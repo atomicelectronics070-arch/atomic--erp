@@ -1069,17 +1069,17 @@ export default function WhatsAppCrmClient() {
     });
 
     return (
-        <div className="w-full h-[calc(100vh-4rem)] bg-[#050505] text-white flex flex-col font-sans">
+        <div className="w-full h-[calc(100vh-4rem)] bg-[#0b141a] text-white flex flex-col font-sans">
             
-            {/* Header */}
-            <div className="px-4 md:px-6 py-3 md:py-4 border-b border-slate-800 bg-slate-950 flex justify-between items-center shrink-0">
+            {/* Header Superior del CRM */}
+            <div className="px-4 md:px-6 py-2.5 border-b border-[#202c33] bg-[#202c33] flex justify-between items-center shrink-0">
                 <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.8)]" />
+                    <div className="w-2.5 h-2.5 rounded-full bg-[#00a884]" />
                     <div>
-                        <h1 className="text-base md:text-xl font-black text-white flex items-center gap-2 tracking-tight">
-                            WhatsApp CRM <span className="text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full">EN VIVO</span>
+                        <h1 className="text-base md:text-lg font-black text-white flex items-center gap-2 tracking-tight">
+                            WhatsApp CRM <span className="text-[10px] font-mono font-bold bg-[#00a884]/20 text-[#00a884] border border-[#00a884]/40 px-2 py-0.5 rounded-full">EN VIVO</span>
                         </h1>
-                        <p className="text-[11px] md:text-xs text-slate-300 hidden sm:block font-medium">Recepción de imágenes, audios, videos y atribución de Pautas Facebook Ads</p>
+                        <p className="text-[11px] text-slate-400 hidden sm:block">Atribución de pautas Facebook/Instagram Ads y mensajería en tiempo real</p>
                     </div>
                 </div>
 
@@ -1087,36 +1087,36 @@ export default function WhatsAppCrmClient() {
                     {/* Bot Agente Karen: Jefa de Mensajería & Auditoría */}
                     <button
                         onClick={() => { setKarenModalOpen(true); fetchKarenAudit(); }}
-                        className="py-1 px-3 rounded-xl bg-gradient-to-r from-cyan-950/90 to-blue-950/90 border border-cyan-500/40 hover:border-cyan-400 text-white transition-all text-xs flex items-center gap-2 cursor-pointer shadow-[0_0_15px_rgba(6,182,212,0.3)] group"
+                        className="py-1 px-3 rounded-xl bg-[#111b21] hover:bg-[#2a3942] border border-cyan-800 text-white transition-colors text-xs flex items-center gap-2 cursor-pointer"
                         title="Abrir Auditoría & Control de Karen (Jefa de Mensajería)"
                     >
                         <div className="relative">
                             <img 
                                 src={`/api/karen-avatar?t=${avatarKey}`} 
                                 alt="Karen" 
-                                className="w-7 h-7 rounded-full object-cover border border-cyan-400 group-hover:scale-105 transition-transform" 
+                                className="w-7 h-7 rounded-full object-cover border border-cyan-400" 
                             />
-                            <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-slate-950 ${
+                            <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#111b21] ${
                                 karenAuditData?.karen?.mode === 'MANUAL' ? 'bg-rose-500' :
                                 karenAuditData?.karen?.mode === 'AWAITING_APPROVAL' ? 'bg-amber-400' : 'bg-emerald-400'
                             }`} />
                         </div>
                         <div className="text-left hidden sm:block">
                             <span className="font-bold text-xs text-cyan-300 block leading-tight">Karen</span>
-                            <span className="text-[9px] font-mono text-slate-400 block -mt-0.5">Jefa de Mensajería</span>
+                            <span className="text-[9px] font-mono text-slate-400 block -mt-0.5">Jefa Mensajería</span>
                         </div>
                     </button>
 
                     <button
                         onClick={() => setIsSettingsModalOpen(true)}
-                        className="px-3 py-1.5 rounded-xl bg-blue-600/30 hover:bg-blue-600/50 border border-blue-500/40 text-cyan-300 transition-all text-xs flex items-center gap-1.5 font-bold shadow-sm cursor-pointer"
+                        className="px-3 py-1.5 rounded-xl bg-[#111b21] hover:bg-[#2a3942] border border-[#2a3942] text-cyan-300 transition-colors text-xs flex items-center gap-1.5 font-bold cursor-pointer"
                     >
                         <Settings size={14} /> <span>Ajustes & Token</span>
                     </button>
 
                     <button
                         onClick={fetchConversations}
-                        className="p-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-emerald-500 text-slate-300 hover:text-white transition-all text-xs flex items-center gap-1 font-mono cursor-pointer"
+                        className="p-2 rounded-xl bg-[#111b21] border border-[#2a3942] hover:border-[#00a884] text-slate-300 hover:text-white transition-colors text-xs flex items-center gap-1 font-mono cursor-pointer"
                     >
                         <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> <span className="hidden sm:inline">Actualizar</span>
                     </button>
@@ -1126,9 +1126,9 @@ export default function WhatsAppCrmClient() {
                             href={`https://wa.me/${activeChat.phone.replace(/\D/g, '')}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 py-2 md:px-4 rounded-xl transition-all flex items-center gap-1.5 shadow-[0_0_15px_rgba(16,185,129,0.3)] cursor-pointer"
+                            className="bg-[#00a884] hover:bg-[#00a884]/90 text-black font-black text-xs px-3.5 py-1.5 rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer"
                         >
-                            <ExternalLink size={14} /> <span className="hidden md:inline">Abrir en WhatsApp Web</span>
+                            <ExternalLink size={14} /> <span className="hidden md:inline">WhatsApp Web</span>
                         </a>
                     )}
                 </div>
@@ -1138,127 +1138,117 @@ export default function WhatsAppCrmClient() {
             <div className="flex-1 flex overflow-hidden relative">
                 
                 {/* Left Sidebar: Chat List */}
-                <div className={`w-full md:w-80 lg:w-96 border-r border-slate-800 bg-slate-900/90 flex flex-col shrink-0 ${activeChatId ? 'hidden md:flex' : 'flex'}`}>
+                <div className={`w-full md:w-80 lg:w-96 border-r border-[#202c33] bg-[#111b21] flex flex-col shrink-0 ${activeChatId ? 'hidden md:flex' : 'flex'}`}>
                     
-                    {/* CRM View Tabs: MIS CONTACTOS vs ENTRANTES vs PAUTAS vs FALLOS vs EMPLEO */}
+                    {/* CRM View Tabs: Selector de Filtros en Píldoras Limpias */}
                     <div className="p-2 bg-[#111b21] border-b border-[#202c33]">
-                        <div className="grid grid-cols-5 gap-1 p-1 bg-[#202c33] rounded-2xl border border-slate-700/50">
+                        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
                             {/* MIS CONTACTOS */}
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('MY_LEADS')}
-                                className={`py-1.5 px-1 rounded-xl text-[10px] font-black transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer truncate ${
+                                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
                                     activeCrmTab === 'MY_LEADS'
-                                        ? 'bg-[#00a884] text-black shadow-md font-black'
-                                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                        ? 'bg-[#00a884] text-black font-black'
+                                        : 'bg-[#202c33] text-slate-300 hover:text-white hover:bg-[#2a3942]'
                                 }`}
                                 title="Mis Contactos y asignados"
                             >
-                                <div className="flex items-center gap-1">
-                                    <UserCheck size={12} className={activeCrmTab === 'MY_LEADS' ? 'text-black' : 'text-[#00a884]'} />
-                                    <span className={`text-[9px] px-1 py-0.2 rounded-full font-mono font-bold ${
-                                        activeCrmTab === 'MY_LEADS' ? 'bg-black/30 text-white' : 'bg-slate-800 text-slate-400'
-                                    }`}>
-                                        {myLeadsCount}
-                                    </span>
-                                </div>
-                                <span className="truncate text-[8px] md:text-[9px] uppercase font-bold tracking-tight">MIS CHATS</span>
+                                <UserCheck size={13} />
+                                <span>Mis Chats</span>
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold ${
+                                    activeCrmTab === 'MY_LEADS' ? 'bg-black/20 text-black' : 'bg-[#111b21] text-slate-400'
+                                }`}>
+                                    {myLeadsCount}
+                                </span>
                             </button>
 
                             {/* ENTRANTES */}
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('ALL_WHATSAPP')}
-                                className={`py-1.5 px-1 rounded-xl text-[10px] font-black transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer truncate ${
+                                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
                                     activeCrmTab === 'ALL_WHATSAPP'
-                                        ? 'bg-[#00a884] text-black shadow-md font-black'
-                                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                        ? 'bg-[#00a884] text-black font-black'
+                                        : 'bg-[#202c33] text-slate-300 hover:text-white hover:bg-[#2a3942]'
                                 }`}
                                 title="Todos los chats entrantes"
                             >
-                                <div className="flex items-center gap-1">
-                                    <MessageSquare size={12} className={activeCrmTab === 'ALL_WHATSAPP' ? 'text-black' : 'text-cyan-400'} />
-                                    <span className={`text-[9px] px-1 py-0.2 rounded-full font-mono font-bold ${
-                                        activeCrmTab === 'ALL_WHATSAPP' ? 'bg-black/30 text-white' : 'bg-slate-800 text-slate-400'
-                                    }`}>
-                                        {allWhatsAppCount}
-                                    </span>
-                                </div>
-                                <span className="truncate text-[8px] md:text-[9px] uppercase font-bold tracking-tight">ENTRANTES</span>
+                                <MessageSquare size={13} />
+                                <span>Entrantes</span>
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold ${
+                                    activeCrmTab === 'ALL_WHATSAPP' ? 'bg-black/20 text-black' : 'bg-[#111b21] text-slate-400'
+                                }`}>
+                                    {allWhatsAppCount}
+                                </span>
                             </button>
 
                             {/* PAUTAS */}
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('PAUTAS')}
-                                className={`py-1.5 px-1 rounded-xl text-[10px] font-black transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer truncate ${
+                                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
                                     activeCrmTab === 'PAUTAS'
-                                        ? 'bg-blue-600 text-white shadow-md font-black'
-                                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                        ? 'bg-blue-600 text-white font-black'
+                                        : 'bg-[#202c33] text-blue-300 hover:text-white hover:bg-[#2a3942]'
                                 }`}
                                 title="Leads de Pautas Publicitarias Meta"
                             >
-                                <div className="flex items-center gap-1">
-                                    <Megaphone size={12} className={activeCrmTab === 'PAUTAS' ? 'text-white' : 'text-blue-400'} />
-                                    <span className={`text-[9px] px-1 py-0.2 rounded-full font-mono font-bold ${
-                                        activeCrmTab === 'PAUTAS' ? 'bg-black/30 text-white' : 'bg-slate-800 text-blue-300'
-                                    }`}>
-                                        {pautasCount}
-                                    </span>
-                                </div>
-                                <span className="truncate text-[8px] md:text-[9px] uppercase font-bold tracking-tight">PAUTAS</span>
+                                <Megaphone size={13} />
+                                <span>Pautas</span>
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold ${
+                                    activeCrmTab === 'PAUTAS' ? 'bg-black/20 text-white' : 'bg-[#111b21] text-blue-300'
+                                }`}>
+                                    {pautasCount}
+                                </span>
                             </button>
 
                             {/* FALLOS */}
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('FAILED')}
-                                className={`py-1.5 px-1 rounded-xl text-[10px] font-black transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer truncate ${
+                                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
                                     activeCrmTab === 'FAILED'
-                                        ? 'bg-rose-500 text-white shadow-md font-black'
+                                        ? 'bg-rose-600 text-white font-black'
                                         : failedCount > 0
-                                        ? 'text-rose-400 bg-rose-950/40 hover:bg-rose-900/50'
-                                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                        ? 'bg-rose-950 text-rose-300 border border-rose-600/50'
+                                        : 'bg-[#202c33] text-slate-400 hover:text-white hover:bg-[#2a3942]'
                                 }`}
                                 title="Chats con mensajes fallidos que necesitan reintento o rescate"
                             >
-                                <div className="flex items-center gap-1">
-                                    <AlertCircle size={12} className={activeCrmTab === 'FAILED' ? 'text-white' : failedCount > 0 ? 'text-rose-400 animate-pulse' : 'text-slate-400'} />
-                                    <span className={`text-[9px] px-1 py-0.2 rounded-full font-mono font-bold ${
-                                        activeCrmTab === 'FAILED' ? 'bg-black/30 text-white' : failedCount > 0 ? 'bg-rose-600 text-white animate-pulse' : 'bg-slate-800 text-slate-400'
-                                    }`}>
-                                        {failedCount}
-                                    </span>
-                                </div>
-                                <span className="truncate text-[8px] md:text-[9px] uppercase font-bold tracking-tight">FALLOS</span>
+                                <AlertCircle size={13} />
+                                <span>Fallos</span>
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold ${
+                                    activeCrmTab === 'FAILED' ? 'bg-black/20 text-white' : failedCount > 0 ? 'bg-rose-600 text-white' : 'bg-[#111b21] text-slate-400'
+                                }`}>
+                                    {failedCount}
+                                </span>
                             </button>
 
                             {/* EMPLEO */}
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('AUTO_REGISTER')}
-                                className={`py-1.5 px-1 rounded-xl text-[10px] font-black transition-all flex flex-col items-center justify-center gap-0.5 cursor-pointer truncate ${
+                                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
                                     activeCrmTab === 'AUTO_REGISTER'
-                                        ? 'bg-[#00a884] text-black shadow-md font-black'
-                                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                        ? 'bg-[#00a884] text-black font-black'
+                                        : 'bg-[#202c33] text-amber-300 hover:text-white hover:bg-[#2a3942]'
                                 }`}
                                 title="Postulantes a Empleo y Registros"
                             >
-                                <div className="flex items-center gap-1">
-                                    <Sparkles size={12} className={activeCrmTab === 'AUTO_REGISTER' ? 'text-black' : 'text-amber-400'} />
-                                    <span className={`text-[9px] px-1 py-0.2 rounded-full font-mono font-bold ${
-                                        activeCrmTab === 'AUTO_REGISTER' ? 'bg-black/30 text-white' : 'bg-slate-800 text-amber-400'
-                                    }`}>
-                                        {autoRegisterCount}
-                                    </span>
-                                </div>
-                                <span className="truncate text-[8px] md:text-[9px] uppercase font-bold tracking-tight">EMPLEO</span>
+                                <Sparkles size={13} />
+                                <span>Empleo</span>
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold ${
+                                    activeCrmTab === 'AUTO_REGISTER' ? 'bg-black/20 text-black' : 'bg-[#111b21] text-amber-400'
+                                }`}>
+                                    {autoRegisterCount}
+                                </span>
                             </button>
                         </div>
                     </div>
 
                     {/* Search Bar */}
-                    <div className="p-3 md:p-3.5 border-b border-[#202c33] bg-[#111b21]">
+                    <div className="p-3 border-b border-[#202c33] bg-[#111b21]">
                         <div className="relative">
                             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                             <input 
@@ -1277,8 +1267,8 @@ export default function WhatsAppCrmClient() {
                         </div>
                     </div>
 
-                    {/* Chat List Items */}
-                    <div className="flex-1 overflow-y-auto divide-y divide-[#202c33] bg-[#111b21]">
+                    {/* Chat List Items (Bordes Limpios, Sin Divide-Y Doble) */}
+                    <div className="flex-1 overflow-y-auto bg-[#111b21]">
                         {loading && chats.length === 0 ? (
                             <div className="p-8 text-center text-slate-400 text-xs font-mono">Cargando conversaciones...</div>
                         ) : filteredChats.length === 0 ? (
@@ -1300,30 +1290,31 @@ export default function WhatsAppCrmClient() {
                                 <button
                                     key={chat.id}
                                     onClick={() => handleSelectChat(chat)}
-                                    className={`w-full p-3 md:p-3.5 text-left transition-all flex items-start gap-3 hover:bg-slate-800/60 cursor-pointer border-b border-[#202c33]/70 ${
+                                    className={`w-full px-3.5 py-3 text-left transition-colors flex items-start gap-3 cursor-pointer border-b border-[#202c33] ${
                                         activeChatId === chat.id 
-                                            ? 'bg-[#202c33] border-l-4 border-[#00a884] shadow-sm' 
+                                            ? 'bg-[#2a3942]' 
                                             : chat.hasFailedMessage
-                                            ? 'bg-rose-950/20 hover:bg-rose-950/35'
-                                            : ''
+                                            ? 'bg-rose-950/25 hover:bg-rose-950/40'
+                                            : 'hover:bg-[#202c33]'
                                     }`}
                                 >
+                                    {/* Avatar */}
                                     <div className="relative shrink-0">
-                                        <div className={`w-11 h-11 rounded-2xl flex items-center justify-center font-extrabold text-sm border ${
+                                        <div className={`w-11 h-11 rounded-full flex items-center justify-center font-bold text-sm border ${
                                             chat.hasFailedMessage
-                                                ? 'bg-rose-950 border-rose-500/60 text-rose-300 ring-2 ring-rose-500/40'
+                                                ? 'bg-rose-900 border-rose-500 text-rose-200'
                                                 : chat.isFromAd
-                                                ? 'bg-blue-950 border-blue-500/60 text-blue-300'
-                                                : 'bg-slate-800 border-slate-700 text-slate-200'
+                                                ? 'bg-blue-900 border-blue-500 text-blue-200'
+                                                : 'bg-[#202c33] border-[#2a3942] text-slate-200'
                                         }`}>
                                             {chat.name.charAt(0).toUpperCase()}
                                         </div>
                                         {chat.hasFailedMessage ? (
-                                            <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-rose-600 border border-slate-900 flex items-center justify-center text-[9px] animate-pulse" title="Fallo de Envío">
+                                            <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-rose-600 border border-[#111b21] flex items-center justify-center text-[9px]" title="Fallo de Envío">
                                                 ⚠️
                                             </span>
                                         ) : chat.isFromAd ? (
-                                            <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-blue-600 border border-slate-900 flex items-center justify-center text-[8px]" title="Lead de Pauta">
+                                            <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-blue-600 border border-[#111b21] flex items-center justify-center text-[8px]" title="Lead de Pauta">
                                                 📢
                                             </span>
                                         ) : null}
@@ -1331,34 +1322,34 @@ export default function WhatsAppCrmClient() {
 
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center justify-between mb-0.5">
-                                            <h3 className="font-extrabold text-sm md:text-[15px] text-white truncate tracking-tight">
+                                            <h3 className="font-bold text-sm text-white truncate">
                                                 {chat.name}
                                             </h3>
                                             <span className="text-[10px] font-mono text-slate-400 shrink-0 ml-1">{chat.time}</span>
                                         </div>
 
-                                        {/* Número de Teléfono Destacado */}
-                                        <p className="text-[11px] font-mono font-bold text-emerald-400/90 truncate mb-1">
+                                        {/* Número de Teléfono Destacado y Claro */}
+                                        <p className="text-xs font-mono font-bold text-emerald-400 truncate mb-1">
                                             {formatPhoneNumber(chat.phone)}
                                         </p>
 
                                         <div className="flex items-center gap-1.5 flex-wrap mb-1">
                                             {chat.hasFailedMessage && (
-                                                <span className="text-[9px] font-black uppercase px-1.5 py-0.2 rounded bg-rose-950 text-rose-300 border border-rose-500/50 flex items-center gap-0.5 animate-pulse shrink-0">
+                                                <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-700/50 flex items-center gap-0.5 shrink-0">
                                                     ⚠️ Fallo Envío
                                                 </span>
                                             )}
                                             {chat.isFromAd && (
-                                                <span className="text-[9px] font-black uppercase px-1.5 py-0.2 rounded bg-blue-950 text-blue-300 border border-blue-500/40 truncate max-w-[140px]">
+                                                <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-700/50 truncate max-w-[140px]">
                                                     📢 {chat.adHeadline || 'Pauta Meta'}
                                                 </span>
                                             )}
                                             {chat.ownerName ? (
-                                                <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 flex items-center gap-0.5 truncate max-w-[120px]">
+                                                <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-800/50 flex items-center gap-0.5 truncate max-w-[120px]">
                                                     <UserCheck size={9} className="shrink-0" /> {chat.ownerName}
                                                 </span>
                                             ) : (
-                                                <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 flex items-center gap-0.5 shrink-0">
+                                                <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-amber-950 text-amber-300 border border-amber-800/50 flex items-center gap-0.5 shrink-0">
                                                     ⚡ Sin Asignar
                                                 </span>
                                             )}
@@ -1371,7 +1362,7 @@ export default function WhatsAppCrmClient() {
                                                         setAdvisorInput(chat.ownerName || "");
                                                         setAssignModalOpen(true);
                                                     }}
-                                                    className="ml-auto text-[9px] font-bold text-slate-400 hover:text-cyan-300 hover:bg-slate-800 px-1.5 py-0.5 rounded transition-colors"
+                                                    className="ml-auto text-[9px] font-bold text-slate-400 hover:text-cyan-300 hover:bg-[#202c33] px-1.5 py-0.5 rounded transition-colors"
                                                     title="Asignar o reasignar asesor a este lead"
                                                 >
                                                     ⚙️ Asignar
@@ -1393,11 +1384,11 @@ export default function WhatsAppCrmClient() {
                     {activeChat ? (
                         <>
                             {/* Chat Header (MODERNO, NOMBRE Y TELÉFONO DESTACADOS) */}
-                            <div className="px-4 py-3 md:px-6 md:py-3.5 border-b border-[#202c33] bg-[#202c33] flex flex-wrap items-center justify-between gap-3 shadow-md">
+                            <div className="px-4 py-3 md:px-6 md:py-3.5 border-b border-[#2a3942] bg-[#202c33] flex items-center justify-between gap-3">
                                 <div className="flex items-center gap-3.5 min-w-0">
                                     <button 
                                         onClick={() => setActiveChatId('')} 
-                                        className="md:hidden p-2 rounded-xl bg-slate-900 text-slate-300 hover:text-white cursor-pointer border border-slate-800"
+                                        className="md:hidden p-2 rounded-xl bg-[#111b21] text-slate-300 hover:text-white cursor-pointer border border-[#2a3942]"
                                         title="Volver a chats"
                                     >
                                         <ChevronLeft size={20} />
@@ -1405,21 +1396,21 @@ export default function WhatsAppCrmClient() {
                                     
                                     {/* Avatar */}
                                     <div className="relative shrink-0">
-                                        <div className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center font-black text-lg md:text-xl shadow-lg border-2 ${
+                                        <div className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center font-black text-lg md:text-xl border-2 ${
                                             activeChat.hasFailedMessage 
-                                                ? 'bg-rose-950/90 border-rose-500/70 text-rose-300 ring-2 ring-rose-500/40' 
+                                                ? 'bg-[#3b1219] border-rose-500 text-rose-300' 
                                                 : activeChat.isFromAd
-                                                ? 'bg-blue-950/90 border-blue-500/70 text-blue-300 ring-2 ring-blue-500/40'
-                                                : 'bg-emerald-950/80 border-emerald-500/50 text-emerald-300 ring-2 ring-emerald-500/30'
+                                                ? 'bg-[#0f2744] border-cyan-500 text-cyan-300'
+                                                : 'bg-[#123b2b] border-[#00a884] text-[#25d366]'
                                         }`}>
                                             {activeChat.name.charAt(0).toUpperCase()}
                                         </div>
                                         {activeChat.hasFailedMessage ? (
-                                            <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-rose-600 border-2 border-slate-950 flex items-center justify-center text-[10px] animate-pulse" title="Fallo de Envío">
+                                            <span className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-rose-600 border-2 border-[#202c33] flex items-center justify-center text-[10px]" title="Fallo de Envío">
                                                 ⚠️
                                             </span>
                                         ) : activeChat.isFromAd ? (
-                                            <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-blue-600 border-2 border-slate-950 flex items-center justify-center text-[10px]" title="Lead de Pauta">
+                                            <span className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-cyan-600 border-2 border-[#202c33] flex items-center justify-center text-[10px]" title="Lead de Pauta">
                                                 📢
                                             </span>
                                         ) : null}
@@ -1432,12 +1423,12 @@ export default function WhatsAppCrmClient() {
                                                 {activeChat.name}
                                             </h2>
                                             {activeChat.hasFailedMessage && (
-                                                <span className="bg-rose-950/90 text-rose-300 border border-rose-500/60 text-[10px] font-black px-2.5 py-0.5 rounded-full flex items-center gap-1 animate-pulse">
+                                                <span className="bg-[#3b1219] text-rose-300 border border-rose-500/60 text-[10px] font-black px-2.5 py-0.5 rounded-full flex items-center gap-1">
                                                     <AlertCircle size={11} className="text-rose-400" /> FALLO EN ENVÍO
                                                 </span>
                                             )}
                                             {activeChat.isFromAd && (
-                                                <span className="bg-blue-950/90 text-cyan-300 border border-blue-500/50 text-[10px] font-black px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                                                <span className="bg-[#0f2744] text-cyan-300 border border-cyan-500/60 text-[10px] font-black px-2.5 py-0.5 rounded-full flex items-center gap-1">
                                                     <Megaphone size={11} className="text-cyan-400" /> LEAD DE PAUTA
                                                 </span>
                                             )}
@@ -1445,21 +1436,21 @@ export default function WhatsAppCrmClient() {
 
                                         {/* Teléfono Grande en Pill Verde con Copiar & Llamar */}
                                         <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                            <div className="inline-flex items-center gap-2 bg-emerald-950/90 border border-emerald-500/40 px-3 py-1 rounded-xl shadow-[0_0_15px_rgba(16,185,129,0.15)] group">
-                                                <Phone size={14} className="text-emerald-400 group-hover:scale-110 transition-transform" />
-                                                <span className="text-sm md:text-base font-mono font-black text-emerald-300 tracking-wider">
+                                            <div className="inline-flex items-center gap-2 bg-[#111b21] border border-[#00a884]/60 px-3 py-1 rounded-xl">
+                                                <Phone size={14} className="text-[#00a884]" />
+                                                <span className="text-sm md:text-base font-mono font-black text-[#25d366] tracking-wider">
                                                     {formatPhoneNumber(activeChat.phone)}
                                                 </span>
                                                 <button
                                                     onClick={() => handleCopyPhone(activeChat.phone)}
-                                                    className="p-1 rounded-md hover:bg-emerald-500/20 text-emerald-400 hover:text-emerald-200 transition-colors cursor-pointer"
+                                                    className="p-1 rounded-md hover:bg-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer"
                                                     title="Copiar número telefónico"
                                                 >
-                                                    {copiedPhone ? <Check size={14} className="text-emerald-300" /> : <Copy size={14} />}
+                                                    {copiedPhone ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
                                                 </button>
                                                 <a
                                                     href={`tel:${activeChat.phone.replace(/\D/g, '')}`}
-                                                    className="p-1 rounded-md hover:bg-emerald-500/20 text-emerald-400 hover:text-emerald-200 transition-colors hidden sm:inline-block cursor-pointer text-xs"
+                                                    className="p-1 rounded-md hover:bg-white/10 text-slate-300 hover:text-white transition-colors hidden sm:inline-block cursor-pointer text-xs"
                                                     title="Llamar teléfono"
                                                 >
                                                     📞
@@ -1469,7 +1460,7 @@ export default function WhatsAppCrmClient() {
                                             {/* Estado de Asignación */}
                                             {activeChat.ownerName ? (
                                                 <div className="flex items-center gap-1.5">
-                                                    <span className="bg-cyan-950/60 text-cyan-300 border border-cyan-500/30 text-xs font-bold px-2.5 py-1 rounded-xl flex items-center gap-1">
+                                                    <span className="bg-[#111b21] text-cyan-300 border border-cyan-500/40 text-xs font-bold px-2.5 py-1 rounded-xl flex items-center gap-1">
                                                         <UserCheck size={12} /> {activeChat.ownerName}
                                                     </span>
                                                     {canAssignLeads && (
@@ -1479,7 +1470,7 @@ export default function WhatsAppCrmClient() {
                                                                 setAdvisorInput(activeChat.ownerName || "");
                                                                 setAssignModalOpen(true);
                                                             }}
-                                                            className="text-[11px] text-cyan-400 hover:text-cyan-200 bg-cyan-950/70 hover:bg-cyan-900/80 border border-cyan-500/30 px-2 py-1 rounded-lg transition-colors cursor-pointer font-bold flex items-center gap-1"
+                                                            className="text-[11px] text-cyan-400 hover:text-white bg-[#111b21] hover:bg-[#2a3942] border border-cyan-500/40 px-2 py-1 rounded-lg transition-colors cursor-pointer font-bold flex items-center gap-1"
                                                             title="Reasignar asesor"
                                                         >
                                                             <Users size={12} /> Reasignar
@@ -1493,7 +1484,7 @@ export default function WhatsAppCrmClient() {
                                                         setAdvisorInput(session?.user?.name || "");
                                                         setAssignModalOpen(true);
                                                     }}
-                                                    className="bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold px-3 py-1 rounded-xl flex items-center gap-1 hover:bg-amber-500/30 cursor-pointer animate-pulse"
+                                                    className="bg-[#2a2114] text-amber-300 border border-amber-500/50 text-xs font-bold px-3 py-1 rounded-xl flex items-center gap-1 hover:bg-[#3d301c] cursor-pointer"
                                                 >
                                                     <UserPlus size={12} /> ⚡ Sin Asignar - Atender
                                                 </button>
@@ -1508,7 +1499,7 @@ export default function WhatsAppCrmClient() {
                                         <button
                                             onClick={() => handleRetryFailedMessage(activeChat.failedMessage?.id)}
                                             disabled={isRetrying}
-                                            className="bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-500 hover:to-rose-500 text-white font-black text-xs px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-[0_0_15px_rgba(245,158,11,0.3)] cursor-pointer disabled:opacity-50"
+                                            className="bg-amber-600 hover:bg-amber-500 text-black font-black text-xs px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                                             title="Reintentar mensaje fallido con Meta WhatsApp"
                                         >
                                             {isRetrying ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
@@ -1520,7 +1511,7 @@ export default function WhatsAppCrmClient() {
                                         href={`https://wa.me/${activeChat.phone.replace(/\D/g, '')}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 shadow-[0_0_15px_rgba(16,185,129,0.3)] cursor-pointer"
+                                        className="bg-[#00a884] hover:bg-[#02906f] text-white font-black text-xs px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer"
                                     >
                                         <ExternalLink size={14} /> <span className="hidden sm:inline">WhatsApp Web</span>
                                     </a>
@@ -1531,12 +1522,12 @@ export default function WhatsAppCrmClient() {
                             <div ref={messagesContainerRef} className="flex-1 p-4 overflow-y-auto space-y-4 scroll-smooth bg-[#0b141a]">
                                 
                                 {/* ⚠️ BANNER DE ALERTA DE FALLO EN EL ENVÍO & RECUPERACIÓN INTELIGENTE */}
-                                {(activeChat.hasFailedMessage || activeChat.messages.some(m => m.status === 'FAILED')) && (
-                                    <div className="p-4 bg-gradient-to-r from-amber-950/95 via-rose-950/90 to-amber-950/95 border-2 border-amber-500/60 rounded-2xl shadow-2xl space-y-3 text-white">
+                                {activeChat.hasFailedMessage && (
+                                    <div className="p-4 bg-[#1f1610] border border-amber-500/60 rounded-xl space-y-3 text-white">
                                         <div className="flex items-start justify-between gap-3">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">
-                                                    <AlertCircle size={22} className="animate-pulse" />
+                                                <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">
+                                                    <AlertCircle size={22} />
                                                 </div>
                                                 <div>
                                                     <h3 className="text-sm md:text-base font-black text-amber-200 uppercase tracking-wide">
@@ -1550,7 +1541,7 @@ export default function WhatsAppCrmClient() {
                                         </div>
 
                                         {activeChat.failedMessage?.errorMessage && (
-                                            <div className="p-2.5 bg-black/60 border border-amber-500/40 rounded-xl text-xs font-mono text-amber-300">
+                                            <div className="p-2.5 bg-[#111b21] border border-amber-500/40 rounded-xl text-xs font-mono text-amber-300">
                                                 <strong className="text-amber-200">Motivo del fallo:</strong> {activeChat.failedMessage.errorMessage}
                                             </div>
                                         )}
@@ -1559,7 +1550,7 @@ export default function WhatsAppCrmClient() {
                                             <button
                                                 onClick={() => handleRetryFailedMessage(activeChat.failedMessage?.id)}
                                                 disabled={isRetrying}
-                                                className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-black text-xs transition-all flex items-center gap-2 shadow-lg cursor-pointer disabled:opacity-50"
+                                                className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-black text-xs transition-all flex items-center gap-2 shadow-sm cursor-pointer disabled:opacity-50"
                                             >
                                                 {isRetrying ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
                                                 <span>🔄 Reintentar Envío Ahora</span>
@@ -1568,7 +1559,7 @@ export default function WhatsAppCrmClient() {
                                             <button
                                                 onClick={handleResuscitateChat}
                                                 disabled={isRetrying}
-                                                className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black text-xs transition-all flex items-center gap-2 shadow-lg cursor-pointer disabled:opacity-50"
+                                                className="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-black text-xs transition-all flex items-center gap-2 shadow-sm cursor-pointer disabled:opacity-50"
                                             >
                                                 {isRetrying ? <Loader2 size={14} className="animate-spin" /> : <Bot size={14} />}
                                                 <span>🤖 Resucitar Chat con IA</span>
@@ -1577,7 +1568,7 @@ export default function WhatsAppCrmClient() {
                                             <button
                                                 onClick={() => handleSendTemplateWindow('hello_world')}
                                                 disabled={isRetrying}
-                                                className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs transition-all flex items-center gap-1.5 border border-slate-700 cursor-pointer"
+                                                className="px-3.5 py-2 rounded-xl bg-[#202c33] hover:bg-[#2a3942] text-slate-200 font-bold text-xs transition-all flex items-center gap-1.5 border border-[#2a3942] cursor-pointer"
                                                 title="Si la ventana de 24 horas de Meta expiró, envía una plantilla oficial para reabrirla"
                                             >
                                                 <span>📲 Reabrir Ventana 24h</span>
@@ -1585,7 +1576,7 @@ export default function WhatsAppCrmClient() {
                                         </div>
 
                                         {retrySuccessMsg && (
-                                            <div className="p-2 rounded-xl bg-emerald-950/80 border border-emerald-500/50 text-xs font-bold text-emerald-300 animate-fadeIn">
+                                            <div className="p-2 rounded-xl bg-[#0f291e] border border-emerald-500/50 text-xs font-bold text-emerald-300">
                                                 {retrySuccessMsg}
                                             </div>
                                         )}
@@ -1593,17 +1584,17 @@ export default function WhatsAppCrmClient() {
                                 )}
                                 {/* 📢 BANNER DESTACADO DE PAUTA PUBLICITARIA SI EL LEAD PROVIENE DE ANUNCIO */}
                                 {activeChat.isFromAd && (
-                                    <div className="p-3.5 bg-gradient-to-r from-blue-950/90 via-indigo-950/90 to-cyan-950/90 border-2 border-blue-500/50 rounded-2xl shadow-xl space-y-2 text-white">
-                                        <div className="flex items-center justify-between border-b border-blue-500/30 pb-2">
+                                    <div className="p-3.5 bg-[#0e1d2c] border border-cyan-500/50 rounded-xl space-y-2 text-white">
+                                        <div className="flex items-center justify-between border-b border-cyan-500/30 pb-2">
                                             <div className="flex items-center gap-2">
-                                                <div className="p-1.5 rounded-lg bg-blue-500/20 text-cyan-300 border border-blue-400/40">
+                                                <div className="p-1.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-400/40">
                                                     <Megaphone size={14} />
                                                 </div>
                                                 <span className="text-[11px] font-black text-cyan-300 uppercase tracking-wider">
                                                     LEAD ORIGINADO DE PAUTA FACEBOOK / INSTAGRAM ADS
                                                 </span>
                                             </div>
-                                            <span className="text-[9px] font-mono bg-blue-600/40 text-blue-200 border border-blue-400/40 px-2 py-0.5 rounded-full font-bold">
+                                            <span className="text-[9px] font-mono bg-cyan-600/30 text-cyan-200 border border-cyan-400/40 px-2 py-0.5 rounded-full font-bold">
                                                 Atribución Meta
                                             </span>
                                         </div>
@@ -1631,13 +1622,13 @@ export default function WhatsAppCrmClient() {
                                                 
                                                 {/* 📢 PREVIEW CARD: ATRIBUCIÓN DE ANUNCIO FACEBOOK ADS (CLICK TO WHATSAPP) */}
                                                 {msg.referral && (
-                                                    <div className="p-3 bg-gradient-to-r from-blue-950/95 to-indigo-950/95 border-2 border-blue-500/60 rounded-xl space-y-2 text-white shadow-lg">
-                                                        <div className="flex items-center justify-between border-b border-blue-500/30 pb-1.5">
+                                                    <div className="p-3 bg-[#0a1829] border border-cyan-500/50 rounded-xl space-y-2 text-white shadow-sm">
+                                                        <div className="flex items-center justify-between border-b border-cyan-500/30 pb-1.5">
                                                             <span className="flex items-center gap-1.5 text-[10px] font-black tracking-wider text-cyan-300 uppercase">
                                                                 <Megaphone size={12} className="text-cyan-400" /> ANUNCIO DE ORIGEN · {msg.referral.sourceType === 'ad' ? 'FACEBOOK ADS' : 'POST META'}
                                                             </span>
                                                             {msg.referral.sourceId && (
-                                                                <span className="text-[9px] font-mono text-blue-300 opacity-80">
+                                                                <span className="text-[9px] font-mono text-cyan-300/80">
                                                                     ID: {msg.referral.sourceId}
                                                                 </span>
                                                             )}
@@ -1867,23 +1858,23 @@ export default function WhatsAppCrmClient() {
 
                             {/* Attachment Preview Chip */}
                             {pendingAttachment && (
-                                <div className="px-4 py-2 bg-slate-900 border-t border-slate-800 flex items-center justify-between">
+                                <div className="px-4 py-2 bg-[#111b21] border-t border-[#2a3942] flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         {pendingAttachment.mediaType === 'image' ? (
-                                            <img src={pendingAttachment.url} alt="Adjunto" className="w-9 h-9 rounded-lg object-cover border border-emerald-500/40" />
+                                            <img src={pendingAttachment.url} alt="Adjunto" className="w-9 h-9 rounded-lg object-cover border border-[#00a884]/40" />
                                         ) : (
-                                            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                                            <div className="w-9 h-9 rounded-lg bg-[#00a884]/10 border border-[#00a884]/30 flex items-center justify-center text-[#25d366]">
                                                 <FileText size={18} />
                                             </div>
                                         )}
                                         <div>
                                             <p className="text-xs font-bold text-white truncate max-w-[200px]">{pendingAttachment.filename}</p>
-                                            <p className="text-[10px] text-emerald-400 font-semibold uppercase">{pendingAttachment.mediaType}</p>
+                                            <p className="text-[10px] text-[#25d366] font-semibold uppercase">{pendingAttachment.mediaType}</p>
                                         </div>
                                     </div>
                                     <button
                                         onClick={() => setPendingAttachment(null)}
-                                        className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-rose-400 transition-colors"
+                                        className="p-1.5 rounded-lg hover:bg-[#202c33] text-slate-400 hover:text-rose-400 transition-colors"
                                         title="Quitar archivo"
                                     >
                                         <X size={14} />
@@ -1892,7 +1883,7 @@ export default function WhatsAppCrmClient() {
                             )}
 
                             {/* Chat Input Bar */}
-                            <div className="p-3 border-t border-slate-800 bg-slate-950 flex items-center gap-2">
+                            <div className="p-3 border-t border-[#2a3942] bg-[#202c33] flex items-center gap-2">
                                 <input 
                                     type="file" 
                                     ref={fileInputRef} 
@@ -1904,7 +1895,7 @@ export default function WhatsAppCrmClient() {
                                     type="button"
                                     onClick={() => fileInputRef.current?.click()}
                                     disabled={isUploadingAttachment}
-                                    className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-cyan-400 transition-all cursor-pointer disabled:opacity-50"
+                                    className="p-2.5 rounded-xl bg-[#2a3942] hover:bg-[#374248] text-slate-300 hover:text-white transition-all cursor-pointer disabled:opacity-50"
                                     title="Adjuntar imagen, audio o documento"
                                 >
                                     {isUploadingAttachment ? <Loader2 size={16} className="animate-spin text-cyan-400" /> : <Paperclip size={16} />}
@@ -1913,7 +1904,7 @@ export default function WhatsAppCrmClient() {
                                     type="button"
                                     onClick={handleSendCatalogToClient}
                                     disabled={sendingCatalog}
-                                    className="p-2.5 rounded-xl bg-slate-900 hover:bg-cyan-950/60 border border-slate-800 hover:border-cyan-500/50 text-slate-400 hover:text-cyan-300 transition-all cursor-pointer disabled:opacity-50 group"
+                                    className="p-2.5 rounded-xl bg-[#2a3942] hover:bg-[#374248] text-slate-300 hover:text-[#00a884] transition-all cursor-pointer disabled:opacity-50 group"
                                     title="Enviar Catálogo Oficial de Productos a este cliente por WhatsApp"
                                 >
                                     {sendingCatalog ? <Loader2 size={16} className="animate-spin text-cyan-400" /> : <ShoppingBag size={16} className="group-hover:scale-110 transition-transform" />}
@@ -1944,7 +1935,7 @@ export default function WhatsAppCrmClient() {
                                             ? "⚠️ Clic para indicar asesor que atiende y escribir..." 
                                             : (pendingAttachment ? "Añadir un pie de foto / mensaje..." : "Escribe tu mensaje a través de WhatsApp API...")
                                     }
-                                    className="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+                                    className="flex-1 bg-[#2a3942] border border-transparent focus:border-[#00a884] rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none"
                                 />
                                 <button
                                     onClick={() => {
@@ -1957,7 +1948,7 @@ export default function WhatsAppCrmClient() {
                                         handleSendMessage();
                                     }}
                                     disabled={(!inputText.trim() && !pendingAttachment) || isUploadingAttachment}
-                                    className="p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white transition-all shadow-md cursor-pointer"
+                                    className="p-2.5 rounded-xl bg-[#00a884] hover:bg-[#02906f] disabled:opacity-40 text-white transition-all shadow-md cursor-pointer"
                                 >
                                     <Send size={16} />
                                 </button>
@@ -2891,7 +2882,7 @@ export default function WhatsAppCrmClient() {
                                         onClick={() => handleSetKarenMode('AUTOMATIC')}
                                         className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center gap-3 ${
                                             karenAuditData?.karen?.mode === 'AUTOMATIC' || !karenAuditData?.karen?.mode
-                                                ? 'bg-emerald-950/60 border-emerald-500 text-emerald-200 ring-2 ring-emerald-500/40'
+                                                ? 'bg-[#0c2a1e] border-2 border-emerald-500 text-emerald-200'
                                                 : 'bg-slate-950/40 border-slate-800 hover:border-slate-700 text-slate-400'
                                         }`}
                                     >
@@ -2907,7 +2898,7 @@ export default function WhatsAppCrmClient() {
                                         onClick={() => handleSetKarenMode('AWAITING_APPROVAL')}
                                         className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center gap-3 ${
                                             karenAuditData?.karen?.mode === 'AWAITING_APPROVAL'
-                                                ? 'bg-amber-950/60 border-amber-500 text-amber-200 ring-2 ring-amber-500/40'
+                                                ? 'bg-[#2a2114] border-2 border-amber-500 text-amber-200'
                                                 : 'bg-slate-950/40 border-slate-800 hover:border-slate-700 text-slate-400'
                                         }`}
                                     >
@@ -2923,7 +2914,7 @@ export default function WhatsAppCrmClient() {
                                         onClick={() => handleSetKarenMode('MANUAL')}
                                         className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center gap-3 ${
                                             karenAuditData?.karen?.mode === 'MANUAL'
-                                                ? 'bg-rose-950/60 border-rose-500 text-rose-200 ring-2 ring-rose-500/40'
+                                                ? 'bg-[#3b1219] border-2 border-rose-500 text-rose-200'
                                                 : 'bg-slate-950/40 border-slate-800 hover:border-slate-700 text-slate-400'
                                         }`}
                                     >
