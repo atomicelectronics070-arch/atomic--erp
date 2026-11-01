@@ -100,7 +100,40 @@ const REFERENCE_PRICES: Record<string, number> = {
     "antihurto": 499.96,
     "antipanico": 98.00,
     "barra": 98.00,
-    "barra antipanico": 98.00
+    "barra antipanico": 98.00,
+    "boc241n": 28.90,
+    "barra sonido": 28.90,
+    "barra de sonido": 28.90,
+    "1 hora": 28.90,
+    "ranger": 35.80,
+    "mini pt": 39.10,
+    "doble lente": 42.50,
+    "doble lente exterior": 63.77,
+    "ezviz": 43.99,
+    "h6c": 43.99,
+    "camara exterior": 47.82,
+    "ip66": 47.82,
+    "cruiser": 135.00,
+    "cruiser triple": 135.00,
+    "titan": 115.00,
+    "titan pro": 115.00,
+    "aurora": 115.00,
+    "combo nvr": 95.00,
+    "nks4223wbth": 95.00,
+    "portero multifuncion": 198.99,
+    "portero zkteco": 198.99,
+    "zkbio": 198.99,
+    "ditec": 1928.90,
+    "ditec 2027": 1928.90,
+    "barrera ditec": 1928.90,
+    "barreras ditec": 1928.90,
+    "antenas 576": 576.00,
+    "antenas acrilicas": 745.00,
+    "antenas 745": 745.00,
+    "generador": 50.00,
+    "mantenimiento generador": 50.00,
+    "generador basico": 50.00,
+    "generador industrial": 180.00
 };
 
 /**
@@ -553,9 +586,123 @@ ${pendingNames}
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // 8. SOLICITUD DE ENVÍO: "ENVÍA [MENSAJE] A [PERSONA / NÚMERO]"
+    // 8. COMANDO INTELIGENTE DE ENVÍO A CLIENTE (SÚPER PRO, DILIGENTE Y RESOLUTIVO)
+    // Ejemplos: "mándale el precio de tal cámara", "dile que cuesta 45 dólares", "envíale la proforma al cliente"
     // ─────────────────────────────────────────────────────────────────────────
-    const sendMatch = raw.match(/(?:envia|envía|mandale|mándale|escribe|escríbele|dile)\s+(?:a\s+)?([^\s:]+)\s*(?:que\s+|:\s*|\s+)([\s\S]+)/i);
+    const isDirectSendOrder = /(?:envia|envía|mandale|mándale|manda|escribe|escríbele|dile|responderle|respondele|contéstale|contestale)/i.test(raw);
+
+    if (isDirectSendOrder) {
+        // Encontrar a qué cliente se refiere (el último chat activo o el último chat sin catalogar)
+        let targetConv = await prisma.wAConversation.findFirst({
+            where: {
+                contact: {
+                    NOT: [
+                        { whatsappId: "593969043453" },
+                        { whatsappId: "0969043453" },
+                        { whatsappId: { contains: "969043453" } }
+                    ]
+                }
+            },
+            orderBy: { updatedAt: "desc" },
+            include: {
+                contact: true,
+                messages: {
+                    take: 3,
+                    orderBy: { createdAt: "desc" }
+                }
+            }
+        });
+
+        if (targetConv && targetConv.contact) {
+            const recipientPhone = targetConv.contact.whatsappId;
+            const recipientName = targetConv.contact.name || "Cliente";
+            const lastClientMsg = targetConv.messages?.[0]?.body || "";
+
+            // Redactar mensaje profesional usando IA ejecutiva
+            const composePrompt = `
+Eres Karen, asistente ejecutiva y mano derecha de Juan en ATOMIC Electronics.
+Juan te acaba de dar una instrucción sobre qué responderle a un cliente.
+Instrucción de Juan: "${raw}"
+Nombre del cliente: "${recipientName}"
+Último mensaje recibido del cliente: "${lastClientMsg}"
+
+PORTAFOLIO DE PRECIOS OFICIALES ATOMIC:
+- Cámaras Interior Hogar 360: IMOU Ranger 3MP ($35.80), IMOU Mini PT Full Color ($39.10), Doble Lente 360 ($42.50), EZVIZ H6C ($43.99).
+- Cámaras Exterior IP66: Wi-Fi IP66 ($47.82), Doble Lente IP81 ($63.77), Combo NVR ($95.00), IMOU Cruiser Triple 11MP ($135.00), IMOU Titan Aurora ($115.00).
+- Videoporteros: Kit Residencial 2 Pantallas HD ($285.00), Hikvision DS-KIS212 ($92.40), Portero Multifunción ZKTeco con app ($198.99).
+- Barreras Automáticas Dítec 2027: $1,928.90 + IVA.
+- Antenas Antihurto: Kit Estándar ($576.00 + IVA), Kit Acrílico ($745.00 + IVA).
+- Generadores: Mantenimiento preventivo básico $50.00.
+- Barra de Sonido Gamer 1 HORA BOC241N: $28.90 + IVA.
+
+TAREA:
+Redacta el mensaje final exacto que se le enviará por WhatsApp a este cliente cumpliendo exactamente lo que Juan pide.
+Debe sonar impecable, educado, comercial y directo. Con emojis sobrios y llamado a la acción.
+Devuelve ÚNICAMENTE el texto que se le enviará al cliente, sin introducciones ni comillas.
+`;
+
+            let craftedMessage = "";
+            try {
+                const draftRes = await axios.post(
+                    "https://integrate.api.nvidia.com/v1/chat/completions",
+                    {
+                        model: NVIDIA_MODEL,
+                        messages: [
+                            { role: "system", content: "Eres una redactora comercial de élite de ATOMIC Electronics." },
+                            { role: "user", content: composePrompt }
+                        ],
+                        temperature: 0.5,
+                        max_tokens: 350
+                    },
+                    {
+                        headers: {
+                            "Authorization": `Bearer ${NVIDIA_API_KEY}`,
+                            "Content-Type": "application/json"
+                        },
+                        timeout: 10000
+                    }
+                );
+                craftedMessage = draftRes.data?.choices?.[0]?.message?.content?.trim() || "";
+            } catch (_) {}
+
+            if (!craftedMessage) {
+                craftedMessage = `¡Hola ${recipientName}! 👋 Con mucho gusto te saluda el equipo de ATOMIC Electronics. En respuesta a tu consulta:\n\n${raw.replace(/^(oye|karen|mandale|mándale|dile|envia|envía|escribe)\s+/i, '')}\n\n¿Deseas que te coordinemos la entrega a domicilio o te preparamos la proforma formal? Quedamos a tus órdenes. 📲`;
+            }
+
+            // Despachar inmediatamente el mensaje al cliente sin trabas ni bucles
+            try {
+                await sendWhatsAppMessage(recipientPhone, craftedMessage);
+
+                // Registrar en la conversación del CRM
+                await prisma.wAMessage.create({
+                    data: {
+                        conversationId: targetConv.id,
+                        direction: "OUTBOUND",
+                        type: "text",
+                        body: craftedMessage,
+                        status: "SENT",
+                        senderId: "KAREN_CHIEF_DIRECT"
+                    }
+                });
+
+                // Actualizar timestamp
+                await prisma.wAConversation.update({
+                    where: { id: targetConv.id },
+                    data: { updatedAt: new Date(), lastMessageAt: new Date() }
+                });
+
+                return `✅ **¡Listo Juan! Mensaje despachado de inmediato:**
+
+👤 **Cliente:** ${recipientName} (${recipientPhone})
+📝 **Mensaje enviado:**
+"${craftedMessage}"
+
+El cliente ya fue atendido con éxito y el chat quedó actualizado en el CRM. ¿Necesitas que despache algo más? 🚀`;
+            } catch (sendErr: any) {
+                return `⚠️ Juan, intenté despachar el mensaje a ${recipientName} (${recipientPhone}) pero ocurrió un inconveniente con WhatsApp API: ${sendErr.message}. Verifica que el número sea válido.`;
+            }
+        }
+    }
     if (sendMatch) {
         const rawTarget = sendMatch[1].trim();
         const msgToSend = sendMatch[2].trim();
@@ -614,40 +761,37 @@ ${pendingNames}
  * Notifica a Juan sobre mensajes entrantes en tiempo real (agrupados cada 5 minutos)
  */
 export async function notifyJuanIncomingBurst() {
-    const now = Date.now();
+    // KAREN SILENCIOSA & EFICIENTE:
+    // No interrumpir a Juan en WhatsApp con ráfagas constantes de cada 5 minutos.
+    // Los contadores se mantienen activos en memoria para el panel de auditoría web y resúmenes solicitados.
     const counters = karenState.burstCounters;
     const total = counters.recruitment + counters.sales + counters.autoRegister + counters.uncataloged;
 
     if (total === 0) return;
 
-    if (now - karenState.lastJuanNotificationAt < 5 * 60 * 1000) {
-        return;
-    }
+    // Solo notificar si hay un volumen excepcionalmente alto de más de 15 leads acumulados y han pasado al menos 3 horas
+    const now = Date.now();
+    if (total >= 15 && (now - karenState.lastJuanNotificationAt >= 3 * 60 * 60 * 1000)) {
+        karenState.lastJuanNotificationAt = now;
+        const summaryParts: string[] = [];
+        if (counters.sales > 0) summaryParts.push(`🛒 ${counters.sales} consultas de Clientes & Cotizaciones`);
+        if (counters.recruitment > 0) summaryParts.push(`💼 ${counters.recruitment} aspirantes a Asesores Comerciales`);
+        if (counters.autoRegister > 0) summaryParts.push(`⚡ ${counters.autoRegister} registros de sistema`);
 
-    karenState.lastJuanNotificationAt = now;
-
-    const summaryParts: string[] = [];
-    if (counters.recruitment > 0) summaryParts.push(`💼 ${counters.recruitment} lead(s) de Contratación / Empleo`);
-    if (counters.autoRegister > 0) summaryParts.push(`⚡ ${counters.autoRegister} de Registro / Cotización Automática`);
-    if (counters.sales > 0) summaryParts.push(`🛒 ${counters.sales} de Ventas & Catálogo`);
-    if (counters.uncataloged > 0) summaryParts.push(`❓ ${counters.uncataloged} por catalogar`);
-
-    const message = 
-`Juan, excelente, están entrando mensajes: estamos respondiendo a:
+        const message = 
+`Juan, te comparto el reporte de alto tráfico en ATOMIC:
 ${summaryParts.join("\n")}
 
-La IA está atendiendo a los clientes con fluidez. Te mantendré informado. 🚀`;
+La IA está atendiendo y canalizando cada requerimiento con fluidez sin que tengas que intervenir. 🚀`;
 
-    counters.recruitment = 0;
-    counters.sales = 0;
-    counters.autoRegister = 0;
-    counters.uncataloged = 0;
+        counters.recruitment = 0;
+        counters.sales = 0;
+        counters.autoRegister = 0;
+        counters.uncataloged = 0;
 
-    try {
-        await sendWhatsAppMessage(JUAN_PHONE, message);
-        console.log(`[KAREN_NOTIFIED_JUAN] Resumen enviado a ${JUAN_PHONE}`);
-    } catch (e) {
-        console.warn(`[KAREN_NOTIFY_WARN] No se pudo enviar notificación a Juan:`, e);
+        try {
+            await sendWhatsAppMessage(JUAN_PHONE, message);
+        } catch (_) {}
     }
 }
 

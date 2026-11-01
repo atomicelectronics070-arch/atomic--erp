@@ -112,13 +112,16 @@ export async function POST(req: Request) {
                                          textLower.includes('publicidad') ||
                                          textLower.includes('tiktok');
 
-                    if (textLower.includes('empleo') || textLower.includes('vacante') || textLower.includes('trabajo') || textLower.includes('postul') || textLower.includes('contrat') || textLower.includes('laboral')) {
+                    // REGLA CRÍTICA: Solo catalogar como empleo si el usuario menciona explícitamente términos laborales
+                    const isStrictJobQuery = /\b(empleo|vacante|postular|postulacion|postulación|hoja de vida|curriculum|cv|trabajar con ustedes|asesor comercial|plan laboral)\b/i.test(textLower);
+
+                    if (isStrictJobQuery) {
                         referral = {
                             source_url: 'https://atomiccotizador.shop/web/contrataciones',
                             source_type: 'ad',
                             source_id: 'PAUTA-RECLUTAMIENTO-30D',
-                            headline: 'Pauta Oficial: Convocatoria Asesores Comerciales',
-                            body: 'Plan Laboral de 30 días con dedicación de 2h/día, sueldo $100-$450 + comisiones y grupo de WhatsApp.',
+                            headline: 'Convocatoria Oficial: Asesores Comerciales',
+                            body: 'Plan Laboral de 30 días con dedicación de 2h/día, sueldo $100-$450 + comisiones.',
                             media_type: 'image',
                             image_url: '/images/contrataciones/empleo-ingeniero-redes.jpg',
                             thumbnail_url: '/images/contrataciones/empleo-ingeniero-redes.jpg',
@@ -225,12 +228,14 @@ export async function POST(req: Request) {
 
                 // Ensure message body is never blank, especially for pauta leads or media
                 if (!msgBody || msgBody.trim() === '' || msgBody === '[Mensaje unsupported]') {
-                    if (referral) {
-                        msgBody = `📢 Lead originado de Pauta: ${referral.headline || referral.source_url || 'Anuncio de Meta'}`;
+                    if (referral && referral.headline && !referral.headline.includes('Lead de Anuncio Meta')) {
+                        msgBody = `Consulta originada de anuncio: ${referral.headline}`;
                     } else if (msgType === 'unsupported') {
-                        msgBody = '📢 Interacción de anuncio publicitario';
+                        msgBody = 'Hola, deseo información';
                     } else if (mediaUrl) {
-                        msgBody = msgType === 'image' ? '📷 Imagen' : msgType === 'audio' ? '🎵 Audio' : msgType === 'video' ? '🎬 Video' : '📄 Documento';
+                        msgBody = msgType === 'image' ? '📷 Imagen enviada' : msgType === 'audio' ? '🎵 Audio enviado' : msgType === 'video' ? '🎬 Video enviado' : '📄 Documento';
+                    } else {
+                        msgBody = 'Hola, deseo información';
                     }
                 }
 

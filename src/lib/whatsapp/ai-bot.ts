@@ -314,29 +314,19 @@ export async function handleIncomingWhatsAppBot(params: {
             `${m.direction === 'INBOUND' ? 'Cliente' : 'Asesor ATOMIC'}: ${m.body}`
         ).join('\n');
 
-        // 2. Clasificación de Intención (RECLUTAMIENTO vs COMERCIAL)
+        // 2. Clasificación de Intención Estricta (RECLUTAMIENTO vs COMERCIAL)
+        // REGLA FUNDAMENTAL DE SEGURIDAD: Solo derivar al grupo de empleo si el usuario menciona
+        // EXPLÍCITAMENTE términos laborales concretos. Jamás derivar por palabras genéricas como "contratar servicio", "vender producto", o saludos generales.
         const textLower = (messageText || '').toLowerCase();
-        const isRecruitment = 
-            textLower.includes('empleo') ||
-            textLower.includes('trabajo') ||
-            textLower.includes('vacante') ||
-            textLower.includes('postul') ||
-            textLower.includes('contrat') ||
-            textLower.includes('aspirant') ||
-            textLower.includes('laboral') ||
-            textLower.includes('curriculum') ||
-            textLower.includes('hoja de vida') ||
-            textLower.includes('asesor comercial') ||
-            textLower.includes('vender') ||
-            textLower.includes('sueldo') ||
-            textLower.includes('remuneracion') ||
-            textLower.includes('comision') ||
-            textLower.includes('[pauta_meta:') && (
-                textLower.includes('empleo') ||
-                textLower.includes('trabajo') ||
-                textLower.includes('contrat') ||
-                textLower.includes('asesor')
-            );
+        
+        const hasExplicitLaboralIntent = 
+            /\b(empleo|vacante|postular|postulacion|postulación|hoja de vida|curriculum|cv|trabajar con ustedes|quiero trabajar|busco trabajo|puesto de trabajo|plan laboral|aspirante)\b/i.test(textLower) ||
+            (/\b(asesor comercial|vendedor)\b/i.test(textLower) && /\b(postular|aplicar|vacante|trabajar|cv|hoja de vida|sueldo|comision|comisiones)\b/i.test(textLower));
+
+        const isRecruitmentPauta = textLower.includes('[pauta_meta:') && 
+            (textLower.includes('convocatoria asesores') || textLower.includes('pauta-reclutamiento') || textLower.includes('empleo-ingeniero'));
+
+        const isRecruitment = hasExplicitLaboralIntent || isRecruitmentPauta;
 
         let systemPrompt = "";
 
@@ -577,6 +567,15 @@ function generateExpertConsultantFallback(messageText: string, contactName: stri
 
     if (isRecruitment) {
         return `¡Hola${namePart}! 👋 Qué gusto saludarte. Tu postulación para Asesor Comercial en ATOMIC Electronics ha sido recibida con éxito. 🚀\n\nPuedes revisar todos los detalles del Plan Laboral de 30 días aquí:\n👉 ${HR_PAGE_LINK}\n\nY únete de inmediato a nuestro grupo oficial de bienvenida e inducción en WhatsApp:\n📲 ${HR_GROUP_LINK}\n\nUna vez dentro, tu coordinadora asignada se pondrá en contacto contigo para explicarte el paso a paso y resolver cualquier duda. ¡Bienvenido al equipo! 💼✨`;
+    }
+
+    // DISCOVERY DE BIENVENIDA EMPÁTICO: Si entra un mensaje ambiguo o saludo general sin producto específico
+    const isAmbiguousQuery = 
+        /^(hola|buenas|buen d[ií]a|buenas tardes|buenas noches|informaci[oó]n|info|saludos|que tal|qu[eé] tal|ayuda|me ayuda|deseo informaci[oó]n|precio|precios|catalogo|cat[aá]logo)\.?$/i.test(textLower.trim()) ||
+        (textLower.length < 25 && !/(cerco|camara|c[aá]mara|portero|ditec|antena|generador|boc241n|torniquet)/i.test(textLower));
+
+    if (isAmbiguousQuery) {
+        return `¡Hola${namePart}! 👋 Bienvenido a *ATOMIC Electronics Ecuador*.\n\nCon mucho gusto te ayudamos. Cuéntanos qué producto o requerimiento te interesa cotizar hoy:\n\n🔹 *Cámaras de Seguridad:* Hogar, interiores 360° o exteriores IP66 resistentes a lluvia.\n🔹 *Videoporteros & Citofonía:* Para casas familiares o edificios inteligentes.\n🔹 *Control de Acceso:* Portero facial ZKTeco, huella digital y torniquetes.\n🔹 *Seguridad Perimetral:* Cercos eléctricos JFL/Hagroy de alto voltaje.\n🔹 *Barreras Automáticas:* Dítec 2027 para urbanizaciones y empresas.\n🔹 *Seguridad Comercial:* Antenas anti-hurto para tiendas y locales.\n🔹 *Servicios:* Mantenimiento preventivo de generadores eléctricos ($50).\n\n🛒 Puedes ver todo nuestro catálogo web aquí: https://atomiccotizador.shop/web\n\n¿Para qué tipo de espacio o proyecto lo necesitas (casa, conjunto residencial, local o negocio)? 📲`;
     }
 
     
