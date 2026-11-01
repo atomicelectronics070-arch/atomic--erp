@@ -55,6 +55,7 @@ interface Chat {
     } | null
     ownerId?: string | null
     ownerName?: string | null
+    profilePic?: string | null
     messages: MessageItem[]
 }
 
@@ -71,6 +72,20 @@ function formatPhoneNumber(phone: string = ''): string {
         return `+${clean.slice(0, 3)} ${clean.slice(3, 6)} ${clean.slice(6)}`;
     }
     return clean ? `+${clean}` : phone;
+}
+
+function categorizarChat(chat: Chat): 'residencial' | 'empresarial' | 'postulante' | 'soporte' | 'general' {
+    const allText = [
+        chat.lastMessage,
+        chat.adHeadline,
+        ...chat.messages.map(m => m.text)
+    ].join(' ').toLowerCase();
+
+    if (/(trabajo|empleo|asesor comercial|comisi[oó]n|curriculum|cv|postulaci[oó]n|vacante|sueldo|horario|requisito)/i.test(allText)) return 'postulante';
+    if (/(garant[ií]a|da[ñn]o|falla|no funciona|roto|reparaci[oó]n|averiado|soporte|servicio t[eé]cnico)/i.test(allText)) return 'soporte';
+    if (/(empresa|local|negocio|bodega|oficina|antena|antihurto|torniquete|barrera|control de acceso|establecimiento|sucursal)/i.test(allText)) return 'empresarial';
+    if (/(c[aá]mara|videoportero|citofono|citofonía|hogar|casa|conjunto|residencial|alarma|cerco|domicilio|apartamento|departamento)/i.test(allText)) return 'residencial';
+    return 'general';
 }
 
 function parseMessageBody(rawBody: string = '', rawMediaUrl?: string | null, rawType: string = 'text') {
@@ -148,6 +163,7 @@ export default function WhatsAppCrmClient() {
     const messagesContainerRef = useRef<HTMLDivElement>(null)
     const prevMessagesCountRef = useRef<number>(0)
     const hasInteractedRef = useRef<boolean>(false)
+    const userClosedChatRef = useRef<boolean>(false)
 
     // Synthesized Sound Alerts via Web Audio API (Zero external assets needed)
     const playIncomingSound = useCallback(() => {
@@ -339,6 +355,7 @@ export default function WhatsAppCrmClient() {
 
     // CRM Tabs Filter: "MY_LEADS" | "ALL_WHATSAPP" | "PAUTAS" | "FAILED" | "AUTO_REGISTER"
     const [activeCrmTab, setActiveCrmTab] = useState<'MY_LEADS' | 'ALL_WHATSAPP' | 'PAUTAS' | 'FAILED' | 'AUTO_REGISTER'>('MY_LEADS')
+    const [activeCategory, setActiveCategory] = useState<'all' | 'residencial' | 'empresarial' | 'postulante' | 'soporte' | 'general'>('all')
     const [systemAdvisors, setSystemAdvisors] = useState<any[]>([])
 
     // Intelligent Retry & Resuscitate State
@@ -708,12 +725,13 @@ export default function WhatsAppCrmClient() {
                             failedMessage: conv.failedMessage || (hasFailedMessage ? parsedMessages.find(m => m.status === 'FAILED') : null),
                             ownerId: conv.ownerId || conv.owner?.id || null,
                             ownerName: conv.owner?.name || null,
+                            profilePic: conv.contact?.profilePic || null,
                             messages: parsedMessages
                         };
                     });
 
                     setChats(formattedChats);
-                    if (formattedChats.length > 0 && !activeChatId && window.innerWidth >= 768) {
+                    if (formattedChats.length > 0 && !activeChatId && !userClosedChatRef.current && window.innerWidth >= 768) {
                         setActiveChatId(formattedChats[0].id);
                     }
                 }
@@ -817,6 +835,7 @@ export default function WhatsAppCrmClient() {
 
     // Handle chat selection (Sin bloquear con popups molestos; selección limpia e instantánea)
     const handleSelectChat = (chat: Chat) => {
+        userClosedChatRef.current = false;
         setActiveChatId(chat.id);
     };
 
@@ -1167,6 +1186,24 @@ export default function WhatsAppCrmClient() {
         setTimeout(() => setCopiedPhone(false), 2000);
     };
 
+    const handleSaveContactPhoto = async (phone: string, photoUrl: string) => {
+        try {
+            const res = await fetch('/api/whatsapp/contact-photo', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone, profilePic: photoUrl.trim() || null })
+            });
+            if (res.ok) {
+                setChats(prev => prev.map(c => c.phone === phone ? { ...c, profilePic: photoUrl.trim() || null } : c));
+            } else {
+                alert('No se pudo guardar la foto de perfil en el servidor.');
+            }
+        } catch (err) {
+            console.error('Error guardando foto de contacto:', err);
+            alert('Error de conexión al guardar foto.');
+        }
+    };
+
     const handleRetryFailedMessage = async (messageId?: string, isAuto = false) => {
         if (!activeChat) return;
         setIsRetrying(true);
@@ -1362,7 +1399,7 @@ export default function WhatsAppCrmClient() {
     const myLeadsCount = chats.filter(c => isMyLead(c) && !isAutoRegister(c)).length
     const allWhatsAppCount = chats.filter(c => !isAutoRegister(c)).length
 
-    const filteredChats = chats.filter(c => {
+    const filteredChatsBeforeCategory = chats.filter(c => {
         // Tab filter
         if (activeCrmTab === 'AUTO_REGISTER') {
             if (!isAutoRegister(c)) return false
@@ -1386,6 +1423,14 @@ export default function WhatsAppCrmClient() {
             (c.adHeadline && c.adHeadline.toLowerCase().includes(q)) ||
             c.messages.some(m => m.text && m.text.toLowerCase().includes(q))
         )
+    });
+
+    const filteredChats = filteredChatsBeforeCategory.filter(c => {
+        // Category filter
+        if (activeCategory !== 'all') {
+            if (categorizarChat(c) !== activeCategory) return false;
+        }
+        return true;
     });
 
     return (
@@ -1611,6 +1656,35 @@ export default function WhatsAppCrmClient() {
                         </div>
                     </div>
 
+                    {/* Filtro por Categoria de Chat */}
+                    <div className={`px-3 py-2 border-b ${currentTheme.tabsBg} flex gap-1.5 overflow-x-auto shrink-0 scrollbar-none`}>
+                        {([
+                            { id: 'all', label: '✦ Todos', emoji: '' },
+                            { id: 'residencial', label: '🏠 Residencial', emoji: '' },
+                            { id: 'empresarial', label: '🏢 Empresarial', emoji: '' },
+                            { id: 'postulante', label: '💼 Empleo', emoji: '' },
+                            { id: 'soporte', label: '🔧 Soporte', emoji: '' },
+                            { id: 'general', label: '💬 General', emoji: '' },
+                        ] as const).map(cat => {
+                            const count = cat.id === 'all'
+                                ? filteredChatsBeforeCategory.length
+                                : filteredChatsBeforeCategory.filter(c => categorizarChat(c) === cat.id).length;
+                            return (
+                                <button
+                                    key={cat.id}
+                                    onClick={() => setActiveCategory(cat.id)}
+                                    className={`shrink-0 flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-lg transition-all cursor-pointer border ${
+                                        activeCategory === cat.id
+                                            ? 'bg-slate-100 text-slate-900 border-transparent shadow-sm'
+                                            : 'bg-slate-900/50 text-slate-400 border-slate-800/60 hover:text-slate-200'
+                                    }`}
+                                >
+                                    {cat.label}
+                                    {count > 0 && <span className={`text-[9px] px-1 py-0.5 rounded-full ${activeCategory === cat.id ? 'bg-slate-800 text-slate-100' : 'bg-slate-800 text-slate-400'}`}>{count}</span>}
+                                </button>
+                            );
+                        })}
+                    </div>
                     {/* Search Bar */}
                     <div className="p-3 border-b border-slate-800/60 bg-transparent">
                         <div className="relative">
@@ -1664,14 +1738,25 @@ export default function WhatsAppCrmClient() {
                                 >
                                     {/* Avatar */}
                                     <div className="relative shrink-0">
-                                        <div className={`w-11 h-11 rounded-full flex items-center justify-center font-bold text-sm border ${
+                                        <div className={`w-11 h-11 rounded-full flex items-center justify-center font-bold text-sm border overflow-hidden ${
                                             chat.hasFailedMessage
                                                 ? 'bg-rose-900 border-rose-500 text-rose-200'
                                                 : chat.isFromAd
                                                 ? 'bg-blue-900 border-blue-500 text-blue-200'
                                                 : 'bg-[#202c33] border-[#2a3942] text-slate-200'
                                         }`}>
-                                            {chat.name.charAt(0).toUpperCase()}
+                                            {chat.profilePic ? (
+                                                <img 
+                                                    src={chat.profilePic} 
+                                                    alt={chat.name} 
+                                                    className="w-full h-full object-cover" 
+                                                    onError={(e) => {
+                                                        (e.target as HTMLElement).style.display = 'none';
+                                                    }}
+                                                />
+                                            ) : (
+                                                chat.name.charAt(0).toUpperCase()
+                                            )}
                                         </div>
                                         {chat.hasFailedMessage ? (
                                             <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-rose-600 border border-[#111b21] flex items-center justify-center text-[9px]" title="Fallo de Envío">
@@ -1762,23 +1847,49 @@ export default function WhatsAppCrmClient() {
                             <div className={`px-4 py-3.5 md:px-6 md:py-4 border-b ${currentTheme.chatHeaderBg} backdrop-blur-xl flex items-center justify-between gap-3 shrink-0`}>
                                 <div className="flex items-center gap-3.5 min-w-0">
                                     <button 
-                                        onClick={() => setActiveChatId('')} 
-                                        className="md:hidden p-2 rounded-xl bg-[#111b21] text-slate-300 hover:text-white cursor-pointer border border-[#2a3942]"
-                                        title="Volver a chats"
+                                        type="button"
+                                        onClick={() => {
+                                            userClosedChatRef.current = true;
+                                            setActiveChatId('');
+                                        }} 
+                                        className="flex items-center gap-1.5 p-2 md:px-3 md:py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 hover:text-white cursor-pointer border border-slate-700 transition-all text-xs font-bold shrink-0 shadow-sm"
+                                        title="Cerrar chat y volver a la lista"
                                     >
-                                        <ChevronLeft size={20} />
+                                        <ChevronLeft size={18} className="text-emerald-400" />
+                                        <span className="hidden sm:inline">Volver</span>
                                     </button>
                                     
-                                    {/* Avatar */}
+                                    {/* Avatar con soporte de foto de perfil y lightbox zoom */}
                                     <div className="relative shrink-0">
-                                        <div className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center font-black text-lg md:text-xl border-2 ${
-                                            activeChat.hasFailedMessage 
-                                                ? 'bg-[#3b1219] border-rose-500 text-rose-300' 
-                                                : activeChat.isFromAd
-                                                ? 'bg-[#0f2744] border-cyan-500 text-cyan-300'
-                                                : 'bg-[#123b2b] border-[#00a884] text-[#25d366]'
-                                        }`}>
-                                            {activeChat.name.charAt(0).toUpperCase()}
+                                        <div 
+                                            onClick={() => {
+                                                if (activeChat.profilePic) {
+                                                    setPreviewImageUrl(activeChat.profilePic);
+                                                }
+                                            }}
+                                            className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center font-black text-lg md:text-xl border-2 overflow-hidden ${
+                                                activeChat.profilePic ? 'cursor-zoom-in hover:opacity-90 ring-2 ring-emerald-500/40' : ''
+                                            } ${
+                                                activeChat.hasFailedMessage 
+                                                    ? 'bg-[#3b1219] border-rose-500 text-rose-300' 
+                                                    : activeChat.isFromAd
+                                                    ? 'bg-[#0f2744] border-cyan-500 text-cyan-300'
+                                                    : 'bg-[#123b2b] border-[#00a884] text-[#25d366]'
+                                            }`}
+                                            title={activeChat.profilePic ? "Clic para ampliar foto de perfil" : activeChat.name}
+                                        >
+                                            {activeChat.profilePic ? (
+                                                <img 
+                                                    src={activeChat.profilePic} 
+                                                    alt={activeChat.name} 
+                                                    className="w-full h-full object-cover"
+                                                    onError={(e) => {
+                                                        (e.target as HTMLElement).style.display = 'none';
+                                                    }}
+                                                />
+                                            ) : (
+                                                activeChat.name.charAt(0).toUpperCase()
+                                            )}
                                         </div>
                                         {activeChat.hasFailedMessage ? (
                                             <span className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-rose-600 border-2 border-[#202c33] flex items-center justify-center text-[10px]" title="Fallo de Envío">
@@ -1809,7 +1920,7 @@ export default function WhatsAppCrmClient() {
                                             )}
                                         </div>
 
-                                        {/* Teléfono Grande en Pill Verde con Copiar & Llamar */}
+                                        {/* Teléfono Grande en Pill Verde con Copiar & Llamar & Foto */}
                                         <div className="flex items-center gap-2 mt-1 flex-wrap">
                                             <div className="inline-flex items-center gap-2 bg-[#111b21] border border-[#00a884]/60 px-3 py-1 rounded-xl">
                                                 <Phone size={14} className="text-[#00a884]" />
@@ -1817,6 +1928,7 @@ export default function WhatsAppCrmClient() {
                                                     {formatPhoneNumber(activeChat.phone)}
                                                 </span>
                                                 <button
+                                                    type="button"
                                                     onClick={() => handleCopyPhone(activeChat.phone)}
                                                     className="p-1 rounded-md hover:bg-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer"
                                                     title="Copiar número telefónico"
@@ -1824,12 +1936,26 @@ export default function WhatsAppCrmClient() {
                                                     {copiedPhone ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
                                                 </button>
                                                 <a
-                                                    href={`tel:${activeChat.phone.replace(/\D/g, '')}`}
-                                                    className="p-1 rounded-md hover:bg-white/10 text-slate-300 hover:text-white transition-colors hidden sm:inline-block cursor-pointer text-xs"
-                                                    title="Llamar teléfono"
+                                                    href={`tel:${activeChat.phone.replace(/\D/g, "")}`}
+                                                    className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white border border-emerald-400/50 rounded-xl px-3 py-1 text-xs font-black transition-all hover:shadow-lg hover:shadow-emerald-900/50 cursor-pointer shrink-0"
+                                                    title="Llamar directamente por teléfono"
                                                 >
-                                                    📞
+                                                    <Phone size={13} className="text-emerald-100" /> <span>Llamar</span>
                                                 </a>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const url = prompt('Ingresa la URL de la foto de perfil para este contacto:', activeChat.profilePic || '');
+                                                        if (url !== null) {
+                                                            handleSaveContactPhoto(activeChat.phone, url);
+                                                        }
+                                                    }}
+                                                    className="p-1 rounded-md hover:bg-white/10 text-slate-400 hover:text-cyan-300 transition-colors cursor-pointer text-xs flex items-center gap-1"
+                                                    title="Asignar o actualizar foto de perfil del contacto"
+                                                >
+                                                    <Camera size={13} />
+                                                    <span className="hidden lg:inline text-[10px]">Foto</span>
+                                                </button>
                                             </div>
 
                                             {/* Estado de Asignación */}
