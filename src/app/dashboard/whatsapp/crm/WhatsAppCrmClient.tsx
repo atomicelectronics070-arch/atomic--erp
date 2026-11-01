@@ -74,17 +74,51 @@ function formatPhoneNumber(phone: string = ''): string {
     return clean ? `+${clean}` : phone;
 }
 
-function categorizarChat(chat: Chat): 'residencial' | 'empresarial' | 'postulante' | 'soporte' | 'general' {
-    const allText = [
-        chat.lastMessage,
-        chat.adHeadline,
-        ...chat.messages.map(m => m.text)
+function getChatFullText(chat: Chat): string {
+    return [
+        chat.lastMessage || '',
+        chat.adHeadline || '',
+        ...chat.messages.map(m => m.text || '')
     ].join(' ').toLowerCase();
+}
 
+// 1. ¿El último mensaje es del cliente y aún no ha sido respondido?
+function isUnanswered(chat: Chat): boolean {
+    if (!chat.messages || chat.messages.length === 0) return true;
+    const lastMsg = chat.messages[chat.messages.length - 1];
+    return lastMsg.sender === 'them';
+}
+
+// 2. ¿Alta intención de compra? (Precios, cotización, proforma, comprar, datos de cuenta, envío)
+function hasHighPurchaseIntent(chat: Chat): boolean {
+    const text = getChatFullText(chat);
+    return /(cu[aá]nto cuesta|precio|precios|proforma|cotiza|cotizaci[oó]n|quiero comprar|disponible|stock|d[oó]nde est[aá]n|cuenta bancaria|transferencia|env[ií]o a domicilio|quiero uno|me interesa comprar|hacen env[ií]os|costo|valor)/i.test(text);
+}
+
+// 3. ¿Sin especificar? (Solo saludos o mensajes muy breves que no especifican producto ni intención)
+function isUnspecified(chat: Chat): boolean {
+    const text = getChatFullText(chat).trim();
+    if (!text) return true;
+    const isGreetingOnly = /^(hola|buenas|buen d[ií]a|buenas tardes|buenas noches|informaci[oó]n|info|saludos|que tal|qu[eé] tal|ayuda|me ayuda)\.?$/i.test(text);
+    const hasNoProductKeywords = !/(c[aá]mara|videoportero|citofon|ditec|barrera|antena|antihurto|torniquet|cerco|generador|laptop|precio|trabajo|empleo|garant[ií]a)/i.test(text);
+    return isGreetingOnly || (text.length < 30 && hasNoProductKeywords);
+}
+
+// 4. ¿Pide envíos o entregas a domicilio?
+function isDeliveryIntent(chat: Chat): boolean {
+    const text = getChatFullText(chat);
+    return /(env[ií]o|servientrega|domicilio|quito|guayaquil|cuenca|ambato|machala|manta|portoviejo|loja|ibarra|entrega|direcci[oó]n|sector)/i.test(text);
+}
+
+// 5. Categoría temática
+function categorizarChat(chat: Chat): 'residencial' | 'empresarial' | 'postulante' | 'soporte' | 'sin_especificar' | 'envios' | 'general' {
+    if (isUnspecified(chat)) return 'sin_especificar';
+    const allText = getChatFullText(chat);
     if (/(trabajo|empleo|asesor comercial|comisi[oó]n|curriculum|cv|postulaci[oó]n|vacante|sueldo|horario|requisito)/i.test(allText)) return 'postulante';
     if (/(garant[ií]a|da[ñn]o|falla|no funciona|roto|reparaci[oó]n|averiado|soporte|servicio t[eé]cnico)/i.test(allText)) return 'soporte';
     if (/(empresa|local|negocio|bodega|oficina|antena|antihurto|torniquete|barrera|control de acceso|establecimiento|sucursal)/i.test(allText)) return 'empresarial';
     if (/(c[aá]mara|videoportero|citofono|citofonía|hogar|casa|conjunto|residencial|alarma|cerco|domicilio|apartamento|departamento)/i.test(allText)) return 'residencial';
+    if (isDeliveryIntent(chat)) return 'envios';
     return 'general';
 }
 
@@ -353,10 +387,20 @@ export default function WhatsAppCrmClient() {
 
     const currentTheme = THEMES_CONFIG[crmTheme] || THEMES_CONFIG['cyber-emerald'];
 
-    // CRM Tabs Filter: "MY_LEADS" | "ALL_WHATSAPP" | "PAUTAS" | "FAILED" | "AUTO_REGISTER"
-    const [activeCrmTab, setActiveCrmTab] = useState<'MY_LEADS' | 'ALL_WHATSAPP' | 'PAUTAS' | 'FAILED' | 'AUTO_REGISTER'>('MY_LEADS')
-    const [activeCategory, setActiveCategory] = useState<'all' | 'residencial' | 'empresarial' | 'postulante' | 'soporte' | 'general'>('all')
+    // CRM Tabs Filter con múltiples dimensiones inteligentes
+    type CrmTabType = 'ABSOLUTELY_ALL' | 'UNANSWERED' | 'HOT_LEADS' | 'MY_LEADS' | 'ALL_WHATSAPP' | 'PAUTAS' | 'FAILED' | 'AUTO_REGISTER';
+    const [activeCrmTab, setActiveCrmTab] = useState<CrmTabType>('ALL_WHATSAPP')
+
+    type CrmCategoryType = 'all' | 'residencial' | 'empresarial' | 'postulante' | 'soporte' | 'sin_especificar' | 'envios' | 'general';
+    const [activeCategory, setActiveCategory] = useState<CrmCategoryType>('all')
     const [systemAdvisors, setSystemAdvisors] = useState<any[]>([])
+
+    // Ref para el buscador de atajo rápido con "/"
+    const searchInputRef = useRef<HTMLInputElement>(null)
+
+    // Touch Swipe Gestures en Móvil para retroceder
+    const touchStartXRef = useRef<number | null>(null)
+    const touchStartYRef = useRef<number | null>(null)
 
     // Intelligent Retry & Resuscitate State
     const [isRetrying, setIsRetrying] = useState(false)
@@ -833,10 +877,72 @@ export default function WhatsAppCrmClient() {
         prevMessagesCountRef.current = currentMsgCount;
     }, [activeChatId, activeChat?.messages?.length, playIncomingSound]);
 
-    // Handle chat selection (Sin bloquear con popups molestos; selección limpia e instantánea)
-    const handleSelectChat = (chat: Chat) => {
+    // Retroceso 10x más profundo y profesional: sincronizado con el historial del navegador
+    const handleBackToChats = useCallback(() => {
+        userClosedChatRef.current = true;
+        setActiveChatId('');
+        if (typeof window !== 'undefined' && window.location.hash) {
+            window.history.pushState(null, '', window.location.pathname + window.location.search);
+        }
+    }, []);
+
+    // Handle chat selection (Con deep-linking en URL hash para soportar botón Atrás del teléfono)
+    const handleSelectChat = useCallback((chat: Chat) => {
         userClosedChatRef.current = false;
         setActiveChatId(chat.id);
+        if (typeof window !== 'undefined' && window.location.hash !== `#chat-${chat.id}`) {
+            window.history.pushState({ chatId: chat.id }, '', `#chat-${chat.id}`);
+        }
+    }, []);
+
+    // Sincronización bidireccional con el botón "Atrás" físico / nativo del navegador o celular
+    useEffect(() => {
+        const onPopState = () => {
+            const hash = window.location.hash;
+            if (hash.startsWith('#chat-')) {
+                const id = hash.replace('#chat-', '');
+                setActiveChatId(id);
+                userClosedChatRef.current = false;
+            } else {
+                setActiveChatId('');
+                userClosedChatRef.current = true;
+            }
+        };
+
+        window.addEventListener('popstate', onPopState);
+
+        // Si ya hay un hash en la URL al cargar
+        if (window.location.hash.startsWith('#chat-')) {
+            const initialId = window.location.hash.replace('#chat-', '');
+            setActiveChatId(initialId);
+            userClosedChatRef.current = false;
+        }
+
+        return () => window.removeEventListener('popstate', onPopState);
+    }, []);
+
+    // Gestos Táctiles Swipe-to-Back en Móviles (Deslizar desde el borde izquierdo hacia la derecha)
+    const handleTouchStart = (e: React.TouchEvent) => {
+        const touch = e.touches[0];
+        if (touch.clientX < 60) {
+            touchStartXRef.current = touch.clientX;
+            touchStartYRef.current = touch.clientY;
+        } else {
+            touchStartXRef.current = null;
+        }
+    };
+
+    const handleTouchEnd = (e: React.TouchEvent) => {
+        if (touchStartXRef.current === null) return;
+        const touch = e.changedTouches[0];
+        const deltaX = touch.clientX - touchStartXRef.current;
+        const deltaY = Math.abs(touch.clientY - (touchStartYRef.current || 0));
+
+        if (deltaX > 75 && deltaY < 80) {
+            if (navigator?.vibrate) navigator.vibrate(15);
+            handleBackToChats();
+        }
+        touchStartXRef.current = null;
     };
 
     // Auto-asignación silenciosa en background al responder sin interrumpir el flujo
@@ -1393,6 +1499,9 @@ export default function WhatsAppCrmClient() {
         return Boolean(chat.hasFailedMessage) || chat.messages.some(m => m.status === 'FAILED')
     }
 
+    const absolutelyAllCount = chats.length
+    const unansweredCount = chats.filter(c => isUnanswered(c)).length
+    const hotLeadsCount = chats.filter(c => hasHighPurchaseIntent(c)).length
     const autoRegisterCount = chats.filter(c => isAutoRegister(c)).length
     const failedCount = chats.filter(c => isFailedChat(c)).length
     const pautasCount = chats.filter(c => c.isFromAd && !isAutoRegister(c)).length
@@ -1401,7 +1510,13 @@ export default function WhatsAppCrmClient() {
 
     const filteredChatsBeforeCategory = chats.filter(c => {
         // Tab filter
-        if (activeCrmTab === 'AUTO_REGISTER') {
+        if (activeCrmTab === 'ABSOLUTELY_ALL') {
+            // No filtrar nada: incluye el 100% de registros
+        } else if (activeCrmTab === 'UNANSWERED') {
+            if (!isUnanswered(c)) return false
+        } else if (activeCrmTab === 'HOT_LEADS') {
+            if (!hasHighPurchaseIntent(c)) return false
+        } else if (activeCrmTab === 'AUTO_REGISTER') {
             if (!isAutoRegister(c)) return false
         } else if (activeCrmTab === 'MY_LEADS') {
             if (!isMyLead(c) || isAutoRegister(c)) return false
@@ -1427,11 +1542,41 @@ export default function WhatsAppCrmClient() {
 
     const filteredChats = filteredChatsBeforeCategory.filter(c => {
         // Category filter
-        if (activeCategory !== 'all') {
-            if (categorizarChat(c) !== activeCategory) return false;
-        }
-        return true;
+        if (activeCategory === 'all') return true;
+        if (activeCategory === 'sin_especificar') return isUnspecified(c);
+        if (activeCategory === 'envios') return isDeliveryIntent(c);
+        return categorizarChat(c) === activeCategory;
     });
+
+    // Atajo global de teclado para retroceso y navegación profesional
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                if (previewImageUrl) {
+                    setPreviewImageUrl(null);
+                } else if (activeChatId) {
+                    handleBackToChats();
+                }
+            }
+            if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+                searchInputRef.current?.focus();
+            }
+            if (e.altKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+                e.preventDefault();
+                if (!filteredChats || filteredChats.length === 0) return;
+                const currentIndex = filteredChats.findIndex(c => c.id === activeChatId);
+                if (e.key === 'ArrowUp' && currentIndex > 0) {
+                    handleSelectChat(filteredChats[currentIndex - 1]);
+                } else if (e.key === 'ArrowDown' && currentIndex < filteredChats.length - 1) {
+                    handleSelectChat(filteredChats[currentIndex + 1]);
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [activeChatId, previewImageUrl, filteredChats, handleBackToChats, handleSelectChat]);
 
     return (
         <div className={`w-full h-[calc(100vh-4rem)] ${currentTheme.bgRoot} text-slate-100 flex flex-col font-sans transition-colors duration-300 relative selection:bg-emerald-500 selection:text-white`}>
@@ -1564,6 +1709,50 @@ export default function WhatsAppCrmClient() {
                     {/* CRM View Tabs: Selector de Filtros en Píldoras Limpias */}
                     <div className={`p-2.5 ${currentTheme.tabsBg} border-b border-slate-800/60 backdrop-blur-md`}>
                         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+                            {/* SIN RESPONDER (MÁXIMA PRIORIDAD OPERATIVA) */}
+                            <button
+                                type="button"
+                                onClick={() => setActiveCrmTab('UNANSWERED')}
+                                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                                    activeCrmTab === 'UNANSWERED' 
+                                        ? 'bg-amber-500 text-slate-950 font-black shadow-lg shadow-amber-500/30' 
+                                        : unansweredCount > 0 
+                                        ? 'bg-amber-950/60 text-amber-300 border border-amber-600/50 hover:bg-amber-900/60' 
+                                        : currentTheme.tabInactive
+                                }`}
+                                title="Mensajes del cliente esperando respuesta urgente"
+                            >
+                                <Bell size={13} className={unansweredCount > 0 ? "animate-bounce text-amber-400" : ""} />
+                                <span>Sin Responder</span>
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold ${
+                                    activeCrmTab === 'UNANSWERED' ? 'bg-black/30 text-black' : unansweredCount > 0 ? 'bg-amber-500 text-slate-950' : 'bg-[#111b21] text-slate-400'
+                                }`}>
+                                    {unansweredCount}
+                                </span>
+                            </button>
+
+                            {/* ALTA INTENCIÓN DE COMPRA (LEADS CALIENTES) */}
+                            <button
+                                type="button"
+                                onClick={() => setActiveCrmTab('HOT_LEADS')}
+                                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                                    activeCrmTab === 'HOT_LEADS' 
+                                        ? 'bg-gradient-to-r from-orange-500 to-rose-500 text-white font-black shadow-lg shadow-orange-500/30' 
+                                        : hotLeadsCount > 0 
+                                        ? 'bg-orange-950/60 text-orange-300 border border-orange-600/50 hover:bg-orange-900/60' 
+                                        : currentTheme.tabInactive
+                                }`}
+                                title="Clientes con alta intención de compra (preguntan precio, proforma, stock o cuenta)"
+                            >
+                                <Flame size={13} className={hotLeadsCount > 0 ? "text-orange-400" : ""} />
+                                <span>Alta Intención 🔥</span>
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold ${
+                                    activeCrmTab === 'HOT_LEADS' ? 'bg-black/30 text-white' : hotLeadsCount > 0 ? 'bg-orange-500 text-slate-950' : 'bg-[#111b21] text-slate-400'
+                                }`}>
+                                    {hotLeadsCount}
+                                </span>
+                            </button>
+
                             {/* MIS CONTACTOS */}
                             <button
                                 type="button"
@@ -1597,6 +1786,24 @@ export default function WhatsAppCrmClient() {
                                     activeCrmTab === 'ALL_WHATSAPP' ? 'bg-black/20 text-black' : 'bg-[#111b21] text-slate-400'
                                 }`}>
                                     {allWhatsAppCount}
+                                </span>
+                            </button>
+
+                            {/* ABSOLUTAMENTE TODO (SIN NINGUNA EXCLUSIÓN) */}
+                            <button
+                                type="button"
+                                onClick={() => setActiveCrmTab('ABSOLUTELY_ALL')}
+                                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                                    activeCrmTab === 'ABSOLUTELY_ALL' ? currentTheme.tabActive : currentTheme.tabInactive
+                                }`}
+                                title="Ver absolutamente todos los registros históricos de la base de datos sin filtrar"
+                            >
+                                <Globe size={13} />
+                                <span>Todo Absoluto</span>
+                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold ${
+                                    activeCrmTab === 'ABSOLUTELY_ALL' ? 'bg-black/20 text-black' : 'bg-[#111b21] text-slate-400'
+                                }`}>
+                                    {absolutelyAllCount}
                                 </span>
                             </button>
 
@@ -1656,18 +1863,24 @@ export default function WhatsAppCrmClient() {
                         </div>
                     </div>
 
-                    {/* Filtro por Categoria de Chat */}
+                    {/* Filtro por Categoría de Chat y Requerimiento Específico */}
                     <div className={`px-3 py-2 border-b ${currentTheme.tabsBg} flex gap-1.5 overflow-x-auto shrink-0 scrollbar-none`}>
                         {([
-                            { id: 'all', label: '✦ Todos', emoji: '' },
-                            { id: 'residencial', label: '🏠 Residencial', emoji: '' },
-                            { id: 'empresarial', label: '🏢 Empresarial', emoji: '' },
-                            { id: 'postulante', label: '💼 Empleo', emoji: '' },
-                            { id: 'soporte', label: '🔧 Soporte', emoji: '' },
-                            { id: 'general', label: '💬 General', emoji: '' },
+                            { id: 'all', label: '✦ Todos' },
+                            { id: 'residencial', label: '🏠 Residencial' },
+                            { id: 'empresarial', label: '🏢 Empresarial' },
+                            { id: 'postulante', label: '💼 Empleo' },
+                            { id: 'soporte', label: '🔧 Soporte' },
+                            { id: 'sin_especificar', label: '❓ Sin Especificar' },
+                            { id: 'envios', label: '📦 Envíos' },
+                            { id: 'general', label: '💬 General' },
                         ] as const).map(cat => {
                             const count = cat.id === 'all'
                                 ? filteredChatsBeforeCategory.length
+                                : cat.id === 'sin_especificar'
+                                ? filteredChatsBeforeCategory.filter(c => isUnspecified(c)).length
+                                : cat.id === 'envios'
+                                ? filteredChatsBeforeCategory.filter(c => isDeliveryIntent(c)).length
                                 : filteredChatsBeforeCategory.filter(c => categorizarChat(c) === cat.id).length;
                             return (
                                 <button
@@ -1685,23 +1898,30 @@ export default function WhatsAppCrmClient() {
                             );
                         })}
                     </div>
-                    {/* Search Bar */}
+                    {/* Search Bar con Atajo de Teclado [/] */}
                     <div className="p-3 border-b border-slate-800/60 bg-transparent">
                         <div className="relative">
                             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                             <input 
+                                ref={searchInputRef}
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder={
+                                    activeCrmTab === 'UNANSWERED' ? "Buscar en mensajes sin responder..." :
+                                    activeCrmTab === 'HOT_LEADS' ? "Buscar en leads con alta intención..." :
+                                    activeCrmTab === 'ABSOLUTELY_ALL' ? "Buscar en toda la base de datos..." :
                                     activeCrmTab === 'MY_LEADS' ? "Buscar en Mis Contactos..." :
                                     activeCrmTab === 'PAUTAS' ? "Buscar en Pautas publicitarias..." :
                                     activeCrmTab === 'FAILED' ? "Buscar en chats con fallo..." :
                                     activeCrmTab === 'AUTO_REGISTER' ? "Buscar en Empleo..." :
-                                    "Buscar en Entrantes..."
+                                    "Buscar chats (presiona '/' para enfocar)..."
                                 }
-                                className={`w-full ${currentTheme.searchBg} rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-400 focus:outline-none transition-all shadow-inner`}
+                                className={`w-full ${currentTheme.searchBg} rounded-xl pl-9 pr-12 py-2 text-xs text-white placeholder-slate-400 focus:outline-none transition-all shadow-inner`}
                             />
+                            <kbd className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-slate-500 bg-slate-800/80 px-1.5 py-0.5 rounded border border-slate-700/60 pointer-events-none">
+                                /
+                            </kbd>
                         </div>
                     </div>
 
@@ -1783,6 +2003,32 @@ export default function WhatsAppCrmClient() {
                                         </p>
 
                                         <div className="flex items-center gap-1.5 flex-wrap mb-1">
+                                            {/* Badge de Sin Responder / Urgente */}
+                                            {isUnanswered(chat) && (
+                                                <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/50 flex items-center gap-0.5 shrink-0 animate-pulse" title="Esperando respuesta">
+                                                    ⏳ Sin Responder
+                                                </span>
+                                            )}
+
+                                            {/* Badge de Alta Intención de Compra */}
+                                            {hasHighPurchaseIntent(chat) && (
+                                                <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-orange-950 text-orange-300 border border-orange-500/50 flex items-center gap-0.5 shrink-0" title="Alta intención de compra">
+                                                    🔥 Caliente
+                                                </span>
+                                            )}
+
+                                            {/* Badge de Categoría Temática */}
+                                            {(() => {
+                                                const cat = categorizarChat(chat);
+                                                if (cat === 'residencial') return <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-600/40 shrink-0">🏠 Residencial</span>;
+                                                if (cat === 'empresarial') return <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-cyan-950/80 text-cyan-300 border border-cyan-600/40 shrink-0">🏢 Empresarial</span>;
+                                                if (cat === 'postulante') return <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-950/80 text-amber-300 border border-amber-600/40 shrink-0">💼 Empleo</span>;
+                                                if (cat === 'soporte') return <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-purple-950/80 text-purple-300 border border-purple-600/40 shrink-0">🔧 Soporte</span>;
+                                                if (cat === 'envios') return <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-950/80 text-blue-300 border border-blue-600/40 shrink-0">📦 Envíos</span>;
+                                                if (cat === 'sin_especificar') return <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60 shrink-0">❓ Sin Especificar</span>;
+                                                return null;
+                                            })()}
+
                                             {chat.hasFailedMessage && (
                                                 <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-600/50 flex items-center gap-0.5 shrink-0" title="Motor de Reintento Inteligente en proceso">
                                                     🔄 Auto-reintentando
@@ -1838,25 +2084,27 @@ export default function WhatsAppCrmClient() {
                     </div>
                 </div>
 
-                {/* Right Main Chat Area */}
-                <div className={`flex-1 flex flex-col ${currentTheme.chatMainBg} transition-colors duration-200 ${!activeChatId ? 'hidden md:flex' : 'flex'}`}>
+                {/* Right Main Chat Area (Soporta Gestos Táctiles Swipe-to-Back en Móvil) */}
+                <div 
+                    onTouchStart={handleTouchStart} 
+                    onTouchEnd={handleTouchEnd}
+                    className={`flex-1 flex flex-col ${currentTheme.chatMainBg} transition-colors duration-200 ${!activeChatId ? 'hidden md:flex' : 'flex'}`}
+                >
                     
                     {activeChat ? (
                         <>
-                            {/* Chat Header (MODERNO, NOMBRE Y TELÉFONO DESTACADOS) */}
-                            <div className={`px-4 py-3.5 md:px-6 md:py-4 border-b ${currentTheme.chatHeaderBg} backdrop-blur-xl flex items-center justify-between gap-3 shrink-0`}>
+                            {/* Chat Header (MODERNO, NOMBRE, BREADCRUMB, ATRIBUTOS Y TELÉFONO DESTACADOS) */}
+                            <div className={`px-4 py-3 md:px-6 md:py-3.5 border-b ${currentTheme.chatHeaderBg} backdrop-blur-xl flex items-center justify-between gap-3 shrink-0`}>
                                 <div className="flex items-center gap-3.5 min-w-0">
                                     <button 
                                         type="button"
-                                        onClick={() => {
-                                            userClosedChatRef.current = true;
-                                            setActiveChatId('');
-                                        }} 
-                                        className="flex items-center gap-1.5 p-2 md:px-3 md:py-2 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 hover:text-white cursor-pointer border border-slate-700 transition-all text-xs font-bold shrink-0 shadow-sm"
-                                        title="Cerrar chat y volver a la lista"
+                                        onClick={handleBackToChats} 
+                                        className="group flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white cursor-pointer border border-slate-700 hover:border-emerald-500/50 transition-all text-xs font-bold shrink-0 shadow-sm"
+                                        title="Volver a la lista de chats (Esc)"
                                     >
-                                        <ChevronLeft size={18} className="text-emerald-400" />
-                                        <span className="hidden sm:inline">Volver</span>
+                                        <ChevronLeft size={16} className="text-emerald-400 group-hover:-translate-x-0.5 transition-transform" />
+                                        <span>Volver</span>
+                                        <kbd className="hidden lg:inline-block px-1.5 py-0.2 text-[9px] font-mono text-slate-400 bg-slate-900/90 rounded border border-slate-700/60">Esc</kbd>
                                     </button>
                                     
                                     {/* Avatar con soporte de foto de perfil y lightbox zoom */}
@@ -1902,8 +2150,38 @@ export default function WhatsAppCrmClient() {
                                         ) : null}
                                     </div>
 
-                                    {/* Nombre & Teléfono en Formato Grande */}
+                                    {/* Nombre, Breadcrumb & Teléfono en Formato Grande */}
                                     <div className="min-w-0">
+                                        {/* Breadcrumb navegable */}
+                                        <div className="flex items-center gap-1.5 text-[10px] text-slate-400 font-mono mb-0.5 flex-wrap">
+                                            <button 
+                                                type="button" 
+                                                onClick={handleBackToChats} 
+                                                className="hover:text-emerald-400 transition-colors flex items-center gap-0.5 cursor-pointer"
+                                            >
+                                                <MessageSquare size={10} /> Chats
+                                            </button>
+                                            <span>›</span>
+                                            <span className="capitalize text-slate-300 px-1.5 py-0.2 rounded bg-slate-800/60 border border-slate-700/40">
+                                                {categorizarChat(activeChat) === 'residencial' ? '🏠 Residencial' :
+                                                 categorizarChat(activeChat) === 'empresarial' ? '🏢 Empresarial' :
+                                                 categorizarChat(activeChat) === 'postulante' ? '💼 Empleo' :
+                                                 categorizarChat(activeChat) === 'soporte' ? '🔧 Soporte' :
+                                                 categorizarChat(activeChat) === 'envios' ? '📦 Envíos' :
+                                                 categorizarChat(activeChat) === 'sin_especificar' ? '❓ Sin Especificar' : '💬 General'}
+                                            </span>
+                                            {isUnanswered(activeChat) && (
+                                                <span className="bg-amber-500/20 text-amber-300 border border-amber-500/40 px-1.5 py-0.2 rounded text-[9px] font-bold animate-pulse">
+                                                    ⏳ Esperando respuesta
+                                                </span>
+                                            )}
+                                            {hasHighPurchaseIntent(activeChat) && (
+                                                <span className="bg-orange-500/20 text-orange-300 border border-orange-500/40 px-1.5 py-0.2 rounded text-[9px] font-bold">
+                                                    🔥 Alta Intención
+                                                </span>
+                                            )}
+                                        </div>
+
                                         <div className="flex items-center gap-2.5 flex-wrap">
                                             <h2 className="text-lg md:text-2xl font-black text-white tracking-tight truncate">
                                                 {activeChat.name}
@@ -2486,10 +2764,102 @@ export default function WhatsAppCrmClient() {
                             </div>
                         </>
                     ) : (
-                        <div className="flex-1 flex flex-col items-center justify-center text-slate-500 text-xs p-6 text-center">
-                            <MessageSquare size={36} className="text-slate-700 mb-2 animate-bounce" />
-                            <p className="font-bold text-slate-400">Selecciona una conversación para chatear</p>
-                            <p className="text-[11px] text-slate-600 mt-1">Los mensajes enviados se despachan directamente por la API de Meta</p>
+                        <div className="flex-1 flex flex-col items-center justify-center p-6 text-center max-w-2xl mx-auto space-y-6">
+                            <div className="relative">
+                                <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-emerald-500/20 via-teal-500/20 to-cyan-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-xl shadow-emerald-950/30">
+                                    <MessageSquare size={32} />
+                                </div>
+                                <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 border-2 border-[#0b141a] flex items-center justify-center text-[10px] font-black text-black">
+                                    ✓
+                                </span>
+                            </div>
+
+                            <div className="space-y-1">
+                                <h3 className="text-lg md:text-xl font-black text-white tracking-tight">
+                                    Centro de Mensajería & CRM Cloud
+                                </h3>
+                                <p className="text-xs text-slate-400 max-w-md mx-auto">
+                                    Selecciona un chat del panel lateral o usa los filtros rápidos inteligentes para gestionar leads, cotizaciones y pedidos.
+                                </p>
+                            </div>
+
+                            {/* Tarjetas de Métricas Rápidas en Vivo */}
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 w-full">
+                                <div 
+                                    onClick={() => setActiveCrmTab('UNANSWERED')}
+                                    className="p-3 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-amber-500/50 transition-all cursor-pointer text-left group"
+                                >
+                                    <div className="flex items-center justify-between text-amber-400 mb-1">
+                                        <Bell size={14} />
+                                        <span className="text-[10px] font-mono text-slate-500 group-hover:text-amber-400">Filtrar</span>
+                                    </div>
+                                    <div className="text-xl font-black text-white">{unansweredCount}</div>
+                                    <div className="text-[10px] font-bold text-slate-400">Sin Responder</div>
+                                </div>
+
+                                <div 
+                                    onClick={() => setActiveCrmTab('HOT_LEADS')}
+                                    className="p-3 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-orange-500/50 transition-all cursor-pointer text-left group"
+                                >
+                                    <div className="flex items-center justify-between text-orange-400 mb-1">
+                                        <Flame size={14} />
+                                        <span className="text-[10px] font-mono text-slate-500 group-hover:text-orange-400">Filtrar</span>
+                                    </div>
+                                    <div className="text-xl font-black text-white">{hotLeadsCount}</div>
+                                    <div className="text-[10px] font-bold text-slate-400">Alta Intención 🔥</div>
+                                </div>
+
+                                <div 
+                                    onClick={() => setActiveCrmTab('PAUTAS')}
+                                    className="p-3 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-cyan-500/50 transition-all cursor-pointer text-left group"
+                                >
+                                    <div className="flex items-center justify-between text-cyan-400 mb-1">
+                                        <Megaphone size={14} />
+                                        <span className="text-[10px] font-mono text-slate-500 group-hover:text-cyan-400">Filtrar</span>
+                                    </div>
+                                    <div className="text-xl font-black text-white">{pautasCount}</div>
+                                    <div className="text-[10px] font-bold text-slate-400">Leads Meta Ads</div>
+                                </div>
+
+                                <div 
+                                    onClick={() => setActiveCrmTab('MY_LEADS')}
+                                    className="p-3 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-emerald-500/50 transition-all cursor-pointer text-left group"
+                                >
+                                    <div className="flex items-center justify-between text-emerald-400 mb-1">
+                                        <UserCheck size={14} />
+                                        <span className="text-[10px] font-mono text-slate-500 group-hover:text-emerald-400">Filtrar</span>
+                                    </div>
+                                    <div className="text-xl font-black text-white">{myLeadsCount}</div>
+                                    <div className="text-[10px] font-bold text-slate-400">Mis Contactos</div>
+                                </div>
+                            </div>
+
+                            {/* Acciones Rápidas */}
+                            {filteredChats.length > 0 && (
+                                <button
+                                    type="button"
+                                    onClick={() => handleSelectChat(filteredChats[0])}
+                                    className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs transition-all shadow-lg shadow-emerald-500/25 flex items-center gap-2 cursor-pointer hover:scale-[1.02]"
+                                >
+                                    <Zap size={15} /> <span>Abrir primer chat de la lista: {filteredChats[0].name}</span>
+                                </button>
+                            )}
+
+                            {/* Cheat-Sheet de Atajos de Teclado Superhuman */}
+                            <div className="pt-4 border-t border-slate-800/60 w-full flex items-center justify-center gap-6 text-[11px] text-slate-400 font-mono flex-wrap">
+                                <span className="flex items-center gap-1.5">
+                                    <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700 font-bold">Esc</kbd>
+                                    <span>Volver / Deseleccionar</span>
+                                </span>
+                                <span className="flex items-center gap-1.5">
+                                    <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700 font-bold">/</kbd>
+                                    <span>Buscar contactos</span>
+                                </span>
+                                <span className="flex items-center gap-1.5">
+                                    <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700 font-bold">Alt + ↑/↓</kbd>
+                                    <span>Navegar chats</span>
+                                </span>
+                            </div>
                         </div>
                     )}
 
