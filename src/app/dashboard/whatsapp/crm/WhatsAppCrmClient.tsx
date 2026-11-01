@@ -7,7 +7,7 @@ import {
     Sparkles, Plus, ExternalLink, ShieldCheck, Tag, RefreshCw, ChevronLeft,
     Settings, Image as ImageIcon, ShoppingBag, Download, Check, Save, X, Globe, Mail, MapPin,
     Volume2, Mic, Film, FileText, Megaphone, Eye, Key, AlertCircle, Copy, Paperclip, Loader2,
-    UserCheck, UserPlus, Lock, Users, Filter, CheckCircle2, Flame, Bot, Zap, Bell, Camera, Upload
+    UserCheck, UserPlus, Lock, Users, Filter, CheckCircle2, Flame, Bot, Zap, Bell, Camera, Upload, Palette
 } from "lucide-react"
 
 interface ReferralData {

@@ -703,39 +703,6 @@ El cliente ya fue atendido con éxito y el chat quedó actualizado en el CRM. ¿
             }
         }
     }
-    if (sendMatch) {
-        const rawTarget = sendMatch[1].trim();
-        const msgToSend = sendMatch[2].trim();
-
-        let targetPhone = rawTarget.replace(/\D/g, "");
-        let targetName = rawTarget;
-
-        if (targetPhone.length < 9) {
-            const contact = await prisma.wAContact.findFirst({
-                where: { name: { contains: rawTarget, mode: "insensitive" } }
-            });
-            if (contact) {
-                targetPhone = contact.whatsappId;
-                targetName = contact.name || rawTarget;
-            } else if (karenState.lastUncatalogedChat && karenState.lastUncatalogedChat.contactName.toLowerCase().includes(rawTarget.toLowerCase())) {
-                targetPhone = karenState.lastUncatalogedChat.phone;
-                targetName = karenState.lastUncatalogedChat.contactName;
-            }
-        }
-
-        if (!targetPhone) {
-            return `Juan, no encontré el número de celular de '${rawTarget}'. Por favor indícame su número (ejemplo: *'Envía [mensaje] a 0998765432'*).`;
-        }
-
-        karenState.pendingSend = {
-            recipientPhone: targetPhone,
-            recipientName: targetName,
-            messageText: msgToSend,
-            requestedAt: Date.now()
-        };
-
-        return `De acuerdo Juan, ¿confirmas enviar este mensaje a **${targetName}** (${targetPhone})?\n\n📝 **Mensaje:**\n"${msgToSend}"\n\n👉 Responde **SÍ** para enviar.`;
-    }
 
     // ─────────────────────────────────────────────────────────────────────────
     // 9. CONVERSACIÓN NATURAL, HUMANA Y EJECUTIVA (LLM REAL PARA JUAN)
