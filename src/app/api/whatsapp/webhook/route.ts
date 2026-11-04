@@ -2,7 +2,12 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { handleIncomingWhatsAppBot } from '@/lib/whatsapp/ai-bot';
-import { checkAndSendMorningBriefingToJuan, checkAndSendScheduledCoordinatorReminders } from '@/lib/karen/karenBrain';
+import { 
+    checkAndSendMorningBriefingToJuan, 
+    checkAndSendScheduledCoordinatorReminders,
+    checkAndSendMondaySkillsBriefingToJuan,
+    checkAndSendScheduledAdvisorReminders
+} from '@/lib/karen/karenBrain';
 
 const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || 'atomic_whatsapp_verify_token_2026';
 
@@ -23,8 +28,14 @@ export async function POST(req: Request) {
         // Disparar saludo matutino automático de Karen para Juan si es horario AM
         checkAndSendMorningBriefingToJuan().catch(() => {});
 
+        // Disparar briefing de habilidades de Karen para Juan (Lunes 5:00 AM)
+        checkAndSendMondaySkillsBriefingToJuan().catch(() => {});
+
         // Disparar recordatorios programados a Cristina (9:00 AM apertura / 7:00 PM cierre)
         checkAndSendScheduledCoordinatorReminders().catch(() => {});
+
+        // Disparar recordatorios diarios a Asesores Comerciales (12 PM timbraje, 3 PM prospección, 5 PM publicaciones)
+        checkAndSendScheduledAdvisorReminders().catch(() => {});
 
         const body = await req.json();
 

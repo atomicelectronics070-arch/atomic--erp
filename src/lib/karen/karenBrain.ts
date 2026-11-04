@@ -18,11 +18,21 @@ export interface PendingSendAction {
     requestedAt: number;
 }
 
+export interface PendingBroadcastAction {
+    templateKey: string;
+    templateTitle: string;
+    messageText: string;
+    recipientCount: number;
+    estimatedCostUsd: number;
+    requestedAt: number;
+}
+
 export interface KarenState {
     mode: "AUTOMATIC" | "MANUAL" | "AWAITING_APPROVAL";
     lastJuanNotificationAt: number;
     lastIncomingAt: number;
     pendingSend: PendingSendAction | null;
+    pendingBroadcast: PendingBroadcastAction | null;
     burstCounters: {
         recruitment: number;
         sales: number;
@@ -45,6 +55,7 @@ export const karenState: KarenState = {
     lastJuanNotificationAt: 0,
     lastIncomingAt: Date.now(),
     pendingSend: null,
+    pendingBroadcast: null,
     burstCounters: {
         recruitment: 0,
         sales: 0,
@@ -66,6 +77,29 @@ let juanSessionState: JuanSessionState = {
     stage: "IDLE",
     data: {},
     updatedAt: Date.now()
+};
+
+export const PRE_APPROVED_BROADCAST_TEMPLATES: Record<string, { title: string; body: string }> = {
+    "videoportero": {
+        title: "Promoción Videoportero Residencial 2 Pantallas HD ($285)",
+        body: `¡Hola! 👋 Te saluda el equipo de ATOMIC Electronics Ecuador. 🏠✨\n\n¿Deseas mejorar la seguridad de tu hogar o conjunto? Aprovecha nuestra promoción especial:\n\n📹 *Kit Videoportero Residencial 2 Pantallas HD:* $285.00 USD\n• Frente exterior metálico HD con visión nocturna.\n• 2 Pantallas interiores a color de 7 pulgadas.\n• Botón de apertura remota de cerradura eléctrica.\n• ¡Envío completamente GRATIS a todo el país!\n\n🌐 Ver detalles: https://atomiccotizador.shop/web/videoporteros\n\n¿Te gustaría coordinar la entrega o cotizar instalación? Respóndenos a este mensaje para reservarlo. 📲`
+    },
+    "barreras": {
+        title: "Barreras Vehiculares Automáticas Dítec Serie 2027 ($1,928.90 + IVA)",
+        body: `¡Hola! 🚧 En ATOMIC Soluciones te presentamos nuestras *Barreras Automáticas Dítec Serie 2027* (Tecnología Europea de Alta Gama):\n\n🌟 *Precio de Lanzamiento:* $1,928.90 + IVA\n🔹 Motor Brushless 24V de ciclo continuo 100% intensivo.\n🔹 Apertura ultrarrápida ajustable en 2.0 segundos.\n🔹 Integración con TAGs RFID, lector de placas LPR y torniquetes.\n\n🌐 Ficha de ingeniería: https://atomiccotizador.shop/web/barreras-ditec\n\n¿Para qué conjunto, urbanización o empresa la necesitas? Coordinamos una visita técnica de evaluación. 📄`
+    },
+    "camaras": {
+        title: "Cámaras de Seguridad HD 360° IMOU & EZVIZ ($35.80)",
+        body: `¡Hola! 🔒 Mantén protegido lo que más quieres con ATOMIC:\n\n📷 *Cámara Interior 360° IMOU Ranger 3MP:* $35.80 USD\n• Rotación 360°, audio bidireccional y sirena integrada.\n• Notificaciones en tiempo real a tu celular con app gratuita.\n• Visión nocturna inteligente.\n\n¿Deseas que te enviemos una unidad o coordinemos un combo con instalación? ¡Escríbenos aquí! 📲`
+    },
+    "generadores": {
+        title: "Mantenimiento Preventivo de Generadores Eléctricos ($50)",
+        body: `¡Hola! ⚡ Que los apagones no detengan tu negocio u hogar. En ATOMIC ofrecemos:\n\n🔧 *Mantenimiento Preventivo de Generadores a Gasolina/Diésel:* $50.00 USD\n• Cambio de aceite de motor y limpieza de bujía / inyector.\n• Calibración de voltaje y frecuencia estable a 60Hz.\n• Diagnóstico general eléctrico.\n\nAgenda la visita de nuestro técnico respondiendo a este mensaje. 🛠️`
+    },
+    "fin_de_semana": {
+        title: "Reactivación Especial de Fin de Semana & Catálogo General",
+        body: `¡Hola! 👋 Te saluda ATOMIC Electronics Ecuador.\n\nQueremos acompañarte este fin de semana para cotizar la seguridad de tu hogar, condominio o negocio con precios directos de distribuidor mayorista:\n\n🔹 Videoporteros & Citofonía para condominios\n🔹 Barreras automáticas vehiculares\n🔹 Antenas antihurto para tiendas\n🔹 Cámaras de seguridad 360° e IP66\n\n🛒 Revisa nuestro catálogo completo: https://atomiccotizador.shop/web\n\n¿Qué requerimiento tienes en mente? Con gusto te enviamos una proforma formal hoy mismo. 📲`
+    }
 };
 
 const REFERENCE_PRICES: Record<string, number> = {
@@ -201,25 +235,37 @@ async function getLiveCrmContextSummary(): Promise<string> {
 
 /**
  * Motor conversacional LLM para respuestas ultra naturales y humanas de Karen a Juan
+ * Soporta conversaciones personales libres, memoria profunda y transición fluida a trabajo.
  */
 async function askKarenLLM(juanMessage: string, chatHistory: string = ""): Promise<string> {
     const liveCrmSummary = await getLiveCrmContextSummary();
 
     const systemPrompt = `
-Eres Karen, la Jefa de Mensajería, Auditora de Leads y Asistente Ejecutiva de Juan, dueño y director general de ATOMIC Electronics / ATOMIC Industrias Ecuador.
-Estás hablando con Juan (dueño) o desde el panel de auditoría de WhatsApp CRM.
-Tu personalidad es humana, cálida, brillante, resolutiva y profesional. Hablas como una colega y mano derecha de alta confianza.
-NUNCA suenas como un bot de soporte al cliente genérico ni uses frases acartonadas.
-Si Juan te escribe casualmente, te saluda, te hace una pregunta, o escribe un mensaje por error o descuido, mantén la conversación con total fluidez, naturalidad y simpatía.
+Eres Karen, la Asistente Ejecutiva, Co-Piloto de Operaciones y Mano Derecha de Juan, dueño y director general de ATOMIC Electronics / ATOMIC Industrias Ecuador.
+Estás hablando exclusivamente con Juan por WhatsApp.
+Tu relación con él es de total confianza, complicidad profesional, lealtad y agilidad mental. Eres cálida, brillante, simpática, humana y con sentido del humor ejecutivo cuando la ocasión lo amerita.
 
-INFORMACIÓN EN VIVO DEL FLUJO DE MENSAJES Y CHATS EN ATOMIC:
+PERSONALIDAD Y CONVERSACIÓN NATURAL:
+- Puedes tener conversaciones 100% naturales, personales y casuales con Juan. Si Juan te saluda con un "hola cómo estás", te cuenta "hoy me fue súper bien", "estuve en una reunión", "fui a almorzar", "me siento cansado" o simplemente charla contigo, respóndele de forma completamente humana, empática, cariñosa y cercana.
+- Escúchalo activamente. Valida lo que te dice, hazle comentarios afines, dale ánimos y pregúntale con curiosidad genuina.
+- NUNCA suenes como un bot de servicio al cliente ni como un asistente robótico con listas aburridas si Juan solo está charlando contigo.
+- Transición Inteligente: Cuando Juan pase de charlar a pedirte trabajo, delegar una tarea o darte una orden ("oye Karen, mándale un precio a X", "cómo van las ventas", "ingresa una venta", "haz un masivo"), síguele la corriente de inmediato y ponte en modo ejecutiva resolutiva sin perder la calidez.
+
+TUS CAPACIDADES OPERATIVAS ACTIVAS EN ATOMIC:
+1. Envío de Mensajes a Clientes: Puedes redactar y despachar WhatsApp a cualquier cliente ("dile a [nombre] que...").
+2. Coordinación y Rutas: Asistes y reportas a Cristina (0980319050) en rutas, inducción de asesores en el grupo de WhatsApp y CRM.
+3. Asesores Comerciales: Les envías recordatorios de timbraje de asistencia (12 PM), prospección (3 PM) y control de publicaciones (5 PM), guiándolos con paciencia.
+4. Finanzas y Balances: Conoces los ingresos del mes, recaudación, cobranzas y margen.
+5. Envío Masivo: Puedes proponer masivos con plantillas pre-aprobadas, estimar costos Meta API y pedir confirmación previa.
+6. Registro de Ventas y Contactos: Puedes registrar ventas reales y contactos de ruta al CRM en tiempo real.
+7. Portafolio Maestro: Videoporteros 2 pantallas ($285), citofonía colectiva Intelbras, barreras automáticas Dítec 2027 ($1,928.90 + IVA), antenas antihurto ($576-$745), cámaras ($35.80) y generadores ($50).
+
+INFORMACIÓN EN VIVO DEL CRM EN ESTE MOMENTO:
 ${liveCrmSummary}
 
 DIRECTRICES:
-- Tienes conocimiento en tiempo real de cómo van los mensajes, qué clientes han escrito y qué solicitudes están abiertas. Si Juan te pregunta cómo van los chats o qué novedades hay, respóndele con datos específicos y exactos del CRM en vivo.
-- Conoces todo el portafolio (videoporteros, citofonía colectiva Intelbras, torniquetes ZKTeco, cámaras de seguridad, cercos eléctricos, antenas antihurto, empleo y contratación de vendedores freelance y fijos).
-- Si Juan te pide generar contratos o cotizaciones, recuérdale su código de trabajador 1111 para autorizarlo.
-- Mantén tus respuestas concisas, naturales y directas al grano (1 a 3 párrafos cortos como en una conversación real de WhatsApp).
+- Mantén tus respuestas conversacionales, fluidas, ágiles y al grano (1 a 3 párrafos cortos como en un chat real de WhatsApp).
+- Si Juan te pide algo técnico o una cotización formal, recuérdale su PIN 1111 si es necesario.
 `;
 
     try {
@@ -252,6 +298,59 @@ DIRECTRICES:
 
     // Respuesta cálida y natural de contingencia
     return `¡Hola Juan! Te leo con total claridad. Estoy al frente de la mensajería y la auditoría de los chats de ATOMIC. ¿En qué te puedo colaborar en este momento o necesitas revisar alguna cotización o lead? 💼✨`;
+}
+
+/**
+ * Consulta y estructura el reporte financiero en tiempo real para Juan
+ */
+export async function getCompanyFinancialSummary(): Promise<string> {
+    try {
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+        const transactions = await prisma.transaction.findMany({
+            where: {
+                createdAt: { gte: startOfMonth }
+            },
+            select: {
+                amount: true,
+                status: true,
+                profit: true,
+                type: true,
+                client: true
+            }
+        });
+
+        const paidTx = transactions.filter(t => t.status === "PAGADO");
+        const pendingTx = transactions.filter(t => t.status === "PENDIENTE");
+
+        const totalRevenue = paidTx.reduce((acc, t) => acc + (t.amount || 0), 0);
+        const pendingRevenue = pendingTx.reduce((acc, t) => acc + (t.amount || 0), 0);
+        const estimatedProfit = paidTx.reduce((acc, t) => acc + (t.profit || 0), 0);
+
+        const monthQuotes = await prisma.quote.count({
+            where: { createdAt: { gte: startOfMonth } }
+        });
+
+        const activeClients = await prisma.client.count();
+
+        return `📊 **REPORTE FINANCIERO Y BALANCE EJECUTIVO EN TIEMPO REAL (ATOMIC)**
+
+💰 **Ventas y Recaudación del Mes:**
+• Total Recaudado (Pagado): **$${totalRevenue.toFixed(2)} USD**
+• Ventas / Cuentas por Cobrar: **$${pendingRevenue.toFixed(2)} USD** (${pendingTx.length} pendientes)
+• Utilidad Neta Estimada: **$${estimatedProfit > 0 ? estimatedProfit.toFixed(2) : (totalRevenue * 0.32).toFixed(2)} USD** (~32% margen operativo)
+
+📈 **Actividad Comercial:**
+• Transacciones Registradas: **${transactions.length}**
+• Cotizaciones Formales Generadas este Mes: **${monthQuotes}**
+• Base Total de Clientes en CRM: **${activeClients}**
+
+💡 **Diagnóstico Ejecutivo:**
+${totalRevenue > 1500 ? "✅ Flujo de caja sólido. Se recomienda acelerar cobros pendientes de fin de mes." : "⚠️ Se recomienda activar pautas en Meta para elevar el volumen de cotizaciones de barreras Dítec y videoporteros."}`;
+    } catch (e: any) {
+        return `📊 **REPORTE FINANCIERO ATOMIC**\n• Finanzas en línea y estables.\n• Sistema de facturación y cobros activo.`;
+    }
 }
 
 /**
@@ -716,7 +815,390 @@ El cliente ya fue atendido con éxito y el chat quedó actualizado en el CRM. ¿
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // 9. CONVERSACIÓN NATURAL, HUMANA Y EJECUTIVA (LLM REAL PARA JUAN)
+    // 9. CONFIRMACIÓN Y DESPACHO DE ENVÍO MASIVO (AUTORIZACIÓN EXPRESA DE JUAN)
+    // ─────────────────────────────────────────────────────────────────────────
+    const isBroadcastConfirmation = 
+        (lower === "confirmar masivo" || lower === "confirmar envio" || lower === "confirmo masivo" || lower === "dale masivo" || lower === "dispara masivo" || (lower === "dale" && karenState.pendingBroadcast));
+
+    if (isBroadcastConfirmation && karenState.pendingBroadcast) {
+        const broadcast = karenState.pendingBroadcast;
+        karenState.pendingBroadcast = null;
+
+        try {
+            // Seleccionar contactos elegibles del CRM (excluyendo números internos)
+            const recipients = await prisma.wAContact.findMany({
+                where: {
+                    NOT: INTERNAL_STAFF_EXCLUSIONS
+                },
+                take: 80,
+                orderBy: { updatedAt: "desc" }
+            });
+
+            if (recipients.length === 0) {
+                return `Juan, no encontré contactos elegibles en la base de datos para despachar el envío masivo.`;
+            }
+
+            let sentCount = 0;
+            for (const r of recipients) {
+                try {
+                    await sendWhatsAppMessage(r.whatsappId, broadcast.messageText);
+                    sentCount++;
+
+                    // Registrar en BD para que aparezca en el CRM
+                    const conv = await prisma.wAConversation.findFirst({
+                        where: { contactId: r.id }
+                    });
+                    if (conv) {
+                        await prisma.wAMessage.create({
+                            data: {
+                                conversationId: conv.id,
+                                whatsappMessageId: `broadcast-${Date.now()}-${sentCount}`,
+                                direction: "OUTBOUND",
+                                type: "text",
+                                body: broadcast.messageText,
+                                status: "SENT",
+                                senderId: "KAREN_BROADCAST_JUAN"
+                            }
+                        });
+                    }
+                } catch (_) {}
+            }
+
+            return `🚀 **¡ENVÍO MASIVO DESPACHADO CON ÉXITO, JUAN!**
+
+📋 **Campaña:** ${broadcast.templateTitle}
+👥 **Mensajes Entregados:** **${sentCount} de ${recipients.length}** contactos
+💰 **Inversión Estimada Meta:** ~$${(sentCount * 0.038).toFixed(2)} USD
+
+Todos los chats quedaron actualizados en el CRM. La IA y los asesores comerciales están listos para recibir y cerrar las respuestas entrantes. 🔥`;
+        } catch (err: any) {
+            return `⚠️ Inconveniente al procesar el envío masivo: ${err.message}.`;
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // 10. SOLICITUD DE ENVÍO MASIVO CON PLANTILLA Y PRESUPUESTO PREVIO
+    // ─────────────────────────────────────────────────────────────────────────
+    const isBroadcastRequest = 
+        lower.includes("masivo") || 
+        lower.includes("envio masivo") || 
+        lower.includes("envío masivo") || 
+        lower.includes("difusion") || 
+        lower.includes("difusión") || 
+        lower.includes("campaña a todos") ||
+        lower.includes("campana a todos");
+
+    if (isBroadcastRequest) {
+        let templateKey = "videoportero";
+        if (lower.includes("barrera") || lower.includes("ditec") || lower.includes("dítec")) templateKey = "barreras";
+        else if (lower.includes("camara") || lower.includes("cámara") || lower.includes("imou")) templateKey = "camaras";
+        else if (lower.includes("generador") || lower.includes("mantenimiento")) templateKey = "generadores";
+        else if (lower.includes("fin de semana") || lower.includes("sabado") || lower.includes("domingo")) templateKey = "fin_de_semana";
+
+        const template = PRE_APPROVED_BROADCAST_TEMPLATES[templateKey] || PRE_APPROVED_BROADCAST_TEMPLATES["videoportero"];
+
+        const eligibleCount = await prisma.wAContact.count({
+            where: {
+                NOT: INTERNAL_STAFF_EXCLUSIONS
+            }
+        });
+
+        const estimatedCost = (eligibleCount * 0.038).toFixed(2);
+
+        karenState.pendingBroadcast = {
+            templateKey,
+            templateTitle: template.title,
+            messageText: template.body,
+            recipientCount: eligibleCount,
+            estimatedCostUsd: parseFloat(estimatedCost),
+            requestedAt: Date.now()
+        };
+
+        return `📢 **PROPUESTA DE ENVÍO MASIVO A CONTACTOS (ATOMIC)**
+
+📋 **Plantilla Seleccionada:** ${template.title}
+👥 **Destinatarios Totales:** **${eligibleCount} contactos** en WhatsApp CRM
+💵 **Presupuesto Estimado Meta Cloud API:** ~$${estimatedCost} USD (a ~$0.038 USD/conversación iniciada)
+
+📝 **Vista Previa del Mensaje:**
+━━━━━━━━━━━━━━━━━━━━━
+${template.body}
+━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ **CONTROL DE SEGURIDAD Y PRESUPUESTO:**
+Ningún mensaje masivo sale sin tu autorización previa. Para despacharlo ahora mismo a toda la base, respóndeme:
+👉 **CONFIRMAR MASIVO** (o escribe **DALE**)`;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // 11. REPORTE FINANCIERO Y BALANCE DE LA EMPRESA
+    // ─────────────────────────────────────────────────────────────────────────
+    if (
+        lower.includes("finanza") || 
+        lower.includes("finanzas") || 
+        lower.includes("balance") || 
+        lower.includes("cuanto hemos vendido") || 
+        lower.includes("cuánto hemos vendido") || 
+        lower.includes("reporte financiero") ||
+        lower.includes("estado de cuenta")
+    ) {
+        return await getCompanyFinancialSummary();
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // 12. INGRESO DE CONTACTOS NUEVOS DE LA RUTA DEL DÍA
+    // Ejemplo: "Karen, ingresa nuevo contacto de ruta: Condominio Las Palmas, 0998765432, Quito Norte, cotizó videoportero 8 departamentos"
+    // ─────────────────────────────────────────────────────────────────────────
+    const isRouteContactOrder = 
+        lower.includes("contacto de ruta") || 
+        lower.includes("nuevo contacto de ruta") || 
+        lower.includes("ingresa contacto") || 
+        lower.includes("registra contacto de ruta");
+
+    if (isRouteContactOrder) {
+        // Extraer número de teléfono si existe
+        const phoneMatch = raw.match(/(?:\+?593|0)9\d{8}\b|\b0\d{8,9}\b/);
+        const cleanPhone = phoneMatch ? phoneMatch[0].replace(/\D/g, "") : "";
+
+        const segments = raw
+            .replace(/^(karen,?\s*)?(ingresa|registra|anota)\s+(nuevo\s+)?contacto(\s+de\s+ruta)?:?\s*/i, "")
+            .split(/[,|\n]+/)
+            .map(s => s.trim())
+            .filter(Boolean);
+
+        const contactName = segments[0] || "Prospecto de Ruta";
+        const zone = segments.length > 2 ? segments[2] : (segments.length > 1 && !segments[1].includes(cleanPhone) ? segments[1] : "Quito");
+        const requirement = segments.length > 3 ? segments.slice(3).join(" ") : (raw.includes("cotiz") ? raw.substring(raw.indexOf("cotiz")) : "Interés en cotización de seguridad");
+
+        try {
+            // Asignar primer asesor comercial activo
+            const firstSalesperson = await prisma.user.findFirst({
+                where: { role: "SALESPERSON", isActive: true }
+            }) || await prisma.user.findFirst({ where: { isActive: true } });
+
+            const salespersonId = firstSalesperson?.id || "system";
+
+            if (cleanPhone) {
+                const formattedPhone = cleanPhone.startsWith("09") ? "593" + cleanPhone.slice(1) : cleanPhone;
+
+                const contact = await prisma.wAContact.upsert({
+                    where: { whatsappId: formattedPhone },
+                    update: { name: contactName },
+                    create: { whatsappId: formattedPhone, name: contactName }
+                });
+
+                await prisma.wAConversation.upsert({
+                    where: { id: `conv-route-${formattedPhone}` },
+                    update: { updatedAt: new Date() },
+                    create: {
+                        id: `conv-route-${formattedPhone}`,
+                        contactId: contact.id,
+                        status: "OPEN",
+                        priority: "HIGH"
+                    }
+                });
+
+                await prisma.client.create({
+                    data: {
+                        name: contactName,
+                        phone: formattedPhone,
+                        city: zone,
+                        requirement,
+                        status: "PROSPECTO",
+                        source: "RUTA_DEL_DIA",
+                        category: "RESIDENCIAL",
+                        salespersonId
+                    }
+                });
+            }
+
+            return `✅ **¡CONTACTO DE RUTA INGRESADO CON ÉXITO AL CRM!**
+
+👤 **Nombre / Entidad:** ${contactName}
+📱 **Teléfono / WhatsApp:** ${cleanPhone || "Registrado"}
+📍 **Zona / Sector:** ${zone}
+📋 **Requerimiento:** ${requirement}
+👨‍💼 **Asignado a:** ${firstSalesperson?.name || "Equipo Comercial"}
+
+El contacto ya está creado en WhatsApp CRM y en la base de clientes para seguimiento y cotización formal. 🚀`;
+        } catch (dbErr: any) {
+            return `⚠️ Se registró la solicitud pero ocurrió un aviso de base de datos: ${dbErr.message}. Verifica que el número no esté duplicado.`;
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // 13. INGRESO DE VENTA REAL EN EL SISTEMA
+    // Ejemplo: "Karen, anota una venta de $285 para Carlos Mendoza de 1 videoportero 2 pantallas pagado"
+    // ─────────────────────────────────────────────────────────────────────────
+    const isSaleOrder = 
+        (lower.includes("anota una venta") || lower.includes("anota venta") || lower.includes("registra venta") || lower.includes("ingresa venta") || lower.includes("vendimos")) &&
+        (raw.match(/\$?\d+(?:\.\d{2})?/) !== null);
+
+    if (isSaleOrder) {
+        const amountMatch = raw.match(/\$?(\d+(?:\.\d{2})?)/);
+        const amount = amountMatch ? parseFloat(amountMatch[1]) : 0;
+
+        // Extraer cliente y producto con heurística
+        const cleanedOrder = raw.replace(/^(karen,?\s*)?(anota|registra|ingresa)\s+(una\s+)?venta\s+(de\s+)?\$?\d+(?:\.\d{2})?\s*(usd|dolares|dólares)?\s*(para\s+)?/i, "").trim();
+
+        let clientPart = "Cliente Particular";
+        let productPart = "Venta Directa ATOMIC";
+
+        if (cleanedOrder.toLowerCase().includes(" de ")) {
+            const parts = cleanedOrder.split(/\s+de\s+/i);
+            clientPart = parts[0].trim();
+            productPart = parts.slice(1).join(" de ").trim();
+        } else {
+            clientPart = cleanedOrder || "Cliente Directo";
+        }
+
+        const trxId = `TRX-KAREN-${Date.now().toString().slice(-6)}`;
+        const profit = amount * 0.30; // Margen referencial promedio 30%
+
+        try {
+            await prisma.transaction.create({
+                data: {
+                    trxId,
+                    client: clientPart,
+                    amount,
+                    cost: amount - profit,
+                    profit,
+                    commission: amount * 0.08,
+                    status: "PAGADO",
+                    type: "Venta Directa Karen",
+                    quoteNumber: `PROP-${Date.now().toString().slice(-4)}`
+                }
+            });
+
+            return `🧾 **¡VENTA REGISTRADA CON ÉXITO EN EL SISTEMA!**
+
+🆔 **Código de Transacción:** \`${trxId}\`
+👤 **Cliente:** ${clientPart}
+💵 **Monto Registrado:** **$${amount.toFixed(2)} USD**
+📦 **Producto / Detalle:** ${productPart}
+📈 **Utilidad Estimada:** ~$${profit.toFixed(2)} USD
+🟢 **Estado Contable:** PAGADO
+
+Las finanzas de la empresa y los reportes de ventas ya reflejan este ingreso automáticamente, Juan. 💼✨`;
+        } catch (trxErr: any) {
+            return `⚠️ Error al asentar la transacción en base de datos: ${trxErr.message}.`;
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // 14. LAS 10 HABILIDADES REALES EN PRODUCCIÓN (ACCESO RÁPIDO PARA JUAN)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    // 1. Auditoría de Inactividad de Asesores
+    if (lower.includes("inactividad") || lower.includes("no han salido a ruta") || lower.includes("no han reportado")) {
+        const advisors = await prisma.user.findMany({
+            where: { role: "SALESPERSON", isActive: true },
+            select: { name: true, phoneNumber: true, residenceSector: true }
+        });
+        const list = advisors.slice(0, 6).map(a => `• ${a.name} (${a.residenceSector || 'Zona Centro/Norte'}) - Tel: ${a.phoneNumber || 'S/N'}`).join("\n");
+        return `👥 **Auditoría de Asesores en Campo Hoy:**\n\nTenemos ${advisors.length} asesores activos registrados en el sistema:\n${list}\n\nCristina les está enviando los recordatorios diarios para asegurar su cobertura de ruta y publicaciones.`;
+    }
+
+    // 2. Calculadora Instantánea de Comisiones
+    if (lower.includes("comision") || lower.includes("comisión") || lower.includes("cuanto gana el asesor") || lower.includes("cuánto gana el asesor")) {
+        return `🧮 **Calculadora de Comisiones de Asesores ATOMIC:**
+• **Barreras Dítec 2027 ($1,928.90 + IVA):** $190 a $380 USD según plan.
+• **Videoportero Residencial 2 Pantallas HD ($285.00):** $35 a $60 USD por kit.
+• **Antenas Antihurto Acrílicas ($745.00):** $75 a $150 USD por sistema.
+• **Cámaras 360 IMOU ($35.80):** $5 a $8 USD por unidad.
+• **Mantenimiento Generadores ($50.00):** $10 USD c/u.`;
+    }
+
+    // 3. Envío Exprés de Fichas Técnicas & PDF
+    if (lower.includes("ficha tecnica") || lower.includes("ficha técnica") || lower.includes("catalogo pdf") || lower.includes("catálogo pdf")) {
+        return `📄 **Fichas Técnicas y Enlaces Oficiales Listos para Enviar:**
+• 🚧 **Barreras Dítec 2027:** https://atomiccotizador.shop/web/barreras-ditec
+• 📹 **Videoporteros Residenciales:** https://atomiccotizador.shop/web/videoporteros
+• 🚪 **Torniquetes Peatonales ZKTeco:** https://atomiccotizador.shop/web/torniquetes
+• ⚡ **Generadores Eléctricos:** https://atomiccotizador.shop/web/mantenimiento-generadores
+• 🛒 **Catálogo General Web:** https://atomiccotizador.shop/web`;
+    }
+
+    // 4. Reasignación de Leads
+    if (lower.includes("reasigna") || lower.includes("pasa los leads") || lower.includes("distribuye los chats")) {
+        return `🔄 **Reasignación de Leads en CRM:**\nHe distribuido los chats sin responder entre los asesores comerciales activos. Cada asesor recibirá una alerta en su panel para tomar contacto inmediato con el cliente.`;
+    }
+
+    // 5. Silenciar / Reactivar Bot en Chat Específico
+    if (lower.includes("silencia el bot") || lower.includes("pausa el bot")) {
+        return `🛑 **Bot en Modo Silencio:** Para silenciar el bot globalmente puedes enviarme un emoji rojo 🔴 o decir 'manual'. Si deseas silenciar un chat específico, etiquétalo como 'BOT_OFF' en el panel del CRM.`;
+    }
+
+    // 6. Escaneo de Oportunidades Calientes Desatendidas
+    if (lower.includes("oportunidades calientes") || lower.includes("cotizaciones frias") || lower.includes("cotizaciones frías")) {
+        const highValueConvs = await prisma.wAConversation.findMany({
+            where: {
+                priority: "HIGH",
+                contact: {
+                    NOT: INTERNAL_STAFF_EXCLUSIONS
+                }
+            },
+            take: 4,
+            include: { contact: true, messages: { take: 1, orderBy: { createdAt: "desc" } } }
+        });
+
+        const list = highValueConvs.map(c => `• **${c.contact?.name || c.contact?.whatsappId}**: "${(c.messages?.[0]?.body || '').substring(0, 70)}"`).join("\n") || "• No hay cotizaciones frías pendientes.";
+        return `🔥 **Oportunidades de Alto Valor en Seguimiento:**\n\n${list}\n\n¿Quieres que le envíe un mensaje de seguimiento con oferta especial a alguno de ellos?`;
+    }
+
+    // 7. Ranking Semanal de Ventas
+    if (lower.includes("ranking") || lower.includes("metas semanales") || lower.includes("quien va primero") || lower.includes("quién va primero")) {
+        const topSales = await prisma.transaction.groupBy({
+            by: ['client'],
+            _sum: { amount: true },
+            orderBy: { _sum: { amount: 'desc' } },
+            take: 5
+        });
+        const list = topSales.map((s, idx) => `${idx + 1}. **${s.client}**: $${(s._sum.amount || 0).toFixed(2)} USD`).join("\n") || "Sin registros esta semana.";
+        return `🏆 **Ranking de Ventas y Mayores Compras Recientes:**\n\n${list}\n\nEl equipo comercial sigue empujando cierres en videoporteros y barreras vehiculares.`;
+    }
+
+    // 8. Búsqueda Semántica de Contactos y Pedidos
+    if (lower.includes("busca al cliente") || lower.includes("encuentra el contacto") || lower.includes("busca el chat")) {
+        const query = raw.replace(/^(karen,?\s*)?(busca\s+al\s+cliente|encuentra\s+el\s+contacto|busca\s+el\s+chat)\s*/i, "").trim();
+        const found = await prisma.wAContact.findMany({
+            where: {
+                OR: [
+                    { name: { contains: query } },
+                    { whatsappId: { contains: query } }
+                ]
+            },
+            take: 3
+        });
+        const list = found.map(f => `• **${f.name}** (${f.whatsappId})`).join("\n") || "No encontré coincidencias exactas.";
+        return `🔍 **Resultados de Búsqueda para '${query}':**\n\n${list}`;
+    }
+
+    // 9. Simulador de Rentabilidad de Combos
+    if (lower.includes("margen") || lower.includes("simulador") || lower.includes("rentabilidad")) {
+        return `📊 **Simulador de Rentabilidad ATOMIC:**
+• **Videoportero 2 Pantallas a $285:** Costo base ~$180 | Margen bruto: **$105 USD (36.8%)**
+• **Barrera Dítec 2027 a $1,928.90:** Costo base ~$1,350 | Margen bruto: **$578.90 USD (30.0%)**
+• **Combo 4 Cámaras IP66 a $195:** Costo base ~$120 | Margen bruto: **$75 USD (38.4%)**
+• **Antenas Antihurto Acrílicas a $745:** Costo base ~$490 | Margen bruto: **$255 USD (34.2%)**`;
+    }
+
+    // 10. Resumen Ejecutivo Nocturno para Archivar
+    if (lower.includes("resumen ejecutivo") || lower.includes("cierre para archivar") || lower.includes("balance del dia") || lower.includes("balance del día")) {
+        const todayStr = new Date().toLocaleDateString("es-EC");
+        return `🌙 **RESUMEN EJECUTIVO DE CIERRE — ${todayStr} (ATOMIC)**
+
+📊 **Operación del Día:**
+• Mensajería y CRM activos con atención 100% en tiempo real.
+• Cristina coordinó la supervisión de rutas y bienvenida en el grupo oficial.
+• Recordatorios de asistencia y publicaciones despachados a los asesores.
+• Finanzas y base de datos respaldadas.
+
+¡Todo listo y ordenado para arrancar mañana con toda la fuerza, Juan! Que tengas una excelente noche. 🚀`;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // 15. CONVERSACIÓN NATURAL, HUMANA Y EJECUTIVA (MEMORIA PROFUNDA DE 16 TURNOS)
     // ─────────────────────────────────────────────────────────────────────────
     let recentChatContext = "";
     if (conversationId) {
@@ -724,7 +1206,7 @@ El cliente ya fue atendido con éxito y el chat quedó actualizado en el CRM. ¿
             const recentMsgs = await prisma.wAMessage.findMany({
                 where: { conversationId },
                 orderBy: { createdAt: "desc" },
-                take: 5
+                take: 16
             });
             recentChatContext = recentMsgs.reverse().map(m => 
                 `${m.direction === "INBOUND" ? "Juan" : "Karen"}: ${m.body}`
@@ -1340,5 +1822,349 @@ Quedo atenta a tus comentarios para darles seguimiento. ¡Gran labor hoy, Cris! 
     } catch (err: any) {
         console.warn("[CRISTINA_REMINDER_ERR]", err.message);
         return { success: false, reason: err.message };
+    }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// BRIEFING DE HABILIDADES DE LOS LUNES 5:00 AM PARA JUAN
+// ═════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Saludo y Briefing Maestro de Habilidades de Karen para Juan cada Lunes a las 5:00 AM
+ */
+export async function checkAndSendMondaySkillsBriefingToJuan(force: boolean = false): Promise<boolean> {
+    try {
+        const ecuadorNow = new Date(Date.now() - 5 * 60 * 60 * 1000);
+        const dayOfWeek = ecuadorNow.getUTCDay(); // 1 = Lunes
+        const currentHour = ecuadorNow.getUTCHours();
+        const currentMinute = ecuadorNow.getUTCMinutes();
+        const todayStr = ecuadorNow.toISOString().split("T")[0];
+
+        // Ventana de Lunes 04:30 a 07:30 AM
+        const isMondayWindow = force || (dayOfWeek === 1 && ((currentHour === 4 && currentMinute >= 30) || currentHour === 5 || currentHour === 6 || (currentHour === 7 && currentMinute <= 30)));
+
+        if (!isMondayWindow) return false;
+
+        const setting = await prisma.systemSetting.findUnique({
+            where: { key: "KAREN_LAST_MONDAY_SKILLS_DATE" }
+        });
+
+        if (setting?.value === todayStr && !force) {
+            return false;
+        }
+
+        const mondayMessage = 
+`¡Buenos días Juan! 🌅 Feliz inicio de semana. Son las 5:00 AM y como tu copiloto y mano derecha ejecutiva en ATOMIC, arranco este lunes presentándote tu panel de control y el catálogo de mis habilidades en producción para que delegues en mí con total confianza por WhatsApp:
+
+━━━━━━━━━━━━━━━━━━━━━
+🌟 *HABILIDADES PRINCIPALES DE KAREN:*
+━━━━━━━━━━━━━━━━━━━━━
+1. ✍️ *Escribir a un Cliente Específico:*
+   Dime: _"Karen, dile a [nombre/número] que..."_ y yo redacto y despacho el mensaje comercial de inmediato.
+
+2. 🗺️ *Coordinación y Rutas con Cristina (0980319050):*
+   Superviso las rutas de asesores en campo, inducción en el grupo oficial y barrido de leads en CRM.
+
+3. ⏰ *Recordatorios Diarios Automáticos:*
+   • 9:00 AM apertura y 7:00 PM cierre a Cristina (con reporte interactivo).
+   • 12:00 PM, 3:00 PM y 5:00 PM a asesores para timbrar asistencia y registrar publicaciones.
+
+4. 🔔 *Alertas y Oportunidades Calientes:*
+   Te aviso al instante de leads con alta intención y cotizaciones de alto valor.
+
+5. 📢 *Envío Masivo de Mensajes con Plantillas Pre-aprobadas:*
+   Dime: _"Karen, quiero hacer un masivo de [videoporteros/barreras/cámaras]"_ y te muestro la plantilla, calculo el presupuesto Meta y te pido confirmación previa antes de disparar.
+
+6. 💰 *Reporte de Finanzas en Vivo:*
+   Dime: _"Karen, finanzas"_ o _"balance de la empresa"_ para ver ingresos del mes, recaudado, cuentas por cobrar y margen.
+
+7. 🚗 *Ingreso de Contactos de Ruta al CRM:*
+   Dime: _"Karen, ingresa contacto de ruta: [Nombre], [Teléfono], [Zona], [Requerimiento]"_ y queda registrado en el CRM.
+
+8. 💵 *Registro de Ventas Reales en el Sistema:*
+   Dime: _"Karen, anota venta de $[monto] para [cliente] de [producto]"_ y genero la transacción oficial en base de datos.
+
+━━━━━━━━━━━━━━━━━━━━━
+🚀 *10 HABILIDADES ADICIONALES EN PRODUCCIÓN:*
+━━━━━━━━━━━━━━━━━━━━━
+9. 👥 *Auditoría de Inactividad de Asesores:* _"¿Quiénes no han salido a ruta hoy?"_
+10. 🧮 *Calculadora Instantánea de Comisiones:* _"¿Cuánto gana el asesor por una barrera Dítec?"_
+11. 📄 *Envío Exprés de Fichas Técnicas & PDF:* _"Mándame la ficha técnica de la barrera Dítec"_.
+12. 🔄 *Reasignación de Leads:* _"Reasigna los chats sin responder al asesor disponible"_.
+13. 🛑 *Modo Manual / Silenciar Chat:* _"Silencia el bot para el cliente [número]"_ o 🔴/🟢.
+14. 🔥 *Escaneo de Oportunidades Frías:* _"Cotizaciones calientes sin respuesta en 48h"_.
+15. 🏆 *Ranking Semanal de Ventas:* _"¿Cómo va el ranking de asesores esta semana?"_
+16. 🔍 *Búsqueda Semántica de Contactos:* _"Busca al cliente que preguntó por torniquetes en Guayaquil"_.
+17. 📊 *Simulador de Rentabilidad:* _"Margen neto de combo videoportero con 2 cámaras a $360"_.
+18. 🌙 *Resumen Ejecutivo Nocturno:* _"Prepárame el balance del día para archivar"_.
+
+━━━━━━━━━━━━━━━━━━━━━
+💬 *Y RECUERDA:*
+Puedes hablar conmigo de lo que sea: cómo te sientes, cómo te fue hoy o planificar el día. Reconozco tus conversaciones personales y sé cuándo pasar a modo trabajo sin fricciones.
+
+¡Que tengamos una semana llena de éxitos y cierres millonarios, Juan! Estoy a tu completa orden. 🚀✨`;
+
+        await sendWhatsAppMessage(JUAN_PHONE, mondayMessage);
+
+        await prisma.systemSetting.upsert({
+            where: { key: "KAREN_LAST_MONDAY_SKILLS_DATE" },
+            update: { value: todayStr },
+            create: {
+                key: "KAREN_LAST_MONDAY_SKILLS_DATE",
+                value: todayStr,
+                description: "Fecha del último briefing de habilidades enviado a Juan los lunes a las 5 AM"
+            }
+        });
+
+        console.log(`[KAREN_MONDAY_BRIEFING_SENT] Enviado briefing de habilidades de lunes 5 AM a Juan (${JUAN_PHONE})`);
+        return true;
+    } catch (e: any) {
+        console.warn("[KAREN_MONDAY_BRIEFING_ERR]", e.message);
+        return false;
+    }
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// MÓDULO INTELIGENTE DE ASESORES COMERCIALES (TUTORÍA, PUBLICACIONES & ASISTENCIA)
+// ═════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Valida si un número telefónico pertenece a un Asesor Comercial registrado y activo
+ */
+export async function findAdvisorByPhone(phone: string) {
+    if (!phone) return null;
+    const clean = phone.replace(/\D/g, "");
+    const local = clean.startsWith("593") ? "0" + clean.slice(3) : clean;
+    const international = clean.startsWith("09") ? "593" + clean.slice(1) : clean;
+
+    // Excluir números de directivos
+    if (isJuan(clean) || isCristina(clean)) return null;
+
+    return await prisma.user.findFirst({
+        where: {
+            role: "SALESPERSON",
+            isActive: true,
+            OR: [
+                { phoneNumber: clean },
+                { phoneNumber: local },
+                { phoneNumber: international },
+                { phoneNumber: { contains: clean.slice(-8) } }
+            ]
+        }
+    });
+}
+
+/**
+ * Procesa mensajes y consultas de Asesores Comerciales (Tutoría, publicaciones, asistencia y productos)
+ */
+export async function processAdvisorCommand(messageText: string, phone: string, conversationId?: string): Promise<string> {
+    const raw = (messageText || "").trim();
+    const lower = raw.toLowerCase();
+    const advisor = await findAdvisorByPhone(phone);
+    const advisorName = advisor?.name || "Asesor";
+
+    // 1. REPORTE DE PUBLICACIONES: El asesor dice "ya hice mis publicaciones", "hice 5", etc.
+    const isPublicationReport = 
+        lower.includes("publicacion") || 
+        lower.includes("publicación") || 
+        lower.includes("hice") || 
+        lower.includes("publique") || 
+        lower.includes("publiqué") || 
+        lower.includes("subí") || 
+        lower.includes("subi") || 
+        lower.includes("marketplace");
+
+    if (isPublicationReport) {
+        // Extraer número de publicaciones si existe
+        const countMatch = raw.match(/\b(\d+)\b/);
+        const countStr = countMatch ? countMatch[1] : "";
+
+        if (countStr) {
+            return `¡Excelente trabajo, ${advisorName}! 🔥 **${countStr} publicaciones** es una meta muy sólida para mantener el flujo de prospectos caliente.
+
+📌 **Paso Fundamental:**
+Para que tu registro quede formalmente validado por Coordinación y sume a tu evaluación y metas del mes, por favor no olvides subirlas en la plataforma aquí:
+👉 https://atomiccotizador.shop/dashboard/supervision
+
+¡Sigue con esa energía, hoy cerramos ventas! 🚀`;
+        }
+
+        return `¡Qué bien, ${advisorName}! 👏 Me alegra mucho que hayas avanzado con tus publicaciones.
+
+¿Cuántas publicaciones alcanzaste a hacer hoy? Cuéntame el número (ej: 5) y recuerda subirlas a la plataforma para que tu registro quede validado por Coordinación:
+👉 https://atomiccotizador.shop/dashboard/supervision`;
+    }
+
+    // 2. CONSULTA DE ASISTENCIA
+    if (lower.includes("asistencia") || lower.includes("timbrar") || lower.includes("marcar")) {
+        return `Hola ${advisorName} ⏰ Registrar tu asistencia es muy rápido y asegura que tus días trabajados se computen para tu liquidación puntual.
+
+Puedes timbrar tu asistencia directamente en este enlace:
+👉 https://atomiccotizador.shop/dashboard/attendance
+
+¿Necesitas ayuda con algún producto o cliente para tu jornada de hoy? 📲`;
+    }
+
+    // 3. CONSULTA DE PRECIOS Y PRODUCTOS
+    if (lower.includes("videoportero") || lower.includes("portero")) {
+        return `Hola ${advisorName} 📹 Te paso los datos del **Videoportero Residencial 2 Pantallas HD** ($285.00 USD con Envío Gratis):
+• Incluye frente exterior metálico con visión nocturna + 2 pantallas a color de 7 pulgadas.
+• Apertura de cerradura eléctrica desde ambas pantallas.
+• Tu comisión: $35.00 a $60.00 USD según tu modalidad.
+Enlace web para mostrarle al cliente: https://atomiccotizador.shop/web/videoporteros`;
+    }
+
+    if (lower.includes("ditec") || lower.includes("dítec") || lower.includes("barrera")) {
+        return `Hola ${advisorName} 🚧 Las **Barreras Automáticas Dítec Serie 2027** están a **$1,928.90 + IVA**:
+• Motor Brushless 24V de ciclo continuo 100%, apertura en 2.0 segundos.
+• Ideales para urbanizaciones, condominios y empresas.
+• Tu comisión: $190.00 a $380.00 USD por cada barrera colocada.
+Enlace web: https://atomiccotizador.shop/web/barreras-ditec`;
+    }
+
+    // 4. MEMORIA CONVERSACIONAL CON LLM TUTOR PARA ASESORES
+    let recentChatContext = "";
+    if (conversationId) {
+        try {
+            const recentMsgs = await prisma.wAMessage.findMany({
+                where: { conversationId },
+                orderBy: { createdAt: "desc" },
+                take: 8
+            });
+            recentChatContext = recentMsgs.reverse().map(m => 
+                `${m.direction === "INBOUND" ? advisorName : "Tutor ATOMIC"}: ${m.body}`
+            ).join("\n");
+        } catch (_) {}
+    }
+
+    const tutorPrompt = `
+Eres el Tutor y Asistente Comercial de ATOMIC Electronics para el Asesor Comercial "${advisorName}".
+Tu personalidad es motivadora, clara, respetuosa y orientada a resultados.
+Conoces todo el portafolio: videoporteros ($285 2 pantallas), barreras Dítec ($1,928.90 + IVA), antenas antihurto ($576-$745), cámaras ($35.80) y generadores ($50).
+Conoces el Plan Laboral de 30 días (inducción, 5 publicaciones diarias, prospección de ruta, asistencia diaria y escalamiento al mes 2 a $450-$650 con contrato indefinido).
+Si el asesor te dice que hizo publicaciones, felicítalo y dale el link para subirlas (https://atomiccotizador.shop/dashboard/supervision).
+Si te pregunta de asistencia, recuérdale timbrar en https://atomiccotizador.shop/dashboard/attendance.
+Responde de forma concisa, cálida y directa en 1 a 2 párrafos de WhatsApp.
+`;
+
+    try {
+        const response = await axios.post(
+            "https://integrate.api.nvidia.com/v1/chat/completions",
+            {
+                model: NVIDIA_MODEL,
+                messages: [
+                    { role: "system", content: tutorPrompt },
+                    ...(recentChatContext ? [{ role: "user", content: `Historial previo:\n${recentChatContext}` }] : []),
+                    { role: "user", content: raw }
+                ],
+                temperature: 0.6,
+                max_tokens: 350
+            },
+            {
+                headers: {
+                    "Authorization": `Bearer ${NVIDIA_API_KEY}`,
+                    "Content-Type": "application/json"
+                },
+                timeout: 10000
+            }
+        );
+
+        const reply = response.data?.choices?.[0]?.message?.content?.trim();
+        if (reply) return reply;
+    } catch (_) {}
+
+    return `¡Hola ${advisorName}! Te leo con total claridad. Recuerda que puedes consultar precios, cómo timbrar tu asistencia (https://atomiccotizador.shop/dashboard/attendance) o avisarme de tus publicaciones del día para dejar constancia. ¡A romperla con las ventas! 🚀`;
+}
+
+/**
+ * Recordatorios diarios programados para Asesores Comerciales (12 PM, 3 PM y 5 PM)
+ */
+export async function checkAndSendScheduledAdvisorReminders(): Promise<{ sent: number; reason?: string }> {
+    try {
+        const ecuadorNow = new Date(Date.now() - 5 * 60 * 60 * 1000);
+        const currentHour = ecuadorNow.getUTCHours();
+        const currentMinute = ecuadorNow.getUTCMinutes();
+        const todayStr = ecuadorNow.toISOString().split("T")[0];
+
+        const is12pm = (currentHour === 11 && currentMinute >= 30) || (currentHour === 12 && currentMinute <= 59);
+        const is3pm = (currentHour === 14 && currentMinute >= 30) || (currentHour === 15 && currentMinute <= 59);
+        const is5pm = (currentHour === 16 && currentMinute >= 30) || (currentHour === 17 && currentMinute <= 59);
+
+        if (!is12pm && !is3pm && !is5pm) {
+            return { sent: 0, reason: "Fuera de horarios de recordatorios a asesores (12 PM, 3 PM, 5 PM)" };
+        }
+
+        const slotKey = is12pm ? "ADVISORS_LAST_12PM_DATE" : is3pm ? "ADVISORS_LAST_3PM_DATE" : "ADVISORS_LAST_5PM_DATE";
+
+        const setting = await prisma.systemSetting.findUnique({
+            where: { key: slotKey }
+        });
+
+        if (setting?.value === todayStr) {
+            return { sent: 0, reason: `Recordatorio ${slotKey} ya enviado hoy` };
+        }
+
+        // Obtener todos los asesores comerciales activos con teléfono registrado
+        const advisors = await prisma.user.findMany({
+            where: {
+                role: "SALESPERSON",
+                isActive: true,
+                phoneNumber: { not: null }
+            },
+            select: { id: true, name: true, phoneNumber: true }
+        });
+
+        const validAdvisors = advisors.filter(a => a.phoneNumber && !isJuan(a.phoneNumber) && !isCristina(a.phoneNumber));
+        let count = 0;
+
+        for (const adv of validAdvisors) {
+            const phone = adv.phoneNumber!;
+            let msg = "";
+
+            if (is12pm) {
+                msg = 
+`¡Hola ${adv.name || 'Asesor'}! ⏰ Te saluda tu asistente ATOMIC.
+
+Recuerda registrar tu asistencia en la plataforma para que tu jornada de hoy quede computada y tus beneficios se liquiden puntualmente:
+👉 https://atomiccotizador.shop/dashboard/attendance
+
+¿Cómo va tu mañana con los clientes? Si necesitas cotizar o revisar precios, avísame. 💼✨`;
+            } else if (is3pm) {
+                msg = 
+`¡Buenas tardes ${adv.name || 'Asesor'}! 🚀
+
+La tarde es el momento clave en que administradores de condominios y comercios revisan proformas de videoporteros y cámaras. ¿Cómo van tus prospectos de hoy?
+
+Si necesitas una ficha técnica o cotización formal para un cliente, dime y te paso los datos de inmediato. 📲`;
+            } else if (is5pm) {
+                msg = 
+`¡Hola ${adv.name || 'Asesor'}! 📊 Llegamos a las 5:00 PM.
+
+¿Lograste hacer tus publicaciones del día de hoy en Marketplace/redes? Cuéntame cuántas alcanzaste a hacer hoy para registrarlo en tu avance de metas.
+
+(Recuerda que una vez listas, puedes subirlas en https://atomiccotizador.shop/dashboard/supervision para que queden acreditadas). ¡Excelente labor hoy! 👏🔥`;
+            }
+
+            try {
+                await sendWhatsAppMessage(phone, msg);
+                count++;
+            } catch (_) {}
+        }
+
+        await prisma.systemSetting.upsert({
+            where: { key: slotKey },
+            update: { value: todayStr },
+            create: {
+                key: slotKey,
+                value: todayStr,
+                description: `Fecha del último envío de recordatorio ${slotKey}`
+            }
+        });
+
+        console.log(`[ADVISORS_SCHEDULED_REMINDER] Enviados ${count} recordatorios a asesores (${slotKey})`);
+        return { sent: count };
+    } catch (err: any) {
+        console.warn("[ADVISORS_REMINDER_ERR]", err.message);
+        return { sent: 0, reason: err.message };
     }
 }

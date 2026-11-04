@@ -9,6 +9,8 @@ import {
     processJuanCommand, 
     isCristina,
     processCristinaCommand,
+    findAdvisorByPhone,
+    processAdvisorCommand,
     karenState, 
     notifyJuanIncomingBurst, 
     notifyJuanHotOpportunity, 
@@ -351,6 +353,26 @@ export async function handleIncomingWhatsAppBot(params: {
             });
             console.log(`[CRISTINA_INTERACTION] Bot respondió a Cristina en WhatsApp (${whatsappId})`);
             return cristinaReply;
+        }
+
+        // A3. Verificar si el remitente es un Asesor Comercial registrado interactuando con su Tutor Bot
+        const advisorUser = await findAdvisorByPhone(whatsappId);
+        if (advisorUser) {
+            const advisorReply = await processAdvisorCommand(messageText, whatsappId, conversationId);
+            await sendWhatsAppMessage(whatsappId, advisorReply);
+            await prisma.wAMessage.create({
+                data: {
+                    conversationId,
+                    whatsappMessageId: `advisor-bot-${Date.now()}`,
+                    direction: 'OUTBOUND',
+                    type: 'text',
+                    body: advisorReply,
+                    status: 'SENT',
+                    senderId: 'BOT_ASESORES_TUTOR'
+                }
+            });
+            console.log(`[ADVISOR_INTERACTION] Bot respondió a Asesor ${advisorUser.name} (${whatsappId})`);
+            return advisorReply;
         }
 
         // Registrar timestamp de actividad entrante para control de inactividad de Karen
