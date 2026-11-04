@@ -5,6 +5,9 @@ import { sendWhatsAppMessage } from "@/lib/whatsapp/service";
 export const JUAN_PHONE = "593969043453";
 export const JUAN_PHONE_LOCAL = "0969043453";
 
+export const CRISTINA_PHONE = "593980319050";
+export const CRISTINA_PHONE_LOCAL = "0980319050";
+
 const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY || "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";
 const NVIDIA_MODEL = "meta/llama-3.2-90b-vision-instruct";
 
@@ -144,6 +147,24 @@ export function isJuan(phone: string): boolean {
     const clean = phone.replace(/\D/g, "");
     return clean === "593969043453" || clean === "0969043453" || clean.endsWith("969043453");
 }
+
+/**
+ * Valida si el número telefónico corresponde EXCLUSIVAMENTE a Cristina (Coordinadora Operativa y Comercial)
+ */
+export function isCristina(phone: string): boolean {
+    if (!phone) return false;
+    const clean = phone.replace(/\D/g, "");
+    return clean === "593980319050" || clean === "0980319050" || clean.endsWith("980319050");
+}
+
+export const INTERNAL_STAFF_EXCLUSIONS = [
+    { whatsappId: JUAN_PHONE },
+    { whatsappId: JUAN_PHONE_LOCAL },
+    { whatsappId: { contains: "969043453" } },
+    { whatsappId: CRISTINA_PHONE },
+    { whatsappId: CRISTINA_PHONE_LOCAL },
+    { whatsappId: { contains: "980319050" } }
+];
 
 /**
  * Genera un resumen en vivo de los últimos chats y mensajes del CRM para que Karen conozca el flujo actual en tiempo real
@@ -493,10 +514,7 @@ ${karenState.lastUncatalogedChat ? `⚠️ **Chat pendiente de atención:** ${ka
             const lastConv = await prisma.wAConversation.findFirst({
                 where: {
                     contact: {
-                        NOT: [
-                            { whatsappId: "593969043453" },
-                            { whatsappId: "0969043453" }
-                        ]
+                        NOT: INTERNAL_STAFF_EXCLUSIONS
                     }
                 },
                 orderBy: { updatedAt: "desc" },
@@ -553,10 +571,7 @@ ${karenState.lastUncatalogedChat ? `⚠️ **Chat pendiente de atención:** ${ka
             const pendingList = await prisma.wAConversation.findMany({
                 where: {
                     contact: {
-                        NOT: [
-                            { whatsappId: "593969043453" },
-                            { whatsappId: "0969043453" }
-                        ]
+                        NOT: INTERNAL_STAFF_EXCLUSIONS
                     },
                     messages: { some: { direction: "INBOUND" } }
                 },
@@ -596,11 +611,7 @@ ${pendingNames}
         let targetConv = await prisma.wAConversation.findFirst({
             where: {
                 contact: {
-                    NOT: [
-                        { whatsappId: "593969043453" },
-                        { whatsappId: "0969043453" },
-                        { whatsappId: { contains: "969043453" } }
-                    ]
+                    NOT: INTERNAL_STAFF_EXCLUSIONS
                 }
             },
             orderBy: { updatedAt: "desc" },
@@ -834,10 +845,7 @@ export async function checkAndSendMorningBriefingToJuan(): Promise<boolean> {
                 createdAt: { gte: twelveHoursAgo },
                 conversation: {
                     contact: {
-                        NOT: [
-                            { whatsappId: "593969043453" },
-                            { whatsappId: "0969043453" }
-                        ]
+                        NOT: INTERNAL_STAFF_EXCLUSIONS
                     }
                 }
             }
@@ -847,10 +855,7 @@ export async function checkAndSendMorningBriefingToJuan(): Promise<boolean> {
             where: {
                 status: { in: ["NEW", "PENDING", "AUTO_REGISTER", "LEAD_PAUTA"] },
                 contact: {
-                    NOT: [
-                        { whatsappId: "593969043453" },
-                        { whatsappId: "0969043453" }
-                    ]
+                    NOT: INTERNAL_STAFF_EXCLUSIONS
                 }
             }
         });
@@ -914,4 +919,426 @@ export async function checkInactivityAndAlertJuan(): Promise<boolean> {
         } catch (_) {}
     }
     return false;
+}
+
+// ═════════════════════════════════════════════════════════════════════════════
+// MÓDULO INTELIGENTE DE COORDINACIÓN & REPORTES PARA CRISTINA (0980319050)
+// ═════════════════════════════════════════════════════════════════════════════
+
+const HR_GROUP_LINK = "https://chat.whatsapp.com/EYwCyfg0mF99nmNEhBPCFt";
+const HR_PAGE_LINK = "https://atomiccotizador.shop/web/contrataciones";
+
+/**
+ * Genera el contexto operativo diario para Cristina (Coordinadora):
+ * - Asesores comerciales activos y rutas asignadas
+ * - Nuevos postulantes y estado del grupo de bienvenida
+ * - Leads del CRM pendientes o de alta prioridad
+ * - Enlaces y directrices de inducción
+ */
+export async function getCoordinatorRutaContext(): Promise<string> {
+    try {
+        // 1. Asesores Comerciales registrados en la plataforma
+        const salesAdvisors = await prisma.user.findMany({
+            where: {
+                role: "SALESPERSON",
+                isActive: true
+            },
+            select: {
+                name: true,
+                phoneNumber: true,
+                residenceSector: true
+            },
+            take: 12
+        });
+
+        // 2. Reporte o asignación de coordinación del día si existe
+        const todayDaily = await prisma.coordinationDaily.findFirst({
+            orderBy: { createdAt: "desc" },
+            include: {
+                followUps: { take: 5 },
+                assignments: { take: 5 }
+            }
+        });
+
+        // 3. Resumen de chats recientes y pendientes en el CRM
+        const pendingChats = await prisma.wAConversation.findMany({
+            where: {
+                messages: {
+                    some: { direction: "INBOUND" }
+                },
+                contact: {
+                    NOT: INTERNAL_STAFF_EXCLUSIONS
+                }
+            },
+            orderBy: { updatedAt: "desc" },
+            take: 6,
+            include: {
+                contact: true,
+                messages: { take: 1, orderBy: { createdAt: "desc" } }
+            }
+        });
+
+        const advisorsList = salesAdvisors.length > 0
+            ? salesAdvisors.map(a => `• ${a.name || 'Asesor'} (Telf: ${a.phoneNumber || 'S/N'}${a.residenceSector ? ' - Zona: ' + a.residenceSector : ''})`).join("\n")
+            : "• Equipo comercial en campo: Cobertura activa en zonas norte, centro, sur y valles de Quito.";
+
+        const pendingList = pendingChats.length > 0
+            ? pendingChats.map(c => `• ${c.contact?.name || c.contact?.whatsappId} (${c.contact?.whatsappId}): "${(c.messages?.[0]?.body || '').substring(0, 70)}"`).join("\n")
+            : "• No hay clientes críticos desatendidos en este momento.";
+
+        return `CONTEXTO OPERATIVO Y RUTAS DEL DÍA (PARA CRISTINA):
+1. ASESORES COMERCIALES EN CAMPO:
+${advisorsList}
+
+2. PRODUCTOS CLAVE EN RUTA:
+- Videoporteros 2 Pantallas HD ($285.00 con envío gratis para condominios/hogares)
+- Citofonía Colectiva Intelbras Collective (4i hasta 24i desde $104.50 + IVA para edificios)
+- Barreras Automáticas Dítec Serie 2027 ($1,928.90 + IVA para urbanizaciones y empresas)
+- Antenas Antihurto para tiendas (Kit Estándar $576, Kit Acrílico $745)
+- Cámaras de Seguridad (IMOU 360 $35.80, Cruiser Triple $135.00) y Cercos Eléctricos
+
+3. INDUCCIÓN & BIENVENIDA:
+- Grupo oficial de bienvenida en WhatsApp: ${HR_GROUP_LINK}
+- Plan Laboral de 30 días para asesores: ${HR_PAGE_LINK}
+
+4. LEADS PENDIENTES EN CRM:
+${pendingList}
+${todayDaily?.notices ? `\nNOTAS DE COORDINACIÓN: ${todayDaily.notices}` : ''}`;
+    } catch (e: any) {
+        return "Operación comercial activa. Equipo comercial en cobertura de rutas de Quito y valles.";
+    }
+}
+
+/**
+ * Motor conversacional inteligente para Cristina (Coordinadora de Operaciones y Comercial)
+ * Memoria contextual, tono humano, empático, colaborativo y ejecutivo.
+ */
+export async function askCristinaAssistantLLM(cristinaMessage: string, chatHistory: string = ""): Promise<string> {
+    const coordinatorContext = await getCoordinatorRutaContext();
+
+    const systemPrompt = `
+Eres el Asistente Ejecutivo de Coordinación y Co-Piloto Operativo de Cristina en ATOMIC Electronics Ecuador.
+Cristina es la Coordinadora de Operaciones y Ventas (mano derecha en la gestión de asesores comerciales y flujo del CRM).
+Tu relación con ella es de colegas de alta confianza: eres cálido, motivador, empático, súper organizado, proactivo y resolutivo.
+Puedes llamarla "Cristina" o "Cris" con naturalidad y respeto profesional.
+NUNCA suenas como un bot acartonado ni repitas disculpas vacías.
+
+RESPONSABILIDADES DE CRISTINA Y CONTEXTO QUE DOMINAS:
+1. RUTA DEL DÍA:
+   - Supervisar y coordinar a los asesores comerciales que salen a ruta a visitar condominios, urbanizaciones, empresas y locales.
+   - Enfoque comercial de los asesores en campo: videoporteros para casas/edificios, citofonía colectiva Intelbras, barreras automáticas Dítec 2027, antenas antihurto y cámaras.
+2. INDUCCIÓN Y RECLUTAMIENTO:
+   - Dar la bienvenida en el grupo oficial de WhatsApp a nuevos asesores (${HR_GROUP_LINK}).
+   - Guiar su inducción de 30 días con el Plan Laboral (${HR_PAGE_LINK}).
+3. SUPERVISIÓN DEL CRM:
+   - Vigilar que ningún lead quede sin atender (especialmente leads con alta intención de compra o pautas activas).
+4. REPORTE A JUAN:
+   - Al final de la tarde, consolidar con Cristina cómo fue el día para que la operación con la gerencia general (Juan) marche sobre ruedas.
+
+INFORMACIÓN OPERATIVA EN TIEMPO REAL:
+${coordinatorContext}
+
+DIRECTRICES DE RESPUESTA:
+- Si Cristina te cuenta cómo le fue, escúchala activamente, valida su esfuerzo, anímala y dale tips prácticos para los pendientes.
+- Si te pregunta por rutas, asesores, clientes o cómo organizar el día, dale respuestas claras, estructuradas y con viñetas limpias.
+- Si te pide un consejo sobre cómo abordar a un asesor desmotivado o cómo gestionar una visita difícil a un condominio, sé su mejor asesor táctico.
+- Mantén las respuestas fluidas, concisas y directas (1 a 3 párrafos cortos como en WhatsApp real).
+`;
+
+    try {
+        const response = await axios.post(
+            "https://integrate.api.nvidia.com/v1/chat/completions",
+            {
+                model: NVIDIA_MODEL,
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    ...(chatHistory ? [{ role: "user", content: `Historial de conversación previa con Cristina:\n${chatHistory}` }] : []),
+                    { role: "user", content: cristinaMessage }
+                ],
+                temperature: 0.7,
+                max_tokens: 500
+            },
+            {
+                headers: {
+                    "Authorization": `Bearer ${NVIDIA_API_KEY}`,
+                    "Content-Type": "application/json"
+                },
+                timeout: 12000
+            }
+        );
+
+        const reply = response.data?.choices?.[0]?.message?.content?.trim();
+        if (reply) return reply;
+    } catch (e: any) {
+        console.warn("[CRISTINA_LLM_WARN]", e.response?.data || e.message);
+    }
+
+    // Fallback cálido y empático si falla el LLM
+    return `¡Hola Cris! Te leo con total claridad. Estoy aquí al frente monitoreando la ruta de los asesores y los chats del CRM. Cuéntame, ¿cómo van las visitas de hoy o necesitas apoyo con algún cliente o nuevo asesor? 💼✨`;
+}
+
+/**
+ * Procesa mensajes entrantes de Cristina (0980319050 / 593980319050)
+ * Recupera historial de la conversación para memoria contextual
+ */
+export async function processCristinaCommand(messageText: string, conversationId?: string): Promise<string> {
+    const raw = (messageText || "").trim();
+
+    // Recuperar historial reciente de la conversación con Cristina para memoria
+    let recentChatContext = "";
+    if (conversationId) {
+        try {
+            const recentMsgs = await prisma.wAMessage.findMany({
+                where: { conversationId },
+                orderBy: { createdAt: "desc" },
+                take: 8
+            });
+            recentChatContext = recentMsgs.reverse().map(m =>
+                `${m.direction === "INBOUND" ? "Cristina" : "Bot Coordinador"}: ${m.body}`
+            ).join("\n");
+        } catch (_) {}
+    }
+
+    return await askCristinaAssistantLLM(raw, recentChatContext);
+}
+
+/**
+ * Envío de Recordatorios Programados para Cristina (Coordinadora):
+ * - 9:00 AM (Apertura del día): Recordatorio de Ruta, Inducción y CRM
+ *   * Lunes a Viernes: Enfoque operativo completo
+ *   * Sábado y Domingo: Más suave y relajado
+ * - 7:00 PM (Cierre del día): Pregunta interactiva "¿Cómo te fue hoy, Cris?"
+ *   * Lunes a Viernes: Cierre de jornada, logros y pendientes
+ *   * Sábado y Domingo: Más suave y descanso
+ */
+export async function checkAndSendScheduledCoordinatorReminders(forceType?: "morning" | "evening"): Promise<{ success: boolean; reason?: string; type?: string }> {
+    try {
+        const ecuadorNow = new Date(Date.now() - 5 * 60 * 60 * 1000);
+        const currentHour = ecuadorNow.getUTCHours();
+        const currentMinute = ecuadorNow.getUTCMinutes();
+        const todayStr = ecuadorNow.toISOString().split("T")[0];
+        const dayOfWeek = ecuadorNow.getUTCDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
+        const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+
+        // Evaluar Ventana Matutina (9:00 AM - ventana 08:30 a 11:30 AM)
+        const isMorningWindow = forceType === "morning" || 
+            ((currentHour === 8 && currentMinute >= 30) || currentHour === 9 || currentHour === 10 || (currentHour === 11 && currentMinute <= 30));
+
+        // Evaluar Ventana Vespertina (7:00 PM / 19:00 - ventana 18:30 a 21:30 PM)
+        const isEveningWindow = forceType === "evening" || 
+            ((currentHour === 18 && currentMinute >= 30) || currentHour === 19 || currentHour === 20 || (currentHour === 21 && currentMinute <= 30));
+
+        if (!isMorningWindow && !isEveningWindow) {
+            return { success: false, reason: "Fuera de ventanas programadas (08:30-11:30 y 18:30-21:30)" };
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // 1. REPUTACIÓN MATUTINA (9:00 AM)
+        // ─────────────────────────────────────────────────────────────────────
+        if (isMorningWindow) {
+            const morningSetting = await prisma.systemSetting.findUnique({
+                where: { key: "CRISTINA_LAST_MORNING_DATE" }
+            });
+
+            if (morningSetting?.value === todayStr && forceType !== "morning") {
+                return { success: false, reason: "Recordatorio matutino ya enviado hoy a Cristina" };
+            }
+
+            let morningMsg = "";
+            if (isWeekend) {
+                // Sábado / Domingo: más suave
+                morningMsg = 
+`¡Buenos días Cris! ☀️ Feliz fin de semana.
+
+Espero que hayas tenido una noche de buen descanso. Te paso un recordatorio suave y tranquilo para hoy:
+
+☕ *Supervisión Liviana:*
+• Mantener un ojo por si algún asesor de fin de semana necesita respaldo con una cotización urgente en campo (videoporteros o cámaras).
+• Si ingresa algún lead caliente en el CRM, tenerlo mapeado para no dejarlo enfriar.
+
+¡Que tengas un día agradable, relajado y a tu propio ritmo! Si necesitas cualquier dato aquí estoy conectada. 🌸✨`;
+            } else {
+                // Lunes a Viernes: Operatividad completa
+                morningMsg = 
+`¡Buenos días Cris! 🌅 Iniciamos la jornada con toda la actitud en ATOMIC.
+
+Te comparto tu checklist prioritario de coordinación para arrancar el día:
+
+🚗 *1. ASESORES EN RUTA DEL DÍA:*
+• Confirmar quiénes de los asesores comerciales salen a campo hoy y validar sus zonas asignadas (condominios, locales comerciales y urbanizaciones).
+• Recordarles foco en: Videoporteros 2 Pantallas HD ($285), Citofonía Intelbras para edificios, Barreras automáticas Dítec 2027 y Antenas antihurto.
+
+👥 *2. INDUCCIÓN & BIENVENIDA:*
+• Revisar el grupo oficial de nuevos asesores para darles la bienvenida formal.
+• Asegurarte de que tengan a mano el Plan Laboral de 30 días y guiarlos en sus primeras actividades.
+
+📊 *3. SUPERVISIÓN EN EL CRM:*
+• Chequear chats sin responder y prospectos con alta intención de compra para canalizarlos de inmediato.
+
+¡Vamos por una jornada súper productiva y llena de cierres, Cris! Estoy lista para apoyarte en lo que necesites. 💼🚀`;
+            }
+
+            // Enviar por WhatsApp
+            await sendWhatsAppMessage(CRISTINA_PHONE, morningMsg);
+
+            // Registrar en base de datos wAMessage y wAConversation
+            try {
+                const contact = await prisma.wAContact.upsert({
+                    where: { whatsappId: CRISTINA_PHONE },
+                    update: { name: "Cristina (Coordinadora)" },
+                    create: { whatsappId: CRISTINA_PHONE, name: "Cristina (Coordinadora)" }
+                });
+
+                let conversation = await prisma.wAConversation.findFirst({
+                    where: { contactId: contact.id },
+                    orderBy: { updatedAt: "desc" }
+                });
+
+                if (!conversation) {
+                    conversation = await prisma.wAConversation.create({
+                        data: {
+                            contactId: contact.id,
+                            status: "OPEN",
+                            priority: "HIGH"
+                        }
+                    });
+                }
+
+                await prisma.wAMessage.create({
+                    data: {
+                        conversationId: conversation.id,
+                        whatsappMessageId: `karen-cristina-morning-${Date.now()}`,
+                        direction: "OUTBOUND",
+                        type: "text",
+                        body: morningMsg,
+                        status: "SENT",
+                        senderId: "BOT_CRISTINA_COORDINATOR"
+                    }
+                });
+
+                await prisma.wAConversation.update({
+                    where: { id: conversation.id },
+                    data: { updatedAt: new Date(), lastMessageAt: new Date() }
+                });
+            } catch (dbErr) {
+                console.warn("[CRISTINA_SAVE_MSG_WARN]", dbErr);
+            }
+
+            // Actualizar SystemSetting
+            await prisma.systemSetting.upsert({
+                where: { key: "CRISTINA_LAST_MORNING_DATE" },
+                update: { value: todayStr },
+                create: {
+                    key: "CRISTINA_LAST_MORNING_DATE",
+                    value: todayStr,
+                    description: "Fecha del último recordatorio matutino (9 AM) enviado a Cristina"
+                }
+            });
+
+            console.log(`[CRISTINA_MORNING_REMINDER_SENT] Recordatorio de 9 AM enviado a Cristina (${CRISTINA_PHONE})`);
+            return { success: true, type: "morning" };
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // 2. REPORTE / CIERRE VESPERTINO (7:00 PM)
+        // ─────────────────────────────────────────────────────────────────────
+        if (isEveningWindow) {
+            const eveningSetting = await prisma.systemSetting.findUnique({
+                where: { key: "CRISTINA_LAST_EVENING_DATE" }
+            });
+
+            if (eveningSetting?.value === todayStr && forceType !== "evening") {
+                return { success: false, reason: "Recordatorio vespertino ya enviado hoy a Cristina" };
+            }
+
+            let eveningMsg = "";
+            if (isWeekend) {
+                // Sábado / Domingo: más suave
+                eveningMsg = 
+`¡Hola Cris! 🌙 Llegamos al final de la jornada de este fin de semana.
+
+Espero que hayas disfrutado tu día y hayas podido descansar. ¿Cómo te fue hoy? Si quedó alguna novedad puntual con algún cliente o cotización pendiente para arrancar el lunes, me cuentas.
+
+¡Que tengas una linda noche y un excelente descanso! 🌸✨`;
+            } else {
+                // Lunes a Viernes: Interactivo y balance de jornada
+                eveningMsg = 
+`¡Hola Cris! 🌙 Llegamos al cierre de la jornada de hoy en ATOMIC.
+
+¿Cómo te fue hoy, Cris? Cuéntame qué avances tuvimos con los chicos en la ruta, si se lograron visitas a condominios o locales, y qué novedades o cotizaciones se generaron.
+
+📋 *Checklist de Cierre:*
+• Barrido final en el CRM para no dejar leads desatendidos.
+• Anotar los avances o dificultades de los asesores en campo para coordinar mañana.
+• Dejar todo listo para el reporte de la gerencia general con Juan.
+
+Quedo atenta a tus comentarios para darles seguimiento. ¡Gran labor hoy, Cris! 👏💼`;
+            }
+
+            // Enviar por WhatsApp
+            await sendWhatsAppMessage(CRISTINA_PHONE, eveningMsg);
+
+            // Registrar en base de datos wAMessage y wAConversation
+            try {
+                const contact = await prisma.wAContact.upsert({
+                    where: { whatsappId: CRISTINA_PHONE },
+                    update: { name: "Cristina (Coordinadora)" },
+                    create: { whatsappId: CRISTINA_PHONE, name: "Cristina (Coordinadora)" }
+                });
+
+                let conversation = await prisma.wAConversation.findFirst({
+                    where: { contactId: contact.id },
+                    orderBy: { updatedAt: "desc" }
+                });
+
+                if (!conversation) {
+                    conversation = await prisma.wAConversation.create({
+                        data: {
+                            contactId: contact.id,
+                            status: "OPEN",
+                            priority: "HIGH"
+                        }
+                    });
+                }
+
+                await prisma.wAMessage.create({
+                    data: {
+                        conversationId: conversation.id,
+                        whatsappMessageId: `karen-cristina-evening-${Date.now()}`,
+                        direction: "OUTBOUND",
+                        type: "text",
+                        body: eveningMsg,
+                        status: "SENT",
+                        senderId: "BOT_CRISTINA_COORDINATOR"
+                    }
+                });
+
+                await prisma.wAConversation.update({
+                    where: { id: conversation.id },
+                    data: { updatedAt: new Date(), lastMessageAt: new Date() }
+                });
+            } catch (dbErr) {
+                console.warn("[CRISTINA_SAVE_MSG_WARN]", dbErr);
+            }
+
+            // Actualizar SystemSetting
+            await prisma.systemSetting.upsert({
+                where: { key: "CRISTINA_LAST_EVENING_DATE" },
+                update: { value: todayStr },
+                create: {
+                    key: "CRISTINA_LAST_EVENING_DATE",
+                    value: todayStr,
+                    description: "Fecha del último recordatorio vespertino (7 PM) enviado a Cristina"
+                }
+            });
+
+            console.log(`[CRISTINA_EVENING_REMINDER_SENT] Recordatorio de 7 PM enviado a Cristina (${CRISTINA_PHONE})`);
+            return { success: true, type: "evening" };
+        }
+
+        return { success: false, reason: "No matching window" };
+    } catch (err: any) {
+        console.warn("[CRISTINA_REMINDER_ERR]", err.message);
+        return { success: false, reason: err.message };
+    }
 }

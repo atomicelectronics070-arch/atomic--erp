@@ -7,6 +7,8 @@ import { processConversationalBotMessage } from '@/lib/bot/botBrain';
 import { 
     isJuan, 
     processJuanCommand, 
+    isCristina,
+    processCristinaCommand,
     karenState, 
     notifyJuanIncomingBurst, 
     notifyJuanHotOpportunity, 
@@ -330,6 +332,25 @@ export async function handleIncomingWhatsAppBot(params: {
             });
             console.log(`[KAREN_JUAN_INTERACTION] Karen respondió comando a Juan en WhatsApp`);
             return karenReply;
+        }
+
+        // A2. Verificar si el remitente es Cristina (Coordinadora Operativa y Comercial) interactuando con el Bot
+        if (isCristina(whatsappId)) {
+            const cristinaReply = await processCristinaCommand(messageText, conversationId);
+            await sendWhatsAppMessage(whatsappId, cristinaReply);
+            await prisma.wAMessage.create({
+                data: {
+                    conversationId,
+                    whatsappMessageId: `karen-cristina-${Date.now()}`,
+                    direction: 'OUTBOUND',
+                    type: 'text',
+                    body: cristinaReply,
+                    status: 'SENT',
+                    senderId: 'BOT_CRISTINA_COORDINATOR'
+                }
+            });
+            console.log(`[CRISTINA_INTERACTION] Bot respondió a Cristina en WhatsApp (${whatsappId})`);
+            return cristinaReply;
         }
 
         // Registrar timestamp de actividad entrante para control de inactividad de Karen
