@@ -58,17 +58,24 @@ export default function ContratacionesClient() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            <Link
+              href="/register/vendedor"
+              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs sm:text-sm transition-all flex items-center gap-2 shadow-lg shadow-cyan-500/20"
+            >
+              <Sparkles size={15} />
+              <span>Registrarse como Vendedor</span>
+            </Link>
             <Link
               href="/web/contrataciones/login"
-              className="px-5 py-2.5 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-white font-bold text-sm transition-all flex items-center gap-2"
+              className="px-4 py-2.5 rounded-xl border border-white/15 bg-white/5 hover:bg-white/10 text-white font-bold text-xs sm:text-sm transition-all flex items-center gap-2"
             >
               <Lock size={15} className="text-cyan-400" />
-              <span>Login Contrataciones</span>
+              <span>Login</span>
             </Link>
             <Link
               href="/web"
-              className="hidden sm:flex text-slate-400 hover:text-white text-sm font-semibold transition-colors"
+              className="hidden md:flex text-slate-400 hover:text-white text-sm font-semibold transition-colors"
             >
               Volver a la Tienda
             </Link>
@@ -298,15 +305,22 @@ export default function ContratacionesClient() {
                     </div>
                   </div>
 
-                  <div className="p-6 pt-0 border-t border-white/5">
+                  <div className="p-6 pt-0 border-t border-white/5 space-y-2">
+                    <Link
+                      href="/register/vendedor"
+                      className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black text-sm hover:from-amber-300 hover:to-amber-400 transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20"
+                    >
+                      <Sparkles size={16} />
+                      Registrarme Directo (Código al Correo)
+                    </Link>
                     <button
                       onClick={() => {
                         setFormData({ ...formData, puesto: "Ventas Digitales desde Celular" })
                         document.getElementById("formulario-postulacion")?.scrollIntoView({ behavior: 'smooth' })
                       }}
-                      className="w-full py-3 rounded-xl bg-amber-500 text-slate-950 font-black text-sm hover:bg-amber-400 transition-all flex items-center justify-center gap-2"
+                      className="w-full py-2.5 rounded-xl border border-white/10 text-slate-400 hover:text-white font-bold text-xs hover:bg-white/5 transition-all flex items-center justify-center gap-2"
                     >
-                      Postular a Ventas <ArrowRight size={16} />
+                      Postular por WhatsApp <ArrowRight size={14} />
                     </button>
                   </div>
                 </div>

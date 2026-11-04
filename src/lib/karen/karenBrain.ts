@@ -2022,7 +2022,25 @@ Enlace web para mostrarle al cliente: https://atomiccotizador.shop/web/videoport
 Enlace web: https://atomiccotizador.shop/web/barreras-ditec`;
     }
 
-    // 4. MEMORIA CONVERSACIONAL CON LLM TUTOR PARA ASESORES
+    // 4. GUÍA OFICIAL DE LAS 7 ACTIVIDADES DIARIAS DEL ASESOR
+    if (lower.includes("actividades") || lower.includes("que tengo que hacer") || lower.includes("qué tengo que hacer") || lower.includes("mis tareas") || lower.includes("manual")) {
+        return `📋 **Tus 7 Actividades Oficiales como Asesor Comercial ATOMIC:**
+
+1. 🛒 **5 Publicaciones Diarias en Marketplace:** Publicar 5 productos en Facebook Marketplace con fotos oficiales y subir capturas a la plataforma.
+2. 👥 **Difusión en 3 Grupos de Redes:** Compartir en al menos 3 grupos comunitarios o locales cada día.
+3. 📱 **Prospección de 10 Números Telefónicos:** Buscar 10 contactos calificados de clientes o comercios en Google Maps/directorios e ingresarlos en la plataforma.
+4. 📞 **7 Llamadas Diarias (Zoom con Supervisión):** Realizar 7 llamadas a prospectos enlazado con la coordinadora para soporte en el cierre.
+5. 📄 **Seguimiento y Cotizaciones Formales:** Atender inmediatamente a los interesados y generar proformas formales.
+6. 📢 **Difusión de Promociones (Lunes y Miércoles):** Enviar las ofertas semanales a tus contactos recopilados.
+7. 📲 **Estados Personales en Redes:** Publicar productos en tus estados de WhatsApp/Instagram al menos 2 veces por semana.
+
+⏰ *Recuerda timbrar tu asistencia diaria en:*
+👉 https://atomiccotizador.shop/dashboard/attendance
+📊 *Subir evidencias de publicaciones y prospectos en:*
+👉 https://atomiccotizador.shop/dashboard/supervision`;
+    }
+
+    // 5. MEMORIA CONVERSACIONAL CON LLM TUTOR PARA ASESORES
     let recentChatContext = "";
     if (conversationId) {
         try {
@@ -2041,7 +2059,8 @@ Enlace web: https://atomiccotizador.shop/web/barreras-ditec`;
 Eres el Tutor y Asistente Comercial de ATOMIC Electronics para el Asesor Comercial "${advisorName}".
 Tu personalidad es motivadora, clara, respetuosa y orientada a resultados.
 Conoces todo el portafolio: videoporteros ($285 2 pantallas), barreras Dítec ($1,928.90 + IVA), antenas antihurto ($576-$745), cámaras ($35.80) y generadores ($50).
-Conoces el Plan Laboral de 30 días (inducción, 5 publicaciones diarias, prospección de ruta, asistencia diaria y escalamiento al mes 2 a $450-$650 con contrato indefinido).
+Conoces las 7 actividades oficiales (5 publicaciones diarias en Marketplace, 3 grupos de difusión, 10 números de prospección, 7 llamadas en Zoom con la coordinadora, seguimiento de cotizaciones, promociones lunes/miércoles, estados personales).
+Conoces el Plan Laboral de 30 días (inducción, asistencia diaria en https://atomiccotizador.shop/dashboard/attendance, y escalamiento al mes 2 a $450-$650 con contrato indefinido).
 Si el asesor te dice que hizo publicaciones, felicítalo y dale el link para subirlas (https://atomiccotizador.shop/dashboard/supervision).
 Si te pregunta de asistencia, recuérdale timbrar en https://atomiccotizador.shop/dashboard/attendance.
 Responde de forma concisa, cálida y directa en 1 a 2 párrafos de WhatsApp.
