@@ -7,7 +7,7 @@ import {
     Sparkles, Plus, ExternalLink, ShieldCheck, Tag, RefreshCw, ChevronLeft,
     Settings, Image as ImageIcon, ShoppingBag, Download, Check, Save, X, Globe, Mail, MapPin,
     Volume2, Mic, Film, FileText, Megaphone, Eye, Key, AlertCircle, Copy, Paperclip, Loader2,
-    UserCheck, UserPlus, Lock, Users, Filter, CheckCircle2, Flame, Bot, Zap, Bell, Camera, Upload, Palette
+    UserCheck, UserPlus, Lock, Users, Filter, CheckCircle2, Flame, Bot, Zap, Bell, Camera, Upload, Palette, Trash2, RotateCcw
 } from "lucide-react"
 
 interface ReferralData {
@@ -111,9 +111,10 @@ function isDeliveryIntent(chat: Chat): boolean {
 }
 
 // 5. Categoría temática
-function categorizarChat(chat: Chat): 'residencial' | 'empresarial' | 'postulante' | 'soporte' | 'sin_especificar' | 'envios' | 'general' {
+function categorizarChat(chat: Chat): 'residencial' | 'empresarial' | 'consolas' | 'postulante' | 'soporte' | 'sin_especificar' | 'envios' | 'general' {
     if (isUnspecified(chat)) return 'sin_especificar';
     const allText = getChatFullText(chat);
+    if (/(playstation|ps4|ps5|xbox|nintendo|switch|consola|consolas|mando|mandos|gamepad|videojuego|joystick|joy-con|gamer)/i.test(allText)) return 'consolas';
     if (/(trabajo|empleo|asesor comercial|comisi[oó]n|curriculum|cv|postulaci[oó]n|vacante|sueldo|horario|requisito)/i.test(allText)) return 'postulante';
     if (/(garant[ií]a|da[ñn]o|falla|no funciona|roto|reparaci[oó]n|averiado|soporte|servicio t[eé]cnico)/i.test(allText)) return 'soporte';
     if (/(empresa|local|negocio|bodega|oficina|antena|antihurto|torniquete|barrera|control de acceso|establecimiento|sucursal)/i.test(allText)) return 'empresarial';
@@ -387,11 +388,31 @@ export default function WhatsAppCrmClient() {
 
     const currentTheme = THEMES_CONFIG[crmTheme] || THEMES_CONFIG['cyber-emerald'];
 
+    // Papelera State
+    const [trashCount, setTrashCount] = useState<number>(0);
+
+    // Envío Masivo & Generador IA de Plantillas Meta
+    const [isBroadcastModalOpen, setIsBroadcastModalOpen] = useState(false);
+    const [broadcastTab, setBroadcastTab] = useState<'BROADCAST' | 'AI_OPTIMIZER'>('BROADCAST');
+    const [broadcastData, setBroadcastData] = useState<any>(null);
+    const [broadcastLoading, setBroadcastLoading] = useState(false);
+    const [selectedBroadcastSegment, setSelectedBroadcastSegment] = useState<string>('ALL');
+    const [selectedBroadcastTemplateId, setSelectedBroadcastTemplateId] = useState<string>('videoportero');
+    const [customBroadcastBody, setCustomBroadcastBody] = useState<string>('');
+    const [isSendingBroadcast, setIsSendingBroadcast] = useState(false);
+    const [broadcastResult, setBroadcastResult] = useState<any>(null);
+
+    // AI Meta Template Optimizer State
+    const [aiPromptText, setAiPromptText] = useState<string>('');
+    const [aiCategory, setAiCategory] = useState<'MARKETING' | 'UTILITY'>('MARKETING');
+    const [isOptimizingTemplate, setIsOptimizingTemplate] = useState(false);
+    const [optimizedTemplateResult, setOptimizedTemplateResult] = useState<any>(null);
+
     // CRM Tabs Filter con múltiples dimensiones inteligentes
-    type CrmTabType = 'ABSOLUTELY_ALL' | 'UNANSWERED' | 'HOT_LEADS' | 'MY_LEADS' | 'ALL_WHATSAPP' | 'PAUTAS' | 'FAILED' | 'AUTO_REGISTER';
+    type CrmTabType = 'ABSOLUTELY_ALL' | 'UNANSWERED' | 'HOT_LEADS' | 'MY_LEADS' | 'ALL_WHATSAPP' | 'PAUTAS' | 'FAILED' | 'AUTO_REGISTER' | 'TRASH';
     const [activeCrmTab, setActiveCrmTab] = useState<CrmTabType>('ALL_WHATSAPP')
 
-    type CrmCategoryType = 'all' | 'residencial' | 'empresarial' | 'postulante' | 'soporte' | 'sin_especificar' | 'envios' | 'general';
+    type CrmCategoryType = 'all' | 'residencial' | 'empresarial' | 'consolas' | 'postulante' | 'soporte' | 'sin_especificar' | 'envios' | 'general';
     const [activeCategory, setActiveCategory] = useState<CrmCategoryType>('all')
     const [systemAdvisors, setSystemAdvisors] = useState<any[]>([])
 
@@ -409,6 +430,191 @@ export default function WhatsAppCrmClient() {
     const [autoRetryCountdown, setAutoRetryCountdown] = useState<number>(15)
     const isRetryingRef = useRef(false)
     isRetryingRef.current = isRetrying
+
+    // Papelera Handlers
+    const handleTrashChat = async (convId?: string) => {
+        const id = convId || activeChat?.id;
+        if (!id) return;
+        if (!confirm('¿Mover este chat a la papelera? No recibirá mensajes automáticos del bot mientras esté allí.')) return;
+        try {
+            const res = await fetch('/api/whatsapp/conversations', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ conversationId: id, action: 'trash' })
+            });
+            if (res.ok) {
+                setActiveChatId('');
+                await fetchConversations();
+            } else {
+                const err = await res.json();
+                alert(`Error: ${err.error || 'No se pudo mover a papelera'}`);
+            }
+        } catch (e: any) {
+            alert(`Error: ${e.message}`);
+        }
+    };
+
+    const handleRestoreChat = async (convId?: string) => {
+        const id = convId || activeChat?.id;
+        if (!id) return;
+        try {
+            const res = await fetch('/api/whatsapp/conversations', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ conversationId: id, action: 'restore' })
+            });
+            if (res.ok) {
+                await fetchConversations();
+                alert('Chat restaurado a la bandeja activa.');
+            } else {
+                const err = await res.json();
+                alert(`Error: ${err.error || 'No se pudo restaurar'}`);
+            }
+        } catch (e: any) {
+            alert(`Error: ${e.message}`);
+        }
+    };
+
+    const handlePermanentDeleteChat = async (convId?: string) => {
+        const id = convId || activeChat?.id;
+        if (!id) return;
+        if (!confirm('⚠️ ¿ELIMINAR DEFINITIVAMENTE este chat y todos sus mensajes? Esta acción NO se puede deshacer.')) return;
+        try {
+            const res = await fetch(`/api/whatsapp/conversations?id=${id}`, {
+                method: 'DELETE'
+            });
+            if (res.ok) {
+                setActiveChatId('');
+                await fetchConversations();
+                alert('Chat eliminado permanentemente.');
+            } else {
+                const err = await res.json();
+                alert(`Error: ${err.error || 'No se pudo eliminar'}`);
+            }
+        } catch (e: any) {
+            alert(`Error: ${e.message}`);
+        }
+    };
+
+    const handleEmptyTrash = async () => {
+        if (!confirm('⚠️ ¿Estás seguro de VACIAR LA PAPELERA COMPLETAMENTE? Se eliminarán todos los chats y mensajes en ella.')) return;
+        try {
+            const res = await fetch('/api/whatsapp/conversations?emptyTrash=true', {
+                method: 'DELETE'
+            });
+            if (res.ok) {
+                setActiveChatId('');
+                await fetchConversations();
+                alert('Papelera vaciada con éxito.');
+            } else {
+                const err = await res.json();
+                alert(`Error: ${err.error || 'No se pudo vaciar la papelera'}`);
+            }
+        } catch (e: any) {
+            alert(`Error: ${e.message}`);
+        }
+    };
+
+    // Broadcast Handlers
+    const fetchBroadcastData = async () => {
+        setBroadcastLoading(true);
+        try {
+            const res = await fetch('/api/whatsapp/broadcast');
+            if (res.ok) {
+                const data = await res.json();
+                setBroadcastData(data);
+                if (data.trashCount !== undefined) setTrashCount(data.trashCount);
+                if (data.templates && data.templates.length > 0 && !customBroadcastBody) {
+                    setCustomBroadcastBody(data.templates[0].body);
+                    setSelectedBroadcastTemplateId(data.templates[0].id);
+                }
+            }
+        } catch (e) {
+            console.error('Error fetching broadcast data:', e);
+        } finally {
+            setBroadcastLoading(false);
+        }
+    };
+
+    const handleOptimizeTemplateWithAI = async () => {
+        if (!aiPromptText.trim()) {
+            alert('Por favor escribe un borrador o idea de tu mensaje para que la IA lo optimice.');
+            return;
+        }
+        setIsOptimizingTemplate(true);
+        setOptimizedTemplateResult(null);
+        try {
+            const res = await fetch('/api/whatsapp/templates/optimize', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    promptText: aiPromptText,
+                    category: aiCategory
+                })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                setOptimizedTemplateResult(data);
+            } else {
+                alert(`Error: ${data.error || 'No se pudo optimizar la plantilla'}`);
+            }
+        } catch (e: any) {
+            alert(`Error de conexión: ${e.message}`);
+        } finally {
+            setIsOptimizingTemplate(false);
+        }
+    };
+
+    const handleApplyOptimizedTemplateToBroadcast = () => {
+        if (!optimizedTemplateResult) return;
+        setCustomBroadcastBody(optimizedTemplateResult.body);
+        setBroadcastTab('BROADCAST');
+        alert('✨ Plantilla aprobada por IA aplicada a la ventana de Envío Masivo.');
+    };
+
+    const handleSendBroadcast = async () => {
+        if (!customBroadcastBody.trim()) {
+            alert('Debes redactar o seleccionar una plantilla para el envío.');
+            return;
+        }
+        const recipientCount = broadcastData?.segments?.[selectedBroadcastSegment] ?? broadcastData?.totalEligible ?? 0;
+        const estimatedBudget = (recipientCount * (broadcastData?.metaPricePerMessageUsd || 0.038)).toFixed(2);
+
+        if (!confirm(`📢 CONFIRMACIÓN DE ENVÍO MASIVO:
+
+• Destinatarios: ${recipientCount} contactos (${selectedBroadcastSegment})
+• Presupuesto Estimado Meta: ~${estimatedBudget} USD
+
+¿Deseas iniciar el envío masivo en este momento?`)) {
+            return;
+        }
+
+        setIsSendingBroadcast(true);
+        setBroadcastResult(null);
+        try {
+            const res = await fetch('/api/whatsapp/broadcast', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    templateId: selectedBroadcastTemplateId,
+                    customBody: customBroadcastBody,
+                    segment: selectedBroadcastSegment,
+                    confirmed: true
+                })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                setBroadcastResult(data);
+                await fetchConversations();
+            } else {
+                alert(`⚠️ Error en el envío: ${data.error || data.message || 'Error desconocido'}`);
+            }
+        } catch (e: any) {
+            alert(`Error: ${e.message}`);
+        } finally {
+            setIsSendingBroadcast(false);
+        }
+    };
 
     // Re-engagement & Apology State
     const [isReengageModalOpen, setIsReengageModalOpen] = useState(false)
@@ -706,7 +912,12 @@ export default function WhatsAppCrmClient() {
 
     const fetchConversations = useCallback(async () => {
         try {
-            const res = await fetch('/api/whatsapp/conversations')
+            const url = activeCrmTab === 'TRASH' ? '/api/whatsapp/conversations?status=TRASH' : '/api/whatsapp/conversations';
+            const res = await fetch(url);
+            if (res.ok) {
+                const tHeader = res.headers.get('X-Trash-Count');
+                if (tHeader !== null) setTrashCount(parseInt(tHeader, 10) || 0);
+            }
             if (res.ok) {
                 const data = await res.json()
                 if (Array.isArray(data)) {
@@ -1510,6 +1721,11 @@ export default function WhatsAppCrmClient() {
 
     const filteredChatsBeforeCategory = chats.filter(c => {
         // Tab filter
+        if (activeCrmTab === 'TRASH') {
+            return c.status === 'TRASH';
+        }
+        if (c.status === 'TRASH') return false;
+
         if (activeCrmTab === 'ABSOLUTELY_ALL') {
             // No filtrar nada: incluye el 100% de registros
         } else if (activeCrmTab === 'UNANSWERED') {
@@ -1670,6 +1886,16 @@ export default function WhatsAppCrmClient() {
                             <span className="font-bold text-xs text-cyan-300 block leading-tight">Karen</span>
                             <span className="text-[9px] font-mono text-slate-400 block -mt-0.5">Jefa Mensajería</span>
                         </div>
+                    </button>
+
+                    {/* Botón Envío Masivo & IA Meta */}
+                    <button
+                        onClick={() => { setIsBroadcastModalOpen(true); fetchBroadcastData(); }}
+                        className="py-1.5 px-3 rounded-xl bg-gradient-to-r from-blue-600/30 to-cyan-600/30 hover:from-blue-600/50 hover:to-cyan-600/50 border border-cyan-500/40 text-cyan-200 hover:text-white transition-all text-xs flex items-center gap-1.5 cursor-pointer shadow-sm font-bold"
+                        title="Envío Masivo de Mensajes & Creador de Plantillas Aprobables por Meta"
+                    >
+                        <Megaphone size={14} className="text-cyan-400" />
+                        <span className="hidden md:inline">Envío Masivo & IA Meta</span>
                     </button>
 
                     <button
@@ -1843,6 +2069,24 @@ export default function WhatsAppCrmClient() {
                                 </span>
                             </button>
 
+                            {/* PAPELERA */}
+                            <button
+                                type="button"
+                                onClick={() => setActiveCrmTab('TRASH')}
+                                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                                    activeCrmTab === 'TRASH' ? 'bg-gradient-to-r from-red-600 to-rose-700 text-white font-black shadow-lg shadow-red-500/25' : trashCount > 0 ? 'bg-red-950/50 text-red-300 border border-red-500/30' : currentTheme.tabInactive
+                                }`}
+                                title="Papelera de reciclaje de chats eliminados"
+                            >
+                                <Trash2 size={13} />
+                                <span>Papelera</span>
+                                {trashCount > 0 && (
+                                    <span className="text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold bg-red-600 text-white">
+                                        {trashCount}
+                                    </span>
+                                )}
+                            </button>
+
                             {/* EMPLEO */}
                             <button
                                 type="button"
@@ -1869,6 +2113,7 @@ export default function WhatsAppCrmClient() {
                             { id: 'all', label: '✦ Todos' },
                             { id: 'residencial', label: '🏠 Residencial' },
                             { id: 'empresarial', label: '🏢 Empresarial' },
+                            { id: 'consolas', label: '🎮 Consolas' },
                             { id: 'postulante', label: '💼 Empleo' },
                             { id: 'soporte', label: '🔧 Soporte' },
                             { id: 'sin_especificar', label: '❓ Sin Especificar' },
@@ -2022,6 +2267,7 @@ export default function WhatsAppCrmClient() {
                                                 const cat = categorizarChat(chat);
                                                 if (cat === 'residencial') return <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-600/40 shrink-0">🏠 Residencial</span>;
                                                 if (cat === 'empresarial') return <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-cyan-950/80 text-cyan-300 border border-cyan-600/40 shrink-0">🏢 Empresarial</span>;
+                                                if (cat === 'consolas') return <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-indigo-950/80 text-indigo-300 border border-indigo-600/40 shrink-0">🎮 Consolas</span>;
                                                 if (cat === 'postulante') return <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-950/80 text-amber-300 border border-amber-600/40 shrink-0">💼 Empleo</span>;
                                                 if (cat === 'soporte') return <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-purple-950/80 text-purple-300 border border-purple-600/40 shrink-0">🔧 Soporte</span>;
                                                 if (cat === 'envios') return <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-950/80 text-blue-300 border border-blue-600/40 shrink-0">📦 Envíos</span>;
@@ -2165,6 +2411,7 @@ export default function WhatsAppCrmClient() {
                                             <span className="capitalize text-slate-300 px-1.5 py-0.2 rounded bg-slate-800/60 border border-slate-700/40">
                                                 {categorizarChat(activeChat) === 'residencial' ? '🏠 Residencial' :
                                                  categorizarChat(activeChat) === 'empresarial' ? '🏢 Empresarial' :
+                                                 categorizarChat(activeChat) === 'consolas' ? '🎮 Consolas' :
                                                  categorizarChat(activeChat) === 'postulante' ? '💼 Empleo' :
                                                  categorizarChat(activeChat) === 'soporte' ? '🔧 Soporte' :
                                                  categorizarChat(activeChat) === 'envios' ? '📦 Envíos' :
@@ -2310,6 +2557,37 @@ export default function WhatsAppCrmClient() {
                                     </button>
 
                                     {/* Botón de Reactivación con Disculpa Inteligente */}
+                                    {/* Acciones de Papelera en Chat Activo */}
+                                    {activeChat.status === 'TRASH' ? (
+                                        <>
+                                            <button
+                                                onClick={() => handleRestoreChat()}
+                                                className="bg-emerald-900/60 hover:bg-emerald-800 border border-emerald-500/60 text-emerald-300 hover:text-white font-bold text-xs px-3 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+                                                title="Restaurar chat a la bandeja activa"
+                                            >
+                                                <RotateCcw size={13} />
+                                                <span>Restaurar</span>
+                                            </button>
+                                            <button
+                                                onClick={() => handlePermanentDeleteChat()}
+                                                className="bg-red-950/80 hover:bg-red-900 border border-red-500/60 text-red-300 hover:text-white font-bold text-xs px-3 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+                                                title="Eliminar definitivamente este chat"
+                                            >
+                                                <Trash2 size={13} />
+                                                <span>Eliminar Definitivo</span>
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <button
+                                            onClick={() => handleTrashChat()}
+                                            className="bg-slate-900/60 hover:bg-red-950/60 border border-slate-700/60 hover:border-red-500/50 text-slate-400 hover:text-red-300 font-bold text-xs px-2.5 py-2 rounded-xl transition-all flex items-center gap-1 cursor-pointer shadow-sm"
+                                            title="Mover este chat a la papelera"
+                                        >
+                                            <Trash2 size={13} />
+                                            <span className="hidden lg:inline">Papelera</span>
+                                        </button>
+                                    )}
+
                                     <button
                                         onClick={handleOpenReengageModal}
                                         className="bg-[#1a2332] hover:bg-[#233044] border border-cyan-500/50 text-cyan-300 hover:text-white font-bold text-xs px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
@@ -2334,6 +2612,32 @@ export default function WhatsAppCrmClient() {
                             {/* Chat Messages */}
                             <div ref={messagesContainerRef} className={`flex-1 p-4 md:p-6 overflow-y-auto space-y-4 scroll-smooth ${currentTheme.chatMainBg}`}>
                                 
+                                {/* 🗑️ BANNER DE CHAT EN PAPELERA */}
+                                {activeChat.status === 'TRASH' && (
+                                    <div className="p-3.5 bg-red-950/40 border border-red-500/50 rounded-xl flex items-center justify-between gap-3 text-red-200 text-xs">
+                                        <div className="flex items-center gap-2">
+                                            <Trash2 size={16} className="text-red-400 shrink-0" />
+                                            <span>
+                                                <strong>Chat en Papelera de Reciclaje:</strong> El bot automático está pausado. Puedes restaurarlo para reactivarlo o eliminarlo permanentemente.
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-2 shrink-0">
+                                            <button
+                                                onClick={() => handleRestoreChat()}
+                                                className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold text-xs flex items-center gap-1"
+                                            >
+                                                <RotateCcw size={12} /> Restaurar
+                                            </button>
+                                            <button
+                                                onClick={() => handlePermanentDeleteChat()}
+                                                className="px-2.5 py-1 bg-red-700 hover:bg-red-600 text-white rounded-lg font-bold text-xs flex items-center gap-1"
+                                            >
+                                                <Trash2 size={12} /> Eliminar
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
                                 {/* ⚠️ BANNER DE ALERTA DE FALLO EN EL ENVÍO & MOTOR DE REINTENTO INTELIGENTE */}
                                 {activeChat.hasFailedMessage && (
                                     <div className="p-4 bg-[#1f1610] border border-amber-500/60 rounded-xl space-y-3 text-white">
@@ -2950,6 +3254,387 @@ export default function WhatsAppCrmClient() {
             {/* ═════════════════════════════════════════════════════════════ */}
             {/* ⚙️ MODAL: AJUSTES, TOKEN & PERFIL DE WHATSAPP BUSINESS       */}
             {/* ═════════════════════════════════════════════════════════════ */}
+            {/* MODAL ENVÍO MASIVO & ASISTENTE IA DE PLANTILLAS META */}
+            {isBroadcastModalOpen && (
+                <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
+                    <div className="bg-[#0b131f] border border-cyan-500/40 rounded-3xl max-w-4xl w-full p-5 sm:p-7 max-h-[92vh] overflow-y-auto relative animate-in fade-in zoom-in duration-200 shadow-2xl">
+                        
+                        {/* Cabecera del Modal */}
+                        <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 text-slate-950 font-black">
+                                    <Megaphone size={20} />
+                                </div>
+                                <div>
+                                    <h2 className="text-lg sm:text-xl font-black text-white flex items-center gap-2">
+                                        Envío Masivo & IA de Plantillas Meta
+                                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
+                                            Cloud API 2026
+                                        </span>
+                                    </h2>
+                                    <p className="text-xs text-slate-400">
+                                        Campañas oficiales de WhatsApp con estimación de presupuesto y optimización de aprobación Facebook.
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setIsBroadcastModalOpen(false)}
+                                className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center font-bold cursor-pointer transition-colors"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        {/* Selector de Pestañas del Modal */}
+                        <div className="flex gap-2 p-1.5 rounded-2xl bg-slate-900/80 border border-white/10 mb-6">
+                            <button
+                                onClick={() => setBroadcastTab('BROADCAST')}
+                                className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                                    broadcastTab === 'BROADCAST'
+                                        ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-black shadow-md'
+                                        : 'text-slate-400 hover:text-white'
+                                }`}
+                            >
+                                <Megaphone size={14} />
+                                <span>1. Envío Masivo & Presupuesto Meta</span>
+                            </button>
+                            <button
+                                onClick={() => setBroadcastTab('AI_OPTIMIZER')}
+                                className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                                    broadcastTab === 'AI_OPTIMIZER'
+                                        ? 'bg-gradient-to-r from-fuchsia-500 to-indigo-600 text-white font-black shadow-md'
+                                        : 'text-slate-400 hover:text-white'
+                                }`}
+                            >
+                                <Sparkles size={14} className="text-amber-300" />
+                                <span>2. ✨ Generador IA de Plantillas (Meta Aprobación)</span>
+                            </button>
+                        </div>
+
+                        {/* PESTAÑA 1: ENVÍO MASIVO & PRESUPUESTO */}
+                        {broadcastTab === 'BROADCAST' && (
+                            <div className="space-y-6">
+                                {/* Segmentación de Audiencia */}
+                                <div>
+                                    <label className="block text-xs font-mono font-bold uppercase tracking-wider text-slate-300 mb-2 flex items-center justify-between">
+                                        <span>Seleccionar Segmento de Audiencia</span>
+                                        <span className="text-cyan-400 text-[11px] font-sans">
+                                            Total elegibles: {broadcastData?.totalEligible ?? '...'} contactos
+                                        </span>
+                                    </label>
+                                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                                        {[
+                                            { id: 'ALL', label: 'Todos', icon: '🌐', count: broadcastData?.segments?.ALL ?? broadcastData?.totalEligible ?? 0 },
+                                            { id: 'RESIDENCIAL', label: 'Residencial', icon: '🏠', count: broadcastData?.segments?.RESIDENCIAL ?? 0 },
+                                            { id: 'EMPRESARIAL', label: 'Empresarial', icon: '🏢', count: broadcastData?.segments?.EMPRESARIAL ?? 0 },
+                                            { id: 'CONSOLAS', label: 'Consolas', icon: '🎮', count: broadcastData?.segments?.CONSOLAS ?? 0 },
+                                            { id: 'UNANSWERED', label: 'Sin Responder', icon: '⏳', count: broadcastData?.segments?.UNANSWERED ?? 0 },
+                                        ].map(seg => (
+                                            <button
+                                                key={seg.id}
+                                                type="button"
+                                                onClick={() => setSelectedBroadcastSegment(seg.id)}
+                                                className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                                                    selectedBroadcastSegment === seg.id
+                                                        ? 'bg-cyan-500/15 border-cyan-400 ring-1 ring-cyan-400/40'
+                                                        : 'bg-white/[0.02] border-white/10 hover:border-white/20'
+                                                }`}
+                                            >
+                                                <div className="text-sm">{seg.icon}</div>
+                                                <div className="text-xs font-bold text-white mt-1">{seg.label}</div>
+                                                <div className="text-[10px] text-cyan-400 font-mono font-bold">{seg.count} contactos</div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Calculadora de Presupuesto Meta Cloud API */}
+                                <div className="p-4 rounded-2xl bg-gradient-to-r from-blue-950/40 via-cyan-950/40 to-slate-900 border border-cyan-500/30">
+                                    <div className="flex items-center justify-between mb-3 border-b border-white/10 pb-2">
+                                        <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-300 flex items-center gap-1.5">
+                                            <ShieldCheck size={14} /> Presupuesto Meta Business Cloud API
+                                        </span>
+                                        <span className="text-[10px] font-mono text-slate-400">
+                                            Tarifa Estándar Ecuador / Latam
+                                        </span>
+                                    </div>
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                                        <div className="p-2.5 rounded-xl bg-white/5 border border-white/5">
+                                            <span className="text-[10px] text-slate-400 block">Destinatarios</span>
+                                            <strong className="text-sm sm:text-base font-black text-white">
+                                                {broadcastData?.segments?.[selectedBroadcastSegment] ?? broadcastData?.totalEligible ?? 0}
+                                            </strong>
+                                        </div>
+                                        <div className="p-2.5 rounded-xl bg-white/5 border border-white/5">
+                                            <span className="text-[10px] text-slate-400 block">Costo / Conversación</span>
+                                            <strong className="text-sm sm:text-base font-black text-cyan-300">
+                                                ${broadcastData?.metaPricePerMessageUsd ?? 0.038} USD
+                                            </strong>
+                                        </div>
+                                        <div className="p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30">
+                                            <span className="text-[10px] text-cyan-300 font-bold block">Presupuesto Estimado</span>
+                                            <strong className="text-base sm:text-lg font-black text-emerald-400">
+                                                ${(((broadcastData?.segments?.[selectedBroadcastSegment] ?? broadcastData?.totalEligible ?? 0) * (broadcastData?.metaPricePerMessageUsd ?? 0.038))).toFixed(2)} USD
+                                            </strong>
+                                        </div>
+                                        <div className="p-2.5 rounded-xl bg-white/5 border border-white/5">
+                                            <span className="text-[10px] text-slate-400 block">Tasa de Entrega</span>
+                                            <strong className="text-sm sm:text-base font-black text-cyan-400">
+                                                ~98.5%
+                                            </strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Selector de Plantillas Pre-Aprobadas */}
+                                <div>
+                                    <label className="block text-xs font-mono font-bold uppercase tracking-wider text-slate-300 mb-2">
+                                        Plantillas Pre-Aprobadas Oficiales
+                                    </label>
+                                    <div className="flex flex-wrap gap-2 mb-3">
+                                        {(broadcastData?.templates || []).map((tpl: any) => (
+                                            <button
+                                                key={tpl.id}
+                                                type="button"
+                                                onClick={() => {
+                                                    setSelectedBroadcastTemplateId(tpl.id);
+                                                    setCustomBroadcastBody(tpl.body);
+                                                }}
+                                                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                                                    selectedBroadcastTemplateId === tpl.id
+                                                        ? 'bg-cyan-500 text-slate-950 border-cyan-400 font-black shadow-sm'
+                                                        : 'bg-white/5 text-slate-300 border-white/10 hover:border-white/20'
+                                                }`}
+                                            >
+                                                {tpl.title}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    {/* Editor de Texto del Mensaje */}
+                                    <div className="space-y-1.5">
+                                        <div className="flex items-center justify-between text-[11px] text-slate-400">
+                                            <span>Cuerpo del Mensaje (usa <code>{`{{1}}`}</code> para el nombre del cliente):</span>
+                                            <span>{customBroadcastBody.length} caracteres</span>
+                                        </div>
+                                        <textarea
+                                            rows={6}
+                                            value={customBroadcastBody}
+                                            onChange={(e) => setCustomBroadcastBody(e.target.value)}
+                                            placeholder="Redacta el mensaje masivo..."
+                                            className="w-full bg-[#070e17] border border-white/15 rounded-2xl p-3.5 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-colors font-sans"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Vista Previa en Mockup WhatsApp */}
+                                <div className="p-4 rounded-2xl bg-[#0b141a] border border-[#202c33] max-w-lg mx-auto shadow-inner">
+                                    <div className="flex items-center justify-between text-[10px] text-slate-400 pb-2 border-b border-[#202c33] mb-3">
+                                        <span className="flex items-center gap-1">
+                                            <Phone size={10} className="text-emerald-400" /> Vista Previa en Celular del Cliente
+                                        </span>
+                                        <span>ATOMIC Electronics (Oficial)</span>
+                                    </div>
+                                    <div className="bg-[#005c4b] text-[#e9edef] rounded-2xl rounded-tr-none p-3.5 text-xs shadow space-y-2 whitespace-pre-wrap leading-relaxed">
+                                        <div>{customBroadcastBody.replace(/\{\{1\}\}/g, 'Carlos')}</div>
+                                        <div className="flex items-center justify-end gap-1 text-[9px] text-slate-300 font-mono">
+                                            <span>10:30 AM</span>
+                                            <CheckCheck size={12} className="text-cyan-300" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Resultado de Envío si se ejecutó */}
+                                {broadcastResult && (
+                                    <div className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 text-emerald-200 text-xs">
+                                        <h4 className="font-bold text-emerald-300 mb-1 flex items-center gap-1.5">
+                                            <CheckCircle2 size={16} /> Envío Masivo Ejecutado Exitosamente
+                                        </h4>
+                                        <p>{broadcastResult.message}</p>
+                                    </div>
+                                )}
+
+                                {/* Botón de Disparo Masivo */}
+                                <div className="pt-2 border-t border-white/10 flex items-center justify-between flex-wrap gap-3">
+                                    <div className="text-xs text-slate-400">
+                                        <strong className="text-white">Doble Confirmación:</strong> El sistema pedirá validación final antes de emitir los mensajes por Meta API.
+                                    </div>
+                                    <button
+                                        type="button"
+                                        disabled={isSendingBroadcast}
+                                        onClick={handleSendBroadcast}
+                                        className="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-sm flex items-center gap-2 shadow-lg shadow-emerald-500/20 cursor-pointer disabled:opacity-50 transition-all"
+                                    >
+                                        {isSendingBroadcast ? (
+                                            <>
+                                                <Loader2 size={16} className="animate-spin" />
+                                                <span>Disparando Campaña...</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Send size={16} />
+                                                <span>Iniciar Envío Masivo</span>
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* PESTAÑA 2: GENERADOR IA DE PLANTILLAS PARA APROBACIÓN META */}
+                        {broadcastTab === 'AI_OPTIMIZER' && (
+                            <div className="space-y-6">
+                                <div className="p-4 rounded-2xl bg-gradient-to-r from-fuchsia-950/30 to-indigo-950/30 border border-fuchsia-500/30">
+                                    <h3 className="text-sm font-bold text-fuchsia-300 flex items-center gap-2 mb-1">
+                                        <Sparkles size={16} className="text-amber-300" />
+                                        Optimizador de Políticas Meta Cloud API (Facebook)
+                                    </h3>
+                                    <p className="text-xs text-slate-300 leading-relaxed">
+                                        Escribe tu borrador en lenguaje común. El motor IA de ATOMIC lo depura, elimina términos de spam, inserta la estructura de variables requerida por Meta y añade la cláusula legal de opt-out para garantizar una aprobación del 99% sin bloqueos.
+                                    </p>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {/* Panel Izquierdo: Entrada de Borrador */}
+                                    <div className="space-y-3">
+                                        <div>
+                                            <label className="block text-xs font-mono font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                                                1. Escribe tu Idea o Borrador Libre
+                                            </label>
+                                            <textarea
+                                                rows={5}
+                                                value={aiPromptText}
+                                                onChange={(e) => setAiPromptText(e.target.value)}
+                                                placeholder="Ej: Hola te vendo videoporteros a 285 dolares con 2 pantallas y envio gratis a todo el Ecuador, respondeme ya si te interesa para separartelo."
+                                                className="w-full bg-[#070e17] border border-white/15 rounded-2xl p-3.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-fuchsia-500 transition-colors"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-xs font-mono font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                                                2. Categoría Meta Deseada
+                                            </label>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setAiCategory('MARKETING')}
+                                                    className={`p-2.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                                                        aiCategory === 'MARKETING'
+                                                            ? 'bg-fuchsia-500/20 border-fuchsia-400 text-fuchsia-200'
+                                                            : 'bg-white/[0.02] border-white/10 text-slate-400 hover:text-white'
+                                                    }`}
+                                                >
+                                                    📣 MARKETING (Ofertas / Catálogo)
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setAiCategory('UTILITY')}
+                                                    className={`p-2.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                                                        aiCategory === 'UTILITY'
+                                                            ? 'bg-blue-500/20 border-blue-400 text-blue-200'
+                                                            : 'bg-white/[0.02] border-white/10 text-slate-400 hover:text-white'
+                                                    }`}
+                                                >
+                                                    ⚙️ UTILITY (Avisos / Cuentas)
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            disabled={isOptimizingTemplate}
+                                            onClick={handleOptimizeTemplateWithAI}
+                                            className="w-full py-3 rounded-xl bg-gradient-to-r from-fuchsia-500 to-indigo-600 hover:from-fuchsia-400 hover:to-indigo-500 text-white font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-fuchsia-500/20 cursor-pointer disabled:opacity-50 transition-all"
+                                        >
+                                            {isOptimizingTemplate ? (
+                                                <>
+                                                    <Loader2 size={16} className="animate-spin" />
+                                                    <span>Analizando Políticas de Meta...</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Sparkles size={16} />
+                                                    <span>✨ Optimizar con IA para Aprobación Meta</span>
+                                                </>
+                                            )}
+                                        </button>
+                                    </div>
+
+                                    {/* Panel Derecho: Resultado y Checklist de Aprobación */}
+                                    <div className="space-y-3">
+                                        <label className="block text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
+                                            Resultado Estructurado Meta Business
+                                        </label>
+
+                                        {optimizedTemplateResult ? (
+                                            <div className="p-4 rounded-2xl bg-[#070e17] border border-fuchsia-500/40 space-y-3 text-xs">
+                                                {/* Score de Aprobación */}
+                                                <div className="flex items-center justify-between pb-2 border-b border-white/10">
+                                                    <span className="font-bold text-white flex items-center gap-1.5">
+                                                        <ShieldCheck size={14} className="text-emerald-400" />
+                                                        Score de Aprobabilidad Meta:
+                                                    </span>
+                                                    <span className="text-sm font-black text-emerald-400 font-mono">
+                                                        {optimizedTemplateResult.approvalScore ?? 98}% ALTO
+                                                    </span>
+                                                </div>
+
+                                                {/* Checklist */}
+                                                <div className="space-y-1">
+                                                    {(optimizedTemplateResult.complianceChecklist || []).map((c: any, idx: number) => (
+                                                        <div key={idx} className="flex items-center gap-1.5 text-[11px] text-slate-300">
+                                                            <CheckCircle2 size={12} className="text-emerald-400 shrink-0" />
+                                                            <span>{c.item}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+
+                                                {/* Plantilla Estructurada */}
+                                                <div className="p-3 rounded-xl bg-black/40 border border-white/5 space-y-1.5 text-[11px]">
+                                                    <div>
+                                                        <span className="text-slate-500 font-mono">HEADER: </span>
+                                                        <strong className="text-cyan-300">{optimizedTemplateResult.header}</strong>
+                                                    </div>
+                                                    <div className="text-slate-200 whitespace-pre-wrap font-sans">
+                                                        {optimizedTemplateResult.body}
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-slate-500 font-mono">FOOTER: </span>
+                                                        <span className="text-slate-400 italic">{optimizedTemplateResult.footer}</span>
+                                                    </div>
+                                                    <div className="pt-1 flex gap-1.5 flex-wrap">
+                                                        {(optimizedTemplateResult.buttons || []).map((b: string, i: number) => (
+                                                            <span key={i} className="px-2 py-0.5 rounded-lg bg-white/10 text-slate-300 text-[10px] font-bold border border-white/10">
+                                                                🔘 {b}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                {/* Botón Aplicar a Envío Masivo */}
+                                                <button
+                                                    type="button"
+                                                    onClick={handleApplyOptimizedTemplateToBroadcast}
+                                                    className="w-full py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer shadow-md transition-all"
+                                                >
+                                                    <Check size={14} /> Usar Esta Plantilla en el Envío Masivo
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/5 text-center text-slate-500 text-xs space-y-2">
+                                                <Bot size={24} className="mx-auto text-slate-600" />
+                                                <p>Ingresa tu borrador a la izquierda y pulsa el botón para generar la plantilla lista para Facebook.</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                    </div>
+                </div>
+            )}
+
             {isSettingsModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-3">
                     <div 

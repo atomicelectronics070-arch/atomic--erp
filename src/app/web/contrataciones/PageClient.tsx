@@ -325,6 +325,80 @@ export default function ContratacionesClient() {
                   </div>
                 </div>
 
+                {/* 4. Vendedor con Experiencia (Llamadas y Mensajería) - $225 */}
+                <div className="rounded-3xl bg-white/[0.03] border border-cyan-500/30 overflow-hidden hover:border-cyan-400/70 transition-all flex flex-col justify-between group shadow-xl relative">
+                  <div className="absolute top-0 right-0 bg-gradient-to-l from-cyan-500/20 to-transparent px-4 py-1 text-[10px] font-mono font-bold text-cyan-300 uppercase tracking-widest border-b border-l border-cyan-500/30 rounded-bl-2xl">
+                    Contratación Inmediata
+                  </div>
+                  <div className="p-8">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-300 text-xs font-black uppercase tracking-wider border border-cyan-500/30">
+                        100% Remoto / Medio Tiempo
+                      </span>
+                      <span className="flex items-center gap-1 text-xs text-slate-400 font-semibold">
+                        <Clock size={13} /> 4 Horas Flexibles
+                      </span>
+                    </div>
+
+                    <h3 className="text-2xl font-black text-white group-hover:text-cyan-300 transition-colors">
+                      Vendedor con Experiencia
+                    </h3>
+                    <p className="text-cyan-400 font-bold text-sm mt-1">
+                      Llamadas y Mensajería Profesional
+                    </p>
+                    <div className="mt-3 inline-flex items-baseline gap-2 bg-cyan-950/40 border border-cyan-500/30 px-3.5 py-1.5 rounded-xl">
+                      <span className="text-xs text-slate-400 font-medium">Pago de Medio Tiempo:</span>
+                      <span className="text-xl font-black text-cyan-300">$225.00 / mes</span>
+                    </div>
+
+                    <div className="mt-5 space-y-2">
+                      <h4 className="text-xs font-bold uppercase text-slate-400 tracking-wider">¿Cuáles serán tus actividades?</h4>
+                      <ul className="text-xs text-slate-300 space-y-1.5">
+                        <li className="flex items-center gap-2">
+                          <CheckCircle2 size={14} className="text-cyan-400 shrink-0" />
+                          <span>Realizar llamadas y seguimiento a clientes potenciales.</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <CheckCircle2 size={14} className="text-cyan-400 shrink-0" />
+                          <span>Gestionar conversaciones por mensajería de forma profesional.</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <CheckCircle2 size={14} className="text-cyan-400 shrink-0" />
+                          <span>Presentar productos/servicios y cerrar acuerdos comerciales.</span>
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <CheckCircle2 size={14} className="text-cyan-400 shrink-0" />
+                          <span>Registrar información de clientes en CRM y cumplir metas.</span>
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div className="mt-5 p-4 rounded-2xl bg-cyan-950/20 border border-cyan-500/20 text-xs text-slate-300">
+                      <span className="font-bold text-cyan-300 block mb-1">Requisitos Clave:</span>
+                      <span>Experiencia en ventas (llamadas/chat), excelente comunicación verbal y escrita, dispositivo propio con internet estable (celular/PC).</span>
+                    </div>
+                  </div>
+
+                  <div className="p-6 pt-0 border-t border-white/5 space-y-2">
+                    <Link
+                      href="/register/vendedor"
+                      className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-black text-sm hover:from-cyan-400 hover:to-blue-500 transition-all flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20"
+                    >
+                      <Sparkles size={16} />
+                      Registrarme Directo (Código al Correo)
+                    </Link>
+                    <button
+                      onClick={() => {
+                        setFormData({ ...formData, puesto: "Vendedor con Experiencia (Medio Tiempo $225)" });
+                        document.getElementById("formulario-postulacion")?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      className="w-full py-2.5 rounded-xl border border-white/10 text-slate-400 hover:text-white font-bold text-xs hover:bg-white/5 transition-all flex items-center justify-center gap-2"
+                    >
+                      Postular por WhatsApp <ArrowRight size={14} />
+                    </button>
+                  </div>
+                </div>
+
               </div>
             </motion.div>
           )}
@@ -510,6 +584,7 @@ export default function ContratacionesClient() {
                   >
                     <option value="Ingeniero en Redes & Web">Ingeniero en Redes & Web</option>
                     <option value="Técnico de Instalaciones">Técnico de Instalaciones</option>
+                    <option value="Vendedor con Experiencia (Medio Tiempo $225)">Vendedor con Experiencia (Medio Tiempo $225)</option>
                     <option value="Ventas Digitales desde Celular">Ventas Digitales desde Celular</option>
                     <option value="Soporte y Reacondicionamiento">Soporte y Reacondicionamiento</option>
                   </select>

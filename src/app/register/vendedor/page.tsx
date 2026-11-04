@@ -9,7 +9,7 @@ import {
     Clock, Award, HelpCircle, Check, DollarSign 
 } from "lucide-react"
 
-type ModalityType = "PLAN_LABORAL_30D" | "COMISIONISTA_AFILIADO"
+type ModalityType = "PLAN_LABORAL_30D" | "MEDIO_TIEMPO_225" | "COMISIONISTA_AFILIADO"
 
 function VendedorRegisterForm() {
     const router = useRouter()
@@ -110,7 +110,7 @@ function VendedorRegisterForm() {
                         <CheckCircle2 size={36} className="text-cyan-400" />
                     </div>
                     <span className="text-[10px] font-mono font-bold text-cyan-400 uppercase tracking-widest px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 inline-block mb-3">
-                        {modality === "PLAN_LABORAL_30D" ? "Plan Laboral 30 Días" : "Vendedor Afiliado"}
+                        {modality === "PLAN_LABORAL_30D" ? "Plan Laboral 30 Días" : modality === "MEDIO_TIEMPO_225" ? "Vendedor Remoto ($225)" : "Vendedor Afiliado"}
                     </span>
                     <h2 className="text-2xl font-black uppercase tracking-tight text-white mb-3">
                         ¡Registro y Activación Exitosa!
@@ -171,7 +171,7 @@ function VendedorRegisterForm() {
                             </span>
                         </label>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
                             {/* Modalidad 1: Plan Laboral 30 Días */}
                             <div
                                 onClick={() => setModality("PLAN_LABORAL_30D")}
@@ -216,7 +216,51 @@ function VendedorRegisterForm() {
                                 </button>
                             </div>
 
-                            {/* Modalidad 2: Vendedor Bajo Comisión Afiliado */}
+                            {/* Modalidad 2: Vendedor con Experiencia Medio Tiempo ($225) */}
+                            <div
+                                onClick={() => setModality("MEDIO_TIEMPO_225")}
+                                className={`p-4 rounded-2xl border cursor-pointer transition-all relative ${
+                                    modality === "MEDIO_TIEMPO_225"
+                                        ? "bg-amber-500/10 border-amber-500 ring-2 ring-amber-500/20 shadow-lg shadow-amber-950/50"
+                                        : "bg-white/[0.02] border-white/10 hover:border-white/20"
+                                }`}
+                            >
+                                <div className="flex items-start justify-between mb-2">
+                                    <div className="flex items-center gap-2">
+                                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                                            modality === "MEDIO_TIEMPO_225" ? "bg-amber-500 text-slate-950 font-black" : "bg-white/10 text-slate-300"
+                                        }`}>
+                                            <Phone size={16} />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-sm font-bold text-white">Vendedor Remoto</h3>
+                                            <span className="text-[10px] text-amber-400 font-medium">$225 Medio Tiempo</span>
+                                        </div>
+                                    </div>
+                                    <input
+                                        type="radio"
+                                        name="modality"
+                                        checked={modality === "MEDIO_TIEMPO_225"}
+                                        onChange={() => setModality("MEDIO_TIEMPO_225")}
+                                        className="accent-amber-400 mt-1 cursor-pointer"
+                                    />
+                                </div>
+                                <p className="text-xs text-slate-400 mb-3 leading-relaxed">
+                                    100% a distancia (4 horas). Gestión de llamadas y mensajería comercial. Contratación inmediata tras perfil.
+                                </p>
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        setShowDetailsModal("MEDIO_TIEMPO_225")
+                                    }}
+                                    className="text-[11px] font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 underline underline-offset-4"
+                                >
+                                    Ver perfil y actividades <ChevronRight size={12} />
+                                </button>
+                            </div>
+
+                            {/* Modalidad 3: Vendedor Bajo Comisión Afiliado */}
                             <div
                                 onClick={() => setModality("COMISIONISTA_AFILIADO")}
                                 className={`p-4 rounded-2xl border cursor-pointer transition-all relative ${
@@ -552,6 +596,84 @@ function VendedorRegisterForm() {
                                 className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs uppercase tracking-wider"
                             >
                                 Entendido, Seleccionar Este Plan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* MODAL DETALLES: VENDEDOR EXPERIENCIA MEDIO TIEMPO $225 */}
+            {showDetailsModal === "MEDIO_TIEMPO_225" && (
+                <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+                    <div className="bg-[#0D121D] border border-amber-500/40 rounded-3xl max-w-xl w-full p-6 sm:p-8 max-h-[90vh] overflow-y-auto relative animate-in fade-in zoom-in duration-200">
+                        <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
+                            <div>
+                                <span className="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20">
+                                    100% Remoto · Contratación Inmediata
+                                </span>
+                                <h2 className="text-xl font-black text-white mt-1">Vendedor con Experiencia (Medio Tiempo)</h2>
+                            </div>
+                            <button
+                                onClick={() => setShowDetailsModal(null)}
+                                className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center font-bold"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        <div className="space-y-4 text-xs text-slate-300">
+                            {/* Te Ofrecemos */}
+                            <div className="p-4 rounded-2xl bg-amber-950/20 border border-amber-500/30 space-y-2">
+                                <h4 className="text-sm font-bold text-amber-300 flex items-center gap-2">
+                                    <DollarSign size={16} /> Lo Que Te Ofrecemos
+                                </h4>
+                                <ul className="space-y-1.5 text-slate-300 text-[11px]">
+                                    <li>• <strong>Pago de Medio Tiempo:</strong> $225.00 USD mensuales garantizados.</li>
+                                    <li>• <strong>Modalidad:</strong> 100% a distancia / Horario flexible de 4 horas diarias.</li>
+                                    <li>• <strong>Contratación:</strong> Inmediata tras cumplir perfil y validación de código.</li>
+                                    <li>• <strong>Crecimiento:</strong> Comisiones adicionales por cierre y oportunidad de escalar a tiempo completo ($450-$650).</li>
+                                </ul>
+                            </div>
+
+                            {/* Actividades */}
+                            <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/10 space-y-2">
+                                <h4 className="text-xs font-bold text-white uppercase tracking-wider">¿Cuáles serán tus actividades?</h4>
+                                <ul className="space-y-1.5 text-slate-300 text-[11px]">
+                                    <li className="flex items-start gap-2">
+                                        <CheckCircle2 size={13} className="text-amber-400 shrink-0 mt-0.5" />
+                                        <span>Realizar llamadas y seguimiento continuo a prospectos calificados.</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <CheckCircle2 size={13} className="text-amber-400 shrink-0 mt-0.5" />
+                                        <span>Gestionar conversaciones por WhatsApp Business y mensajería profesional.</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <CheckCircle2 size={13} className="text-amber-400 shrink-0 mt-0.5" />
+                                        <span>Presentar el catálogo tecnológico (videoporteros, barreras, antenas, cámaras) y cerrar acuerdos.</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <CheckCircle2 size={13} className="text-amber-400 shrink-0 mt-0.5" />
+                                        <span>Registrar los clientes en la plataforma CRM y reportar métricas con la coordinadora.</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            {/* Requisitos */}
+                            <div className="p-4 rounded-2xl bg-cyan-950/20 border border-cyan-500/20 text-[11px] text-slate-300 space-y-1">
+                                <span className="font-bold text-cyan-300 block mb-1">Requisitos:</span>
+                                <p>• Experiencia comprobable en ventas por llamadas, chat o atención al cliente.</p>
+                                <p>• Excelente comunicación verbal y redacción profesional.</p>
+                                <p>• Dispositivo con conexión a internet estable (computadora o celular inteligente).</p>
+                                <p>• Timbrar asistencia diaria para cómputo de días y liquidación puntual.</p>
+                            </div>
+                        </div>
+
+                        <div className="mt-6 pt-4 border-t border-white/10 flex justify-end">
+                            <button
+                                onClick={() => setShowDetailsModal(null)}
+                                className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider"
+                            >
+                                Entendido, Seleccionar Este Perfil ($225)
                             </button>
                         </div>
                     </div>
