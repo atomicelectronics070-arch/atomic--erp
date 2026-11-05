@@ -6,7 +6,9 @@ import {
     checkAndSendMorningBriefingToJuan, 
     checkAndSendScheduledCoordinatorReminders,
     checkAndSendMondaySkillsBriefingToJuan,
-    checkAndSendScheduledAdvisorReminders
+    checkAndSendScheduledAdvisorReminders,
+    checkAndSendDaily5pmTeamCheckin,
+    checkAndSendDaily530pmJuanReport
 } from '@/lib/karen/karenBrain';
 
 const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || 'atomic_whatsapp_verify_token_2026';
@@ -36,6 +38,12 @@ export async function POST(req: Request) {
 
         // Disparar recordatorios diarios a Asesores Comerciales (12 PM timbraje, 3 PM prospección, 5 PM publicaciones)
         checkAndSendScheduledAdvisorReminders().catch(() => {});
+
+        // Disparar chequeo diario 5:00 PM a Cristina, Stefi y Kevin
+        checkAndSendDaily5pmTeamCheckin().catch(() => {});
+
+        // Disparar reporte ejecutivo consolidado 5:30 PM a Juan
+        checkAndSendDaily530pmJuanReport().catch(() => {});
 
         const body = await req.json();
 

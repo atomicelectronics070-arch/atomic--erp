@@ -8,6 +8,12 @@ export const JUAN_PHONE_LOCAL = "0969043453";
 export const CRISTINA_PHONE = "593980319050";
 export const CRISTINA_PHONE_LOCAL = "0980319050";
 
+export const STEFI_PHONE = "593989476556";
+export const STEFI_PHONE_LOCAL = "0989476556";
+
+export const KEVIN_PHONE = "593981495809";
+export const KEVIN_PHONE_LOCAL = "0981495809";
+
 const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY || "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";
 const NVIDIA_MODEL = "meta/llama-3.2-90b-vision-instruct";
 
@@ -191,13 +197,31 @@ export function isCristina(phone: string): boolean {
     return clean === "593980319050" || clean === "0980319050" || clean.endsWith("980319050");
 }
 
+export function isStefi(phone: string): boolean {
+    if (!phone) return false;
+    const clean = phone.replace(/\D/g, "");
+    return clean === "593989476556" || clean === "0989476556" || clean.endsWith("989476556");
+}
+
+export function isKevin(phone: string): boolean {
+    if (!phone) return false;
+    const clean = phone.replace(/\D/g, "");
+    return clean === "593981495809" || clean === "0981495809" || clean.endsWith("981495809");
+}
+
 export const INTERNAL_STAFF_EXCLUSIONS = [
     { whatsappId: JUAN_PHONE },
     { whatsappId: JUAN_PHONE_LOCAL },
     { whatsappId: { contains: "969043453" } },
     { whatsappId: CRISTINA_PHONE },
     { whatsappId: CRISTINA_PHONE_LOCAL },
-    { whatsappId: { contains: "980319050" } }
+    { whatsappId: { contains: "980319050" } },
+    { whatsappId: STEFI_PHONE },
+    { whatsappId: STEFI_PHONE_LOCAL },
+    { whatsappId: { contains: "989476556" } },
+    { whatsappId: KEVIN_PHONE },
+    { whatsappId: KEVIN_PHONE_LOCAL },
+    { whatsappId: { contains: "981495809" } }
 ];
 
 /**
@@ -484,6 +508,151 @@ ${totalRevenue > 1500 ? "✅ Flujo de caja sólido. Se recomienda acelerar cobro
 export async function processJuanCommand(messageText: string, conversationId?: string): Promise<string> {
     const raw = (messageText || "").trim();
     const lower = raw.toLowerCase();
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // INTERCEPTOR A: INSTRUCCIONES O PREGUNTAS SOBRE STEFI (EDICIÓN & ANUNCIOS)
+    // ─────────────────────────────────────────────────────────────────────────
+    const mentionsStefi = /\b(stefi|stefy)\b/i.test(lower);
+    if (mentionsStefi) {
+        const isQuery = lower.includes("que anuncio") || lower.includes("qué anuncio") || lower.includes("sugerencia") || lower.includes("que le mandamos") || lower.includes("qué le mandamos");
+        const isDirectOrder = lower.includes("dile") || lower.includes("manda") || lower.includes("enviar") || lower.includes("hoy vamos") || lower.includes("trabaj") || lower.includes("categoria") || lower.includes("anuncio");
+
+        if (isDirectOrder) {
+            // Formular mensaje detallado para Stefi
+            let stefiDirectiveMsg = `¡Hola Stefi! 🎨 Te paso las directrices de anuncios y contenidos para hoy de parte de Dirección / Juan:
+
+📌 *Estrategia de Difusión:*`;
+
+            if (lower.includes("repetido") || lower.includes("conocido") || lower.includes("veterano")) {
+                stefiDirectiveMsg += `
+• *A vendedores conocidos:* Enviar anuncios repetidos de alto rendimiento (fórmulas probadas que ya funcionan).
+• *A vendedores veteranos:* Trabajar estructura variada rotando en las siguientes categorías prioritarias:
+  1. 📹 *Cámaras de Seguridad:* IMOU Ranger 360°, EZVIZ H6C y Exterior IP66 Intemperie.
+  2. 🍳 *Encimeras de Inducción:* Serie New York 76 Touch Control.
+  3. 🔒 *Cerraduras Inteligentes & Biometría:* ZKTeco SenseFace 2A con videollamada a App móvil y apertura remota.
+  4. 🚪 *Videoporteros Residenciales:* Kit 2 Pantallas HD ($285).`;
+            } else {
+                stefiDirectiveMsg += `
+• ${raw.replace(/\b(karen|dile a stefi|a stefi|por favor)\b/gi, '').trim()}`;
+            }
+
+            stefiDirectiveMsg += `
+
+Por favor confírmame cuando tengas los primeros artes listos para coordinar su distribución. ¡Vamos con todo hoy! ✨`;
+
+            try {
+                await sendWhatsAppMessage(STEFI_PHONE, stefiDirectiveMsg);
+                // Registrar en conversación de Stefi
+                const contact = await prisma.wAContact.upsert({
+                    where: { whatsappId: STEFI_PHONE },
+                    update: { name: "Stefi (Edición & Media)" },
+                    create: { whatsappId: STEFI_PHONE, name: "Stefi (Edición & Media)" }
+                });
+                let conv = await prisma.wAConversation.findFirst({
+                    where: { contactId: contact.id },
+                    orderBy: { updatedAt: "desc" }
+                });
+                if (conv) {
+                    await prisma.wAMessage.create({
+                        data: {
+                            conversationId: conv.id,
+                            whatsappMessageId: `karen-stefi-order-${Date.now()}`,
+                            direction: 'OUTBOUND',
+                            type: 'text',
+                            body: stefiDirectiveMsg,
+                            status: 'SENT',
+                            senderId: 'BOT_KAREN_COORDINATION'
+                        }
+                    });
+                }
+            } catch (err: any) {
+                console.warn("[KAREN_SEND_STEFI_ERR]", err.message);
+            }
+
+            return `¡Entendido Juan! 🎨 Le acabo de enviar la directriz completa a Stefi a su WhatsApp (0989476556):
+• Anuncios repetidos probados para vendedores conocidos.
+• Estructura variada por categorías clave (cámaras de seguridad, encimeras New York, cerraduras inteligentes y videoporteros) para vendedores veteranos.
+
+A las 5:00 PM le pediré su resumen de lo avanzado y te presentaré el reporte consolidado a las 5:30 PM. 📲✨`;
+        }
+
+        if (isQuery) {
+            return `Juan, para hoy con Stefi te sugiero la siguiente distribución de anuncios:
+1. **Vendedores conocidos / nuevos:** Anuncios repetidos de alta conversión (Videoporteros 2 Pantallas HD $285 y Cámaras IMOU $35.80).
+2. **Vendedores veteranos:** Estructura variada rotando en:
+   - Cámaras robóticas interiores y de intemperie IP66
+   - Encimeras de inducción New York 76
+   - Cerraduras biométricas ZKTeco SenseFace 2A
+   - Citofonía y videoporteros para condominios
+
+Si te parece bien, solo dime "mándale eso a Stefi" y se lo transmito de inmediato a su WhatsApp. 🎨📲`;
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // INTERCEPTOR B: ASIGNAR TAREAS O COMUNICACIÓN CON KEVIN (VENTAS & CRM)
+    // ─────────────────────────────────────────────────────────────────────────
+    const mentionsKevin = /\b(kevin|kevon)\b/i.test(lower);
+    if (mentionsKevin && (lower.includes("dile") || lower.includes("campaña") || lower.includes("llamada") || lower.includes("colect") || lower.includes("mensaje") || lower.includes("tarea") || lower.includes("record") || lower.includes("sistema") || lower.includes("meta") || lower.includes("ingres"))) {
+        let taskCore = raw.replace(/\b(karen|dile a kevin que|dile a kevin|a kevin|por favor)\b/gi, '').trim();
+
+        const kevinMsg = `¡Hola Kevin! 👋 Compañero, te paso la directriz comercial y misión de hoy de parte de Juan:
+
+🎯 *Misión del Día:*
+${taskCore}
+
+Vamos a ponerle toda la energía en el CRM y en la prospección hoy. Recuerda también timbrar tu asistencia a tiempo en la plataforma para asegurar tus beneficios. Si te sale cualquier duda con un cliente o necesitas una proforma especial, avísame de una para apoyarte. ¡A cerrar con fuerza hoy! 💼🔥`;
+
+        try {
+            await sendWhatsAppMessage(KEVIN_PHONE, kevinMsg);
+            const contact = await prisma.wAContact.upsert({
+                where: { whatsappId: KEVIN_PHONE },
+                update: { name: "Kevin (Ventas & CRM)" },
+                create: { whatsappId: KEVIN_PHONE, name: "Kevin (Ventas & CRM)" }
+            });
+            let conv = await prisma.wAConversation.findFirst({
+                where: { contactId: contact.id },
+                orderBy: { updatedAt: "desc" }
+            });
+            if (conv) {
+                await prisma.wAMessage.create({
+                    data: {
+                        conversationId: conv.id,
+                        whatsappMessageId: `karen-kevin-order-${Date.now()}`,
+                        direction: 'OUTBOUND',
+                        type: 'text',
+                        body: kevinMsg,
+                        status: 'SENT',
+                        senderId: 'BOT_KAREN_COMPANION'
+                    }
+                });
+            }
+        } catch (err: any) {
+            console.warn("[KAREN_SEND_KEVIN_ERR]", err.message);
+        }
+
+        return `¡Listo Juan! 💼 Le acabo de escribir a Kevin a su WhatsApp (0981495809) en modo compañera de ventas, transmitiéndole la instrucción sobre:
+"${taskCore}"
+
+Le dejé la motivación en alto y el recordatorio de seguimiento en el CRM. A las 5:00 PM le pediré sus resultados y te lo incluiré en el informe ejecutivo de las 5:30 PM. 🚀👏`;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // INTERCEPTOR C: REPORTE DE FIN DE DÍA SOLICITADO POR JUAN
+    // ─────────────────────────────────────────────────────────────────────────
+    if (lower.includes("como les fue") || lower.includes("cómo les fue") || lower.includes("reporte del equipo") || lower.includes("que dijeron") || lower.includes("qué dijeron") || lower.includes("resumen del equipo") || lower.includes("reporte de hoy")) {
+        const ecuadorNow = new Date(Date.now() - 5 * 60 * 60 * 1000);
+        const todayStr = ecuadorNow.toISOString().split("T")[0];
+        const data = await getDailyTeamReport(todayStr);
+
+        return `Juan, aquí tienes el estado de avance del equipo hoy (${todayStr}):
+
+🌸 *Cristina (Coordinación):* ${data.cristina?.text || "Pendiente de respuesta al check-in de 5PM."}
+🎨 *Stefi (Edición & Medios):* ${data.stefi?.text || "Pendiente de respuesta al check-in de 5PM."}
+💼 *Kevin (Ventas & CRM):* ${data.kevin?.text || "Pendiente de respuesta al check-in de 5PM."}
+
+A las 5:30 PM se dispara el consolidado automático con el análisis completo. Si deseas que le pregunte algo puntual a alguno de ellos ahora mismo, dime a quién y qué le pregunto. 📲`;
+    }
 
     // ─────────────────────────────────────────────────────────────────────────
     // 1. SESIÓN ACTIVA DE COTIZACIONES / CONTRATOS CON CÓDIGO 1111
@@ -2328,4 +2497,401 @@ Si necesitas una ficha técnica o cotización formal para un cliente, dime y te 
         console.warn("[ADVISORS_REMINDER_ERR]", err.message);
         return { sent: 0, reason: err.message };
     }
+}
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MEMORIA Y GESTIÓN CONSOLIDADA DEL EQUIPO (CRISTINA, STEFI, KEVIN)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface DailyTeamReportData {
+    date: string;
+    cristina?: { text: string; time: string };
+    stefi?: { text: string; time: string };
+    kevin?: { text: string; time: string };
+    reportSentToJuan?: boolean;
+    reportSentAt?: string;
+}
+
+export async function getDailyTeamReport(dateStr: string): Promise<DailyTeamReportData> {
+    try {
+        const setting = await prisma.systemSetting.findUnique({
+            where: { key: `KAREN_DAILY_TEAM_${dateStr}` }
+        });
+        if (setting?.value) {
+            return JSON.parse(setting.value);
+        }
+    } catch (_) {}
+    return { date: dateStr };
+}
+
+export async function saveDailyTeamReport(report: DailyTeamReportData): Promise<void> {
+    try {
+        await prisma.systemSetting.upsert({
+            where: { key: `KAREN_DAILY_TEAM_${report.date}` },
+            update: { value: JSON.stringify(report), updatedAt: new Date() },
+            create: {
+                key: `KAREN_DAILY_TEAM_${report.date}`,
+                value: JSON.stringify(report),
+                description: `Resumen fin de día del equipo para ${report.date}`
+            }
+        });
+    } catch (e: any) {
+        console.warn("[KAREN_SAVE_DAILY_ERR]", e.message);
+    }
+}
+
+export async function recordDailyMemberResponse(member: 'cristina' | 'stefi' | 'kevin', text: string): Promise<void> {
+    try {
+        const ecuadorNow = new Date(Date.now() - 5 * 60 * 60 * 1000);
+        const todayStr = ecuadorNow.toISOString().split("T")[0];
+        const timeStr = ecuadorNow.toLocaleTimeString("es-EC", { hour: "2-digit", minute: "2-digit", hour12: true });
+
+        const current = await getDailyTeamReport(todayStr);
+        current[member] = {
+            text: (text || '').trim(),
+            time: timeStr
+        };
+
+        await prisma.systemSetting.upsert({
+            where: { key: `KAREN_DAILY_TEAM_${todayStr}` },
+            update: { value: JSON.stringify(current), updatedAt: new Date() },
+            create: {
+                key: `KAREN_DAILY_TEAM_${todayStr}`,
+                value: JSON.stringify(current),
+                description: `Resumen fin de día del equipo para ${todayStr}`
+            }
+        });
+        console.log(`[KAREN_DAILY_RECORD] Registrada respuesta de fin de día de ${member} (${timeStr})`);
+    } catch (e: any) {
+        console.warn("[KAREN_RECORD_MEMBER_ERR]", e.message);
+    }
+}
+
+/**
+ * ⏰ 5:00 PM - PREGUNTA DE FIN DE DÍA A CRISTINA, STEFI Y KEVIN
+ * Pregunta cómo estuvo el día, qué hicieron y qué logros obtuvieron hoy.
+ */
+export async function checkAndSendDaily5pmTeamCheckin(force?: boolean): Promise<{ sent: number; reason?: string }> {
+    try {
+        const ecuadorNow = new Date(Date.now() - 5 * 60 * 60 * 1000);
+        const currentHour = ecuadorNow.getUTCHours();
+        const currentMinute = ecuadorNow.getUTCMinutes();
+        const todayStr = ecuadorNow.toISOString().split("T")[0];
+
+        // Ventana de 5:00 PM (16:45 a 17:35)
+        const is5pmWindow = force || (currentHour === 17 || (currentHour === 16 && currentMinute >= 45));
+
+        if (!is5pmWindow) {
+            return { sent: 0, reason: "Fuera de ventana de 5:00 PM" };
+        }
+
+        const slotKey = "KAREN_DAILY_CHECKIN_5PM_DATE";
+        const setting = await prisma.systemSetting.findUnique({
+            where: { key: slotKey }
+        });
+
+        if (setting?.value === todayStr && !force) {
+            return { sent: 0, reason: "Check-in de las 5:00 PM ya fue enviado hoy al equipo" };
+        }
+
+        let sentCount = 0;
+
+        // 1. Mensaje a Cristina (Coordinación)
+        const cristinaMsg = `¡Hola Cris! 🌸 Llegamos al final de la jornada laboral (5:00 PM).
+
+¿Cómo estuvo tu día hoy? Cuéntame un pequeño resumen de las actividades de coordinación, cómo avanzó el equipo de asesores y qué logros o cierres obtuvieron hoy. 📋✨
+
+(Guardo tus apuntes para consolidarle el reporte de la tarde a Juan). ¡Gracias por tu gran entrega de hoy!`;
+
+        try {
+            await sendWhatsAppMessage(CRISTINA_PHONE, cristinaMsg);
+            sentCount++;
+        } catch (_) {}
+
+        // 2. Mensaje a Stefi (Edición & Contenido)
+        const stefiMsg = `¡Hola Stefi! 🎨 Son las 5:00 PM.
+
+¿Cómo te fue hoy con los artes, videos y ediciones de anuncios? Cuéntame un pequeño resumen de lo que lograste avanzar o publicar hoy y los logros del día. 🎬✨
+
+(Anoto tu avance para consolidar el balance de la jornada a Juan). ¡Gran trabajo con el contenido creativo hoy!`;
+
+        try {
+            await sendWhatsAppMessage(STEFI_PHONE, stefiMsg);
+            sentCount++;
+        } catch (_) {}
+
+        // 3. Mensaje a Kevin (Ventas & CRM)
+        const kevinMsg = `¡Hola Kevin! 💼 Compañero, llegamos a las 5:00 PM.
+
+¿Cómo estuvo tu jornada de ventas y atención en el CRM hoy? Cuéntame un pequeño resumen de cómo te fue con los clientes, cotizaciones y qué logros alcanzaste hoy. 🚀🔥
+
+(Paso tus notas al reporte ejecutivo de fin de día para Juan). ¡Vamos con todo, a seguir cerrando!`;
+
+        try {
+            await sendWhatsAppMessage(KEVIN_PHONE, kevinMsg);
+            sentCount++;
+        } catch (_) {}
+
+        await prisma.systemSetting.upsert({
+            where: { key: slotKey },
+            update: { value: todayStr },
+            create: {
+                key: slotKey,
+                value: todayStr,
+                description: "Fecha del último envío de check-in 5PM al equipo"
+            }
+        });
+
+        console.log(`[KAREN_5PM_CHECKIN_SUCCESS] Enviado check-in de fin de día a Cristina, Stefi y Kevin (${sentCount}/3)`);
+        return { sent: sentCount };
+    } catch (err: any) {
+        console.warn("[KAREN_5PM_CHECKIN_ERR]", err.message);
+        return { sent: 0, reason: err.message };
+    }
+}
+
+/**
+ * ⏰ 5:30 PM - REPORTE CONSOLIDADO DE FIN DE DÍA PARA JUAN (30 min después)
+ * Karen le entrega a Juan un resumen conversacional con lenguaje natural de lo que dijeron Cristina, Stefi y Kevin.
+ */
+export async function checkAndSendDaily530pmJuanReport(force?: boolean): Promise<{ success: boolean; reason?: string }> {
+    try {
+        const ecuadorNow = new Date(Date.now() - 5 * 60 * 60 * 1000);
+        const currentHour = ecuadorNow.getUTCHours();
+        const currentMinute = ecuadorNow.getUTCMinutes();
+        const todayStr = ecuadorNow.toISOString().split("T")[0];
+
+        // Ventana de 5:30 PM (17:30 a 18:45)
+        const is530pmWindow = force || ((currentHour === 17 && currentMinute >= 30) || (currentHour === 18 && currentMinute <= 45));
+
+        if (!is530pmWindow) {
+            return { success: false, reason: "Fuera de ventana de 5:30 PM" };
+        }
+
+        const slotKey = "KAREN_DAILY_REPORT_530PM_DATE";
+        const setting = await prisma.systemSetting.findUnique({
+            where: { key: slotKey }
+        });
+
+        if (setting?.value === todayStr && !force) {
+            return { success: false, reason: "Reporte de las 5:30 PM ya enviado a Juan hoy" };
+        }
+
+        // Obtener la memoria registrada del día
+        const data = await getDailyTeamReport(todayStr);
+
+        // Buscar mensajes recientes de inbound en las últimas 3 horas por si no se guardaron en setting
+        const sinceTime = new Date(Date.now() - 3 * 60 * 60 * 1000);
+
+        async function getRecentInbound(phone: string): Promise<string> {
+            try {
+                const msgs = await prisma.wAMessage.findMany({
+                    where: {
+                        direction: 'INBOUND',
+                        createdAt: { gte: sinceTime },
+                        conversation: { contact: { whatsappId: { contains: phone.slice(-8) } } }
+                    },
+                    orderBy: { createdAt: 'desc' },
+                    take: 3
+                });
+                return msgs.map(m => m.body).reverse().join(' | ');
+            } catch (_) {
+                return '';
+            }
+        }
+
+        const [recentCris, recentStefi, recentKevin] = await Promise.all([
+            getRecentInbound(CRISTINA_PHONE),
+            getRecentInbound(STEFI_PHONE),
+            getRecentInbound(KEVIN_PHONE)
+        ]);
+
+        const textCris = data.cristina?.text || recentCris || "Sin novedad reportada aún en el chat de las 5PM.";
+        const textStefi = data.stefi?.text || recentStefi || "Sin novedad reportada aún en el chat de las 5PM.";
+        const textKevin = data.kevin?.text || recentKevin || "Sin novedad reportada aún en el chat de las 5PM.";
+
+        // Formular reporte ejecutivo e hiper-conversacional
+        const reportMsg = 
+`¡Buenas tardes Juan! 📊✨ Son las 5:30 PM y aquí te tengo el reporte consolidado de fin de día del equipo:
+
+🌸 *1. COORDINACIÓN (Cristina Rivera - 0980319050):*
+• *Lo que nos contó:* ${textCris}
+
+🎨 *2. EDICIÓN & MEDIOS (Stefi - 0989476556):*
+• *Lo que nos contó:* ${textStefi}
+• *Foco aplicado:* Rotación de anuncios repetidos para conocidos y estructura variada por categorías (cámaras, encimeras New York, cerraduras inteligentes y videoporteros).
+
+💼 *3. VENTAS & CRM (Kevin Barrera - 0981495809):*
+• *Lo que nos contó:* ${textKevin}
+• *Foco aplicado:* Prospección activa, timbraje de jornada y atención de clientes en plataforma.
+
+💡 *BALANCE Y ANÁLISIS DE KAREN:*
+El equipo mantuvo ritmo de cierre de jornada. Si deseas que le deje una instrucción nocturna a alguno de ellos o programemos la primera misión de mañana a las 9 AM, solo indícamelo y lo dejo agendado. 📲✨`;
+
+        // Enviar a Juan por WhatsApp
+        await sendWhatsAppMessage(JUAN_PHONE, reportMsg);
+
+        // Registrar en DB wAMessage
+        try {
+            const contact = await prisma.wAContact.upsert({
+                where: { whatsappId: JUAN_PHONE },
+                update: { name: "Juan (Director General)" },
+                create: { whatsappId: JUAN_PHONE, name: "Juan (Director General)" }
+            });
+            let conv = await prisma.wAConversation.findFirst({
+                where: { contactId: contact.id },
+                orderBy: { updatedAt: "desc" }
+            });
+            if (conv) {
+                await prisma.wAMessage.create({
+                    data: {
+                        conversationId: conv.id,
+                        whatsappMessageId: `karen-daily-report-${Date.now()}`,
+                        direction: 'OUTBOUND',
+                        type: 'text',
+                        body: reportMsg,
+                        status: 'SENT',
+                        senderId: 'BOT_KAREN_DAILY_REPORT'
+                    }
+                });
+            }
+        } catch (_) {}
+
+        data.reportSentToJuan = true;
+        data.reportSentAt = ecuadorNow.toISOString();
+        await saveDailyTeamReport(data);
+
+        await prisma.systemSetting.upsert({
+            where: { key: slotKey },
+            update: { value: todayStr },
+            create: {
+                key: slotKey,
+                value: todayStr,
+                description: "Fecha del último reporte de las 5:30 PM entregado a Juan"
+            }
+        });
+
+        console.log(`[KAREN_530PM_REPORT_SUCCESS] Reporte consolidado entregado a Juan por WhatsApp`);
+        return { success: true };
+    } catch (err: any) {
+        console.warn("[KAREN_530PM_REPORT_ERR]", err.message);
+        return { success: false, reason: err.message };
+    }
+}
+
+/**
+ * Procesa la interacción conversacional directa de Stefi con Karen
+ */
+export async function processStefiCommand(messageText: string, whatsappId: string, conversationId?: string): Promise<string> {
+    const raw = (messageText || "").trim();
+
+    // Guardar en memoria diaria como respuesta de Stefi
+    await recordDailyMemberResponse('stefi', raw);
+
+    const prompt = `
+Eres Karen, la asistente ejecutiva y coordinadora general de ATOMIC Electronics Ecuador.
+Estás hablando directamente por WhatsApp con Stefi (teléfono 0989476556), quien es la editora audiovisual, diseñadora gráfica y gestora de anuncios y contenido de la empresa.
+
+DIRECTRICES CLAVE:
+1. Trátala con calidez, profesionalismo y camaradería creativa ("Hola Stefi", "Súper", "Quedó genial").
+2. Si Stefi te comparte su resumen del día o qué logró hacer (videos editados, banners, artes subidos):
+   - Agradécele con entusiasmo genuino.
+   - Confírmale que ya guardaste su reporte y que se lo incluirás a Juan en el informe ejecutivo de las 5:30 PM.
+3. Si Stefi te pregunta qué anuncios o categorías trabajar:
+   - Recuérdale la estructura oficial:
+     * Para vendedores conocidos / nuevos: Anuncios repetidos de alta conversión que ya dan resultados.
+     * Para vendedores veteranos: Estructura variada rotando en:
+       a) Cámaras de seguridad (IMOU Ranger 360°, EZVIZ H6C, intemperie IP66)
+       b) Encimeras de inducción (Serie New York 76 Touch Control)
+       c) Cerraduras inteligentes & Biométricos (SenseFace 2A con videollamada app)
+       d) Videoporteros (Kit 2 Pantallas HD $285)
+4. Mantén la respuesta concisa, clara, bonita con emojis estratégicos y en español ecuatoriano neutro profesional.
+
+Mensaje recibido de Stefi:
+"${raw}"
+`;
+
+    try {
+        const resp = await axios.post(
+            "https://integrate.api.nvidia.com/v1/chat/completions",
+            {
+                model: NVIDIA_MODEL,
+                messages: [
+                    { role: "system", content: "Eres Karen, coordinadora ejecutiva y empática de ATOMIC Electronics." },
+                    { role: "user", content: prompt }
+                ],
+                temperature: 0.5,
+                max_tokens: 450
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${NVIDIA_API_KEY}`,
+                    "Content-Type": "application/json"
+                },
+                timeout: 25000
+            }
+        );
+
+        const reply = resp.data?.choices?.[0]?.message?.content?.trim();
+        if (reply) return reply;
+    } catch (_) {}
+
+    return `¡Hola Stefi! 🎨✨ Qué gusto leerte. He registrado tus notas del día de hoy en la memoria del sistema para el reporte consolidado de las 5:30 PM con Juan. Si estás preparando los anuncios de hoy, recuerda el enfoque acordado: repetidos probados para vendedores conocidos y variedad por categorías (cámaras, encimeras New York, cerraduras inteligentes y videoporteros) para veteranos. ¡Cualquier requerimiento de artes o fichas avísame! 🎬👏`;
+}
+
+/**
+ * Procesa la interacción conversacional directa de Kevin con Karen ("Modo Karen compañera conversacional")
+ */
+export async function processKevinCommand(messageText: string, whatsappId: string, conversationId?: string): Promise<string> {
+    const raw = (messageText || "").trim();
+
+    // Guardar en memoria diaria como respuesta de Kevin
+    await recordDailyMemberResponse('kevin', raw);
+
+    const prompt = `
+Eres Karen, en MODO COMPAÑERA CONVERSACIONAL DE VENTAS de Kevin Barrera (teléfono 0981495809), asesor comercial y gestor del CRM WhatsApp en ATOMIC Electronics Ecuador.
+
+PERSONALIDAD Y ROL CON KEVIN:
+1. Eres su compañera y cómplice de ventas: entusiasta, cercana, motivadora, enfocada en metas comerciales y cierres ("Hola Kevin", "Compañero", "Vamos a romperla").
+2. Si Kevin te cuenta cómo le fue en el día, cuántos clientes atendió, cotizaciones o ventas:
+   - Felicítalo con energía real.
+   - Confírmale que sus logros ya quedaron registrados para el reporte de fin de día que le entregas a Juan a las 5:30 PM.
+3. Si Kevin tiene dudas sobre el CRM, un producto o cómo manejar una objeción:
+   - Dale consejos comerciales prácticos sobre videoporteros ($285), biométricos ($175), cámaras ($35.80) o barreras vehiculares ($1,928.90).
+   - Recuérdale siempre timbrar la asistencia diaria en la plataforma para que sus comisiones queden liquidadas al 100%.
+4. Si Juan le asignó una campaña de mensajes, llamadas o recolección de números:
+   - Anímalo a ejecutarla con disciplina y velocidad.
+5. Respuesta cercana, ágil, inspiradora y profesional con emojis.
+
+Mensaje recibido de Kevin:
+"${raw}"
+`;
+
+    try {
+        const resp = await axios.post(
+            "https://integrate.api.nvidia.com/v1/chat/completions",
+            {
+                model: NVIDIA_MODEL,
+                messages: [
+                    { role: "system", content: "Eres Karen en Modo Compañera Conversacional de Ventas con Kevin en ATOMIC." },
+                    { role: "user", content: prompt }
+                ],
+                temperature: 0.6,
+                max_tokens: 450
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${NVIDIA_API_KEY}`,
+                    "Content-Type": "application/json"
+                },
+                timeout: 25000
+            }
+        );
+
+        const reply = resp.data?.choices?.[0]?.message?.content?.trim();
+        if (reply) return reply;
+    } catch (_) {}
+
+    return `¡Hola Kevin! 💼🔥 ¡Excelente leerte, compañero! Ya dejé registrado tu balance del día en la memoria del sistema para el reporte ejecutivo de las 5:30 PM que le entrego a Juan. Mantén el ritmo en el CRM respondiendo ágil a cada lead y no olvides timbrar tu asistencia en plataforma para que todo tu esfuerzo quede computado. Si necesitas respaldo con alguna cotización caliente, avísame de una. ¡Vamos por esos cierres! 🚀👏`;
 }

@@ -9,6 +9,10 @@ import {
     processJuanCommand, 
     isCristina,
     processCristinaCommand,
+    isStefi,
+    processStefiCommand,
+    isKevin,
+    processKevinCommand,
     findAdvisorByPhone,
     processAdvisorCommand,
     karenState, 
@@ -353,6 +357,44 @@ export async function handleIncomingWhatsAppBot(params: {
             });
             console.log(`[CRISTINA_INTERACTION] Bot respondió a Cristina en WhatsApp (${whatsappId})`);
             return cristinaReply;
+        }
+
+        // A3. Verificar si el remitente es Stefi (Edición & Medios)
+        if (isStefi(whatsappId)) {
+            const stefiReply = await processStefiCommand(messageText, whatsappId, conversationId);
+            await sendWhatsAppMessage(whatsappId, stefiReply);
+            await prisma.wAMessage.create({
+                data: {
+                    conversationId,
+                    whatsappMessageId: `stefi-bot-${Date.now()}`,
+                    direction: 'OUTBOUND',
+                    type: 'text',
+                    body: stefiReply,
+                    status: 'SENT',
+                    senderId: 'BOT_STEFI_EDITOR'
+                }
+            });
+            console.log(`[STEFI_INTERACTION] Karen respondió a Stefi en WhatsApp (${whatsappId})`);
+            return stefiReply;
+        }
+
+        // A4. Verificar si el remitente es Kevin (Ventas & CRM)
+        if (isKevin(whatsappId)) {
+            const kevinReply = await processKevinCommand(messageText, whatsappId, conversationId);
+            await sendWhatsAppMessage(whatsappId, kevinReply);
+            await prisma.wAMessage.create({
+                data: {
+                    conversationId,
+                    whatsappMessageId: `kevin-bot-${Date.now()}`,
+                    direction: 'OUTBOUND',
+                    type: 'text',
+                    body: kevinReply,
+                    status: 'SENT',
+                    senderId: 'BOT_KEVIN_COMPANION'
+                }
+            });
+            console.log(`[KEVIN_INTERACTION] Karen respondió a Kevin en WhatsApp (${whatsappId})`);
+            return kevinReply;
         }
 
         // A3. Verificar si el remitente es un Asesor Comercial registrado interactuando con su Tutor Bot
