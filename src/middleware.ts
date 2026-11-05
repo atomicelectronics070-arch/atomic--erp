@@ -36,7 +36,7 @@ export async function middleware(req: NextRequest) {
   }
 
   const response = NextResponse.next()
-  if (path.startsWith("/web")) {
+  if (path.startsWith("/web") || path.startsWith("/dashboard") || path.startsWith("/api") || path.startsWith("/precios-internos")) {
     response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0, s-maxage=0")
     response.headers.set("Pragma", "no-cache")
     response.headers.set("Expires", "0")

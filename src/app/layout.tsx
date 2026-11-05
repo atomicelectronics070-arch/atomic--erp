@@ -56,7 +56,11 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               try {
-                var theme = localStorage.getItem('atomic_theme') || 'ticketmaster-white';
+                var theme = localStorage.getItem('atomic_theme');
+                if (!theme || theme === 'ticketmaster-white' || theme === 'blanco-tomate' || theme === 'white') {
+                  theme = 'cyber-neon';
+                  localStorage.setItem('atomic_theme', 'cyber-neon');
+                }
                 document.documentElement.setAttribute('data-theme', theme);
               } catch (e) {}
             `,
@@ -64,10 +68,10 @@ export default function RootLayout({
         />
       </head>
       <body
-        className="antialiased selection:bg-blue-500/20 selection:text-blue-600 bg-white text-slate-900"
+        className="antialiased selection:bg-cyan-500/20 selection:text-cyan-400 bg-[#070a14] text-white"
         style={{
-          backgroundColor: "#FFFFFF",
-          color: "#0F172A",
+          backgroundColor: "#070a14",
+          color: "#F8FAFC",
           fontFamily: "'Instrument Sans', 'Inter', ui-sans-serif, system-ui",
           WebkitFontSmoothing: "antialiased",
           MozOsxFontSmoothing: "grayscale",
