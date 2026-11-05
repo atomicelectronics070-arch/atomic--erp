@@ -24,7 +24,8 @@ const ATOMIC_DEFAULT_ACCOUNTS: Record<string, { name: string; role: string; area
     "ventas@atomic.com.ec":               { name: "Asesor de Ventas",               role: "SALESPERSON", area: "Ventas" },
 
     // ── Cuentas Nominales Oficiales del Equipo ───────────────────────────
-    "kevinbarrera@atomicventas.com":      { name: "Kevin Barrera",                  role: "SALESPERSON", area: "Ventas" },
+    "kevinbarrera@atomicventas.com":      { name: "Kevin Barrera",                  role: "COORDINATOR,SALESPERSON", area: "Coordinación & Ventas" },
+    "kevinestibenbarrera@gmail.com":      { name: "KEVIN Estiben Barrera",          role: "COORDINATOR,SALESPERSON", area: "Coordinación & Ventas" },
     "juanguzman@atomicsupervision.com":   { name: "Juan Guzman",                    role: "COORDINATOR", area: "Supervisión" },
     "atomic@industrias.ec":               { name: "Juan Guzman (Supervisión)",      role: "COORDINATOR", area: "Supervisión" },
     "nicolascarrera@atomiclabs.com":      { name: "Nicolás Carrera",                role: "SALESPERSON", area: "Ventas" },
@@ -40,6 +41,7 @@ const ATOMIC_DEFAULT_ACCOUNTS: Record<string, { name: string; role: string; area
 // Contraseñas nominales específicas (también admiten atomic2026)
 const NAMED_PASSWORDS: Record<string, string> = {
     "kevinbarrera@atomicventas.com":      "Kevinventas2026",
+    "kevinestibenbarrera@gmail.com":      "Kevinventas2026",
     "juanguzman@atomicsupervision.com":   "JuanSuper2026",
     "atomic@industrias.ec":               "JuanSuper2026",
     "nicolascarrera@atomiclabs.com":      "NicolasCarrera2026",

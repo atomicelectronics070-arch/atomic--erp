@@ -18,9 +18,12 @@ export default async function WhatsappCrmPage() {
     }
 
     const role = String((session.user as any)?.role || "SALESPERSON").toUpperCase()
-    const isAdministrative = role.includes("ADMIN") || role.includes("COORDINATOR") || role.includes("MANAGEMENT")
+    const userName = String(session.user?.name || "").toUpperCase()
+    const userEmail = String(session.user?.email || "").toUpperCase()
+    const isKevin = userName.includes("KEVIN") || userName.includes("KEVON") || userEmail.includes("KEVIN") || userEmail.includes("KEVON")
+    const isAdministrative = role.includes("ADMIN") || role.includes("COORDINATOR") || role.includes("MANAGEMENT") || role.includes("CRM") || isKevin
 
-    // Los vendedores (SALESPERSON como Luisa, Kevin, Nicolas) no tienen acceso al CRM WhatsApp
+    // Acceso restringido: Administrativos, Coordinación y Kevin (habilitado expresamente para atención y respuesta de CRM)
     if (!isAdministrative) {
         redirect("/dashboard/asistencia")
     }

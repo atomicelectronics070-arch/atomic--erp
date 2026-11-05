@@ -13,9 +13,12 @@ export default async function DynamicDashboardPage() {
     }
 
     const role = String((session.user as any)?.role || "SALESPERSON").toUpperCase()
-    const isAdministrative = role.includes("ADMIN") || role.includes("COORDINATOR") || role.includes("MANAGEMENT")
+    const userName = String(session.user?.name || "").toUpperCase()
+    const userEmail = String(session.user?.email || "").toUpperCase()
+    const isKevin = userName.includes("KEVIN") || userName.includes("KEVON") || userEmail.includes("KEVIN") || userEmail.includes("KEVON")
+    const isAdministrative = role.includes("ADMIN") || role.includes("COORDINATOR") || role.includes("MANAGEMENT") || role.includes("CRM") || isKevin
 
-    // Solo administrativos tienen acceso a gestión de leads de WhatsApp
+    // Acceso administrativo o autorizado expresamente para gestión de leads
     if (!isAdministrative) {
         redirect("/dashboard/asistencia")
     }

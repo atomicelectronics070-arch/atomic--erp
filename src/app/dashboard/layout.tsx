@@ -36,8 +36,13 @@ export default function DashboardLayout({
 
     // Role definitions
     const role = (session?.user as any)?.role || "SALESPERSON"
-    const rolesList = role.split(",").map((r: string) => r.trim()).filter(Boolean)
+    const rolesList = role.split(",").map((r: string) => r.trim().toUpperCase()).filter(Boolean)
     const primaryRole = rolesList[0] || "SALESPERSON"
+    const userNameUpper = String(session?.user?.name || "").toUpperCase()
+    const userEmailUpper = String(session?.user?.email || "").toUpperCase()
+    const isKevin = userNameUpper.includes("KEVIN") || userNameUpper.includes("KEVON") || userEmailUpper.includes("KEVIN") || userEmailUpper.includes("KEVON")
+    const isAdministrative = rolesList.some((r: string) => ["ADMIN", "COORDINATOR", "MANAGEMENT", "SUPERVISOR"].includes(r)) || isKevin || role.toUpperCase().includes("COORDINATOR") || role.toUpperCase().includes("ADMIN")
+    const canAccessCrm = isAdministrative || isKevin || role.toUpperCase().includes("CRM")
 
     const [showRoleStats, setShowRoleStats] = useState(false)
     const [userStats, setUserStats] = useState({
@@ -228,7 +233,7 @@ export default function DashboardLayout({
                     <GlassNavItem href="/dashboard/scanner" icon={<Scan size={18} strokeWidth={1.8} />} label="Escáner Códigos" isActive={pathname.startsWith('/dashboard/scanner')} />
                     
                     {/* Solo Administrativos / Coordinación (Propietario, Admin, Juan Guzman, Cris Rivera, Software) */}
-                    {(role === "ADMIN" || role === "COORDINATOR" || role === "MANAGEMENT") && (
+                    {(isAdministrative || canAccessCrm) && (
                         <>
                             <div className="pt-3 pb-1 px-3.5 text-[11px] font-normal tracking-[0.5px] text-cyan-400/80 font-mono uppercase">
                                 Gestión Administrativa
@@ -290,7 +295,7 @@ export default function DashboardLayout({
                     </div>
                     
                     {/* Gestión & Finanzas */}
-                    {(role === "ADMIN" || role === "MANAGEMENT" || role === "COORDINATOR" || role === "COORD_ASSISTANT") && (
+                    {(isAdministrative || rolesList.includes("COORD_ASSISTANT")) && (
                         <>
                             <div className="pt-3 pb-1 px-3.5 text-[11px] font-normal tracking-[0.5px] text-white/40">
                                 Gestión & Finanzas
@@ -311,13 +316,13 @@ export default function DashboardLayout({
                     <GlassNavItem href="/dashboard/academy" icon={<GraduationCap size={18} strokeWidth={1.8} />} label="Academia Atomic" isActive={pathname.startsWith('/dashboard/academy') || pathname.startsWith('/dashboard/admin')} />
                     <GlassNavItem href="/dashboard/software" icon={<Cpu size={18} strokeWidth={1.8} />} label="Software & IA" isActive={pathname.startsWith('/dashboard/software')} />
                     <GlassNavItem href="/dashboard/bot-ruta" icon={<Bot size={18} strokeWidth={1.8} />} label="Bot Ruta" isActive={pathname.startsWith('/dashboard/bot-ruta')} />
-                    {(role === "ADMIN" || role === "COORDINATOR" || role === "COORD_ASSISTANT") && (
+                    {(isAdministrative || rolesList.includes("COORD_ASSISTANT")) && (
                         <GlassNavItem href="/dashboard/supervision" icon={<ShieldCheck size={18} strokeWidth={1.8} />} label="Supervisión" isActive={pathname.startsWith('/dashboard/supervision')} />
                     )}
-                    {(role === "ADMIN" || role === "MANAGEMENT" || role === "COORDINATOR" || role === "COORD_ASSISTANT") && (
+                    {(isAdministrative || rolesList.includes("COORD_ASSISTANT")) && (
                         <GlassNavItem href="/dashboard/evaluations" icon={<Users size={18} strokeWidth={1.8} />} label="Asesores RRHH" isActive={pathname.startsWith('/dashboard/evaluations')} />
                     )}
-                    {(role === "ADMIN" || role === "MANAGEMENT") && (
+                    {(rolesList.includes("ADMIN") || rolesList.includes("MANAGEMENT")) && (
                         <GlassNavItem href="/dashboard/superadmin" icon={<Shield size={18} strokeWidth={1.8} />} label="Super Admin" isActive={pathname.startsWith('/dashboard/superadmin')} />
                     )}
                 </nav>

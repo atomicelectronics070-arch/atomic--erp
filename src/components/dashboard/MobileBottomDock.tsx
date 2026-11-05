@@ -22,7 +22,10 @@ import GestorCuentasModal from "@/components/coordinacion/GestorCuentasModal"
 function MobileBottomDockInner() {
     const { data: session } = useSession()
     const userRole = String((session?.user as any)?.role || "SALESPERSON").toUpperCase()
-    const isAdministrative = userRole.includes("ADMIN") || userRole.includes("COORDINATOR") || userRole.includes("MANAGEMENT") || userRole.includes("SUPERVISOR")
+    const userNameUpper = String(session?.user?.name || "").toUpperCase()
+    const userEmailUpper = String(session?.user?.email || "").toUpperCase()
+    const isKevin = userNameUpper.includes("KEVIN") || userNameUpper.includes("KEVON") || userEmailUpper.includes("KEVIN") || userEmailUpper.includes("KEVON")
+    const isAdministrative = userRole.includes("ADMIN") || userRole.includes("COORDINATOR") || userRole.includes("MANAGEMENT") || userRole.includes("SUPERVISOR") || isKevin || userRole.includes("CRM")
 
     const pathname = usePathname()
     const searchParams = useSearchParams()

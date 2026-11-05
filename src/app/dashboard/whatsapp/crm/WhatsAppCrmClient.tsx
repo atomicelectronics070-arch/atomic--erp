@@ -691,18 +691,23 @@ export default function WhatsAppCrmClient() {
         } catch (_) {}
     }
 
-    // Roles permitted to assign leads: SUPERVISOR, COORDINADOR, CEO (ADMIN), JEFE TECNICO
+    // Roles permitted to assign leads: SUPERVISOR, COORDINADOR, CEO (ADMIN), JEFE TECNICO, KEVIN
     const userRole = (session?.user as any)?.role?.toUpperCase() || ''
     const userArea = ((session?.user as any)?.area || '').toUpperCase()
+    const userNameUpper = ((session?.user as any)?.name || '').toUpperCase()
+    const userEmailUpper = ((session?.user as any)?.email || '').toUpperCase()
+    const isKevin = userNameUpper.includes('KEVIN') || userNameUpper.includes('KEVON') || userEmailUpper.includes('KEVIN') || userEmailUpper.includes('KEVON')
     const canAssignLeads = 
-        userRole === 'ADMIN' || 
-        userRole === 'SUPERVISOR' || 
-        userRole === 'COORDINATOR' || 
-        userRole === 'COORDINADOR' ||
-        userRole === 'JEFE_TECNICO' ||
-        userRole === 'JEFE TECNICO' ||
-        userRole === 'TECHNICAL_CHIEF' ||
-        userRole === 'TALLER' ||
+        isKevin ||
+        userRole.includes('ADMIN') || 
+        userRole.includes('SUPERVISOR') || 
+        userRole.includes('COORDINATOR') || 
+        userRole.includes('COORDINADOR') ||
+        userRole.includes('JEFE_TECNICO') ||
+        userRole.includes('JEFE TECNICO') ||
+        userRole.includes('TECHNICAL_CHIEF') ||
+        userRole.includes('TALLER') ||
+        userRole.includes('CRM') ||
         userArea.includes('SUPERVIS') ||
         userArea.includes('COORD') ||
         userArea.includes('TECNIC')
