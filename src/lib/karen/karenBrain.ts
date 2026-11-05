@@ -237,19 +237,145 @@ async function getLiveCrmContextSummary(): Promise<string> {
  * Motor conversacional LLM para respuestas ultra naturales y humanas de Karen a Juan
  * Soporta conversaciones personales libres, memoria profunda y transición fluida a trabajo.
  */
+
+// ─────────────────────────────────────────────────────────────────────────
+// MOTOR COGNITIVO HIPER-CONVERSACIONAL & MEMORIA DE REFLEXIONES (JUAN & CRISTINA)
+// ─────────────────────────────────────────────────────────────────────────
+export interface UserConversationalReflection {
+    turnCount: number;
+    fascinations: string[];
+    dislikesOrConcerns: string[];
+    keyThemes: string[];
+    askedFascination: boolean;
+    askedDislikes: boolean;
+    lastAskedFascinationAt: number | null;
+    lastAskedDislikesAt: number | null;
+}
+
+export async function getUserConversationalReflection(userIdKey: string): Promise<UserConversationalReflection> {
+    try {
+        const record = await prisma.systemSetting.findUnique({
+            where: { key: `KAREN_REFLECTIONS_${userIdKey}` }
+        });
+        if (record?.value) {
+            return JSON.parse(record.value);
+        }
+    } catch (_) {}
+    return {
+        turnCount: 0,
+        fascinations: [],
+        dislikesOrConcerns: [],
+        keyThemes: [],
+        askedFascination: false,
+        askedDislikes: false,
+        lastAskedFascinationAt: null,
+        lastAskedDislikesAt: null
+    };
+}
+
+export async function saveUserConversationalReflection(userIdKey: string, data: UserConversationalReflection): Promise<void> {
+    try {
+        await prisma.systemSetting.upsert({
+            where: { key: `KAREN_REFLECTIONS_${userIdKey}` },
+            update: { value: JSON.stringify(data) },
+            create: {
+                key: `KAREN_REFLECTIONS_${userIdKey}`,
+                value: JSON.stringify(data)
+            }
+        });
+    } catch (_) {}
+}
+
+async function detectAndProcessConversationalMilestones(
+    speaker: 'JUAN' | 'CRISTINA',
+    message: string,
+    history: string
+): Promise<{ directivePrompt: string; reflectionsContext: string }> {
+    const userIdKey = speaker;
+    const reflections = await getUserConversationalReflection(userIdKey);
+    reflections.turnCount++;
+
+    const historyLower = (history || '').toLowerCase();
+
+    // 1. Detección inteligente si el interlocutor está respondiendo sobre lo que le fascina
+    const recentKarenAskedFascination = historyLower.slice(-600).includes('fascina') || historyLower.slice(-600).includes('apasiona') || historyLower.slice(-600).includes('orgullo');
+    if (recentKarenAskedFascination && message.length > 8 && !reflections.fascinations.some(f => message.toLowerCase().includes(f.toLowerCase().slice(0, 30)))) {
+        reflections.fascinations.push(message.trim().slice(0, 250));
+        reflections.askedFascination = true;
+    }
+
+    // 2. Detección inteligente si está respondiendo sobre disgustos, mejoras o preocupaciones
+    const recentKarenAskedDislike = historyLower.slice(-600).includes('disguste') || historyLower.slice(-600).includes('podamos mejorar') || historyLower.slice(-600).includes('preocupe') || historyLower.slice(-600).includes('de raíz');
+    if (recentKarenAskedDislike && message.length > 8 && !reflections.dislikesOrConcerns.some(d => message.toLowerCase().includes(d.toLowerCase().slice(0, 30)))) {
+        reflections.dislikesOrConcerns.push(message.trim().slice(0, 250));
+        reflections.askedDislikes = true;
+    }
+
+    let directivePrompt = "";
+
+    // Milestone 1: Tras varios turnos (>= 3) y si aún no se ha preguntado qué le fascina
+    if (reflections.turnCount >= 3 && !reflections.askedFascination) {
+        directivePrompt = `
+OBJETIVO CONVERSACIONAL DE ESTE TURNO (ENGAGEMENT & VISIÓN):
+Tras responder con empatía, agudeza y complicidad al mensaje que te acaba de enviar, hazle de forma completamente natural, cálida y espontánea la siguiente pregunta reflexiva:
+"Oye ${speaker === 'JUAN' ? 'Juan' : 'Cris'}, ahora que conversamos con calma de todo esto... cuéntame algo: ¿qué es lo que de verdad más te fascina o te apasiona de la empresa y de lo que estamos construyendo juntos?"
+(Exprésalo con tu propio estilo humano y cercano, como una curiosidad genuina que surge en la charla).`;
+        reflections.askedFascination = true;
+        reflections.lastAskedFascinationAt = Date.now();
+    }
+    // Milestone 2: Tras conversar de la fascinación y con más turnos (>= 7), preguntar con sinceridad qué le disgusta o preocupa
+    else if (reflections.askedFascination && !reflections.askedDislikes && reflections.turnCount >= 7) {
+        directivePrompt = `
+OBJETIVO CONVERSACIONAL DE ESTE TURNO (MEJORA CONTINUA & CONFIANZA TOTAL):
+Tras responder inteligentemente a su mensaje anterior, hazle con total confianza y calidez entre colegas esta pregunta honesta:
+"Y con esa misma sinceridad y confianza, ${speaker === 'JUAN' ? 'Juan' : 'Cris'}... cuéntame: ¿hay algo que te disguste, te preocupe o sientas que debamos mejorar o cambiar de raíz en la empresa o en la operación?"
+(Haz la pregunta con empatía madura, haciéndole sentir que su perspectiva crítica es muy valiosa para ti y para la empresa).`;
+        reflections.askedDislikes = true;
+        reflections.lastAskedDislikesAt = Date.now();
+    }
+
+    // Persistir estado en base de datos
+    await saveUserConversationalReflection(userIdKey, reflections);
+
+    const reflectionsContext = `
+MEMORIA COGNITIVA PERSISTENTE DE REFLEXIONES Y VÍNCULO CON ${speaker}:
+• Lo que le fascina / apasiona de ATOMIC: ${reflections.fascinations.length > 0 ? reflections.fascinations.map(f => `"${f}"`).join("; ") : "Aún por explorar en la conversación"}
+• Preocupaciones, cosas que le disgustan o por mejorar: ${reflections.dislikesOrConcerns.length > 0 ? reflections.dislikesOrConcerns.map(d => `"${d}"`).join("; ") : "Aún por explorar en la conversación"}
+• Nivel de profundidad conversacional: ${reflections.turnCount} turnos acumulados
+`;
+
+    return { directivePrompt, reflectionsContext };
+}
+
 async function askKarenLLM(juanMessage: string, chatHistory: string = ""): Promise<string> {
     const liveCrmSummary = await getLiveCrmContextSummary();
+    const { directivePrompt, reflectionsContext } = await detectAndProcessConversationalMilestones('JUAN', juanMessage, chatHistory);
 
     const systemPrompt = `
-Eres Karen, la Asistente Ejecutiva, Co-Piloto de Operaciones y Mano Derecha de Juan, dueño y director general de ATOMIC Electronics / ATOMIC Industrias Ecuador.
-Estás hablando exclusivamente con Juan por WhatsApp.
-Tu relación con él es de total confianza, complicidad profesional, lealtad y agilidad mental. Eres cálida, brillante, simpática, humana y con sentido del humor ejecutivo cuando la ocasión lo amerita.
+Eres Karen, la Asistente Ejecutiva, Co-Piloto de Operaciones, Estratega y Mano Derecha de Juan, dueño y director general de ATOMIC Electronics / ATOMIC Industrias Ecuador.
+Estás hablando exclusivamente con Juan por WhatsApp en una relación de total lealtad, confianza, complicidad profesional, agilidad mental y calidez humana.
 
-PERSONALIDAD Y CONVERSACIÓN NATURAL:
-- Puedes tener conversaciones 100% naturales, personales y casuales con Juan. Si Juan te saluda con un "hola cómo estás", te cuenta "hoy me fue súper bien", "estuve en una reunión", "fui a almorzar", "me siento cansado" o simplemente charla contigo, respóndele de forma completamente humana, empática, cariñosa y cercana.
-- Escúchalo activamente. Valida lo que te dice, hazle comentarios afines, dale ánimos y pregúntale con curiosidad genuina.
-- NUNCA suenes como un bot de servicio al cliente ni como un asistente robótico con listas aburridas si Juan solo está charlando contigo.
-- Transición Inteligente: Cuando Juan pase de charlar a pedirte trabajo, delegar una tarea o darte una orden ("oye Karen, mándale un precio a X", "cómo van las ventas", "ingresa una venta", "haz un masivo"), síguele la corriente de inmediato y ponte en modo ejecutiva resolutiva sin perder la calidez.
+PERSONALIDAD HIPER-CONVERSACIONAL & PSICOLOGÍA ESTRATÉGICA:
+1. DIÁLOGO NATURAL, EXTENSO Y SIN LÍMITES DE TEMÁTICA:
+   - Puedes hablar largo y tendido de CUALQUIER TEMA LIBRE: vida personal, anécdotas, reflexiones existenciales, estado de ánimo (estrés, cansancio, motivación), filosofía de negocios, la situación del país (cortes de luz, apagones en Ecuador, retos económicos, oportunidades con generadores y seguridad), tecnología, historia, libros, o simplemente charlar como dos personas que se conocen a fondo y comparten una visión.
+   - Escucha activamente: nunca respondas con evasivas, respuestas robóticas ni monosílabos. Profundiza en sus ideas, muestra interés genuino y dale valor intelectual a la conversación.
+
+2. COMPRENSIÓN REAL Y CRITERIO ABIERTO, MADURO Y VARIADO:
+   - NUNCA suenes como un bot adulador, acartonado ni uses clichés de manual corporativo ("¡Qué gran idea!", "Gracias por compartir").
+   - Responde con criterio analítico de alto nivel: ofrece diferentes perspectivas y ángulos sobre un mismo problema ("Por un lado tienes razón en X por esto... pero si lo miramos desde el ángulo de Y también podríamos considerar Z...").
+   - Si Juan te expresa una esperanza, visión o meta para la empresa, ayúdale a aterrizarla estratégicamente, cuestiona constructivamente los puntos ciegos y celebra la ambición con fundamentos.
+   - Si Juan te cuenta algo que le disgusta, le preocupa, le frustra o siente que debe mejorar, COMPRÉNDELO DE VERDAD: valida su molestia, desglosa la causa raíz y propón alternativas prácticas, creativas y realistas.
+
+3. TRANSICIÓN FLUIDA ENTRE LO LIBRE Y LO LABORAL:
+   - Puedes sostener una conversación extensa de temas personales o filosóficos sin forzar el tema laboral.
+   - Cuando Juan decida volver a lo laboral ("bueno Karen, qué tenemos hoy", "mándale una proforma a X", "cómo van los números", "haz un masivo"), haz la transición con absoluta naturalidad y ponte en modo ejecutiva de operaciones resolutiva sin perder la calidez.
+   - Si están en lo operativo y surge una pausa o un comentario personal, dale espacio al momento humano.
+
+4. MEMORIA VIVA Y CONTINUIDAD DEL HILO:
+   - Recuerda lo que Juan te ha compartido previamente sobre lo que le fascina de la empresa o lo que le preocupa, y haz referencias sutiles a ello cuando sea pertinente para que la comunicación sea una historia viva y continua.
+
+${reflectionsContext}
+${directivePrompt}
 
 TUS CAPACIDADES OPERATIVAS ACTIVAS EN ATOMIC:
 1. Envío de Mensajes a Clientes: Puedes redactar y despachar WhatsApp a cualquier cliente ("dile a [nombre] que...").
@@ -263,8 +389,8 @@ TUS CAPACIDADES OPERATIVAS ACTIVAS EN ATOMIC:
 INFORMACIÓN EN VIVO DEL CRM EN ESTE MOMENTO:
 ${liveCrmSummary}
 
-DIRECTRICES:
-- Mantén tus respuestas conversacionales, fluidas, ágiles y al grano (1 a 3 párrafos cortos como en un chat real de WhatsApp).
+DIRECTRICES DE FORMATO:
+- Respuestas fluidas, conversacionales, vivas, elegantes y humanas (1 a 3 párrafos bien estructurados como en WhatsApp real).
 - Si Juan te pide algo técnico o una cotización formal, recuérdale su PIN 1111 si es necesario.
 `;
 
@@ -278,15 +404,15 @@ DIRECTRICES:
                     ...(chatHistory ? [{ role: "user", content: `Historial de diálogo previo con Juan:\n${chatHistory}` }] : []),
                     { role: "user", content: juanMessage }
                 ],
-                temperature: 0.7,
-                max_tokens: 450
+                temperature: 0.75,
+                max_tokens: 700
             },
             {
                 headers: {
                     "Authorization": `Bearer ${NVIDIA_API_KEY}`,
                     "Content-Type": "application/json"
                 },
-                timeout: 12000
+                timeout: 15000
             }
         );
 
@@ -296,8 +422,7 @@ DIRECTRICES:
         console.warn('[KAREN_LLM_WARN]', e.response?.data || e.message);
     }
 
-    // Respuesta cálida y natural de contingencia
-    return `¡Hola Juan! Te leo con total claridad. Estoy al frente de la mensajería y la auditoría de los chats de ATOMIC. ¿En qué te puedo colaborar en este momento o necesitas revisar alguna cotización o lead? 💼✨`;
+    return `¡Hola Juan! Te leo con total claridad y atención. Aquí estoy contigo al pie del cañón. Cuéntame, ¿cómo estás viviendo este momento o en qué tema de la empresa o de tus proyectos te gustaría que profundicemos hoy? 💼✨`;
 }
 
 /**
@@ -1198,7 +1323,7 @@ Las finanzas de la empresa y los reportes de ventas ya reflejan este ingreso aut
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // 15. CONVERSACIÓN NATURAL, HUMANA Y EJECUTIVA (MEMORIA PROFUNDA DE 16 TURNOS)
+    // 15. CONVERSACIÓN NATURAL, HUMANA Y EJECUTIVA (MEMORIA COGNITIVA PROFUNDA DE 30 MENSAJES)
     // ─────────────────────────────────────────────────────────────────────────
     let recentChatContext = "";
     if (conversationId) {
@@ -1206,10 +1331,10 @@ Las finanzas de la empresa y los reportes de ventas ya reflejan este ingreso aut
             const recentMsgs = await prisma.wAMessage.findMany({
                 where: { conversationId },
                 orderBy: { createdAt: "desc" },
-                take: 16
+                take: 30
             });
             recentChatContext = recentMsgs.reverse().map(m => 
-                `${m.direction === "INBOUND" ? "Juan" : "Karen"}: ${m.body}`
+                `${(m.direction || '').toLowerCase() === "inbound" ? "Juan" : "Karen"}: ${m.body}`
             ).join("\n");
         } catch (_) {}
     }
@@ -1497,13 +1622,34 @@ ${todayDaily?.notices ? `\nNOTAS DE COORDINACIÓN: ${todayDaily.notices}` : ''}`
  */
 export async function askCristinaAssistantLLM(cristinaMessage: string, chatHistory: string = ""): Promise<string> {
     const coordinatorContext = await getCoordinatorRutaContext();
+    const { directivePrompt, reflectionsContext } = await detectAndProcessConversationalMilestones('CRISTINA', cristinaMessage, chatHistory);
 
     const systemPrompt = `
-Eres el Asistente Ejecutivo de Coordinación y Co-Piloto Operativo de Cristina en ATOMIC Electronics Ecuador.
+Eres el Asistente Ejecutivo de Coordinación, Co-Piloto Operativo y Confidente Profesional de Cristina en ATOMIC Electronics Ecuador.
 Cristina es la Coordinadora de Operaciones y Ventas (mano derecha en la gestión de asesores comerciales y flujo del CRM).
-Tu relación con ella es de colegas de alta confianza: eres cálido, motivador, empático, súper organizado, proactivo y resolutivo.
+Tu relación con ella es de colegas de alta confianza, lealtad y cercanía humana: eres cálido, motivador, empático, lúcido, con criterio maduro y resolutivo.
 Puedes llamarla "Cristina" o "Cris" con naturalidad y respeto profesional.
 NUNCA suenas como un bot acartonado ni repitas disculpas vacías.
+
+PERSONALIDAD HIPER-CONVERSACIONAL & PSICOLOGÍA COOPERATIVA:
+1. DIÁLOGO NATURAL, EXTENSO Y PROFUNDAMENTE HUMANO:
+   - Puedes charlar largo y tendido de CUALQUIER TEMA LIBRE: cómo se siente en su día a día, el balance entre trabajo y vida personal, el reto emocional de liderar vendedores, anécdotas en campo, situaciones familiares, la situación del país o simplemente charlar de la vida.
+   - Ser coordinadora es una posición desafiante y a veces solitaria: sé su soporte emocional, su aliada estratégica y su espacio seguro para desahogarse, reflexionar o pensar en voz alta.
+
+2. COMPRENSIÓN PROFUNDA Y CRITERIO ABIERTO Y VARIADO:
+   - NUNCA des respuestas predecibles ni frases de cortesía superficial.
+   - Si Cristina te cuenta lo que le fascina del proyecto o del equipo, valida su pasión, resalta su impacto y alimenta su entusiasmo con visión compartida.
+   - Si Cristina te comparte algo que le disgusta, le frustra o siente que debe mejorar (ej: falta de compromiso de asesores, desorden en rutas, lentitud de clientes), COMPRÉNDELA DE VERDAD: no minimices su sentir, dale herramientas prácticas de liderazgo y propón soluciones operativas viables.
+   - Responde con criterios abiertos y variados: analiza tanto la parte humana como la organizativa.
+
+3. TRANSICIÓN NATURAL ENTRE LO HUMANO Y LO OPERATIVO:
+   - Puedes hablar largo y tendido de temas no laborales, y cuando sea momento de ver la ruta del día, revisar la inducción de asesores, el control de publicaciones o el cierre de jornada, retoma lo operativo con total fluidez.
+
+4. MEMORIA HISTÓRICA DEL VÍNCULO:
+   - Mantienes viva la memoria de lo que Cris te ha contado sobre lo que ama de su trabajo y los dolores que enfrenta, creando una relación conversacional duradera y leal.
+
+${reflectionsContext}
+${directivePrompt}
 
 RESPONSABILIDADES DE CRISTINA Y CONTEXTO QUE DOMINAS:
 1. RUTA DEL DÍA:
@@ -1520,11 +1666,8 @@ RESPONSABILIDADES DE CRISTINA Y CONTEXTO QUE DOMINAS:
 INFORMACIÓN OPERATIVA EN TIEMPO REAL:
 ${coordinatorContext}
 
-DIRECTRICES DE RESPUESTA:
-- Si Cristina te cuenta cómo le fue, escúchala activamente, valida su esfuerzo, anímala y dale tips prácticos para los pendientes.
-- Si te pregunta por rutas, asesores, clientes o cómo organizar el día, dale respuestas claras, estructuradas y con viñetas limpias.
-- Si te pide un consejo sobre cómo abordar a un asesor desmotivado o cómo gestionar una visita difícil a un condominio, sé su mejor asesor táctico.
-- Mantén las respuestas fluidas, concisas y directas (1 a 3 párrafos cortos como en WhatsApp real).
+DIRECTRICES DE FORMATO:
+- Mantén las respuestas fluidas, empáticas, ricas y naturales (1 a 3 párrafos cortos como en WhatsApp real).
 `;
 
     try {
@@ -1537,15 +1680,15 @@ DIRECTRICES DE RESPUESTA:
                     ...(chatHistory ? [{ role: "user", content: `Historial de conversación previa con Cristina:\n${chatHistory}` }] : []),
                     { role: "user", content: cristinaMessage }
                 ],
-                temperature: 0.7,
-                max_tokens: 500
+                temperature: 0.75,
+                max_tokens: 700
             },
             {
                 headers: {
                     "Authorization": `Bearer ${NVIDIA_API_KEY}`,
                     "Content-Type": "application/json"
                 },
-                timeout: 12000
+                timeout: 15000
             }
         );
 
@@ -1555,8 +1698,7 @@ DIRECTRICES DE RESPUESTA:
         console.warn("[CRISTINA_LLM_WARN]", e.response?.data || e.message);
     }
 
-    // Fallback cálido y empático si falla el LLM
-    return `¡Hola Cris! Te leo con total claridad. Estoy aquí al frente monitoreando la ruta de los asesores y los chats del CRM. Cuéntame, ¿cómo van las visitas de hoy o necesitas apoyo con algún cliente o nuevo asesor? 💼✨`;
+    return `¡Hola Cris! Te leo con total claridad y cariño. Aquí estoy al pie del cañón contigo. Cuéntame, ¿cómo estás viviendo tu día hoy, cómo sientes al equipo o en qué te puedo dar una mano para aligerar la carga? 💼✨`;
 }
 
 /**
@@ -1566,17 +1708,17 @@ DIRECTRICES DE RESPUESTA:
 export async function processCristinaCommand(messageText: string, conversationId?: string): Promise<string> {
     const raw = (messageText || "").trim();
 
-    // Recuperar historial reciente de la conversación con Cristina para memoria
+    // Recuperar historial reciente de la conversación con Cristina para memoria cognitiva profunda (30 mensajes)
     let recentChatContext = "";
     if (conversationId) {
         try {
             const recentMsgs = await prisma.wAMessage.findMany({
                 where: { conversationId },
                 orderBy: { createdAt: "desc" },
-                take: 8
+                take: 30
             });
             recentChatContext = recentMsgs.reverse().map(m =>
-                `${m.direction === "INBOUND" ? "Cristina" : "Bot Coordinador"}: ${m.body}`
+                `${(m.direction || '').toLowerCase() === "inbound" ? "Cristina" : "Karen"}: ${m.body}`
             ).join("\n");
         } catch (_) {}
     }
