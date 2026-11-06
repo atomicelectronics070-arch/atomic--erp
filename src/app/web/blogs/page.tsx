@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { NewsletterCard } from "@/components/blog/NewsletterCard"
 import { prisma } from "@/lib/prisma"
 
 export const dynamic = "force-dynamic"
@@ -164,6 +165,11 @@ export default async function BlogsGallery() {
                       </div>
                   </Link>
               ))}
+          </div>
+
+          {/* Lead Magnet / VIP Tech Circle Newsletter */}
+          <div className="mb-24">
+              <NewsletterCard />
           </div>
 
           {/* Historial Section */}
