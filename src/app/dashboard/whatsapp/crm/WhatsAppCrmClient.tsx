@@ -1935,18 +1935,18 @@ export default function WhatsAppCrmClient() {
             <div className="flex-1 flex overflow-hidden relative">
                 
                 {/* Left Sidebar: Chat List */}
-                <div className={`w-full md:w-80 lg:w-96 border-r ${currentTheme.sidebarBg} flex flex-col shrink-0 transition-colors duration-200 backdrop-blur-md ${activeChatId ? 'hidden md:flex' : 'flex'}`}>
+                <div className={`w-full md:w-[380px] lg:w-[420px] xl:w-[450px] border-r ${currentTheme.sidebarBg} flex flex-col shrink-0 transition-colors duration-200 backdrop-blur-md ${activeChatId ? 'hidden md:flex' : 'flex'}`}>
                     
-                    {/* CRM View Tabs: Selector de Filtros en Píldoras Limpias */}
+                    {/* CRM View Tabs: Segmented Clean Bar */}
                     <div className={`p-2.5 ${currentTheme.tabsBg} border-b border-slate-800/60 backdrop-blur-md`}>
                         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-                            {/* SIN RESPONDER (MÁXIMA PRIORIDAD OPERATIVA) */}
+                            {/* SIN RESPONDER */}
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('UNANSWERED')}
-                                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                                className={`h-8 px-3 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ${
                                     activeCrmTab === 'UNANSWERED' 
-                                        ? 'bg-amber-500 text-slate-950 font-black shadow-lg shadow-amber-500/30' 
+                                        ? 'bg-amber-500 text-slate-950 font-black shadow-md shadow-amber-500/25' 
                                         : unansweredCount > 0 
                                         ? 'bg-amber-950/60 text-amber-300 border border-amber-600/50 hover:bg-amber-900/60' 
                                         : currentTheme.tabInactive
@@ -1955,48 +1955,48 @@ export default function WhatsAppCrmClient() {
                             >
                                 <Bell size={13} className={unansweredCount > 0 ? "animate-bounce text-amber-400" : ""} />
                                 <span>Sin Responder</span>
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold ${
-                                    activeCrmTab === 'UNANSWERED' ? 'bg-black/30 text-black' : unansweredCount > 0 ? 'bg-amber-500 text-slate-950' : 'bg-[#111b21] text-slate-400'
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                                    activeCrmTab === 'UNANSWERED' ? 'bg-black/30 text-black' : unansweredCount > 0 ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-400'
                                 }`}>
                                     {unansweredCount}
                                 </span>
                             </button>
 
-                            {/* ALTA INTENCIÓN DE COMPRA (LEADS CALIENTES) */}
+                            {/* ALTA INTENCIÓN */}
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('HOT_LEADS')}
-                                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                                className={`h-8 px-3 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ${
                                     activeCrmTab === 'HOT_LEADS' 
-                                        ? 'bg-gradient-to-r from-orange-500 to-rose-500 text-white font-black shadow-lg shadow-orange-500/30' 
+                                        ? 'bg-gradient-to-r from-orange-500 to-rose-500 text-white font-black shadow-md shadow-orange-500/25' 
                                         : hotLeadsCount > 0 
                                         ? 'bg-orange-950/60 text-orange-300 border border-orange-600/50 hover:bg-orange-900/60' 
                                         : currentTheme.tabInactive
                                 }`}
-                                title="Clientes con alta intención de compra (preguntan precio, proforma, stock o cuenta)"
+                                title="Clientes con alta intención de compra (precio, proforma, stock o cuenta)"
                             >
                                 <Flame size={13} className={hotLeadsCount > 0 ? "text-orange-400" : ""} />
                                 <span>Alta Intención 🔥</span>
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold ${
-                                    activeCrmTab === 'HOT_LEADS' ? 'bg-black/30 text-white' : hotLeadsCount > 0 ? 'bg-orange-500 text-slate-950' : 'bg-[#111b21] text-slate-400'
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                                    activeCrmTab === 'HOT_LEADS' ? 'bg-black/30 text-white' : hotLeadsCount > 0 ? 'bg-orange-500 text-slate-950' : 'bg-slate-800 text-slate-400'
                                 }`}>
                                     {hotLeadsCount}
                                 </span>
                             </button>
 
-                            {/* MIS CONTACTOS */}
+                            {/* MIS CHATS */}
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('MY_LEADS')}
-                                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                                className={`h-8 px-3 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
                                     activeCrmTab === 'MY_LEADS' ? currentTheme.tabActive : currentTheme.tabInactive
                                 }`}
                                 title="Mis Contactos y asignados"
                             >
                                 <UserCheck size={13} />
                                 <span>Mis Chats</span>
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold ${
-                                    activeCrmTab === 'MY_LEADS' ? 'bg-black/20 text-black' : 'bg-[#111b21] text-slate-400'
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                                    activeCrmTab === 'MY_LEADS' ? 'bg-black/20 text-black' : 'bg-slate-800 text-slate-400'
                                 }`}>
                                     {myLeadsCount}
                                 </span>
@@ -2006,53 +2006,53 @@ export default function WhatsAppCrmClient() {
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('ALL_WHATSAPP')}
-                                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                                className={`h-8 px-3 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
                                     activeCrmTab === 'ALL_WHATSAPP' ? currentTheme.tabActive : currentTheme.tabInactive
                                 }`}
                                 title="Todos los chats entrantes"
                             >
                                 <MessageSquare size={13} />
                                 <span>Entrantes</span>
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold ${
-                                    activeCrmTab === 'ALL_WHATSAPP' ? 'bg-black/20 text-black' : 'bg-[#111b21] text-slate-400'
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                                    activeCrmTab === 'ALL_WHATSAPP' ? 'bg-black/20 text-black' : 'bg-slate-800 text-slate-400'
                                 }`}>
                                     {allWhatsAppCount}
                                 </span>
                             </button>
 
-                            {/* ABSOLUTAMENTE TODO (SIN NINGUNA EXCLUSIÓN) */}
-                            <button
-                                type="button"
-                                onClick={() => setActiveCrmTab('ABSOLUTELY_ALL')}
-                                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
-                                    activeCrmTab === 'ABSOLUTELY_ALL' ? currentTheme.tabActive : currentTheme.tabInactive
-                                }`}
-                                title="Ver absolutamente todos los registros históricos de la base de datos sin filtrar"
-                            >
-                                <Globe size={13} />
-                                <span>Todo Absoluto</span>
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold ${
-                                    activeCrmTab === 'ABSOLUTELY_ALL' ? 'bg-black/20 text-black' : 'bg-[#111b21] text-slate-400'
-                                }`}>
-                                    {absolutelyAllCount}
-                                </span>
-                            </button>
-
-                            {/* PAUTAS */}
+                            {/* PAUTAS META */}
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('PAUTAS')}
-                                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                                className={`h-8 px-3 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
                                     activeCrmTab === 'PAUTAS' ? currentTheme.tabActive : currentTheme.tabInactive
                                 }`}
                                 title="Leads de Pautas Publicitarias Meta"
                             >
                                 <Megaphone size={13} />
                                 <span>Pautas</span>
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold ${
-                                    activeCrmTab === 'PAUTAS' ? 'bg-black/20 text-white' : 'bg-[#111b21] text-blue-300'
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                                    activeCrmTab === 'PAUTAS' ? 'bg-black/20 text-white' : 'bg-slate-800 text-blue-300'
                                 }`}>
                                     {pautasCount}
+                                </span>
+                            </button>
+
+                            {/* TODO ABSOLUTO */}
+                            <button
+                                type="button"
+                                onClick={() => setActiveCrmTab('ABSOLUTELY_ALL')}
+                                className={`h-8 px-3 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                                    activeCrmTab === 'ABSOLUTELY_ALL' ? currentTheme.tabActive : currentTheme.tabInactive
+                                }`}
+                                title="Ver absolutamente todos los registros históricos de la base de datos sin filtrar"
+                            >
+                                <Globe size={13} />
+                                <span>Todo</span>
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                                    activeCrmTab === 'ABSOLUTELY_ALL' ? 'bg-black/20 text-black' : 'bg-slate-800 text-slate-400'
+                                }`}>
+                                    {absolutelyAllCount}
                                 </span>
                             </button>
 
@@ -2060,15 +2060,15 @@ export default function WhatsAppCrmClient() {
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('FAILED')}
-                                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
-                                    activeCrmTab === 'FAILED' ? 'bg-gradient-to-r from-rose-600 to-red-600 text-white font-black shadow-lg shadow-rose-500/25' : failedCount > 0 ? 'bg-rose-950/60 text-rose-300 border border-rose-500/40' : currentTheme.tabInactive
+                                className={`h-8 px-3 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                                    activeCrmTab === 'FAILED' ? 'bg-gradient-to-r from-rose-600 to-red-600 text-white font-black shadow-md' : failedCount > 0 ? 'bg-rose-950/60 text-rose-300 border border-rose-500/40' : currentTheme.tabInactive
                                 }`}
                                 title="Chats con mensajes fallidos que necesitan reintento o rescate"
                             >
                                 <AlertCircle size={13} />
                                 <span>Fallos</span>
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold ${
-                                    activeCrmTab === 'FAILED' ? 'bg-black/20 text-white' : failedCount > 0 ? 'bg-rose-600 text-white' : 'bg-[#111b21] text-slate-400'
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                                    activeCrmTab === 'FAILED' ? 'bg-black/20 text-white' : failedCount > 0 ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-400'
                                 }`}>
                                     {failedCount}
                                 </span>
@@ -2078,15 +2078,15 @@ export default function WhatsAppCrmClient() {
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('TRASH')}
-                                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
-                                    activeCrmTab === 'TRASH' ? 'bg-gradient-to-r from-red-600 to-rose-700 text-white font-black shadow-lg shadow-red-500/25' : trashCount > 0 ? 'bg-red-950/50 text-red-300 border border-red-500/30' : currentTheme.tabInactive
+                                className={`h-8 px-3 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                                    activeCrmTab === 'TRASH' ? 'bg-gradient-to-r from-red-600 to-rose-700 text-white font-black shadow-md' : trashCount > 0 ? 'bg-red-950/50 text-red-300 border border-red-500/30' : currentTheme.tabInactive
                                 }`}
                                 title="Papelera de reciclaje de chats eliminados"
                             >
                                 <Trash2 size={13} />
                                 <span>Papelera</span>
                                 {trashCount > 0 && (
-                                    <span className="text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold bg-red-600 text-white">
+                                    <span className="text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold bg-red-600 text-white">
                                         {trashCount}
                                     </span>
                                 )}
@@ -2096,15 +2096,15 @@ export default function WhatsAppCrmClient() {
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('AUTO_REGISTER')}
-                                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                                className={`h-8 px-3 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
                                     activeCrmTab === 'AUTO_REGISTER' ? currentTheme.tabActive : currentTheme.tabInactive
                                 }`}
                                 title="Postulantes a Empleo y Registros"
                             >
                                 <Sparkles size={13} />
                                 <span>Empleo</span>
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold ${
-                                    activeCrmTab === 'AUTO_REGISTER' ? 'bg-black/20 text-black' : 'bg-[#111b21] text-amber-400'
+                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                                    activeCrmTab === 'AUTO_REGISTER' ? 'bg-black/20 text-black' : 'bg-slate-800 text-amber-400'
                                 }`}>
                                     {autoRegisterCount}
                                 </span>
@@ -2136,22 +2136,27 @@ export default function WhatsAppCrmClient() {
                                 <button
                                     key={cat.id}
                                     onClick={() => setActiveCategory(cat.id)}
-                                    className={`shrink-0 flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-lg transition-all cursor-pointer border ${
+                                    className={`shrink-0 flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-lg transition-all cursor-pointer border ${
                                         activeCategory === cat.id
                                             ? 'bg-slate-100 text-slate-900 border-transparent shadow-sm'
-                                            : 'bg-slate-900/50 text-slate-400 border-slate-800/60 hover:text-slate-200'
+                                            : 'bg-slate-900/60 text-slate-400 border-slate-800 hover:text-slate-200 hover:bg-slate-800/50'
                                     }`}
                                 >
-                                    {cat.label}
-                                    {count > 0 && <span className={`text-[9px] px-1 py-0.5 rounded-full ${activeCategory === cat.id ? 'bg-slate-800 text-slate-100' : 'bg-slate-800 text-slate-400'}`}>{count}</span>}
+                                    <span>{cat.label}</span>
+                                    {count > 0 && (
+                                        <span className={`text-[9px] px-1.5 py-0.2 rounded-full font-mono font-bold ${activeCategory === cat.id ? 'bg-slate-800 text-slate-100' : 'bg-slate-800 text-slate-400'}`}>
+                                            {count}
+                                        </span>
+                                    )}
                                 </button>
                             );
                         })}
                     </div>
-                    {/* Search Bar con Atajo de Teclado [/] */}
-                    <div className="p-3 border-b border-slate-800/60 bg-transparent">
-                        <div className="relative">
-                            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+
+                    {/* Search Bar con Atajo de Teclado [/] y Botón Limpiar */}
+                    <div className="p-2.5 border-b border-slate-800/60 bg-transparent">
+                        <div className="relative flex items-center">
+                            <Search size={14} className="absolute left-3 text-slate-400 pointer-events-none" />
                             <input 
                                 ref={searchInputRef}
                                 type="text"
@@ -2159,29 +2164,40 @@ export default function WhatsAppCrmClient() {
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder={
                                     activeCrmTab === 'UNANSWERED' ? "Buscar en mensajes sin responder..." :
-                                    activeCrmTab === 'HOT_LEADS' ? "Buscar en leads con alta intención..." :
-                                    activeCrmTab === 'ABSOLUTELY_ALL' ? "Buscar en toda la base de datos..." :
-                                    activeCrmTab === 'MY_LEADS' ? "Buscar en Mis Contactos..." :
-                                    activeCrmTab === 'PAUTAS' ? "Buscar en Pautas publicitarias..." :
-                                    activeCrmTab === 'FAILED' ? "Buscar en chats con fallo..." :
-                                    activeCrmTab === 'AUTO_REGISTER' ? "Buscar en Empleo..." :
-                                    "Buscar chats (presiona '/' para enfocar)..."
+                                    activeCrmTab === 'HOT_LEADS' ? "Buscar en leads de alta intención..." :
+                                    activeCrmTab === 'ABSOLUTELY_ALL' ? "Buscar en toda la base..." :
+                                    activeCrmTab === 'MY_LEADS' ? "Buscar en mis contactos..." :
+                                    activeCrmTab === 'PAUTAS' ? "Buscar en leads de pautas..." :
+                                    activeCrmTab === 'FAILED' ? "Buscar en chats con fallos..." :
+                                    activeCrmTab === 'AUTO_REGISTER' ? "Buscar en empleo..." :
+                                    "Buscar por nombre, teléfono o mensaje ( '/' )..."
                                 }
-                                className={`w-full ${currentTheme.searchBg} rounded-xl pl-9 pr-12 py-2 text-xs text-white placeholder-slate-400 focus:outline-none transition-all shadow-inner`}
+                                className={`w-full ${currentTheme.searchBg} rounded-xl pl-9 pr-16 py-2 text-xs text-white placeholder-slate-400 focus:outline-none transition-all shadow-inner`}
                             />
-                            <kbd className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-slate-500 bg-slate-800/80 px-1.5 py-0.5 rounded border border-slate-700/60 pointer-events-none">
-                                /
-                            </kbd>
+                            {searchQuery ? (
+                                <button
+                                    type="button"
+                                    onClick={() => setSearchQuery('')}
+                                    className="absolute right-3 text-slate-400 hover:text-white p-0.5 rounded cursor-pointer"
+                                    title="Limpiar búsqueda"
+                                >
+                                    <X size={13} />
+                                </button>
+                            ) : (
+                                <kbd className="absolute right-3 text-[10px] font-mono text-slate-500 bg-slate-800/80 px-1.5 py-0.5 rounded border border-slate-700/60 pointer-events-none">
+                                    /
+                                </kbd>
+                            )}
                         </div>
                     </div>
 
-                    {/* Chat List Items (Bordes Limpios, Sin Divide-Y Doble) */}
-                    <div className="flex-1 overflow-y-auto bg-transparent divide-y divide-slate-800/40 p-1.5 space-y-1">
+                    {/* Chat List Items: Diseño Calmo, Jerárquico y Elegante */}
+                    <div className="flex-1 overflow-y-auto bg-transparent p-2 space-y-1.5 scrollbar-thin">
                         {loading && chats.length === 0 ? (
                             <div className="p-8 text-center text-slate-400 text-xs font-mono">Cargando conversaciones...</div>
                         ) : filteredChats.length === 0 ? (
                             <div className="p-8 text-center space-y-2">
-                                <div className="w-10 h-10 rounded-2xl bg-[#202c33] border border-slate-700/80 flex items-center justify-center mx-auto text-slate-400">
+                                <div className="w-10 h-10 rounded-2xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-center mx-auto text-slate-400">
                                     {activeCrmTab === 'MY_LEADS' ? <UserCheck size={20} /> : <MessageSquare size={20} />}
                                 </div>
                                 <p className="text-xs text-slate-300 font-bold">
@@ -2194,148 +2210,168 @@ export default function WhatsAppCrmClient() {
                                 )}
                             </div>
                         ) : (
-                            filteredChats.map(chat => (
-                                <button
-                                    key={chat.id}
-                                    onClick={() => handleSelectChat(chat)}
-                                    className={`w-full px-3.5 py-3 text-left transition-colors flex items-start gap-3 cursor-pointer border-b border-[#202c33] ${
-                                        activeChatId === chat.id 
-                                            ? 'bg-[#2a3942]' 
-                                            : chat.hasFailedMessage
-                                            ? 'bg-rose-950/25 hover:bg-rose-950/40'
-                                            : 'hover:bg-[#202c33]'
-                                    }`}
-                                >
-                                    {/* Avatar */}
-                                    <div className="relative shrink-0">
-                                        <div className={`w-11 h-11 rounded-full flex items-center justify-center font-bold text-sm border overflow-hidden ${
-                                            chat.hasFailedMessage
-                                                ? 'bg-rose-900 border-rose-500 text-rose-200'
-                                                : chat.isFromAd
-                                                ? 'bg-blue-900 border-blue-500 text-blue-200'
-                                                : 'bg-[#202c33] border-[#2a3942] text-slate-200'
-                                        }`}>
-                                            {chat.profilePic ? (
-                                                <img 
-                                                    src={chat.profilePic} 
-                                                    alt={chat.name} 
-                                                    className="w-full h-full object-cover" 
-                                                    onError={(e) => {
-                                                        (e.target as HTMLElement).style.display = 'none';
-                                                    }}
-                                                />
-                                            ) : (
-                                                chat.name.charAt(0).toUpperCase()
-                                            )}
+                            filteredChats.map(chat => {
+                                const isSelected = activeChatId === chat.id;
+                                const cat = categorizarChat(chat);
+                                const unanswered = isUnanswered(chat);
+                                const hotLead = hasHighPurchaseIntent(chat);
+                                const botActive = (chat.isBotActive ?? chat.status !== 'MANUAL');
+
+                                return (
+                                    <button
+                                        key={chat.id}
+                                        onClick={() => handleSelectChat(chat)}
+                                        className={`w-full p-3 text-left transition-all duration-150 flex items-start gap-3 cursor-pointer relative group rounded-xl border ${
+                                            isSelected 
+                                                ? `${currentTheme.chatCardActive} shadow-md` 
+                                                : chat.hasFailedMessage
+                                                ? 'bg-rose-950/25 hover:bg-rose-950/40 border-rose-900/50'
+                                                : unanswered
+                                                ? 'bg-amber-950/15 hover:bg-slate-800/60 border-amber-900/30'
+                                                : 'hover:bg-slate-800/40 border-slate-800/60 bg-slate-900/40'
+                                        }`}
+                                    >
+                                        {/* Indicador de selección lateral */}
+                                        {isSelected && (
+                                            <div className="absolute left-0 top-2 bottom-2 w-1 bg-gradient-to-b from-emerald-400 to-teal-400 rounded-r shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                                        )}
+
+                                        {/* Avatar con sub-indicador inteligente */}
+                                        <div className="relative shrink-0 mt-0.5">
+                                            <div className={`w-11 h-11 rounded-full flex items-center justify-center font-bold text-sm border overflow-hidden shadow-inner ${
+                                                chat.hasFailedMessage
+                                                    ? 'bg-rose-950 border-rose-500/60 text-rose-200'
+                                                    : chat.isFromAd
+                                                    ? 'bg-blue-950 border-blue-500/60 text-blue-200'
+                                                    : isSelected
+                                                    ? 'bg-emerald-950 border-emerald-500/60 text-emerald-200'
+                                                    : 'bg-slate-800 border-slate-700/80 text-slate-200'
+                                            }`}>
+                                                {chat.profilePic ? (
+                                                    <img 
+                                                        src={chat.profilePic} 
+                                                        alt={chat.name} 
+                                                        className="w-full h-full object-cover" 
+                                                        onError={(e) => {
+                                                            (e.target as HTMLElement).style.display = 'none';
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    chat.name.charAt(0).toUpperCase()
+                                                )}
+                                            </div>
+
+                                            {/* Sub-badge de estado sobre avatar */}
+                                            {chat.hasFailedMessage ? (
+                                                <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-rose-600 border border-slate-950 flex items-center justify-center text-[9px] shadow" title="Fallo de Envío">
+                                                    ⚠️
+                                                </span>
+                                            ) : unanswered ? (
+                                                <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-amber-400 border border-slate-950 shadow animate-pulse" title="Esperando respuesta" />
+                                            ) : chat.isFromAd ? (
+                                                <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-blue-600 border border-slate-950 flex items-center justify-center text-[8px] text-white shadow" title="Lead de Pauta">
+                                                    📢
+                                                </span>
+                                            ) : botActive ? (
+                                                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border border-slate-950 shadow" title="Bot Activo" />
+                                            ) : null}
                                         </div>
-                                        {chat.hasFailedMessage ? (
-                                            <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-rose-600 border border-[#111b21] flex items-center justify-center text-[9px]" title="Fallo de Envío">
-                                                ⚠️
-                                            </span>
-                                        ) : chat.isFromAd ? (
-                                            <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-blue-600 border border-[#111b21] flex items-center justify-center text-[8px]" title="Lead de Pauta">
-                                                📢
-                                            </span>
-                                        ) : null}
-                                    </div>
 
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center justify-between mb-0.5">
-                                            <h3 className="font-bold text-sm text-white truncate">
-                                                {chat.name}
-                                            </h3>
-                                            <span className="text-[10px] font-mono text-slate-400 shrink-0 ml-1">{chat.time}</span>
-                                        </div>
+                                        {/* Cuerpo de la Tarjeta (3 filas limpias, nunca saturadas) */}
+                                        <div className="flex-1 min-w-0">
+                                            {/* Fila 1: Nombre + Categoría Temática + Hora */}
+                                            <div className="flex items-center justify-between gap-1.5 mb-1">
+                                                <h3 className={`font-semibold text-xs md:text-sm truncate ${isSelected ? 'text-white font-bold' : 'text-slate-100'}`}>
+                                                    {chat.name}
+                                                </h3>
+                                                <div className="flex items-center gap-1.5 shrink-0">
+                                                    {cat === 'residencial' && <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-950/70 text-emerald-300 border border-emerald-600/30">🏠 Residencial</span>}
+                                                    {cat === 'empresarial' && <span className="text-[9px] px-1.5 py-0.2 rounded bg-cyan-950/70 text-cyan-300 border border-cyan-600/30">🏢 Empresa</span>}
+                                                    {cat === 'consolas' && <span className="text-[9px] px-1.5 py-0.2 rounded bg-indigo-950/70 text-indigo-300 border border-indigo-600/30">🎮 Consolas</span>}
+                                                    {cat === 'postulante' && <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-950/70 text-amber-300 border border-amber-600/30">💼 Empleo</span>}
+                                                    {cat === 'soporte' && <span className="text-[9px] px-1.5 py-0.2 rounded bg-purple-950/70 text-purple-300 border border-purple-600/30">🔧 Soporte</span>}
+                                                    {cat === 'envios' && <span className="text-[9px] px-1.5 py-0.2 rounded bg-blue-950/70 text-blue-300 border border-blue-600/30">📦 Envíos</span>}
+                                                    {cat === 'sin_especificar' && <span className="text-[9px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-400 border border-slate-700/40">❓ Consulta</span>}
+                                                    <span className="text-[10px] font-mono text-slate-400">{chat.time}</span>
+                                                </div>
+                                            </div>
 
-                                        {/* Número de Teléfono Destacado y Claro */}
-                                        <p className="text-xs font-mono font-bold text-emerald-400 truncate mb-1">
-                                            {formatPhoneNumber(chat.phone)}
-                                        </p>
+                                            {/* Fila 2: Teléfono destacado + Snippet del último mensaje + Badge no leídos */}
+                                            <div className="flex items-center justify-between gap-2 text-xs mb-1.5">
+                                                <p className="text-[11px] text-slate-400 truncate flex-1 leading-snug">
+                                                    <span className="font-mono text-emerald-400/90 font-medium mr-1.5">
+                                                        {formatPhoneNumber(chat.phone)}:
+                                                    </span>
+                                                    <span>{chat.lastMessage || 'Sin mensajes'}</span>
+                                                </p>
+                                                {chat.unread > 0 && (
+                                                    <span className="w-4 h-4 rounded-full bg-emerald-500 text-slate-950 font-bold text-[9px] flex items-center justify-center shrink-0 shadow">
+                                                        {chat.unread}
+                                                    </span>
+                                                )}
+                                            </div>
 
-                                        <div className="flex items-center gap-1.5 flex-wrap mb-1">
-                                            {/* Badge de Sin Responder / Urgente */}
-                                            {isUnanswered(chat) && (
-                                                <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/50 flex items-center gap-0.5 shrink-0 animate-pulse" title="Esperando respuesta">
-                                                    ⏳ Sin Responder
-                                                </span>
-                                            )}
+                                            {/* Fila 3: Bandeja de Etiquetas Elegante (Sin saltos de línea caóticos) */}
+                                            <div className="flex items-center gap-1.5 flex-nowrap overflow-x-hidden text-[9px]">
+                                                {unanswered ? (
+                                                    <span className="px-1.5 py-0.5 rounded font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 shrink-0 flex items-center gap-0.5 animate-pulse">
+                                                        ⏳ Sin Responder
+                                                    </span>
+                                                ) : hotLead ? (
+                                                    <span className="px-1.5 py-0.5 rounded font-bold bg-orange-500/20 text-orange-300 border border-orange-500/40 shrink-0 flex items-center gap-0.5">
+                                                        🔥 Alta Intención
+                                                    </span>
+                                                ) : chat.hasFailedMessage ? (
+                                                    <span className="px-1.5 py-0.5 rounded font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40 shrink-0 flex items-center gap-0.5">
+                                                        ⚠️ Falló Envío
+                                                    </span>
+                                                ) : null}
 
-                                            {/* Badge de Alta Intención de Compra */}
-                                            {hasHighPurchaseIntent(chat) && (
-                                                <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-orange-950 text-orange-300 border border-orange-500/50 flex items-center gap-0.5 shrink-0" title="Alta intención de compra">
-                                                    🔥 Caliente
-                                                </span>
-                                            )}
+                                                {chat.isFromAd && (
+                                                    <span className="px-1.5 py-0.5 rounded font-medium bg-blue-500/15 text-blue-300 border border-blue-500/30 truncate max-w-[110px] shrink-0" title={chat.adHeadline || 'Pauta Meta'}>
+                                                        📢 {chat.adHeadline || 'Pauta'}
+                                                    </span>
+                                                )}
 
-                                            {/* Badge de Categoría Temática */}
-                                            {(() => {
-                                                const cat = categorizarChat(chat);
-                                                if (cat === 'residencial') return <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-600/40 shrink-0">🏠 Residencial</span>;
-                                                if (cat === 'empresarial') return <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-cyan-950/80 text-cyan-300 border border-cyan-600/40 shrink-0">🏢 Empresarial</span>;
-                                                if (cat === 'consolas') return <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-indigo-950/80 text-indigo-300 border border-indigo-600/40 shrink-0">🎮 Consolas</span>;
-                                                if (cat === 'postulante') return <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-950/80 text-amber-300 border border-amber-600/40 shrink-0">💼 Empleo</span>;
-                                                if (cat === 'soporte') return <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-purple-950/80 text-purple-300 border border-purple-600/40 shrink-0">🔧 Soporte</span>;
-                                                if (cat === 'envios') return <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-950/80 text-blue-300 border border-blue-600/40 shrink-0">📦 Envíos</span>;
-                                                if (cat === 'sin_especificar') return <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700/60 shrink-0">❓ Sin Especificar</span>;
-                                                return null;
-                                            })()}
+                                                <span className={`px-1.5 py-0.5 rounded font-medium border shrink-0 flex items-center gap-0.5 ${
+                                                    botActive 
+                                                        ? 'bg-emerald-950/60 text-emerald-300 border-emerald-600/30' 
+                                                        : 'bg-slate-800/80 text-slate-400 border-slate-700/40'
+                                                }`}>
+                                                    <Bot size={9} />
+                                                    <span>{botActive ? 'Bot' : 'Manual'}</span>
+                                                </span>
 
-                                            {chat.hasFailedMessage && (
-                                                <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-600/50 flex items-center gap-0.5 shrink-0" title="Motor de Reintento Inteligente en proceso">
-                                                    🔄 Auto-reintentando
-                                                </span>
-                                            )}
-                                            {chat.isFromAd && (
-                                                <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-700/50 truncate max-w-[140px]">
-                                                    📢 {chat.adHeadline || 'Pauta Meta'}
-                                                </span>
-                                            )}
-                                            {chat.ownerName ? (
-                                                <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-800/50 flex items-center gap-0.5 truncate max-w-[120px]">
-                                                    <UserCheck size={9} className="shrink-0" /> {chat.ownerName}
-                                                </span>
-                                            ) : (
-                                                <span className="text-[9px] font-medium px-1.5 py-0.5 rounded-full bg-amber-950 text-amber-300 border border-amber-800/50 flex items-center gap-0.5 shrink-0">
-                                                    ⚡ Sin Asignar
-                                                </span>
-                                            )}
-
-                                            {/* Badge de Estado del Bot por Chat */}
-                                            {(chat.isBotActive ?? chat.status !== 'MANUAL') ? (
-                                                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-600/40 flex items-center gap-0.5 shrink-0" title="Bot Automático Activo">
-                                                    <Bot size={9} /> Bot ON
-                                                </span>
-                                            ) : (
-                                                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-rose-950/80 text-rose-300 border border-rose-600/40 flex items-center gap-0.5 shrink-0" title="Atención Manual Asesor">
-                                                    🛑 Manual
-                                                </span>
-                                            )}
-
-                                            {canAssignLeads && (
                                                 <span
                                                     onClick={(e) => {
+                                                        if (!canAssignLeads) return;
                                                         e.stopPropagation();
                                                         setChatToAssign(chat);
                                                         setAdvisorInput(chat.ownerName || "");
                                                         setAssignModalOpen(true);
                                                     }}
-                                                    className="ml-auto text-[9px] font-bold text-slate-400 hover:text-cyan-300 hover:bg-[#202c33] px-1.5 py-0.5 rounded transition-colors"
-                                                    title="Asignar o reasignar asesor a este lead"
+                                                    className={`ml-auto px-1.5 py-0.5 rounded font-medium border shrink-0 flex items-center gap-1 transition-colors ${
+                                                        chat.ownerName
+                                                            ? 'bg-cyan-950/60 text-cyan-300 border-cyan-700/40 hover:bg-cyan-900/60'
+                                                            : 'bg-slate-800/80 text-slate-400 border-slate-700/40 hover:text-cyan-300'
+                                                    } ${canAssignLeads ? 'cursor-pointer' : ''}`}
+                                                    title={canAssignLeads ? "Clic para asignar o cambiar asesor" : undefined}
                                                 >
-                                                    ⚙️ Asignar
+                                                    <UserCheck size={9} />
+                                                    <span className="truncate max-w-[70px]">
+                                                        {chat.ownerName ? chat.ownerName.split(' ')[0] : 'Libre'}
+                                                    </span>
                                                 </span>
-                                            )}
+                                            </div>
                                         </div>
-
-                                        <p className="text-[11px] text-slate-400 truncate">{chat.lastMessage}</p>
-                                    </div>
-                                </button>
-                            ))
+                                    </button>
+                                );
+                            })
                         )}
                     </div>
                 </div>
 
-                {/* Right Main Chat Area (Soporta Gestos Táctiles Swipe-to-Back en Móvil) */}
+                {/* Right Main Chat Area */}
                 <div 
                     onTouchStart={handleTouchStart} 
                     onTouchEnd={handleTouchEnd}
@@ -2344,273 +2380,270 @@ export default function WhatsAppCrmClient() {
                     
                     {activeChat ? (
                         <>
-                            {/* Chat Header (MODERNO, NOMBRE, BREADCRUMB, ATRIBUTOS Y TELÉFONO DESTACADOS) */}
-                            <div className={`px-4 py-3 md:px-6 md:py-3.5 border-b ${currentTheme.chatHeaderBg} backdrop-blur-xl flex items-center justify-between gap-3 shrink-0`}>
-                                <div className="flex items-center gap-3.5 min-w-0">
-                                    <button 
-                                        type="button"
-                                        onClick={handleBackToChats} 
-                                        className="group flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white cursor-pointer border border-slate-700 hover:border-emerald-500/50 transition-all text-xs font-bold shrink-0 shadow-sm"
-                                        title="Volver a la lista de chats (Esc)"
-                                    >
-                                        <ChevronLeft size={16} className="text-emerald-400 group-hover:-translate-x-0.5 transition-transform" />
-                                        <span>Volver</span>
-                                        <kbd className="hidden lg:inline-block px-1.5 py-0.2 text-[9px] font-mono text-slate-400 bg-slate-900/90 rounded border border-slate-700/60">Esc</kbd>
-                                    </button>
-                                    
-                                    {/* Avatar con soporte de foto de perfil y lightbox zoom */}
-                                    <div className="relative shrink-0">
-                                        <div 
-                                            onClick={() => {
-                                                if (activeChat.profilePic) {
-                                                    setPreviewImageUrl(activeChat.profilePic);
-                                                }
-                                            }}
-                                            className={`w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center font-black text-lg md:text-xl border-2 overflow-hidden ${
-                                                activeChat.profilePic ? 'cursor-zoom-in hover:opacity-90 ring-2 ring-emerald-500/40' : ''
-                                            } ${
-                                                activeChat.hasFailedMessage 
-                                                    ? 'bg-[#3b1219] border-rose-500 text-rose-300' 
-                                                    : activeChat.isFromAd
-                                                    ? 'bg-[#0f2744] border-cyan-500 text-cyan-300'
-                                                    : 'bg-[#123b2b] border-[#00a884] text-[#25d366]'
-                                            }`}
-                                            title={activeChat.profilePic ? "Clic para ampliar foto de perfil" : activeChat.name}
+                            {/* Chat Header: Estructurado en 2 Niveles Claros (Identidad + Barra de Acciones) */}
+                            <div className={`px-4 py-3 md:px-6 md:py-3.5 border-b ${currentTheme.chatHeaderBg} backdrop-blur-xl flex flex-col gap-2 shrink-0 shadow-sm`}>
+                                
+                                {/* Nivel Superior: Identidad, Nombre y Acciones Principales */}
+                                <div className="flex items-center justify-between gap-3">
+                                    <div className="flex items-center gap-3 min-w-0">
+                                        {/* Botón Volver (Móvil / Esc) */}
+                                        <button 
+                                            type="button"
+                                            onClick={handleBackToChats} 
+                                            className="group md:hidden flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-800/90 text-slate-200 hover:text-white border border-slate-700 text-xs font-bold shrink-0 shadow-sm"
+                                            title="Volver a la lista de chats (Esc)"
                                         >
-                                            {activeChat.profilePic ? (
-                                                <img 
-                                                    src={activeChat.profilePic} 
-                                                    alt={activeChat.name} 
-                                                    className="w-full h-full object-cover"
-                                                    onError={(e) => {
-                                                        (e.target as HTMLElement).style.display = 'none';
-                                                    }}
-                                                />
-                                            ) : (
-                                                activeChat.name.charAt(0).toUpperCase()
-                                            )}
+                                            <ChevronLeft size={16} className="text-emerald-400" />
+                                            <span>Atrás</span>
+                                        </button>
+                                        
+                                        {/* Avatar con Zoom */}
+                                        <div className="relative shrink-0">
+                                            <div 
+                                                onClick={() => {
+                                                    if (activeChat.profilePic) {
+                                                        setPreviewImageUrl(activeChat.profilePic);
+                                                    }
+                                                }}
+                                                className={`w-11 h-11 md:w-12 md:h-12 rounded-full flex items-center justify-center font-black text-base md:text-lg border overflow-hidden ${
+                                                    activeChat.profilePic ? 'cursor-zoom-in hover:opacity-90 ring-2 ring-emerald-500/40' : ''
+                                                } ${
+                                                    activeChat.hasFailedMessage 
+                                                        ? 'bg-rose-950 border-rose-500 text-rose-300' 
+                                                        : activeChat.isFromAd
+                                                        ? 'bg-blue-950 border-blue-500 text-cyan-300'
+                                                        : 'bg-emerald-950 border-emerald-500 text-emerald-300'
+                                                }`}
+                                                title={activeChat.profilePic ? "Clic para ampliar foto de perfil" : activeChat.name}
+                                            >
+                                                {activeChat.profilePic ? (
+                                                    <img 
+                                                        src={activeChat.profilePic} 
+                                                        alt={activeChat.name} 
+                                                        className="w-full h-full object-cover"
+                                                        onError={(e) => {
+                                                            (e.target as HTMLElement).style.display = 'none';
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    activeChat.name.charAt(0).toUpperCase()
+                                                )}
+                                            </div>
+                                            {activeChat.hasFailedMessage ? (
+                                                <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-rose-600 border border-slate-900 flex items-center justify-center text-[9px]" title="Fallo de Envío">
+                                                    ⚠️
+                                                </span>
+                                            ) : activeChat.isFromAd ? (
+                                                <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-blue-600 border border-slate-900 flex items-center justify-center text-[8px] text-white" title="Lead de Pauta">
+                                                    📢
+                                                </span>
+                                            ) : null}
                                         </div>
-                                        {activeChat.hasFailedMessage ? (
-                                            <span className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-rose-600 border-2 border-[#202c33] flex items-center justify-center text-[10px]" title="Fallo de Envío">
-                                                ⚠️
-                                            </span>
-                                        ) : activeChat.isFromAd ? (
-                                            <span className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-cyan-600 border-2 border-[#202c33] flex items-center justify-center text-[10px]" title="Lead de Pauta">
-                                                📢
-                                            </span>
-                                        ) : null}
+
+                                        {/* Nombre del Contacto */}
+                                        <div className="min-w-0">
+                                            <h2 className="text-base md:text-lg font-black text-white tracking-tight truncate flex items-center gap-2">
+                                                <span>{activeChat.name}</span>
+                                                {activeChat.hasFailedMessage && (
+                                                    <span className="bg-rose-950 text-rose-300 border border-rose-500/60 text-[9px] font-black px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+                                                        <AlertCircle size={10} className="text-rose-400" /> FALLO EN ENVÍO
+                                                    </span>
+                                                )}
+                                                {activeChat.isFromAd && (
+                                                    <span className="bg-blue-950 text-cyan-300 border border-blue-500/60 text-[9px] font-black px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+                                                        <Megaphone size={10} className="text-cyan-400" /> PAUTA ADS
+                                                    </span>
+                                                )}
+                                            </h2>
+                                        </div>
                                     </div>
 
-                                    {/* Nombre, Breadcrumb & Teléfono en Formato Grande */}
-                                    <div className="min-w-0">
-                                        {/* Breadcrumb navegable */}
-                                        <div className="flex items-center gap-1.5 text-[10px] text-slate-400 font-mono mb-0.5 flex-wrap">
-                                            <button 
-                                                type="button" 
-                                                onClick={handleBackToChats} 
-                                                className="hover:text-emerald-400 transition-colors flex items-center gap-0.5 cursor-pointer"
+                                    {/* Toolbar de Acciones Principales */}
+                                    <div className="flex items-center gap-2 shrink-0">
+                                        {/* Auto-reintento si falló */}
+                                        {activeChat.hasFailedMessage && (
+                                            <button
+                                                onClick={() => handleRetryFailedMessage(activeChat.failedMessage?.id, false)}
+                                                disabled={isRetrying}
+                                                className="bg-amber-600 hover:bg-amber-500 text-black font-black text-xs px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm"
+                                                title="Motor de reintento inteligente activo"
                                             >
-                                                <MessageSquare size={10} /> Chats
+                                                {isRetrying ? <Loader2 size={13} className="animate-spin" /> : <RefreshCw size={13} />}
+                                                <span className="hidden sm:inline">{isRetrying ? 'Reintentando...' : `Reintento en ${autoRetryCountdown}s`}</span>
                                             </button>
-                                            <span>›</span>
-                                            <span className="capitalize text-slate-300 px-1.5 py-0.2 rounded bg-slate-800/60 border border-slate-700/40">
-                                                {categorizarChat(activeChat) === 'residencial' ? '🏠 Residencial' :
-                                                 categorizarChat(activeChat) === 'empresarial' ? '🏢 Empresarial' :
-                                                 categorizarChat(activeChat) === 'consolas' ? '🎮 Consolas' :
-                                                 categorizarChat(activeChat) === 'postulante' ? '💼 Empleo' :
-                                                 categorizarChat(activeChat) === 'soporte' ? '🔧 Soporte' :
-                                                 categorizarChat(activeChat) === 'envios' ? '📦 Envíos' :
-                                                 categorizarChat(activeChat) === 'sin_especificar' ? '❓ Sin Especificar' : '💬 General'}
-                                            </span>
-                                            {isUnanswered(activeChat) && (
-                                                <span className="bg-amber-500/20 text-amber-300 border border-amber-500/40 px-1.5 py-0.2 rounded text-[9px] font-bold animate-pulse">
-                                                    ⏳ Esperando respuesta
-                                                </span>
-                                            )}
-                                            {hasHighPurchaseIntent(activeChat) && (
-                                                <span className="bg-orange-500/20 text-orange-300 border border-orange-500/40 px-1.5 py-0.2 rounded text-[9px] font-bold">
-                                                    🔥 Alta Intención
-                                                </span>
-                                            )}
-                                        </div>
+                                        )}
 
-                                        <div className="flex items-center gap-2.5 flex-wrap">
-                                            <h2 className="text-lg md:text-2xl font-black text-white tracking-tight truncate">
-                                                {activeChat.name}
-                                            </h2>
-                                            {activeChat.hasFailedMessage && (
-                                                <span className="bg-[#3b1219] text-rose-300 border border-rose-500/60 text-[10px] font-black px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                                                    <AlertCircle size={11} className="text-rose-400" /> FALLO EN ENVÍO
-                                                </span>
-                                            )}
-                                            {activeChat.isFromAd && (
-                                                <span className="bg-[#0f2744] text-cyan-300 border border-cyan-500/60 text-[10px] font-black px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                                                    <Megaphone size={11} className="text-cyan-400" /> LEAD DE PAUTA
-                                                </span>
-                                            )}
-                                        </div>
-
-                                        {/* Teléfono Grande en Pill Verde con Copiar & Llamar & Foto */}
-                                        <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                            <div className="inline-flex items-center gap-2 bg-[#111b21] border border-[#00a884]/60 px-3 py-1 rounded-xl">
-                                                <Phone size={14} className="text-[#00a884]" />
-                                                <span className="text-sm md:text-base font-mono font-black text-[#25d366] tracking-wider">
-                                                    {formatPhoneNumber(activeChat.phone)}
-                                                </span>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleCopyPhone(activeChat.phone)}
-                                                    className="p-1 rounded-md hover:bg-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer"
-                                                    title="Copiar número telefónico"
-                                                >
-                                                    {copiedPhone ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
-                                                </button>
-                                                <a
-                                                    href={`tel:${activeChat.phone.replace(/\D/g, "")}`}
-                                                    className="flex items-center gap-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white border border-emerald-400/50 rounded-xl px-3 py-1 text-xs font-black transition-all hover:shadow-lg hover:shadow-emerald-900/50 cursor-pointer shrink-0"
-                                                    title="Llamar directamente por teléfono"
-                                                >
-                                                    <Phone size={13} className="text-emerald-100" /> <span>Llamar</span>
-                                                </a>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        const url = prompt('Ingresa la URL de la foto de perfil para este contacto:', activeChat.profilePic || '');
-                                                        if (url !== null) {
-                                                            handleSaveContactPhoto(activeChat.phone, url);
-                                                        }
-                                                    }}
-                                                    className="p-1 rounded-md hover:bg-white/10 text-slate-400 hover:text-cyan-300 transition-colors cursor-pointer text-xs flex items-center gap-1"
-                                                    title="Asignar o actualizar foto de perfil del contacto"
-                                                >
-                                                    <Camera size={13} />
-                                                    <span className="hidden lg:inline text-[10px]">Foto</span>
-                                                </button>
-                                            </div>
-
-                                            {/* Estado de Asignación */}
-                                            {activeChat.ownerName ? (
-                                                <div className="flex items-center gap-1.5">
-                                                    <span className="bg-[#111b21] text-cyan-300 border border-cyan-500/40 text-xs font-bold px-2.5 py-1 rounded-xl flex items-center gap-1">
-                                                        <UserCheck size={12} /> {activeChat.ownerName}
-                                                    </span>
-                                                    {canAssignLeads && (
-                                                        <button
-                                                            onClick={() => {
-                                                                setChatToAssign(activeChat);
-                                                                setAdvisorInput(activeChat.ownerName || "");
-                                                                setAssignModalOpen(true);
-                                                            }}
-                                                            className="text-[11px] text-cyan-400 hover:text-white bg-[#111b21] hover:bg-[#2a3942] border border-cyan-500/40 px-2 py-1 rounded-lg transition-colors cursor-pointer font-bold flex items-center gap-1"
-                                                            title="Reasignar asesor"
-                                                        >
-                                                            <Users size={12} /> Reasignar
-                                                        </button>
-                                                    )}
-                                                </div>
+                                        {/* Switch ON / OFF del Bot IA */}
+                                        <button
+                                            onClick={handleToggleChatBot}
+                                            disabled={togglingBot}
+                                            className={`font-bold text-xs px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm border ${
+                                                (activeChat.isBotActive ?? activeChat.status !== 'MANUAL')
+                                                    ? 'bg-emerald-950/80 hover:bg-emerald-900 border-emerald-500/60 text-emerald-300'
+                                                    : 'bg-rose-950/80 hover:bg-rose-900 border-rose-500/60 text-rose-300'
+                                            }`}
+                                            title={(activeChat.isBotActive ?? activeChat.status !== 'MANUAL')
+                                                ? 'El Bot IA está ACTIVO para este chat. Haz clic para pausarlo y tomar atención manual.'
+                                                : 'El Bot IA está PAUSADO (Atención Manual). Haz clic para reactivar el Bot automático.'}
+                                        >
+                                            {togglingBot ? (
+                                                <Loader2 size={13} className="animate-spin" />
                                             ) : (
-                                                <button
-                                                    onClick={() => {
-                                                        setChatToAssign(activeChat);
-                                                        setAdvisorInput(session?.user?.name || "");
-                                                        setAssignModalOpen(true);
-                                                    }}
-                                                    className="bg-[#2a2114] text-amber-300 border border-amber-500/50 text-xs font-bold px-3 py-1 rounded-xl flex items-center gap-1 hover:bg-[#3d301c] cursor-pointer"
-                                                >
-                                                    <UserPlus size={12} /> ⚡ Sin Asignar - Atender
-                                                </button>
+                                                <Bot size={13} className={(activeChat.isBotActive ?? activeChat.status !== 'MANUAL') ? 'text-emerald-400' : 'text-rose-400'} />
                                             )}
-                                        </div>
+                                            <span className="hidden sm:inline">
+                                                {(activeChat.isBotActive ?? activeChat.status !== 'MANUAL') ? 'Bot: ON' : 'Bot: OFF (Manual)'}
+                                            </span>
+                                        </button>
+
+                                        {/* Reactivar con Disculpa */}
+                                        <button
+                                            onClick={handleOpenReengageModal}
+                                            className="bg-slate-900/80 hover:bg-slate-800 border border-cyan-500/50 text-cyan-300 hover:text-white font-bold text-xs px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+                                            title="Reactivar chat con disculpa personalizada según el artículo consultado"
+                                        >
+                                            <Sparkles size={13} className="text-cyan-400" />
+                                            <span className="hidden lg:inline">Reactivar</span>
+                                        </button>
+
+                                        {/* WhatsApp Web Oficial */}
+                                        <a
+                                            href={`https://wa.me/${activeChat.phone.replace(/\D/g, '')}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+                                            title="Abrir en WhatsApp Web oficial"
+                                        >
+                                            <ExternalLink size={13} />
+                                            <span className="hidden xl:inline">WA Web</span>
+                                        </a>
+
+                                        {/* Papelera / Restaurar */}
+                                        {activeChat.status === 'TRASH' ? (
+                                            <>
+                                                <button
+                                                    onClick={() => handleRestoreChat()}
+                                                    className="bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/60 text-emerald-300 font-bold text-xs px-2.5 py-1.5 rounded-xl transition-all flex items-center gap-1 cursor-pointer"
+                                                    title="Restaurar chat a la bandeja activa"
+                                                >
+                                                    <RotateCcw size={13} />
+                                                    <span className="hidden sm:inline">Restaurar</span>
+                                                </button>
+                                                <button
+                                                    onClick={() => handlePermanentDeleteChat()}
+                                                    className="bg-red-950/80 hover:bg-red-900 border border-red-500/60 text-red-300 font-bold text-xs px-2.5 py-1.5 rounded-xl transition-all flex items-center gap-1 cursor-pointer"
+                                                    title="Eliminar definitivamente este chat"
+                                                >
+                                                    <Trash2 size={13} />
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <button
+                                                onClick={() => handleTrashChat()}
+                                                className="bg-slate-900/60 hover:bg-red-950/60 border border-slate-700/60 hover:border-red-500/50 text-slate-400 hover:text-red-300 font-bold text-xs p-1.5 rounded-xl transition-all cursor-pointer"
+                                                title="Mover este chat a la papelera"
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
 
-                                {/* Acciones del Header: Reintento Rápido y WhatsApp Web */}
-                                <div className="flex items-center gap-2">
-                                    {activeChat.hasFailedMessage && (
-                                        <button
-                                            onClick={() => handleRetryFailedMessage(activeChat.failedMessage?.id, false)}
-                                            disabled={isRetrying}
-                                            className="bg-amber-600 hover:bg-amber-500 text-black font-black text-xs px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-                                            title="Motor de reintento inteligente activo"
-                                        >
-                                            {isRetrying ? <Loader2 size={13} className="animate-spin" /> : <RefreshCw size={13} />}
-                                            <span>{isRetrying ? 'Reintentando...' : `Auto-reintento en ${autoRetryCountdown}s`}</span>
-                                        </button>
-                                    )}
+                                {/* Nivel Inferior: Teléfono, Atributos de Clasificación y Asignación */}
+                                <div className="flex items-center justify-between gap-2 flex-wrap pt-1 border-t border-slate-800/40">
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        {/* Teléfono con Copiar & Llamar */}
+                                        <div className="inline-flex items-center gap-1.5 bg-slate-900/90 border border-emerald-500/30 px-2.5 py-0.5 rounded-lg">
+                                            <Phone size={12} className="text-emerald-400" />
+                                            <span className="text-xs font-mono font-bold text-emerald-300">
+                                                {formatPhoneNumber(activeChat.phone)}
+                                            </span>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleCopyPhone(activeChat.phone)}
+                                                className="p-0.5 rounded hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                                                title="Copiar número"
+                                            >
+                                                {copiedPhone ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+                                            </button>
+                                            <a
+                                                href={`tel:${activeChat.phone.replace(/\D/g, "")}`}
+                                                className="text-slate-400 hover:text-emerald-300 p-0.5 rounded hover:bg-white/10 transition-colors"
+                                                title="Llamar teléfono"
+                                            >
+                                                <Phone size={12} />
+                                            </a>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const url = prompt('Ingresa la URL de la foto de perfil para este contacto:', activeChat.profilePic || '');
+                                                    if (url !== null) {
+                                                        handleSaveContactPhoto(activeChat.phone, url);
+                                                    }
+                                                }}
+                                                className="text-slate-400 hover:text-cyan-300 p-0.5 rounded hover:bg-white/10 transition-colors text-xs flex items-center gap-0.5"
+                                                title="Actualizar foto de perfil"
+                                            >
+                                                <Camera size={12} />
+                                            </button>
+                                        </div>
 
-                                    {/* Switch ON / OFF del Bot IA por Chat */}
-                                    <button
-                                        onClick={handleToggleChatBot}
-                                        disabled={togglingBot}
-                                        className={`font-bold text-xs px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm border ${
-                                            (activeChat.isBotActive ?? activeChat.status !== 'MANUAL')
-                                                ? 'bg-emerald-950/80 hover:bg-emerald-900 border-emerald-500/60 text-emerald-300'
-                                                : 'bg-rose-950/80 hover:bg-rose-900 border-rose-500/60 text-rose-300'
-                                        }`}
-                                        title={(activeChat.isBotActive ?? activeChat.status !== 'MANUAL')
-                                            ? 'El Bot IA está ACTIVO para este chat. Haz clic para pausarlo y tomar atención manual.'
-                                            : 'El Bot IA está PAUSADO (Atención Manual). Haz clic para reactivar el Bot automático.'}
-                                    >
-                                        {togglingBot ? (
-                                            <Loader2 size={13} className="animate-spin" />
-                                        ) : (
-                                            <Bot size={14} className={(activeChat.isBotActive ?? activeChat.status !== 'MANUAL') ? 'text-emerald-400' : 'text-rose-400'} />
-                                        )}
-                                        <span>
-                                            {(activeChat.isBotActive ?? activeChat.status !== 'MANUAL') ? '🤖 Bot: ON' : '🛑 Bot: OFF (Manual)'}
+                                        {/* Categoría */}
+                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-slate-800/80 text-slate-300 border border-slate-700/60">
+                                            {categorizarChat(activeChat) === 'residencial' ? '🏠 Residencial' :
+                                             categorizarChat(activeChat) === 'empresarial' ? '🏢 Empresarial' :
+                                             categorizarChat(activeChat) === 'consolas' ? '🎮 Consolas' :
+                                             categorizarChat(activeChat) === 'postulante' ? '💼 Empleo' :
+                                             categorizarChat(activeChat) === 'soporte' ? '🔧 Soporte' :
+                                             categorizarChat(activeChat) === 'envios' ? '📦 Envíos' :
+                                             categorizarChat(activeChat) === 'sin_especificar' ? '❓ Sin Especificar' : '💬 General'}
                                         </span>
-                                    </button>
 
-                                    {/* Botón de Reactivación con Disculpa Inteligente */}
-                                    {/* Acciones de Papelera en Chat Activo */}
-                                    {activeChat.status === 'TRASH' ? (
-                                        <>
+                                        {/* Sin responder o Alta Intención */}
+                                        {isUnanswered(activeChat) && (
+                                            <span className="bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-lg text-[10px] font-bold animate-pulse">
+                                                ⏳ Esperando respuesta
+                                            </span>
+                                        )}
+                                        {hasHighPurchaseIntent(activeChat) && (
+                                            <span className="bg-orange-500/20 text-orange-300 border border-orange-500/40 px-2 py-0.5 rounded-lg text-[10px] font-bold">
+                                                🔥 Alta Intención
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {/* Estado de Asignación de Asesor */}
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="text-[10px] text-slate-400 font-mono">Asesor:</span>
+                                        {activeChat.ownerName ? (
                                             <button
-                                                onClick={() => handleRestoreChat()}
-                                                className="bg-emerald-900/60 hover:bg-emerald-800 border border-emerald-500/60 text-emerald-300 hover:text-white font-bold text-xs px-3 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
-                                                title="Restaurar chat a la bandeja activa"
+                                                onClick={() => {
+                                                    if (!canAssignLeads) return;
+                                                    setChatToAssign(activeChat);
+                                                    setAdvisorInput(activeChat.ownerName || "");
+                                                    setAssignModalOpen(true);
+                                                }}
+                                                className={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-lg bg-cyan-950/80 text-cyan-300 border border-cyan-700/50 ${canAssignLeads ? 'hover:bg-cyan-900/80 cursor-pointer' : ''}`}
+                                                title={canAssignLeads ? "Clic para reasignar asesor" : undefined}
                                             >
-                                                <RotateCcw size={13} />
-                                                <span>Restaurar</span>
+                                                <UserCheck size={11} />
+                                                <span>{activeChat.ownerName}</span>
                                             </button>
+                                        ) : (
                                             <button
-                                                onClick={() => handlePermanentDeleteChat()}
-                                                className="bg-red-950/80 hover:bg-red-900 border border-red-500/60 text-red-300 hover:text-white font-bold text-xs px-3 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
-                                                title="Eliminar definitivamente este chat"
+                                                onClick={() => {
+                                                    setChatToAssign(activeChat);
+                                                    setAdvisorInput("");
+                                                    setAssignModalOpen(true);
+                                                }}
+                                                className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-lg bg-amber-950/80 text-amber-300 border border-amber-700/50 hover:bg-amber-900/80 cursor-pointer"
+                                                title="Asignar asesor a este chat"
                                             >
-                                                <Trash2 size={13} />
-                                                <span>Eliminar Definitivo</span>
+                                                <UserPlus size={11} />
+                                                <span>⚡ Sin Asignar</span>
                                             </button>
-                                        </>
-                                    ) : (
-                                        <button
-                                            onClick={() => handleTrashChat()}
-                                            className="bg-slate-900/60 hover:bg-red-950/60 border border-slate-700/60 hover:border-red-500/50 text-slate-400 hover:text-red-300 font-bold text-xs px-2.5 py-2 rounded-xl transition-all flex items-center gap-1 cursor-pointer shadow-sm"
-                                            title="Mover este chat a la papelera"
-                                        >
-                                            <Trash2 size={13} />
-                                            <span className="hidden lg:inline">Papelera</span>
-                                        </button>
-                                    )}
-
-                                    <button
-                                        onClick={handleOpenReengageModal}
-                                        className="bg-[#1a2332] hover:bg-[#233044] border border-cyan-500/50 text-cyan-300 hover:text-white font-bold text-xs px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
-                                        title="Reactivar chat con disculpa personalizada según el artículo consultado"
-                                    >
-                                        <Sparkles size={14} className="text-cyan-400" />
-                                        <span className="hidden sm:inline">Reactivar con Disculpa</span>
-                                        <span className="sm:hidden">Reactivar</span>
-                                    </button>
-
-                                    <a
-                                        href={`https://wa.me/${activeChat.phone.replace(/\D/g, '')}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="bg-[#00a884] hover:bg-[#02906f] text-white font-black text-xs px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer"
-                                    >
-                                        <ExternalLink size={14} /> <span className="hidden sm:inline">WhatsApp Web</span>
-                                    </a>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
 
