@@ -71,7 +71,7 @@ export async function POST(req: Request) {
         } = body
 
         // Normalizar número de cotización siempre a prefijo PROP
-        let quoteNumber = rawQuoteNumber || `PROP-2026-${Math.floor(1000 + Math.random() * 9000)}`
+        let quoteNumber = rawQuoteNumber || `PROP-2026-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`
         if (quoteNumber.startsWith("COT-")) {
             quoteNumber = quoteNumber.replace(/^COT-/, "PROP-")
         } else if (!quoteNumber.startsWith("PROP-")) {
@@ -83,7 +83,7 @@ export async function POST(req: Request) {
             where: { quoteNumber }
         })
         if (existingQuote) {
-            quoteNumber = `PROP-2026-${Math.floor(1000 + Math.random() * 9000)}`
+            quoteNumber = `PROP-2026-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`
         }
 
         const effectiveClientName = (clientName || "Cliente General").trim()

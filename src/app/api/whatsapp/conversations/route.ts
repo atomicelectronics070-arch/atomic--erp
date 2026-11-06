@@ -29,6 +29,7 @@ export async function GET(req: Request) {
         const [conversations, trashCount] = await Promise.all([
             prisma.wAConversation.findMany({
                 where: whereClause,
+                take: 120,
                 include: {
                     contact: true,
                     owner: { select: { name: true, id: true } },

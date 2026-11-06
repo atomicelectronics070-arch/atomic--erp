@@ -25,25 +25,34 @@ export async function GET(req: Request) {
     return new Response('Forbidden', { status: 403 });
 }
 
+// Control de concurrencia: Debounce en memoria para rutinas programadas de Karen
+let lastScheduledRoutinesRun = 0;
+const ROUTINES_DEBOUNCE_MS = 60_000; // Máximo 1 verificación cada 60s para no saturar PostgreSQL
+
 export async function POST(req: Request) {
     try {
-        // Disparar saludo matutino automático de Karen para Juan si es horario AM
-        checkAndSendMorningBriefingToJuan().catch(() => {});
+        const now = Date.now();
+        if (now - lastScheduledRoutinesRun > ROUTINES_DEBOUNCE_MS) {
+            lastScheduledRoutinesRun = now;
 
-        // Disparar briefing de habilidades de Karen para Juan (Lunes 5:00 AM)
-        checkAndSendMondaySkillsBriefingToJuan().catch(() => {});
+            // Disparar saludo matutino automático de Karen para Juan si es horario AM
+            checkAndSendMorningBriefingToJuan().catch(() => {});
 
-        // Disparar recordatorios programados a Cristina (9:00 AM apertura / 7:00 PM cierre)
-        checkAndSendScheduledCoordinatorReminders().catch(() => {});
+            // Disparar briefing de habilidades de Karen para Juan (Lunes 5:00 AM)
+            checkAndSendMondaySkillsBriefingToJuan().catch(() => {});
 
-        // Disparar recordatorios diarios a Asesores Comerciales (12 PM timbraje, 3 PM prospección, 5 PM publicaciones)
-        checkAndSendScheduledAdvisorReminders().catch(() => {});
+            // Disparar recordatorios programados a Cristina (9:00 AM apertura / 7:00 PM cierre)
+            checkAndSendScheduledCoordinatorReminders().catch(() => {});
 
-        // Disparar chequeo diario 5:00 PM a Cristina, Stefi y Kevin
-        checkAndSendDaily5pmTeamCheckin().catch(() => {});
+            // Disparar recordatorios diarios a Asesores Comerciales (12 PM timbraje, 3 PM prospección, 5 PM publicaciones)
+            checkAndSendScheduledAdvisorReminders().catch(() => {});
 
-        // Disparar reporte ejecutivo consolidado 5:30 PM a Juan
-        checkAndSendDaily530pmJuanReport().catch(() => {});
+            // Disparar chequeo diario 5:00 PM a Cristina, Stefi y Kevin
+            checkAndSendDaily5pmTeamCheckin().catch(() => {});
+
+            // Disparar reporte ejecutivo consolidado 5:30 PM a Juan
+            checkAndSendDaily530pmJuanReport().catch(() => {});
+        }
 
         const body = await req.json();
 
