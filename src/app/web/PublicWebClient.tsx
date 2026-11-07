@@ -894,6 +894,16 @@ export default function PublicWebClient({
               <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-ping" />
             </Link>
 
+            {/* ─── PESTAÑA DESTACADA: DISCOS DUROS ADATA HD710 ─── */}
+            <Link
+              href="/web/adata-hd710"
+              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-stone-900 hover:bg-stone-800 text-yellow-400 border border-yellow-500/50 shadow-sm flex items-center gap-1.5"
+              title="Discos Duros ADATA HD710 AntiShock & IP68 • 1TB ($148.12) y 2TB ($178.80)"
+            >
+              <span>💾 ADATA HD710 ($148.12)</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
+            </Link>
+
             {/* LÍNEA DIVISORIA VERTICAL 3 */}
             <div className="h-5 w-[1px] bg-slate-300 shrink-0" />
 
@@ -2003,6 +2013,15 @@ export default function PublicWebClient({
             >
               <span className="font-heading uppercase tracking-wider text-[11px] text-rose-300 font-black">🔒 CERRADURAS INTELIGENTES</span>
               <span className="text-[10px] bg-rose-500 text-white px-2 py-0.5 rounded-full font-mono font-black">DESDE $89.80</span>
+            </Link>
+
+            {/* NEW CATEGORY PILL: DISCOS DUROS ADATA HD710 */}
+            <Link
+              href="/web/adata-hd710"
+              className="px-5 py-3 rounded-full bg-stone-900 border-2 border-yellow-400 hover:border-yellow-300 text-xs font-bold text-yellow-300 transition-all flex items-center gap-2 shadow-md group"
+            >
+              <span className="font-heading uppercase tracking-wider text-[11px] text-yellow-300 font-black">💾 ADATA HD710 ANTISHOCK</span>
+              <span className="text-[10px] bg-yellow-400 text-stone-950 px-2 py-0.5 rounded-full font-mono font-black">$148.12</span>
             </Link>
             <Link
               href="/web/camaras-hogar"
