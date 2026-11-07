@@ -22,7 +22,10 @@ export default async function PanelesRanuradosPage() {
         isActive: true,
         OR: [
           { sku: { startsWith: 'WPC-' } },
+          { sku: { startsWith: 'PVC-' } },
           { name: { contains: 'WPC', mode: 'insensitive' } },
+          { name: { contains: 'PVC', mode: 'insensitive' } },
+          { name: { contains: 'Plancha', mode: 'insensitive' } },
           { provider: 'ATOMIC ARQUITECTURA' }
         ]
       },
