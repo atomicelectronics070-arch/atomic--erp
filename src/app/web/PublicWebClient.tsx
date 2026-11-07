@@ -864,6 +864,16 @@ export default function PublicWebClient({
               <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
             </Link>
 
+            {/* ─── PESTAÑA DESTACADA: ATOMIC GAMING CONSOLAS ─── */}
+            <Link
+              href="/web/gaming"
+              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-gradient-to-r from-[#002266] to-[#003791] hover:brightness-110 text-white border border-blue-400/50 shadow-sm flex items-center gap-1.5"
+              title="ATOMIC Gaming • Consolas Certificadas con 2 Años de Garantía ($260)"
+            >
+              <span>🎮 ATOMIC GAMING ($260)</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
+            </Link>
+
             {/* LÍNEA DIVISORIA VERTICAL 3 */}
             <div className="h-5 w-[1px] bg-slate-300 shrink-0" />
 
@@ -1946,6 +1956,15 @@ export default function PublicWebClient({
             >
               <span className="font-heading uppercase tracking-wider text-[11px] text-cyan-300 font-black">⚡ 1HORA BANCOS DE CARGA</span>
               <span className="text-[10px] bg-cyan-400 text-stone-950 px-2 py-0.5 rounded-full font-mono font-black">DESDE $27.10</span>
+            </Link>
+
+            {/* NEW CATEGORY PILL: ATOMIC GAMING ECOSYSTEM */}
+            <Link
+              href="/web/gaming"
+              className="px-5 py-3 rounded-full bg-[#071329] border-2 border-blue-500 hover:border-blue-400 text-xs font-bold text-blue-200 transition-all flex items-center gap-2 shadow-md group"
+            >
+              <span className="font-heading uppercase tracking-wider text-[11px] text-blue-300 font-black">🎮 ATOMIC GAMING CONSOLAS</span>
+              <span className="text-[10px] bg-yellow-400 text-stone-950 px-2 py-0.5 rounded-full font-mono font-black">DESDE $260</span>
             </Link>
             <Link
               href="/web/camaras-hogar"
