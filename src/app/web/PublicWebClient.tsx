@@ -844,6 +844,16 @@ export default function PublicWebClient({
               <span>🚚 CARROS INDUSTRIALES</span>
             </Link>
 
+            {/* ─── PESTAÑA DESTACADA: PANELES RANURADOS WPC ─── */}
+            <Link
+              href="/web/paneles-ranurados"
+              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-gradient-to-r from-stone-900 to-amber-950 hover:brightness-110 text-amber-300 border border-amber-500/50 shadow-sm flex items-center gap-1.5"
+              title="Paneles Ranurados WPC & Remodelaciones ($9.09)"
+            >
+              <span>🪵 PANELES RANURADOS ($9.09)</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+            </Link>
+
             {/* LÍNEA DIVISORIA VERTICAL 3 */}
             <div className="h-5 w-[1px] bg-slate-300 shrink-0" />
 
@@ -1908,6 +1918,15 @@ export default function PublicWebClient({
             >
               <span className="font-heading uppercase tracking-wider text-[11px] text-yellow-400 font-black">🚚 CARROS INDUSTRIALES BP</span>
               <span className="text-[10px] bg-yellow-400 text-black px-2 py-0.5 rounded-full font-mono font-black">CARGA 200KG</span>
+            </Link>
+
+            {/* NEW CATEGORY PILL: PANELES RANURADOS WPC */}
+            <Link
+              href="/web/paneles-ranurados"
+              className="px-5 py-3 rounded-full bg-stone-950 border-2 border-amber-500/80 hover:border-amber-400 text-xs font-bold text-amber-200 transition-all flex items-center gap-2 shadow-md group"
+            >
+              <span className="font-heading uppercase tracking-wider text-[11px] text-amber-300 font-black">🪵 PANELES RANURADOS WPC</span>
+              <span className="text-[10px] bg-amber-400 text-stone-950 px-2 py-0.5 rounded-full font-mono font-black">$9.09 C/U</span>
             </Link>
             <Link
               href="/web/camaras-hogar"
