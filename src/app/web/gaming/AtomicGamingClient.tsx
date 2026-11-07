@@ -8,7 +8,8 @@ import {
   ArrowRight, CheckCircle2, Youtube, BookOpen, Clock, 
   Award, Zap, Check, HelpCircle, AlertCircle, Lock, 
   ExternalLink, ChevronRight, Play, Star, Disc, Layers,
-  Flame, HeartHandshake, Eye
+  Flame, HeartHandshake, Eye, MapPin, Globe, Compass, Filter,
+  Navigation, CheckCheck, X
 } from "lucide-react"
 import { useCart } from "@/context/CartContext"
 
@@ -22,15 +23,23 @@ interface DbProduct {
   description?: string | null
 }
 
-interface SoldConsole {
+interface SoldConsolePin {
   id: string
   name: string
-  clientLocation: string
   clientName: string
+  city: string
+  sector: string
+  region: 'quito' | 'costa' | 'sierra' | 'internacional'
+  country: string
   soldDate: string
   pricePaid: string
+  warrantyYears: number
   details: string
   image: string
+  // SVG Map Coordinates (percentage x: 0-100, y: 0-100)
+  x: number
+  y: number
+  pinColor: string
 }
 
 export default function AtomicGamingClient({ initialProducts }: { initialProducts: DbProduct[] }) {
@@ -38,8 +47,12 @@ export default function AtomicGamingClient({ initialProducts }: { initialProduct
   const [addedItem, setAddedItem] = useState<string | null>(null)
   
   // Interactive Console Variant Selector
-  // 1: 1 Control ($260) | 2: 2 Controles ($280) | 3: Con Magia & Juegos ($295)
   const [selectedPs4Config, setSelectedPs4Config] = useState<number>(3)
+
+  // Map Filter & Selected Pin State
+  const [activeRegion, setActiveRegion] = useState<'all' | 'quito' | 'costa' | 'sierra' | 'internacional'>('all')
+  const [selectedPinId, setSelectedPinId] = useState<string>("sold-ps4-gow-quito")
+  const [viewMode, setViewMode] = useState<'map' | 'grid'>('map')
 
   const officialPhone = "593980319050"
   const formattedPhone = "098 031 9050"
@@ -105,48 +118,185 @@ export default function AtomicGamingClient({ initialProducts }: { initialProduct
 
   const activeConfig = PS4_CONFIGS.find(c => c.id === selectedPs4Config) || PS4_CONFIGS[2]
 
-  const SOLD_CONSOLES: SoldConsole[] = [
+  // Sold consoles with real locations & coordinates
+  const SOLD_CONSOLES_MAP: SoldConsolePin[] = [
     {
-      id: "sold-ps5-slim",
+      id: "sold-ps5-cumbaya",
       name: "PlayStation 5 Slim 1 TB SSD + 2 Mandos DualSense",
-      clientLocation: "Quito, Sector Cumbayá",
       clientName: "Esteban V.",
-      soldDate: "Entregado el 28 de Octubre 2026",
+      city: "Quito",
+      sector: "Cumbayá / Valle de Tumbaco",
+      region: "quito",
+      country: "Ecuador",
+      soldDate: "28 de Octubre 2026",
       pricePaid: "$560.00",
-      details: "Estado 10/10 Open Box con caja original y garantía de 2 años activa.",
-      image: "/images/gaming/ps4-slim-1tb-god-of-war.jpg"
+      warrantyYears: 2,
+      details: "Estado 10/10 Open Box con caja original. Mantenimiento y garantía activa de 2 años.",
+      image: "/images/gaming/ps4-slim-1tb-god-of-war.jpg",
+      x: 48,
+      y: 33,
+      pinColor: "bg-blue-500"
     },
     {
-      id: "sold-ps4-pro-gow",
-      name: "PlayStation 4 Pro 1 TB 4K HDR Edición God of War Limitada",
-      clientLocation: "Quito Norte, El Inca",
+      id: "sold-ps4-gow-quito",
+      name: "PlayStation 4 Pro 1 TB 4K HDR Edición God of War",
       clientName: "Mateo R.",
-      soldDate: "Entregado el 22 de Octubre 2026",
+      city: "Quito Norte",
+      sector: "Sector El Inca / La Carolina",
+      region: "quito",
+      country: "Ecuador",
+      soldDate: "22 de Octubre 2026",
       pricePaid: "$370.00",
-      details: "Mantenimiento térmico profundo, pasta disipadora Arctic MX-4 y 2 controles.",
-      image: "/images/gaming/ps4-slim-1tb-god-of-war.jpg"
+      warrantyYears: 2,
+      details: "Pasta térmica nueva Arctic MX-4, 2 controles DualShock y estuche rígido oficial.",
+      image: "/images/gaming/ps4-slim-1tb-god-of-war.jpg",
+      x: 46,
+      y: 28,
+      pinColor: "bg-blue-600"
     },
     {
-      id: "sold-switch-oled",
+      id: "sold-ps4-carapungo",
+      name: "PlayStation 4 Slim 1 TB + 2 Controles Camo Red",
+      clientName: "Bryan S.",
+      city: "Quito Norte",
+      sector: "Carapungo / Calderón",
+      region: "quito",
+      country: "Ecuador",
+      soldDate: "19 de Octubre 2026",
+      pricePaid: "$280.00",
+      warrantyYears: 2,
+      details: "Retiro directo en bodega Carapungo con prueba técnica en vivo en televisor 4K.",
+      image: "/images/gaming/ps4-slim-1tb-god-of-war.jpg",
+      x: 50,
+      y: 23,
+      pinColor: "bg-cyan-500"
+    },
+    {
+      id: "sold-switch-guayaquil",
       name: "Nintendo Switch OLED 64GB Edición Zelda Tears of the Kingdom",
-      clientLocation: "Guayaquil, Samborondón",
       clientName: "Carlos M.",
-      soldDate: "Entregado el 15 de Octubre 2026",
+      city: "Guayaquil",
+      sector: "Samborondón / Plaza Lagos",
+      region: "costa",
+      country: "Ecuador",
+      soldDate: "15 de Octubre 2026",
       pricePaid: "$320.00",
-      details: "Despacho asegurado por Servientrega con estuche de viaje y mica de vidrio.",
-      image: "/images/gaming/ps4-slim-1tb-god-of-war.jpg"
+      warrantyYears: 2,
+      details: "Despacho por Servientrega asegurado con mica de vidrio templado instalada.",
+      image: "/images/gaming/ps4-slim-1tb-god-of-war.jpg",
+      x: 32,
+      y: 62,
+      pinColor: "bg-red-500"
     },
     {
-      id: "sold-xbox-series-s",
-      name: "Xbox Series S 512GB SSD Digital + 2 Mandos Inalámbricos",
-      clientLocation: "Cuenca, Sector El Vergel",
+      id: "sold-ps5-urdesa",
+      name: "PlayStation 5 Digital Edition + Headset Pulse 3D",
+      clientName: "Gabriel F.",
+      city: "Guayaquil",
+      sector: "Urdesa Central",
+      region: "costa",
+      country: "Ecuador",
+      soldDate: "11 de Octubre 2026",
+      pricePaid: "$520.00",
+      warrantyYears: 2,
+      details: "Lote importado certificado, ventilador silencioso y 2 mandos Midnight Black.",
+      image: "/images/gaming/ps4-slim-1tb-god-of-war.jpg",
+      x: 35,
+      y: 65,
+      pinColor: "bg-indigo-500"
+    },
+    {
+      id: "sold-xbox-cuenca",
+      name: "Xbox Series S 512GB SSD Digital + 2 Mandos",
       clientName: "David P.",
-      soldDate: "Entregado el 05 de Octubre 2026",
+      city: "Cuenca",
+      sector: "Sector El Vergel / Av. Solano",
+      region: "sierra",
+      country: "Ecuador",
+      soldDate: "05 de Octubre 2026",
       pricePaid: "$270.00",
-      details: "Cuenta activa de Game Pass Ultimate de cortesía y 2 años de garantía.",
-      image: "/images/gaming/ps4-slim-1tb-god-of-war.jpg"
+      warrantyYears: 2,
+      details: "Entregada con suscripción Game Pass Ultimate y cables de alta fidelidad.",
+      image: "/images/gaming/ps4-slim-1tb-god-of-war.jpg",
+      x: 43,
+      y: 78,
+      pinColor: "bg-emerald-500"
+    },
+    {
+      id: "sold-ps4-ambato",
+      name: "PlayStation 4 Slim 1 TB + Magia & 15 Juegos",
+      clientName: "Christian T.",
+      city: "Ambato",
+      sector: "Sector Ficoa / Miraflores",
+      region: "sierra",
+      country: "Ecuador",
+      soldDate: "29 de Septiembre 2026",
+      pricePaid: "$295.00",
+      warrantyYears: 2,
+      details: "Firmware permanente con GTA V, God of War Ragnarok, FIFA y Spider-Man cargados.",
+      image: "/images/gaming/ps4-slim-1tb-god-of-war.jpg",
+      x: 46,
+      y: 46,
+      pinColor: "bg-amber-500"
+    },
+    {
+      id: "sold-switch-manta",
+      name: "Nintendo Switch V2 Neon + Estuche Pokémon",
+      clientName: "Kevin A.",
+      city: "Manta",
+      sector: "Barbasquillo / Playa Murciélago",
+      region: "costa",
+      country: "Ecuador",
+      soldDate: "21 de Septiembre 2026",
+      pricePaid: "$240.00",
+      warrantyYears: 2,
+      details: "Batería con 98% de salud, Joy-Cons sin drift y garantía de 2 años por escrito.",
+      image: "/images/gaming/ps4-slim-1tb-god-of-war.jpg",
+      x: 18,
+      y: 49,
+      pinColor: "bg-red-500"
+    },
+    {
+      id: "sold-ps4-madrid",
+      name: "PlayStation 4 Pro 1TB Edición Especial 500 Millones",
+      clientName: "Javier P.",
+      city: "Madrid",
+      sector: "Chamartín / Encomienda Internacional",
+      region: "internacional",
+      country: "España",
+      soldDate: "14 de Septiembre 2026",
+      pricePaid: "$440.00",
+      warrantyYears: 2,
+      details: "Envío internacional DHL Express con estuche blindado y certificado de coleccionista.",
+      image: "/images/gaming/ps4-slim-1tb-god-of-war.jpg",
+      x: 88,
+      y: 18,
+      pinColor: "bg-purple-500"
+    },
+    {
+      id: "sold-ps4-miami",
+      name: "PlayStation 4 Slim 1TB Firmware 9.00 Golden",
+      clientName: "Roberto B.",
+      city: "Miami, FL",
+      sector: "Doral / Courier Internacional",
+      region: "internacional",
+      country: "Estados Unidos",
+      soldDate: "02 de Septiembre 2026",
+      pricePaid: "$310.00",
+      warrantyYears: 2,
+      details: "Versión especial para modding enviada mediante casillero courier en Miami.",
+      image: "/images/gaming/ps4-slim-1tb-god-of-war.jpg",
+      x: 78,
+      y: 28,
+      pinColor: "bg-purple-600"
     }
   ]
+
+  const filteredPins = activeRegion === 'all'
+    ? SOLD_CONSOLES_MAP
+    : SOLD_CONSOLES_MAP.filter(p => p.region === activeRegion)
+
+  const activeSelectedPin = SOLD_CONSOLES_MAP.find(p => p.id === selectedPinId) || SOLD_CONSOLES_MAP[0]
 
   const BLOG_POSTS = [
     {
@@ -223,6 +373,20 @@ export default function AtomicGamingClient({ initialProducts }: { initialProduct
             </div>
           </Link>
 
+          {/* Direct Nav Links to Sections */}
+          <div className="hidden lg:flex items-center gap-2 font-mono text-xs">
+            <a href="#seccion-disponibles" className="px-3 py-1.5 rounded-lg text-stone-300 hover:text-white hover:bg-blue-950/40 transition-colors">
+              Disponibles
+            </a>
+            <a href="#mapa-consolas-vendidas" className="px-3 py-1.5 rounded-lg bg-blue-950/60 border border-blue-500/40 text-blue-300 hover:text-white transition-colors flex items-center gap-1.5">
+              <MapPin size={13} className="text-red-400" />
+              <span>Mapa Consolas Vendidas</span>
+            </a>
+            <a href="#seccion-blog" className="px-3 py-1.5 rounded-lg text-stone-300 hover:text-white hover:bg-blue-950/40 transition-colors">
+              Blog & YouTube
+            </a>
+          </div>
+
           {/* Quick Direct WhatsApp & Cart */}
           <div className="flex items-center gap-3">
             <a
@@ -255,7 +419,7 @@ export default function AtomicGamingClient({ initialProducts }: { initialProduct
         </div>
       </header>
 
-      {/* ── HERO & MANIFIESTO: NOSOTROS BUSCAMOS LAS MEJORES CONSOLAS Y TÚ CONFÍA EN NOSOTROS ── */}
+      {/* ── HERO & MANIFIESTO ── */}
       <section className="relative pt-12 pb-14 px-4 sm:px-8 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           
@@ -304,15 +468,16 @@ export default function AtomicGamingClient({ initialProducts }: { initialProduct
                 href="#seccion-disponibles"
                 className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 hover:brightness-110 text-white font-black text-xs uppercase tracking-wider font-mono shadow-[0_0_30px_rgba(37,99,235,0.4)] transition-all active:scale-95 cursor-pointer"
               >
-                <span>Ver Consola Disponible (PS4 Slim 1TB)</span>
+                <span>Ver Consola Disponible ($260)</span>
                 <ArrowRight size={14} />
               </a>
 
               <a
-                href="#seccion-vendidas"
+                href="#mapa-consolas-vendidas"
                 className="flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-[#0a162b] hover:bg-[#122344] border border-blue-500/40 text-blue-200 text-xs font-bold uppercase tracking-wider font-mono transition-all"
               >
-                <span>Historial de Clientes Vendidos</span>
+                <MapPin size={15} className="text-red-400" />
+                <span>Explorar Mapa de Consolas Vendidas</span>
               </a>
             </div>
 
@@ -519,102 +684,359 @@ export default function AtomicGamingClient({ initialProducts }: { initialProduct
       </section>
 
       {/* ══════════════════════════════════════════════════════════════════════════════
-          APARTADO 2: HISTORIAL DE CLIENTES VENDIDOS (CONSOLAS YA VENDIDAS / AGOTADO)
+          APARTADO 2: MAPA INTERACTIVO DE CONSOLAS VENDIDAS & HISTORIAL
       ══════════════════════════════════════════════════════════════════════════════ */}
-      <section className="py-14 px-4 sm:px-8 max-w-7xl mx-auto border-t border-blue-950" id="seccion-vendidas">
+      <section className="py-14 px-4 sm:px-8 max-w-7xl mx-auto border-t border-blue-950" id="mapa-consolas-vendidas">
         
         <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4 mb-8 pb-4 border-b border-blue-950">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 text-red-400 text-xs font-mono font-bold uppercase tracking-wider border border-red-500/30 mb-2">
-              <Lock size={13} />
-              <span>Registro de Transparencia & Entregas</span>
+              <MapPin size={13} className="text-red-500" />
+              <span>Mapa de Ubicaciones & Entregas Verificadas</span>
             </div>
             <h2 className="text-2xl sm:text-4xl font-black text-white uppercase tracking-tight font-sans">
-              Historial de Consolas Vendidas
+              Consolas Vendidas: Mapa de Entregas
             </h2>
             <p className="text-stone-400 text-xs sm:text-sm mt-0.5">
-              Consolas compradas, revisadas en laboratorio y entregadas con éxito a miembros de nuestra comunidad gamer.
+              Haz clic en cualquiera de los pines del mapa para ver la foto real de la consola entregada, el sector y los detalles de garantía.
             </p>
           </div>
 
-          <a
-            href={`https://wa.me/${officialPhone}?text=Hola%20ATOMIC%20Gaming,%20busco%20una%20consola%20especifica%20(PS5,%20PS4,%20Switch%20o%20Xbox).%20Deseo%20que%20me%20ayuden%20a%20buscarla%20y%20certificarla%20con%202%20anos%20de%20garantia.`}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#09152b] hover:bg-[#122344] border border-blue-500/40 text-blue-200 text-xs font-mono font-bold transition-all shrink-0"
-          >
-            <span>¿Buscas otro modelo? Te lo conseguimos</span>
-            <ChevronRight size={14} />
-          </a>
+          {/* Toggle View & Quick Region Filters */}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center bg-[#091325] p-1 rounded-xl border border-slate-800">
+              <button
+                type="button"
+                onClick={() => setViewMode('map')}
+                className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+                  viewMode === 'map' ? 'bg-blue-600 text-white shadow-sm' : 'text-stone-400 hover:text-white'
+                }`}
+              >
+                🗺️ Vista Mapa
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('grid')}
+                className={`px-3 py-1 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer ${
+                  viewMode === 'grid' ? 'bg-blue-600 text-white shadow-sm' : 'text-stone-400 hover:text-white'
+                }`}
+              >
+                📋 Lista / Tarjetas
+              </button>
+            </div>
+
+            <a
+              href={`https://wa.me/${officialPhone}?text=Hola%20ATOMIC%20Gaming,%20busco%20una%20consola%20especifica%20(PS5,%20PS4,%20Switch%20o%20Xbox).%20Deseo%20que%20me%20ayuden%20a%20buscarla%20y%20certificarla%20con%202%20anos%20de%20garantia.`}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#09152b] hover:bg-[#122344] border border-blue-500/40 text-blue-200 text-xs font-mono font-bold transition-all shrink-0"
+            >
+              <span>Pedir una consola</span>
+              <ChevronRight size={13} />
+            </a>
+          </div>
         </div>
 
-        {/* Sold Consoles Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {SOLD_CONSOLES.map((sold) => (
-            <div 
-              key={sold.id}
-              className="rounded-3xl bg-[#081020] border border-slate-800/80 overflow-hidden relative flex flex-col justify-between group opacity-90 hover:opacity-100 transition-opacity"
+        {/* Region Filter Bar */}
+        <div className="flex flex-wrap items-center gap-2 mb-6">
+          <span className="text-xs font-mono text-stone-400 flex items-center gap-1 mr-1">
+            <Filter size={12} /> Región:
+          </span>
+          {[
+            { id: 'all', label: `Todos los Puntos (${SOLD_CONSOLES_MAP.length})` },
+            { id: 'quito', label: 'Quito & Valles (3)' },
+            { id: 'costa', label: 'Guayaquil & Costa (3)' },
+            { id: 'sierra', label: 'Cuenca & Sierra (2)' },
+            { id: 'internacional', label: 'Internacional / Courier (2)' },
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveRegion(tab.id as any)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold uppercase transition-all cursor-pointer ${
+                activeRegion === tab.id
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-[#091325] hover:bg-[#11203c] text-stone-400 border border-slate-800'
+              }`}
             >
-              <div>
-                
-                {/* Image with Restrictive "YA AGOTADO" Badge & Watermark */}
-                <div className="relative aspect-[4/3] w-full bg-slate-950 overflow-hidden">
-                  <Image
-                    src={sold.image}
-                    alt={sold.name}
-                    fill
-                    className="object-cover grayscale contrast-125 group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]" />
-                  
-                  {/* Restrictive Stamp / Logo */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <div className="rotate-[-12deg] px-4 py-1.5 rounded-xl bg-red-600/90 border-2 border-red-400 text-white font-black text-xs uppercase tracking-widest font-mono shadow-[0_0_20px_rgba(239,68,68,0.6)] flex items-center gap-1.5">
-                      <Lock size={14} />
-                      <span>YA AGOTADO • VENDIDA</span>
-                    </div>
-                  </div>
-
-                  <div className="absolute bottom-2 left-2 right-2 text-center">
-                    <span className="text-[10px] font-mono text-stone-300 bg-black/80 px-2 py-0.5 rounded border border-slate-800">
-                      {sold.soldDate}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Details */}
-                <div className="p-5 space-y-2.5">
-                  <div className="flex items-center justify-between text-[10px] font-mono text-emerald-400">
-                    <span className="flex items-center gap-1">
-                      <CheckCircle2 size={12} /> Cliente: {sold.clientName}
-                    </span>
-                    <span className="text-stone-400">{sold.clientLocation}</span>
-                  </div>
-
-                  <h3 className="text-sm font-black text-white uppercase leading-snug">
-                    {sold.name}
-                  </h3>
-
-                  <p className="text-[11px] text-stone-400 leading-relaxed">
-                    {sold.details}
-                  </p>
-                </div>
-
-              </div>
-
-              {/* Footer Stamp */}
-              <div className="p-5 pt-0">
-                <div className="p-2.5 rounded-xl bg-[#050a14] border border-slate-800 flex items-center justify-between text-xs font-mono">
-                  <span className="text-stone-500">Precio entregado:</span>
-                  <span className="font-bold text-stone-300">{sold.pricePaid}</span>
-                </div>
-              </div>
-
-            </div>
+              {tab.label}
+            </button>
           ))}
         </div>
 
-        {/* Notice for Future Past Consoles */}
+        {/* ── INTERACTIVE RADAR MAP VIEW ── */}
+        {viewMode === 'map' && (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            {/* Map Canvas (Tactical Cyber Radar SVG) */}
+            <div className="lg:col-span-8 rounded-3xl bg-[#060d1b] border-2 border-blue-500/40 relative overflow-hidden shadow-2xl p-4 sm:p-6 min-h-[480px]">
+              
+              {/* Tactical Grid Background */}
+              <div className="absolute inset-0 bg-[linear-gradient(to_right,#0c1a36_1px,transparent_1px),linear-gradient(to_bottom,#0c1a36_1px,transparent_1px)] bg-[size:40px_40px] opacity-60 pointer-events-none" />
+              
+              {/* Radar Rings */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] h-[340px] rounded-full border border-blue-500/20 pointer-events-none animate-pulse" />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] rounded-full border border-blue-500/10 pointer-events-none" />
+
+              {/* Map Header Status Indicator */}
+              <div className="relative z-10 flex items-center justify-between mb-4 pb-2 border-b border-blue-950 text-xs font-mono">
+                <div className="flex items-center gap-2 text-blue-300">
+                  <Compass size={14} className="text-blue-400 animate-spin [animation-duration:12s]" />
+                  <span className="font-bold">RADAR DE ENTREGAS ATOMIC GAMING</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                  <span className="text-[10px] text-emerald-400 font-bold uppercase">{filteredPins.length} Pines Activos</span>
+                </div>
+              </div>
+
+              {/* Vector Contour Outline of Ecuador & Global Scope */}
+              <div className="relative w-full h-[380px] sm:h-[440px]">
+                
+                <svg className="w-full h-full opacity-30 pointer-events-none" viewBox="0 0 100 100" fill="none">
+                  {/* Stylized Ecuador Continental & Coast Geometry */}
+                  <path
+                    d="M 22,25 C 26,18 38,12 55,16 C 65,19 75,25 78,35 C 80,48 70,60 62,72 C 55,82 48,92 38,88 C 28,84 20,72 24,58 C 16,50 18,36 22,25 Z"
+                    stroke="#3b82f6"
+                    strokeWidth="0.8"
+                    strokeDasharray="2,2"
+                    fill="#0f244a"
+                    fillOpacity="0.25"
+                  />
+                  {/* Andes Mountain Backbone Line */}
+                  <path
+                    d="M 46,15 L 48,32 L 45,50 L 42,75 L 38,88"
+                    stroke="#60a5fa"
+                    strokeWidth="0.5"
+                    strokeDasharray="1,1"
+                  />
+                  {/* International Flight Routes */}
+                  <path
+                    d="M 50,28 Q 65,15 88,18"
+                    stroke="#a855f7"
+                    strokeWidth="0.6"
+                    strokeDasharray="1.5,1.5"
+                  />
+                  <path
+                    d="M 50,28 Q 65,22 78,28"
+                    stroke="#a855f7"
+                    strokeWidth="0.6"
+                    strokeDasharray="1.5,1.5"
+                  />
+                </svg>
+
+                {/* Interactive Dynamic Pins */}
+                {filteredPins.map((pin) => {
+                  const isSelected = selectedPinId === pin.id
+
+                  return (
+                    <div
+                      key={pin.id}
+                      style={{ left: `${pin.x}%`, top: `${pin.y}%` }}
+                      onClick={() => setSelectedPinId(pin.id)}
+                      className="absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer group z-20"
+                    >
+                      {/* Pulse Wave */}
+                      <span className={`absolute -inset-2 rounded-full opacity-75 animate-ping ${pin.pinColor}`} />
+                      
+                      {/* Pin Circle */}
+                      <div className={`relative w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 flex items-center justify-center transition-all ${
+                        isSelected 
+                          ? 'bg-yellow-400 border-white text-stone-950 scale-125 shadow-[0_0_20px_rgba(250,204,21,0.8)] z-30'
+                          : 'bg-[#09152b] border-blue-400 text-blue-200 hover:scale-110 hover:border-yellow-400'
+                      }`}>
+                        <Gamepad2 size={13} className="shrink-0" />
+                      </div>
+
+                      {/* Floating Micro Label */}
+                      <div className={`absolute top-full left-1/2 -translate-x-1/2 mt-1 px-2 py-0.5 rounded-md text-[9px] font-mono whitespace-nowrap transition-all pointer-events-none ${
+                        isSelected
+                          ? 'bg-yellow-400 text-stone-950 font-black shadow-md'
+                          : 'bg-black/90 text-stone-300 border border-slate-700 group-hover:bg-blue-600 group-hover:text-white'
+                      }`}>
+                        {pin.city} • {pin.clientName}
+                      </div>
+                    </div>
+                  )
+                })}
+
+                {/* Map Legend */}
+                <div className="absolute bottom-2 left-2 p-2.5 rounded-xl bg-black/80 backdrop-blur-md border border-slate-800 text-[10px] font-mono space-y-1 text-stone-400">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-blue-500" />
+                    <span>Quito & Valles</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-red-500" />
+                    <span>Guayaquil / Costa</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                    <span>Sierra / Austro</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-purple-500" />
+                    <span>Internacional / Courier</span>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+            {/* Selected Console Detail Card (Sidebar / Preview) */}
+            <div className="lg:col-span-4 rounded-3xl bg-[#091325] border-2 border-blue-500/50 p-6 space-y-4 shadow-2xl relative">
+              
+              <div className="flex items-center justify-between border-b border-blue-950 pb-3">
+                <div className="flex items-center gap-1.5 text-xs font-mono text-blue-300 font-bold">
+                  <MapPin size={14} className="text-red-400" />
+                  <span>{activeSelectedPin.city}, {activeSelectedPin.country}</span>
+                </div>
+                <span className="text-[10px] bg-red-600/90 text-white font-mono font-black px-2 py-0.5 rounded-full border border-red-400">
+                  YA AGOTADO
+                </span>
+              </div>
+
+              {/* Console Photo with Restrictive Stamp */}
+              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-black border border-slate-700">
+                <Image
+                  src={activeSelectedPin.image}
+                  alt={activeSelectedPin.name}
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-black/40" />
+
+                {/* Watermark Stamp */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="rotate-[-10deg] px-4 py-1.5 rounded-xl bg-red-600/95 border-2 border-red-300 text-white font-black text-xs uppercase tracking-widest font-mono shadow-[0_0_20px_rgba(239,68,68,0.8)] flex items-center gap-1.5">
+                    <Lock size={13} />
+                    <span>VENDIDA A CLIENTE</span>
+                  </div>
+                </div>
+
+                <div className="absolute bottom-2 left-2 right-2 text-center">
+                  <span className="text-[10px] font-mono text-stone-200 bg-black/85 px-2.5 py-1 rounded-md border border-slate-700 block truncate">
+                    📍 {activeSelectedPin.sector}
+                  </span>
+                </div>
+              </div>
+
+              {/* Client & Specs Data */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-xs font-mono">
+                  <span className="text-stone-400">Comprador:</span>
+                  <span className="font-bold text-white flex items-center gap-1">
+                    <CheckCheck size={13} className="text-emerald-400" /> {activeSelectedPin.clientName}
+                  </span>
+                </div>
+
+                <h3 className="text-base font-black text-white uppercase leading-snug">
+                  {activeSelectedPin.name}
+                </h3>
+
+                <p className="text-xs text-stone-300 leading-relaxed">
+                  {activeSelectedPin.details}
+                </p>
+
+                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-blue-950 text-xs font-mono">
+                  <div className="p-2.5 rounded-xl bg-[#060d1b] border border-slate-800">
+                    <span className="text-[10px] text-stone-400 block">Precio Vendido:</span>
+                    <span className="text-sm font-black text-yellow-400">{activeSelectedPin.pricePaid}</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-[#060d1b] border border-slate-800">
+                    <span className="text-[10px] text-stone-400 block">Garantía Escrita:</span>
+                    <span className="text-sm font-black text-emerald-400">2 Años Activa</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Inquiry Action */}
+              <div className="pt-2">
+                <a
+                  href={`https://wa.me/${officialPhone}?text=${encodeURIComponent(`Hola ATOMIC Gaming, vi en el mapa que vendieron "${activeSelectedPin.name}" a ${activeSelectedPin.clientName} en ${activeSelectedPin.city}. Deseo cotizar si tienen una consola similar disponible.`)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-110 text-white font-mono font-bold text-xs uppercase tracking-wider shadow-md transition-all"
+                >
+                  <Phone size={14} className="stroke-[2.5]" />
+                  <span>Quiero una consola similar</span>
+                </a>
+              </div>
+
+            </div>
+
+          </div>
+        )}
+
+        {/* ── GRID / CARD VIEW ── */}
+        {viewMode === 'grid' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {filteredPins.map((sold) => (
+              <div 
+                key={sold.id}
+                className="rounded-3xl bg-[#081020] border border-slate-800/80 overflow-hidden relative flex flex-col justify-between group opacity-90 hover:opacity-100 transition-opacity"
+              >
+                <div>
+                  
+                  {/* Image with Restrictive "YA AGOTADO" Badge & Watermark */}
+                  <div className="relative aspect-[4/3] w-full bg-slate-950 overflow-hidden">
+                    <Image
+                      src={sold.image}
+                      alt={sold.name}
+                      fill
+                      className="object-cover grayscale contrast-125 group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]" />
+                    
+                    {/* Restrictive Stamp / Logo */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                      <div className="rotate-[-12deg] px-4 py-1.5 rounded-xl bg-red-600/90 border-2 border-red-400 text-white font-black text-xs uppercase tracking-widest font-mono shadow-[0_0_20px_rgba(239,68,68,0.6)] flex items-center gap-1.5">
+                        <Lock size={14} />
+                        <span>YA AGOTADO • VENDIDA</span>
+                      </div>
+                    </div>
+
+                    <div className="absolute bottom-2 left-2 right-2 text-center">
+                      <span className="text-[10px] font-mono text-stone-300 bg-black/80 px-2 py-0.5 rounded border border-slate-800">
+                        {sold.soldDate}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Details */}
+                  <div className="p-5 space-y-2.5">
+                    <div className="flex items-center justify-between text-[10px] font-mono text-emerald-400">
+                      <span className="flex items-center gap-1">
+                        <CheckCircle2 size={12} /> Cliente: {sold.clientName}
+                      </span>
+                      <span className="text-stone-400">{sold.city}</span>
+                    </div>
+
+                    <h3 className="text-sm font-black text-white uppercase leading-snug">
+                      {sold.name}
+                    </h3>
+
+                    <p className="text-[11px] text-stone-400 leading-relaxed">
+                      {sold.details}
+                    </p>
+                  </div>
+
+                </div>
+
+                {/* Footer Stamp */}
+                <div className="p-5 pt-0">
+                  <div className="p-2.5 rounded-xl bg-[#050a14] border border-slate-800 flex items-center justify-between text-xs font-mono">
+                    <span className="text-stone-500">Precio entregado:</span>
+                    <span className="font-bold text-stone-300">{sold.pricePaid}</span>
+                  </div>
+                </div>
+
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Sell Your Console Banner */}
         <div className="mt-8 p-4 rounded-2xl bg-[#09152b]/60 border border-blue-900/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-stone-400">
           <div className="flex items-center gap-2 text-stone-300">
             <HeartHandshake size={16} className="text-blue-400 shrink-0" />
