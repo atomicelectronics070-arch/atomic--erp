@@ -904,6 +904,16 @@ export default function PublicWebClient({
               <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
             </Link>
 
+            {/* ─── PESTAÑA DESTACADA: MONITORES GAMING & PRO ─── */}
+            <Link
+              href="/web/monitores"
+              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-gradient-to-r from-blue-950 via-indigo-900 to-slate-900 hover:brightness-110 text-cyan-300 border border-cyan-500/50 shadow-sm flex items-center gap-1.5"
+              title="Monitores Gaming & Pro 120Hz/144Hz IPS • ASUS, LG, Gigabyte, Dell"
+            >
+              <span>🖥️ MONITORES 144Hz/IPS</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+            </Link>
+
             {/* LÍNEA DIVISORIA VERTICAL 3 */}
             <div className="h-5 w-[1px] bg-slate-300 shrink-0" />
 
@@ -2022,6 +2032,15 @@ export default function PublicWebClient({
             >
               <span className="font-heading uppercase tracking-wider text-[11px] text-yellow-300 font-black">💾 ADATA HD710 ANTISHOCK</span>
               <span className="text-[10px] bg-yellow-400 text-stone-950 px-2 py-0.5 rounded-full font-mono font-black">$148.12</span>
+            </Link>
+
+            {/* NEW CATEGORY PILL: MONITORES GAMING & PRO TECNOMEGA */}
+            <Link
+              href="/web/monitores"
+              className="px-5 py-3 rounded-full bg-[#0a1128] border-2 border-cyan-400 hover:border-cyan-300 text-xs font-bold text-cyan-200 transition-all flex items-center gap-2 shadow-md group"
+            >
+              <span className="font-heading uppercase tracking-wider text-[11px] text-cyan-300 font-black">🖥️ MONITORES GAMING & PRO</span>
+              <span className="text-[10px] bg-cyan-400 text-stone-950 px-2 py-0.5 rounded-full font-mono font-black">120Hz/144Hz</span>
             </Link>
             <Link
               href="/web/camaras-hogar"
