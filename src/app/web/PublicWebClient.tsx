@@ -825,6 +825,28 @@ export default function PublicWebClient({
             {/* LÍNEA DIVISORIA VERTICAL 2 */}
             <div className="h-5 w-[1px] bg-slate-300 shrink-0" />
 
+            {/* ─── PESTAÑA DESTACADA: ATOMIC STUDIO & CONTENIDO ─── */}
+            <Link
+              href="/web/creacion-contenido"
+              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:brightness-110 text-white shadow-sm flex items-center gap-1.5 border border-pink-400/40"
+              title="ATOMIC Studio: Creación de Contenido & Redes Sociales"
+            >
+              <span>🎬 STUDIO CONTENIDO</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-yellow-300 animate-ping" />
+            </Link>
+
+            {/* ─── PESTAÑA DESTACADA: CARROS INDUSTRIALES BP ─── */}
+            <Link
+              href="/web/carros-industriales"
+              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-slate-900 hover:bg-black text-yellow-400 border border-yellow-500/40 shadow-sm flex items-center gap-1.5"
+              title="Línea Industrial Banco del Perno"
+            >
+              <span>🚚 CARROS INDUSTRIALES</span>
+            </Link>
+
+            {/* LÍNEA DIVISORIA VERTICAL 3 */}
+            <div className="h-5 w-[1px] bg-slate-300 shrink-0" />
+
             {/* ─── SECCIÓN 3: CONFIANZA, EMPRESA & SOPORTE ─── */}
             <div className="flex items-center gap-1 bg-slate-100 hover:bg-slate-200/70 p-1 rounded-full border border-slate-200/80 backdrop-blur-md shrink-0 shadow-inner transition-colors">
               {[
@@ -1870,6 +1892,23 @@ export default function PublicWebClient({
 
           {/* QUICK CATEGORY HUB BUTTONS */}
           <div className="flex flex-wrap items-center justify-center gap-3 max-w-4xl mx-auto mb-16">
+            {/* NEW CATEGORY PILL: ATOMIC STUDIO */}
+            <Link
+              href="/web/creacion-contenido"
+              className="px-5 py-3 rounded-full bg-gradient-to-r from-purple-50 via-pink-50 to-indigo-50 border-2 border-purple-400 hover:border-pink-500 text-xs font-bold text-slate-800 transition-all flex items-center gap-2 shadow-sm group"
+            >
+              <span className="font-heading uppercase tracking-wider text-[11px] text-purple-950 font-black">🎬 ATOMIC STUDIO (CONTENIDO)</span>
+              <span className="text-[10px] bg-gradient-to-r from-pink-600 to-purple-600 text-white px-2 py-0.5 rounded-full font-mono font-bold">TICKETS $100</span>
+            </Link>
+
+            {/* NEW CATEGORY PILL: CARROS INDUSTRIALES BP */}
+            <Link
+              href="/web/carros-industriales"
+              className="px-5 py-3 rounded-full bg-slate-900 border-2 border-yellow-400 hover:border-yellow-300 text-xs font-bold text-yellow-400 transition-all flex items-center gap-2 shadow-md group"
+            >
+              <span className="font-heading uppercase tracking-wider text-[11px] text-yellow-400 font-black">🚚 CARROS INDUSTRIALES BP</span>
+              <span className="text-[10px] bg-yellow-400 text-black px-2 py-0.5 rounded-full font-mono font-black">CARGA 200KG</span>
+            </Link>
             <Link
               href="/web/camaras-hogar"
               className="px-5 py-3 rounded-full bg-white border border-amber-400 hover:border-amber-500 hover:bg-amber-50/40 text-xs font-bold text-slate-800 transition-all flex items-center gap-2 shadow-sm group"
