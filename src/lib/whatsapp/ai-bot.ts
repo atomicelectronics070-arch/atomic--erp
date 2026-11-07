@@ -7,6 +7,9 @@ import { processConversationalBotMessage } from '@/lib/bot/botBrain';
 import { 
     isJuan, 
     processJuanCommand, 
+    isSantiago,
+    processSantiagoCommand,
+    notifySantiagoPorteroElectrico,
     isCristina,
     processCristinaCommand,
     isStefi,
@@ -321,6 +324,25 @@ export async function handleIncomingWhatsAppBot(params: {
     try {
         const { whatsappId, contactName, messageText, mediaUrl, conversationId } = params;
 
+        // A0. Verificar si el remitente es Santiago (Jefe y Propietario de Atomic)
+        if (isSantiago(whatsappId)) {
+            const santiagoReply = await processSantiagoCommand(messageText, whatsappId, conversationId);
+            await sendWhatsAppMessage(whatsappId, santiagoReply);
+            await prisma.wAMessage.create({
+                data: {
+                    conversationId,
+                    whatsappMessageId: `karen-santiago-${Date.now()}`,
+                    direction: 'OUTBOUND',
+                    type: 'text',
+                    body: santiagoReply,
+                    status: 'SENT',
+                    senderId: 'BOT_SANTIAGO_DIRECTOR'
+                }
+            });
+            console.log(`[SANTIAGO_INTERACTION] Karen respondió a Santiago (Jefe) en WhatsApp (${whatsappId})`);
+            return santiagoReply;
+        }
+
         // A. Verificar si el remitente es Juan (Administrador / Dueño) interactuando con Karen
         if (isJuan(whatsappId)) {
             const karenReply = await processJuanCommand(messageText, conversationId);
@@ -560,6 +582,28 @@ INSTRUCCIÓN CLAVE DE RESPUESTA:
                 if (isHotOpportunity) {
                     notifyJuanHotOpportunity(contactName, whatsappId, messageText).catch(() => {});
                 }
+
+                // 🔔 Alerta prioritaria para Santiago (Jefe & Propietario): Porteros Eléctricos y Citofonía
+                const isPorteroElectrico = 
+                    textLower.includes('portero') || 
+                    textLower.includes('citofon') || 
+                    textLower.includes('citófon') || 
+                    textLower.includes('intercom') || 
+                    textLower.includes('videoportero') || 
+                    textLower.includes('video portero') || 
+                    textLower.includes('frente de calle') || 
+                    textLower.includes('timbre con camara') || 
+                    textLower.includes('timbre con cámara') || 
+                    textLower.includes('commax') || 
+                    textLower.includes('belcom') || 
+                    textLower.includes('auricular') || 
+                    textLower.includes('citofonia') || 
+                    textLower.includes('citofonía');
+
+                if (isPorteroElectrico) {
+                    notifySantiagoPorteroElectrico(contactName, whatsappId, messageText, conversationId).catch(() => {});
+                }
+
                 notifyJuanIncomingBurst().catch(() => {});
             } else {
                 karenState.burstCounters.uncataloged++;

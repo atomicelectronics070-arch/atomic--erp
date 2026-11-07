@@ -14,6 +14,9 @@ export const STEFI_PHONE_LOCAL = "0989476556";
 export const KEVIN_PHONE = "593981495809";
 export const KEVIN_PHONE_LOCAL = "0981495809";
 
+export const SANTIAGO_PHONE = "593981791384";
+export const SANTIAGO_PHONE_LOCAL = "0981791384";
+
 const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY || "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";
 const NVIDIA_MODEL = "meta/llama-3.2-90b-vision-instruct";
 
@@ -207,6 +210,12 @@ export function isKevin(phone: string): boolean {
     if (!phone) return false;
     const clean = phone.replace(/\D/g, "");
     return clean === "593981495809" || clean === "0981495809" || clean.endsWith("981495809");
+}
+
+export function isSantiago(phone: string): boolean {
+    if (!phone) return false;
+    const clean = phone.replace(/\D/g, "");
+    return clean === "593981791384" || clean === "0981791384" || clean.endsWith("981791384");
 }
 
 export const INTERNAL_STAFF_EXCLUSIONS = [
@@ -2894,4 +2903,189 @@ Mensaje recibido de Kevin:
     } catch (_) {}
 
     return `¡Hola Kevin! 💼🔥 ¡Excelente leerte, compañero! Ya dejé registrado tu balance del día en la memoria del sistema para el reporte ejecutivo de las 5:30 PM que le entrego a Juan. Mantén el ritmo en el CRM respondiendo ágil a cada lead y no olvides timbrar tu asistencia en plataforma para que todo tu esfuerzo quede computado. Si necesitas respaldo con alguna cotización caliente, avísame de una. ¡Vamos por esos cierres! 🚀👏`;
+}
+
+/**
+ * Notifica de inmediato a Santiago (Jefe y Propietario) cuando un cliente consulta por porteros eléctricos o citofonía.
+ */
+export async function notifySantiagoPorteroElectrico(contactName: string, phone: string, snippet: string, conversationId?: string) {
+    const cleanPhone = phone.replace(/\D/g, "");
+    const formattedPhone = cleanPhone.startsWith("593") ? cleanPhone : (cleanPhone.startsWith("09") ? "593" + cleanPhone.slice(1) : cleanPhone);
+    const waLink = `https://wa.me/${formattedPhone}`;
+
+    const message = 
+`🔔 *¡SANTIAGO! CLIENTE DE PORTERO ELÉCTRICO / CITOFONÍA DETECTADO* ⚡
+
+Acaba de ingresar un cliente solicitando asesoría directa en porteros eléctricos o citofonía:
+👤 *Cliente:* ${contactName}
+📱 *Teléfono:* +${formattedPhone}
+💬 *Mensaje:* "${snippet}"
+
+👉 *Escríbele directo en WhatsApp:* ${waLink}
+
+⚠️ *Control 24h Meta:* ¡Contáctalo antes de que venza la ventana gratuita de 24 horas para no perder la comunicación comercial! 💼`;
+
+    try {
+        await sendWhatsAppMessage(SANTIAGO_PHONE, message);
+        console.log(`[NOTIFY_SANTIAGO_PORTERO] Alerta de portero enviada exitosamente a Santiago (${SANTIAGO_PHONE}) para cliente ${contactName}`);
+    } catch (e: any) {
+        console.error("[NOTIFY_SANTIAGO_PORTERO_ERR]", e.message);
+    }
+}
+
+/**
+ * Monitoreo diario y preventivo de la ventana de 24 horas de Meta para Santiago.
+ * Detecta clientes con mensajes entrantes sin responder que están entre 16 y 23.5 horas de antigüedad.
+ */
+export async function checkAndSendSantiago24hExpiringAlerts(force?: boolean): Promise<{ count: number }> {
+    try {
+        const now = Date.now();
+        const minAgeMs = 16 * 60 * 60 * 1000; // Al menos 16 horas
+        const maxAgeMs = 23.5 * 60 * 60 * 1000; // Menos de 23.5 horas
+
+        const minDate = new Date(now - maxAgeMs);
+        const maxDate = new Date(now - minAgeMs);
+
+        // Clave de debounce diario para no saturar a Santiago más de una vez cada 6 horas
+        const debounceKey = `SANTIAGO_24H_ALERT_RUN`;
+        const lastRunSetting = await prisma.systemSetting.findUnique({ where: { key: debounceKey } });
+        if (!force && lastRunSetting && lastRunSetting.value) {
+            const lastRunTime = parseInt(lastRunSetting.value, 10);
+            if (!isNaN(lastRunTime) && now - lastRunTime < 6 * 60 * 60 * 1000) {
+                return { count: 0 };
+            }
+        }
+
+        // Buscar conversaciones activas donde el último mensaje haya sido INBOUND dentro de la ventana de vencimiento
+        const expiringConversations = await prisma.wAConversation.findMany({
+            where: {
+                status: { notIn: ['TRASH', 'ARCHIVED'] },
+                contact: {
+                    NOT: [
+                        { whatsappId: JUAN_PHONE },
+                        { whatsappId: CRISTINA_PHONE },
+                        { whatsappId: STEFI_PHONE },
+                        { whatsappId: KEVIN_PHONE },
+                        { whatsappId: SANTIAGO_PHONE }
+                    ]
+                },
+                updatedAt: { gte: minDate, lte: maxDate }
+            },
+            include: {
+                contact: true,
+                messages: {
+                    take: 3,
+                    orderBy: { createdAt: 'desc' }
+                }
+            },
+            take: 10
+        });
+
+        // Filtrar aquellas cuyo último mensaje sea del cliente (INBOUND)
+        const leadsNearExpiration = expiringConversations.filter(c => {
+            const lastMsg = c.messages?.[0];
+            return lastMsg && lastMsg.direction === 'INBOUND';
+        });
+
+        if (leadsNearExpiration.length === 0) {
+            return { count: 0 };
+        }
+
+        // Registrar tiempo de ejecución
+        await prisma.systemSetting.upsert({
+            where: { key: debounceKey },
+            update: { value: String(now) },
+            create: { key: debounceKey, value: String(now), description: "Última alerta 24h Meta enviada a Santiago" }
+        });
+
+        const leadItems = leadsNearExpiration.map(c => {
+            const lastMsg = c.messages[0];
+            const cleanPhone = c.contact.whatsappId.replace(/\D/g, "");
+            const hoursAgo = Math.round((now - new Date(lastMsg.createdAt).getTime()) / (1000 * 60 * 60));
+            return `• *${c.contact.name || 'Cliente'}* (+${cleanPhone})\n  ⏳ Hace ${hoursAgo}h: "${(lastMsg.body || '').slice(0, 70)}..."\n  👉 https://wa.me/${cleanPhone}`;
+        }).join('\n\n');
+
+        const alertMessage = 
+`⏳ *¡ALERTA PREVENTIVA 24 HORAS META - SANTIAGO!* ⚠️
+
+Tienes *${leadsNearExpiration.length} cliente(s)* a punto de cumplir 24 horas desde su último mensaje. Si la ventana se cierra, no podremos responderles de forma gratuita:
+
+${leadItems}
+
+¡Por favor escríbeles o haz clic en los enlaces directos para no perder el contacto comercial! 📲`;
+
+        await sendWhatsAppMessage(SANTIAGO_PHONE, alertMessage);
+        console.log(`[SANTIAGO_24H_ALERT] Alerta de ${leadsNearExpiration.length} clientes enviada a Santiago`);
+        return { count: leadsNearExpiration.length };
+
+    } catch (e: any) {
+        console.error("[SANTIAGO_24H_ALERT_ERR]", e.message);
+        return { count: 0 };
+    }
+}
+
+/**
+ * Procesa la interacción conversacional directa de Santiago (Jefe y Propietario de Atomic) con Karen.
+ */
+export async function processSantiagoCommand(messageText: string, whatsappId: string, conversationId?: string): Promise<string> {
+    const raw = (messageText || "").trim();
+    const rawLower = raw.toLowerCase();
+
+    // 1. Si Santiago pregunta por clientes por expirar o ventana de 24h
+    if (rawLower.includes("24") || rawLower.includes("ventana") || rawLower.includes("expirar") || rawLower.includes("pendientes") || rawLower.includes("revisa")) {
+        const alertRes = await checkAndSendSantiago24hExpiringAlerts(true);
+        if (alertRes.count > 0) {
+            return `¡A la orden, Santiago! 🫡 Acabo de escanear la base de datos y encontré ${alertRes.count} cliente(s) cerca de cumplir las 24 horas. Ya te envié el detalle completo con los enlaces directos de WhatsApp para que les escribas. ¡Revisa el mensaje anterior!`;
+        } else {
+            return `¡Todo bajo control, Santiago! 🛡️ Ningún cliente tiene mensajes a punto de vencer en la ventana de 24 horas de Meta en este momento. Todos los leads recientes están atendidos o dentro del margen seguro.`;
+        }
+    }
+
+    // 2. Si Santiago pregunta por porteros eléctricos
+    if (rawLower.includes("portero") || rawLower.includes("citofon") || rawLower.includes("videoportero")) {
+        return `¡Hola Santiago! 🔔 Tengo el radar activo para ti: en cuanto cualquier cliente mencione porteros eléctricos, citófonos, videoporteros o intercomunicadores, te llegará la notificación inmediata con su número y enlace directo https://wa.me/... para que lo cierres al instante.`;
+    }
+
+    // 3. Respuesta conversacional con IA (NVIDIA Llama-3.2) reconociendo a Santiago como Jefe y Propietario
+    const prompt = `
+Eres Karen, Jefa de Inteligencia y Mensajería de Atomic Electronics Ecuador.
+Estás hablando exclusivamente con Santiago, el JEFE Y PROPIETARIO de la empresa (teléfono 0981791384).
+
+ROL Y PERSONALIDAD CON SANTIAGO:
+1. Trátalo con respeto, lealtad y agilidad ejecutiva como el dueño de la empresa ("Hola Santiago", "A la orden, Santiago", "Jefe").
+2. Tu misión principal para él:
+   - Pasar los clientes de PORTEROS ELÉCTRICOS y CITOFONÍA directo a su WhatsApp para que él les escriba y no se pierda la comunicación.
+   - Monitorear la ventana de 24 horas de Meta WhatsApp para que no expire ningún cliente sin respuesta.
+3. Si te hace cualquier consulta operativa, de inventario, de ventas o de personal (Cristina, Kevin, Stefi), responde con datos concretos y actitud resolutiva.
+4. Respuesta clara, directa y ejecutiva en 1 a 2 párrafos.
+
+Mensaje de Santiago: "${raw}"
+`;
+
+    try {
+        const resp = await axios.post(
+            "https://integrate.api.nvidia.com/v1/chat/completions",
+            {
+                model: NVIDIA_MODEL,
+                messages: [
+                    { role: "system", content: "Eres Karen, Jefa de Operaciones y Mensajería de Atomic, hablando con Santiago (Jefe y Propietario)." },
+                    { role: "user", content: prompt }
+                ],
+                temperature: 0.6,
+                max_tokens: 450
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${NVIDIA_API_KEY}`,
+                    "Content-Type": "application/json"
+                },
+                timeout: 25000
+            }
+        );
+
+        const reply = resp.data?.choices?.[0]?.message?.content?.trim();
+        if (reply) return reply;
+    } catch (_) {}
+
+    return `¡A la orden, Santiago! 🫡 Recibido tu mensaje. Te confirmo que sigo monitoreando cada cliente de portero eléctrico que ingresa para pasártelo de inmediato y vigilando el reloj de 24 horas de Meta para que no perdamos a ningún cliente. ¿Requieres que revise algún lead en particular o necesitas un reporte del CRM? 💼⚡`;
 }

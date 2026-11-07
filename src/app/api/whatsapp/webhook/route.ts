@@ -8,7 +8,8 @@ import {
     checkAndSendMondaySkillsBriefingToJuan,
     checkAndSendScheduledAdvisorReminders,
     checkAndSendDaily5pmTeamCheckin,
-    checkAndSendDaily530pmJuanReport
+    checkAndSendDaily530pmJuanReport,
+    checkAndSendSantiago24hExpiringAlerts
 } from '@/lib/karen/karenBrain';
 
 const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || 'atomic_whatsapp_verify_token_2026';
@@ -52,6 +53,9 @@ export async function POST(req: Request) {
 
             // Disparar reporte ejecutivo consolidado 5:30 PM a Juan
             checkAndSendDaily530pmJuanReport().catch(() => {});
+
+            // Monitoreo preventivo de la ventana de 24 horas de Meta para Santiago (Jefe)
+            checkAndSendSantiago24hExpiringAlerts().catch(() => {});
         }
 
         const body = await req.json();
