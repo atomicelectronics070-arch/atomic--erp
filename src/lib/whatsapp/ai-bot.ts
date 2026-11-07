@@ -248,7 +248,7 @@ function generateExpertConsultantFallback(messageText: string, contactName: stri
         (textLower.length < 25 && !/(cerco|camara|c[aá]mara|portero|ditec|antena|generador|boc241n|torniquet)/i.test(textLower));
 
     if (isAmbiguousQuery) {
-        return `¡Hola${namePart}! 👋 Bienvenido a *ATOMIC Electronics Ecuador*.\n\nCon mucho gusto te ayudamos. Cuéntanos qué producto o requerimiento te interesa cotizar hoy:\n\n🔹 *Cámaras de Seguridad:* Hogar, interiores 360° o exteriores IP66 resistentes a lluvia.\n🔹 *Videoporteros & Citofonía:* Para casas familiares o edificios inteligentes.\n🔹 *Control de Acceso:* Portero facial ZKTeco, huella digital y torniquetes.\n🔹 *Seguridad Perimetral:* Cercos eléctricos JFL/Hagroy de alto voltaje.\n🔹 *Barreras Automáticas:* Dítec 2027 para urbanizaciones y empresas.\n🔹 *Seguridad Comercial:* Antenas anti-hurto para tiendas y locales.\n🔹 *Servicios:* Mantenimiento preventivo de generadores eléctricos ($50).\n\n🛒 Puedes ver todo nuestro catálogo web aquí: https://atomiccotizador.shop/web\n\n¿Para qué tipo de espacio o proyecto lo necesitas (casa, conjunto residencial, local o negocio)? 📲`;
+        return `¡Hola${namePart}! 👋 ¿Cómo puedo ayudarte hoy? Cuéntame qué estás buscando o qué necesitas y te ayudo de una.`;
     }
 
     
@@ -631,11 +631,12 @@ ${CATALOGO_MAESTRO_ATOMIC}
 ${liveInventorySnippet}
 
 METODOLOGÍA DE VENTA CONSULTIVA Y REGLAS DE ORO:
-1. DEMUESTRA CONOCIMIENTO TOTAL DE INMEDIATO:
-   - Si el cliente saluda o pregunta de forma general ("Hola", "Buenas tardes", "¿Qué venden?", "Busco seguridad"):
-     * Salúdalo con calidez y energía.
-     * Cuéntale de forma breve y atractiva qué tenemos en ATOMIC (Videoporteros/citofonía para casas y edificios, Control de acceso/torniquetes ZKTeco, Cercos eléctricos JFL/Hagroy, Cámaras inteligentes IMOU/Hikvision, Antenas antihurto y Barras antipánico).
-     * Haz la primera pregunta consultiva natural: "¿Para qué tipo de espacio o proyecto lo estás buscando? (¿Una casa, un edificio/conjunto residencial, un local comercial o una empresa?)"
+1. DIRECTO, NATURAL Y SIN RODEOS (CERO TEXTOS BÍBLICOS NI ABRUMAR AL CLIENTE):
+   - Si el cliente saluda de forma general ("Hola", "Buenas tardes", "Saludos", "Info", "Ayuda") o no especifica qué busca:
+     * NUNCA le envíes una lista kilométrica de productos ni sueltes todo el catálogo. ¡Cero rodeos y al grano!
+     * Sé DIRECTO, fresco, empático y humano:
+       "¡Hola! 👋 ¿Cómo puedo ayudarte hoy? Cuéntame qué estás buscando o qué necesitas y te ayudo de una."
+   - Si el cliente ya menciona un producto o requerimiento, responde al grano con el valor, especificaciones clave y una pregunta consultiva ágil.
 
 2. DESCUBRIMIENTO PROGRESIVO (NO AGRESIVO):
    - Nunca hagas un interrogatorio pesado. Pregunta 1 o máximo 2 detalles clave por mensaje de forma conversacional:
@@ -949,28 +950,56 @@ METODOLOGÍA DE VENTA CONSULTIVA Y REGLAS DE ORO:
                 console.log(`[BOT_SUCCESS] Respondió automáticamente (${sentType}) de forma resiliente a ${whatsappId}`);
             } catch (sendErr: any) {
                 const errMsg = sendErr?.response?.data?.error?.message || sendErr.message || 'Error al entregar por WhatsApp';
-                console.error(`[BOT_SEND_FAILED] Recipiente: ${whatsappId}. Detalle:`, errMsg);
+                console.warn(`[BOT_SEND_GLITCH] Falló entrega inicial a ${whatsappId}: ${errMsg}. Reintentando automáticamente en 2.5 segundos...`);
 
-                // Registrar en BD con metadatos de reintento inteligente para que el motor de auto-retry lo entregue
-                await prisma.wAMessage.create({
-                    data: {
-                        conversationId,
-                        whatsappMessageId: `bot-failed-${Date.now()}`,
-                        direction: 'OUTBOUND',
-                        type: shouldSendImage ? 'image' : 'text',
-                        mediaUrl: shouldSendImage ? detectedAsset.imagePath : null,
-                        body: botReply,
-                        status: 'FAILED',
-                        errorMessage: formatRetryMetadata(0, Date.now() + 15000, errMsg),
-                        senderId: 'BOT_ATOMIC_RESILIENT'
+                let inFlightSuccess = false;
+                try {
+                    // Reenvío inmediato en unos segundos (2.5s)
+                    await new Promise(res => setTimeout(res, 2500));
+                    if (shouldSendImage && detectedAsset?.imagePath) {
+                        await sendWhatsAppMedia(whatsappId, detectedAsset.imagePath, 'image', botReply.slice(0, 1000));
+                    } else {
+                        await sendWhatsAppMessage(whatsappId, botReply);
                     }
-                }).catch(() => {});
+                    inFlightSuccess = true;
+                    console.log(`[BOT_RETRY_SUCCESS] Reenvío en caliente completado con éxito para ${whatsappId}`);
 
-                // Marcar la conversación con alta prioridad y estado de atención
-                await prisma.wAConversation.update({
-                    where: { id: conversationId },
-                    data: { priority: 'URGENT', status: 'LEAD_PAUTA' }
-                }).catch(() => {});
+                    await prisma.wAMessage.create({
+                        data: {
+                            conversationId,
+                            whatsappMessageId: `bot-retry-ok-${Date.now()}`,
+                            direction: 'OUTBOUND',
+                            type: shouldSendImage ? 'image' : 'text',
+                            mediaUrl: shouldSendImage ? detectedAsset.imagePath : null,
+                            body: botReply,
+                            status: 'SENT',
+                            senderId: 'BOT_ATOMIC_INFLIGHT_RETRY'
+                        }
+                    });
+                } catch (retryErr: any) {
+                    const finalErr = retryErr?.response?.data?.error?.message || retryErr.message || errMsg;
+                    console.error(`[BOT_INFLIGHT_FAILED] Reintento falló para ${whatsappId}:`, finalErr);
+
+                    // Registrar en BD con metadatos de reintento ultrarrápido (3s) para auto-retry
+                    await prisma.wAMessage.create({
+                        data: {
+                            conversationId,
+                            whatsappMessageId: `bot-failed-${Date.now()}`,
+                            direction: 'OUTBOUND',
+                            type: shouldSendImage ? 'image' : 'text',
+                            mediaUrl: shouldSendImage ? detectedAsset.imagePath : null,
+                            body: botReply,
+                            status: 'FAILED',
+                            errorMessage: formatRetryMetadata(0, Date.now() + 3000, finalErr),
+                            senderId: 'BOT_ATOMIC_RESILIENT'
+                        }
+                    }).catch(() => {});
+
+                    await prisma.wAConversation.update({
+                        where: { id: conversationId },
+                        data: { priority: 'URGENT', status: 'LEAD_PAUTA' }
+                    }).catch(() => {});
+                }
             }
         }
 

@@ -53,7 +53,7 @@ export async function getWhatsAppCredentials() {
  * Ejecutor inteligente con reintentos exponenciales para Meta WhatsApp Cloud API.
  * Protege contra micro-caídas de red, rate limits transitorios y demoras de socket.
  */
-async function withRetry<T>(fn: () => Promise<T>, maxRetries = 3, initialDelayMs = 1200): Promise<T> {
+async function withRetry<T>(fn: () => Promise<T>, maxRetries = 3, initialDelayMs = 800): Promise<T> {
     let lastError: any;
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {

@@ -2,7 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { sendWhatsAppMessage, sendWhatsAppMedia, sanitizeToE164 } from './service';
 
 export const MAX_RETRY_ATTEMPTS = 5;
-export const BACKOFF_DELAYS_SEC = [15, 30, 60, 120, 300]; // 15s, 30s, 1m, 2m, 5m
+export const BACKOFF_DELAYS_SEC = [3, 8, 20, 60, 180]; // Reenvíos ultrarrápidos: 3s, 8s, 20s, 1m, 3m
 
 export interface ParsedRetryMeta {
     attempt: number;
