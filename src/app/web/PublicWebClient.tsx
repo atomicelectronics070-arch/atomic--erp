@@ -914,6 +914,26 @@ export default function PublicWebClient({
               <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
             </Link>
 
+            {/* ─── PESTAÑA DESTACADA: JUAN PABLO GUZMÁN (48 LEYES DEL PODER) ─── */}
+            <Link
+              href="/web/juan-pablo-guzman"
+              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-gradient-to-r from-purple-950 via-slate-900 to-amber-950 hover:brightness-110 text-amber-300 border border-amber-500/50 shadow-sm flex items-center gap-1.5"
+              title="Juan Pablo Guzmán • Las 48 Leyes del Poder & Crecimiento Viral"
+            >
+              <span>👑 JUAN PABLO GUZMÁN</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+            </Link>
+
+            {/* ─── PESTAÑA DESTACADA: SANTIAGO GUZMÁN (CEO) ─── */}
+            <Link
+              href="/web/santiago-guzman"
+              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 hover:brightness-110 text-blue-300 border border-blue-500/50 shadow-sm flex items-center gap-1.5"
+              title="Santiago Guzmán • Fundador & CEO ATOMIC Ecuador"
+            >
+              <span>⚡ SANTIAGO GUZMÁN</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+            </Link>
+
             {/* LÍNEA DIVISORIA VERTICAL 3 */}
             <div className="h-5 w-[1px] bg-slate-300 shrink-0" />
 
@@ -2512,6 +2532,45 @@ export default function PublicWebClient({
             <Award className="mx-auto text-blue-600" size={32} />
             <h4 className="font-bold text-sm text-slate-950 uppercase font-heading">Atención Especializada</h4>
             <p className="text-xs text-slate-600 leading-relaxed">Asesoría técnica instantánea vía WhatsApp antes, durante y después de tu compra.</p>
+          </div>
+        </div>
+      
+
+        {/* ── BANNER OFICIAL DE MIEMBROS & LIDERAZGO ATOMIC ── */}
+        <div className="mt-12 p-8 rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white border border-slate-800 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="space-y-2 text-center md:text-left">
+              <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-amber-400 bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20 inline-block">
+                EQUIPO DIRECTIVO & MARCA OFICIAL
+              </span>
+              <h3 className="text-2xl font-black uppercase tracking-tight font-heading">
+                Conoce a los Miembros de ATOMIC Ecuador
+              </h3>
+              <p className="text-sm text-slate-400 max-w-xl">
+                Liderazgo estratégico, psicología aplicada, arquitectura de software e infraestructura comercial directa.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <Link
+                href="/web/juan-pablo-guzman"
+                className="px-5 py-3 rounded-2xl bg-gradient-to-r from-amber-500/20 to-purple-500/20 border border-amber-500/40 hover:border-amber-400 text-amber-200 hover:text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg flex items-center gap-2 group"
+              >
+                <span>👑 Juan Pablo Guzmán</span>
+                <span className="text-[10px] text-amber-400 font-mono">(48 Leyes)</span>
+                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+
+              <Link
+                href="/web/santiago-guzman"
+                className="px-5 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg shadow-blue-600/30 flex items-center gap-2 group"
+              >
+                <span>⚡ Santiago Guzmán</span>
+                <span className="text-[10px] text-cyan-200 font-mono">(CEO)</span>
+                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
           </div>
         </div>
       </section>
