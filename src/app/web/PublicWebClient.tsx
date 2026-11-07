@@ -884,6 +884,16 @@ export default function PublicWebClient({
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             </Link>
 
+            {/* ─── PESTAÑA DESTACADA: CERRADURAS INTELIGENTES FIN DE AÑO ─── */}
+            <Link
+              href="/web/cerraduras-oferta"
+              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-gradient-to-r from-red-950 via-rose-900 to-amber-950 hover:brightness-110 text-rose-300 border border-rose-500/50 shadow-sm flex items-center gap-1.5"
+              title="Cerraduras Inteligentes Oferta Fin de Año • Entrega Inmediata (Desde $89.80)"
+            >
+              <span>🔒 CERRADURAS SMART ($89.80)</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-ping" />
+            </Link>
+
             {/* LÍNEA DIVISORIA VERTICAL 3 */}
             <div className="h-5 w-[1px] bg-slate-300 shrink-0" />
 
@@ -1984,6 +1994,15 @@ export default function PublicWebClient({
             >
               <span className="font-heading uppercase tracking-wider text-[11px] text-emerald-300 font-black">🔋 GENERADOR ANKER SOLIX</span>
               <span className="text-[10px] bg-emerald-400 text-stone-950 px-2 py-0.5 rounded-full font-mono font-black">$380 OFERTA</span>
+            </Link>
+
+            {/* NEW CATEGORY PILL: CERRADURAS INTELIGENTES OFERTA FIN DE AÑO */}
+            <Link
+              href="/web/cerraduras-oferta"
+              className="px-5 py-3 rounded-full bg-[#180a0e] border-2 border-rose-500 hover:border-rose-400 text-xs font-bold text-rose-200 transition-all flex items-center gap-2 shadow-md group"
+            >
+              <span className="font-heading uppercase tracking-wider text-[11px] text-rose-300 font-black">🔒 CERRADURAS INTELIGENTES</span>
+              <span className="text-[10px] bg-rose-500 text-white px-2 py-0.5 rounded-full font-mono font-black">DESDE $89.80</span>
             </Link>
             <Link
               href="/web/camaras-hogar"

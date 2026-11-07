@@ -1513,6 +1513,14 @@ export default function CerradurasSmartClient() {
   return (
     <div className="w-full bg-[#07070A] min-h-screen text-white font-sans selection:bg-blue-500/30 selection:text-white overflow-x-hidden">
       
+      {/* ═══════════ BANNER OFERTA FINAL DE AÑO ═══════════ */}
+      <Link 
+        href="/web/cerraduras-oferta"
+        className="block w-full bg-gradient-to-r from-red-600 via-amber-500 to-red-600 text-stone-950 py-2 px-4 text-center font-mono font-black text-xs uppercase tracking-wider hover:brightness-110 transition-all shadow-lg z-50 relative"
+      >
+        <span>🔥 ¡OFERTA DE FINAL DE AÑO! Cerraduras para Entrega Inmediata (Facial 3D $145 • 5 Pistones $89.80 • Con Cámara $91) • ¡Entrega GRATIS en Quito! Click Aquí →</span>
+      </Link>
+
       {/* ═══════════ STICKY TOP BAR: PRODUCTOS 100% ORIGINALES & GARANTÍA ═══════════ */}
       <div className="sticky top-0 z-50 w-full bg-[#050507]/95 backdrop-blur-xl border-b border-emerald-500/20 py-1.5 px-4 text-center shadow-md">
         <div className="max-w-7xl mx-auto flex items-center justify-center gap-2">
