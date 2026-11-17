@@ -254,6 +254,7 @@ export default function DashboardLayout({
                             <GlassNavItem href="/dashboard/whatsapp/leads" icon={<Users size={18} strokeWidth={1.8} />} label="Gestión Leads" isActive={pathname.startsWith('/dashboard/whatsapp/leads')} />
                             <GlassNavItem href="/dashboard/tecnicos" icon={<Wrench size={18} strokeWidth={1.8} />} label="Técnicos & Campo" isActive={pathname.startsWith('/dashboard/tecnicos')} />
                             <GlassNavItem href="/dashboard/map-prospecting" icon={<Map size={18} strokeWidth={1.8} />} label="Prospección" isActive={pathname.startsWith('/dashboard/map-prospecting')} />
+                            <GlassNavItem href="/dashboard/solicitudes-landing" icon={<Sparkles size={18} strokeWidth={1.8} />} label="Solicitudes Landing" isActive={pathname.startsWith('/dashboard/solicitudes-landing')} />
                             <GlassNavItem href="/dashboard/formularios" icon={<FileSpreadsheet size={18} strokeWidth={1.8} />} label="Contactos Web" isActive={pathname.startsWith('/dashboard/formularios')} />
                             <GlassNavItem href="/dashboard/blogs" icon={<Share2 size={18} strokeWidth={1.8} />} label="Edición Audiovisual & Media" isActive={pathname.startsWith('/dashboard/blogs')} />
                         </>

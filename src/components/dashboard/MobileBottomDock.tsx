@@ -201,6 +201,19 @@ function MobileBottomDockInner() {
                                         <span className="text-amber-200 font-extrabold">Gestor Cuentas</span>
                                         <span className="text-[8px] font-mono px-1.5 py-0.2 rounded-full bg-amber-400 text-black font-black uppercase">DELEGACIÓN</span>
                                     </button>
+
+                                    {/* ── BOTÓN: SOLICITUDES DE LANDING (LEADS PROYECTOS) ── */}
+                                    <Link 
+                                        href="/dashboard/solicitudes-landing"
+                                        onClick={() => setShowMoreMenu(false)}
+                                        className="p-3 rounded-2xl bg-gradient-to-b from-purple-500/25 to-pink-600/25 border-2 border-purple-400/80 hover:border-purple-300 flex flex-col items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-lg shadow-purple-950/50"
+                                    >
+                                        <div className="p-2 rounded-xl bg-purple-500 text-white shadow-md">
+                                            <Sparkles size={18} className="stroke-[2.5]" />
+                                        </div>
+                                        <span className="text-purple-200 font-extrabold text-center text-xs">Solicitudes Landing</span>
+                                        <span className="text-[8px] font-mono px-1.5 py-0.2 rounded-full bg-purple-400 text-black font-black uppercase">LEADS PROYECTOS</span>
+                                    </Link>
                                 </>
                             )}
                             {/* 0. Ruta del Día (Tile Cuadrado Destacado) */}

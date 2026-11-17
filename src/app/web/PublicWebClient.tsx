@@ -944,6 +944,16 @@ export default function PublicWebClient({
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             </Link>
 
+            {/* ─── PESTAÑA DESTACADA: PROYECTOS & INFRAESTRUCTURA ─── */}
+            <Link
+              href="/web/proyectos"
+              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-gradient-to-r from-purple-950 via-indigo-900 to-slate-900 hover:brightness-110 text-purple-300 border border-purple-500/50 shadow-sm flex items-center gap-1.5"
+              title="Proyectos de Seguridad, Edificios e Infraestructura Residencial • Asesoría Técnica"
+            >
+              <span>🏗️ PROYECTOS & SEGURIDAD</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+            </Link>
+
             {/* LÍNEA DIVISORIA VERTICAL 3 */}
             <div className="h-5 w-[1px] bg-slate-300 shrink-0" />
 
