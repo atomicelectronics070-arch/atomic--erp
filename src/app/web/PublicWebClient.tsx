@@ -934,6 +934,16 @@ export default function PublicWebClient({
               <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
             </Link>
 
+            {/* ─── PESTAÑA DESTACADA: SOFTWARE & SISTEMAS ERP 2027 ─── */}
+            <Link
+              href="/web/software"
+              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-gradient-to-r from-emerald-950 via-teal-900 to-slate-900 hover:brightness-110 text-emerald-300 border border-emerald-500/50 shadow-sm flex items-center gap-1.5"
+              title="Desarrollo de Software, Sistemas ERP & IA 2027 • Demos en Vivo"
+            >
+              <span>💻 SOFTWARE & ERP 2027</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            </Link>
+
             {/* LÍNEA DIVISORIA VERTICAL 3 */}
             <div className="h-5 w-[1px] bg-slate-300 shrink-0" />
 
@@ -2237,7 +2247,14 @@ export default function PublicWebClient({
 
                 {/* Buttons styled like FrontendJoe */}
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 mt-auto">
-                  {c.id === 'cat-residencial' ? (
+                  {c.id === 'cat-software' ? (
+                    <Link
+                      href="/web/software"
+                      className="px-5 py-2.5 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white text-xs font-black font-heading transition-all shadow-md hover:scale-105 flex items-center gap-1.5"
+                    >
+                      <span>💻 Plataformas & Demos 2027</span>
+                    </Link>
+                  ) : c.id === 'cat-residencial' ? (
                     <Link
                       href="/web/cerraduras-smart"
                       className="px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black font-heading transition-all shadow-md hover:scale-105 flex items-center gap-1.5"
@@ -2568,6 +2585,15 @@ export default function PublicWebClient({
               >
                 <span>⚡ Santiago Guzmán</span>
                 <span className="text-[10px] text-cyan-200 font-mono">(CEO)</span>
+                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+
+              <Link
+                href="/web/software"
+                className="px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg shadow-emerald-600/30 flex items-center gap-2 group"
+              >
+                <span>💻 Software & ERP 2027</span>
+                <span className="text-[10px] text-emerald-200 font-mono">(Demos)</span>
                 <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
