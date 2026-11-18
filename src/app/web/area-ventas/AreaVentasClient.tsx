@@ -56,7 +56,7 @@ const CHAPTERS_DATA: Chapter[] = [
     unlocked: false,
     duration: "Próximamente",
     date: "En Grabación",
-    instructor: "Equipo Comercial Softres",
+    instructor: "Equipo Comercial ATOMIC",
     summary: [
       "Configuración de publicaciones con alta tasa de respuesta en Facebook Marketplace y grupos locales.",
       "Cómo seleccionar títulos y fotografías para evitar advertencias de algoritmo.",
@@ -175,7 +175,7 @@ export default function AreaVentasClient() {
             <div className="flex items-center gap-2">
               <span className="text-sm font-black tracking-tight text-white">Área de Ventas</span>
               <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-                Academia Softres
+                Academia ATOMIC
               </span>
             </div>
             <p className="text-[10px] text-slate-400 font-mono">
@@ -222,7 +222,7 @@ export default function AreaVentasClient() {
           </h1>
 
           <p className="text-slate-400 text-sm sm:text-base max-w-3xl leading-relaxed mb-6">
-            Aprende la metodología comercial de Softres y ATOMIC: conoce los dos perfiles laborales (comisión y sueldo fijo de $450 USD), domina la prospección activa, las llamadas en frío supervisadas y el registro inalterable en la bitácora del sistema.
+            Aprende la metodología comercial de ATOMIC: conoce los dos perfiles laborales (comisión y sueldo fijo de $450 USD), domina la prospección activa, las llamadas en frío supervisadas y el registro inalterable en la bitácora del sistema.
           </p>
 
           <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-slate-300">
@@ -581,7 +581,7 @@ export default function AreaVentasClient() {
 
       {/* ── FOOTER ── */}
       <footer className="border-t border-slate-800/80 bg-slate-950 py-8 px-4 text-center text-xs font-mono text-slate-500">
-        <p>Softres V2 &bull; ATOMIC ERP &bull; Academia Comercial Oficial 2026</p>
+        <p>ATOMIC &bull; ATOMIC ERP &bull; Academia Comercial Oficial 2026</p>
         <p className="text-[11px] text-slate-600 mt-1">Ecuador &bull; Soporte, Control de Acceso y Soluciones Tecnológicas B2B</p>
       </footer>
     </div>

@@ -1594,7 +1594,7 @@ export default function RutaDelDiaWorkspace({
                             <div className="relative aspect-video bg-black">
                                 <iframe
                                     src="https://www.youtube.com/embed/tFyDBikor4I?rel=0&modestbranding=1&color=white"
-                                    title="Capítulo 1: Capacitación Oficial de Ventas Softres"
+                                    title="Capítulo 1: Capacitación Oficial de Ventas ATOMIC"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                     allowFullScreen
                                     className="w-full h-full border-0"
