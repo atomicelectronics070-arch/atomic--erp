@@ -954,6 +954,16 @@ export default function PublicWebClient({
               <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
             </Link>
 
+            {/* ─── PESTAÑA DESTACADA: ÁREA DE VENTAS & CAPACITACIONES ─── */}
+            <Link
+              href="/web/area-ventas"
+              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-gradient-to-r from-amber-950 via-yellow-900 to-slate-900 hover:brightness-110 text-yellow-300 border border-yellow-500/50 shadow-sm flex items-center gap-1.5"
+              title="Área de Ventas • Academia Comercial Softres & ATOMIC • Capítulos Oficiales"
+            >
+              <span>🎓 ÁREA DE VENTAS</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
+            </Link>
+
             {/* LÍNEA DIVISORIA VERTICAL 3 */}
             <div className="h-5 w-[1px] bg-slate-300 shrink-0" />
 
