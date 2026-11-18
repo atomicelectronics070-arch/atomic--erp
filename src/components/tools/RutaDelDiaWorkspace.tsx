@@ -11,7 +11,7 @@ import {
     ArrowRight, Clock, Target, DollarSign, Award, 
     Zap, Sparkles, AlertCircle, RefreshCw, X, ShieldCheck, 
     Search, Layers, Send, Smartphone, Users, Wrench, Video, Code2, 
-    FileText, UserCheck, ShieldAlert, Globe, Download, CheckSquare
+    FileText, UserCheck, ShieldAlert, Globe, Download, CheckSquare, GraduationCap
 } from "lucide-react"
 import SalesCopyManager from "./SalesCopyManager"
 import { getCategoryLandingSlug } from "./SuicideSquadWarRoom"
@@ -445,7 +445,7 @@ export default function RutaDelDiaWorkspace({
     }, [userRoleStr])
 
     const [selectedRole, setSelectedRole] = useState<RoleType>(defaultRole)
-    const [activeTab, setActiveTab] = useState<"actividades" | "categorias" | "plan_laboral" | "mensajes">("actividades")
+    const [activeTab, setActiveTab] = useState<"actividades" | "categorias" | "plan_laboral" | "mensajes" | "capacitaciones">("actividades")
 
     // ─────────────────────────────────────────────────────────────
     // 1. GESTIÓN DE ACTIVIDADES DIARIAS POR ROL CON LOCALSTORAGE
@@ -777,6 +777,16 @@ export default function RutaDelDiaWorkspace({
                         <span className="sm:hidden">Asistencia</span>
                     </Link>
 
+                    <Link
+                        href="/web/area-ventas"
+                        target="_blank"
+                        className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-black text-xs font-black flex items-center gap-1.5 transition-all shadow-md shadow-amber-500/20 hover:scale-105 active:scale-95 cursor-pointer"
+                        title="Abrir Academia y Capacitaciones Oficiales de Ventas"
+                    >
+                        <Sparkles size={13} className="stroke-[2.5]" />
+                        <span className="hidden sm:inline">Capacitaciones</span>
+                    </Link>
+
                     {quoteCount > 0 && (
                         <Link
                             href="/dashboard/quotes"
@@ -839,7 +849,8 @@ export default function RutaDelDiaWorkspace({
                     { id: "actividades", label: `📋 Plan Diario (${currentRoleInfo.label})`, badge: `${progressPercent}%` },
                     { id: "categorias", label: "🗂️ Categorías & Subcategorías", badge: "Catálogo" },
                     { id: "plan_laboral", label: "🎯 Plan Laboral & Metas", badge: `Escala $450` },
-                    { id: "mensajes", label: "💬 Mensajes para Copiar", badge: "Marketplace" }
+                    { id: "mensajes", label: "💬 Mensajes para Copiar", badge: "Marketplace" },
+                    { id: "capacitaciones", label: "🎓 Capacitaciones", badge: "Capítulo 1" }
                 ].map((tab) => {
                     const isActive = activeTab === tab.id
                     return (
@@ -1544,6 +1555,119 @@ export default function RutaDelDiaWorkspace({
                         </div>
                     </div>
                 )}
+
+                {/* ═══════════════════════════════════════════════════════════
+                    TAB 5: CAPACITACIONES OFICIALES & ACADEMIA DE VENTAS
+                ═══════════════════════════════════════════════════════════ */}
+                {activeTab === "capacitaciones" && (
+                    <div className="max-w-5xl mx-auto space-y-6">
+                        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-slate-900 to-indigo-950/80 border border-cyan-500/40 flex flex-wrap items-center justify-between gap-4">
+                            <div>
+                                <div className="flex items-center gap-2 mb-1">
+                                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                                        ACADEMIA OFICIAL 2026
+                                    </span>
+                                    <span className="text-[10px] font-mono text-emerald-400 font-bold">
+                                        ● Capítulo 1 Desbloqueado
+                                    </span>
+                                </div>
+                                <h3 className="text-base font-black text-white flex items-center gap-2">
+                                    <span>Serie de Capacitaciones: Puesto de Ventas y Plan Laboral</span>
+                                </h3>
+                                <p className="text-xs text-slate-300 mt-1 max-w-2xl">
+                                    Módulos canónicos impartidos por Juan Pablo Guzmán. Aprende las condiciones de comisión vs sueldo fijo ($450), las 6 tareas obligatorias y el registro en bitácora.
+                                </p>
+                            </div>
+
+                            <Link
+                                href="/web/area-ventas"
+                                target="_blank"
+                                className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-black text-xs font-mono flex items-center gap-2 shadow-lg shadow-cyan-500/20 hover:scale-105 active:scale-95 transition-all"
+                            >
+                                <span>Ver Portal Completo</span>
+                                <ExternalLink size={14} />
+                            </Link>
+                        </div>
+
+                        {/* REPRODUCTOR CAPÍTULO 1 DESBLOQUEADO */}
+                        <div className="bg-slate-950 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
+                            <div className="relative aspect-video bg-black">
+                                <iframe
+                                    src="https://www.youtube.com/embed/tFyDBikor4I?rel=0&modestbranding=1&color=white"
+                                    title="Capítulo 1: Capacitación Oficial de Ventas Softres"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                    className="w-full h-full border-0"
+                                />
+                            </div>
+
+                            <div className="p-5 bg-slate-900/60 border-t border-slate-800">
+                                <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                                    <span className="text-xs font-mono font-bold text-cyan-400">
+                                        Capítulo 1 • 21:41 min • 18 de Noviembre de 2026
+                                    </span>
+                                    <span className="text-xs font-mono text-slate-400">
+                                        Instructor: Juan Pablo Guzmán
+                                    </span>
+                                </div>
+                                <h4 className="text-sm sm:text-base font-bold text-white mb-2">
+                                    Introducción al Puesto de Ventas: Comisiones vs Sueldo Fijo ($450) y Bitácora Digital
+                                </h4>
+                                <p className="text-xs text-slate-400 leading-relaxed mb-4">
+                                    En este primer video se detallan las reglas de permanencia para vendedores a comisión (20% neto + bonos) y los requisitos del puesto fijo de $450 USD mensuales mediante la plataforma inalterable.
+                                </p>
+
+                                {/* 6 ACTIVIDADES EN MINI TARJETAS */}
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-[11px] font-mono">
+                                    <div className="bg-slate-950 p-2 rounded-lg border border-slate-800 text-slate-300">
+                                        <span className="text-cyan-400 font-bold block">1. 5 Posts/Día</span> Marketplace & Grupos
+                                    </div>
+                                    <div className="bg-slate-950 p-2 rounded-lg border border-slate-800 text-slate-300">
+                                        <span className="text-cyan-400 font-bold block">2. 10 Contactos B2B</span> Cualificados / semana
+                                    </div>
+                                    <div className="bg-slate-950 p-2 rounded-lg border border-slate-800 text-slate-300">
+                                        <span className="text-cyan-400 font-bold block">3. 3 Llamadas/Día</span> En vivo por Zoom
+                                    </div>
+                                    <div className="bg-slate-950 p-2 rounded-lg border border-slate-800 text-slate-300">
+                                        <span className="text-cyan-400 font-bold block">4. Seguimiento</span> Memoria de cartera
+                                    </div>
+                                    <div className="bg-slate-950 p-2 rounded-lg border border-slate-800 text-slate-300">
+                                        <span className="text-cyan-400 font-bold block">5. Difusión Promo</span> Lunes y Miércoles
+                                    </div>
+                                    <div className="bg-slate-950 p-2 rounded-lg border border-slate-800 text-slate-300">
+                                        <span className="text-cyan-400 font-bold block">6. 1 Estado/Sem</span> Círculo personal
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* LISTA DE CAPÍTULOS POR DESBLOQUEAR */}
+                        <div className="p-4 rounded-2xl bg-slate-900/40 border border-slate-800/80">
+                            <h4 className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider mb-3">
+                                Próximos Capítulos de la Serie (Bloqueados / En Producción)
+                            </h4>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                                <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800/60 text-slate-400 flex items-center justify-between">
+                                    <span>Cap. 2: Técnicas de Publicación en Marketplace</span>
+                                    <span className="text-amber-400 text-[10px] font-mono">🔒 Bloqueado</span>
+                                </div>
+                                <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800/60 text-slate-400 flex items-center justify-between">
+                                    <span>Cap. 3: Llamadas en Frío en Vivo & Speech</span>
+                                    <span className="text-amber-400 text-[10px] font-mono">🔒 Bloqueado</span>
+                                </div>
+                                <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800/60 text-slate-400 flex items-center justify-between">
+                                    <span>Cap. 4: La Postura Comercial & Necesidad Real</span>
+                                    <span className="text-amber-400 text-[10px] font-mono">🔒 Bloqueado</span>
+                                </div>
+                                <div className="p-3 rounded-xl bg-slate-950/70 border border-slate-800/60 text-slate-400 flex items-center justify-between">
+                                    <span>Cap. 5: Manejo de Objeciones & Cotizador PDF</span>
+                                    <span className="text-amber-400 text-[10px] font-mono">🔒 Bloqueado</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
 
             </div>
         </div>

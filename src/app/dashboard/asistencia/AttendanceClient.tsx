@@ -1,11 +1,13 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import UniversalTimbrado30Dias from "@/components/attendance/UniversalTimbrado30Dias"
 import DirectedTasksPanel from "@/components/attendance/DirectedTasksPanel"
 import { 
-    Calendar as CalendarIcon, 
+    Calendar as CalendarIcon,
+    GraduationCap, 
     Clock, 
     Trophy, 
     Flame, 
@@ -456,6 +458,15 @@ export default function AttendanceClient() {
                     <FileText size={14} />
                     <span>TAREAS</span>
                 </button>
+
+                <Link
+                    href="/web/area-ventas"
+                    className="flex-1 py-2.5 px-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer bg-slate-950 text-amber-400 hover:bg-amber-500/20 border border-amber-500/30"
+                    title="Academia y Capacitaciones Oficiales"
+                >
+                    <GraduationCap size={14} />
+                    <span>CAPACITACIONES</span>
+                </Link>
             </div>
 
             {/* VISTA 1: TAREAS DIRIGIDAS */}
