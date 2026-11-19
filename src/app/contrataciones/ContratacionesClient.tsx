@@ -221,18 +221,18 @@ const MATRIZ_EXCEL = [
 const ESCALA_SALARIAL = [
   {
     mes: "Nivel Rendimiento",
-    etapa: "Rendimiento Intermedio / Esfuerzo Base",
-    sueldoFijo: "$50 USD",
+    etapa: "Rendimiento Base (Esfuerzo Inicial)",
+    sueldoFijo: "$25 USD",
     condicion: "Asistencia >80%, Publicaciones >80%, 3 números de Maps diarios contactados y al menos 3 llamadas a la semana",
     comision: "20% de comisión en ventas generadas",
-    bono: "Puente directo al Plan Laboral de $100",
-    totalPotencial: "$50 - $120+ USD",
+    bono: "Acceso a bonos comerciales y herramientas oficiales",
+    totalPotencial: "$25 - $80+ USD",
     destacado: false,
     color: "border-amber-300 bg-amber-50/30",
-    badge: "Rendimiento Intermedio",
+    badge: "Rendimiento Base $25",
     badgeColor: "bg-amber-100 text-amber-900 border border-amber-300",
     descripcion:
-      "Para quien no alcanza a cubrir las 7 actividades completas, pero demuestra disciplina constante cumpliendo asistencia, publicaciones, prospección de 3 contactos diarios por Maps y 3 llamadas por semana."
+      "Para quien no alcanza a cubrir las 7 actividades completas, pero demuestra disciplina cumpliendo asistencia, publicaciones, prospección de 3 contactos diarios por Maps y 3 llamadas por semana (pese a un bajo rendimiento siguen perteneciendo al grupo y accediendo a bonos, herramientas y comisiones del 20%)."
   },
   {
     mes: "Mes 1",
@@ -350,7 +350,7 @@ const BENEFICIOS_FREELANCE = [
 const TABLA_COMPARATIVA = [
   {
     criterio: "Remuneración Base",
-    fijo: "$50 (Rendimiento) ➔ $100 (M1) ➔ $200 (M2) ➔ $450 (M3) Fijos Garantizados",
+    fijo: "$25 (Rendimiento Base) ➔ $100 (M1) ➔ $200 (M2) ➔ $450 (M3) Fijos Garantizados (pese a un bajo rendimiento siguen en el grupo accediendo a bonos)",
     comision: "100% Variable por Comisión Directa del 20% (Sin Techo de Ganancias)",
     icono: DollarSign
   },
@@ -374,7 +374,7 @@ const TABLA_COMPARATIVA = [
   },
   {
     criterio: "Tareas Requeridas",
-    fijo: "7 Actividades Diarias Verificables (o 4 tareas para el bono de rendimiento de $50)",
+    fijo: "7 Actividades Diarias Verificables (o 4 tareas para el bono de rendimiento de $25)",
     comision: "Asistencia y publicaciones (mínimo de permanencia en grupo sin sueldo fijo)",
     icono: CheckSquare
   },
@@ -417,10 +417,10 @@ export default function ContratacionesClient() {
   )
   const whatsappLinkFijo = `https://wa.me/${whatsappNumber}?text=${whatsappPreMsgFijo}`
 
-  const whatsappPreMsgRendimiento50 = encodeURIComponent(
-    "Hola, deseo postularme a la opción de Rendimiento Intermedio ($50 USD al mes + 20% comisión) cumpliendo asistencia >80%, publicaciones >80%, 3 números de Maps diarios contactados y 3 llamadas semanales."
+  const whatsappPreMsgRendimiento25 = encodeURIComponent(
+    "Hola, deseo postularme a la opción de Rendimiento Base ($25 USD al mes + 20% comisión) cumpliendo asistencia >80%, publicaciones >80%, 3 números de Maps diarios contactados y 3 llamadas semanales (pese a un bajo rendimiento sigo perteneciendo al grupo y accediendo a bonos)."
   )
-  const whatsappLinkRendimiento50 = `https://wa.me/${whatsappNumber}?text=${whatsappPreMsgRendimiento50}`
+  const whatsappLinkRendimiento25 = `https://wa.me/${whatsappNumber}?text=${whatsappPreMsgRendimiento25}`
 
   const whatsappPreMsgFastTrack = encodeURIComponent(
     "Hola, cuento con experiencia previa en ventas, dispongo de computadora, celular y disponibilidad completa de 8 horas (de 9:00 AM a 5:00 PM) para realizar las 7 actividades de golpe. Deseo pugnar por el puesto fijo de $450 fijos mensuales de una vez."
@@ -446,8 +446,8 @@ Aquí tienes el instructivo oficial y los enlaces para incorporarte a nuestro eq
 https://atomiccotizador.shop/contrataciones#manual
 
 2. Esquema de Ingresos y Niveles de Desempeño:
-   • PERMANENCIA EN EL GRUPO (Sin Sueldo Fijo): Si cumples tu asistencia diaria y tus publicaciones en Marketplace, te mantienes activo en el grupo comercial y ganas el 20% DE COMISIÓN DIRECTA por cada venta que cierres, pero NO genera remuneración fija.
-   • RENDIMIENTO BÁSICO ($50 USD FIJOS): Para cobrar al menos $50 al mes, debes cumplir asistencia >80%, publicaciones >80%, registrar y escribir a 3 números diarios de Google Maps y hacer al menos 3 llamadas en la semana (+ 20% comisión).
+   • PERMANENCIA EN EL GRUPO (Sin Sueldo Fijo): Si cumples tu asistencia diaria y tus publicaciones en Marketplace, te mantienes activo en el grupo comercial y ganas el 20% DE COMISIÓN DIRECTA por cada venta que cierres, pero NO genera remuneración fija (pese a un bajo rendimiento sigues perteneciendo al grupo y accediendo a bonos y beneficios).
+   • RENDIMIENTO BÁSICO ($25 USD FIJOS): Para cobrar al menos $25 al mes, debes cumplir asistencia >80%, publicaciones >80%, registrar y escribir a 3 números diarios de Google Maps y hacer al menos 3 llamadas en la semana (+ 20% comisión). (Nota: pese a un bajo rendimiento sigues perteneciendo al grupo y accediendo a bonos y comisiones).
    • PLAN LABORAL 30 DÍAS ($100 Mes 1 ➔ $200 Mes 2 ➔ $450 Mes 3): 2 horas diarias cumpliendo las 7 actividades ordinarias completas con más del 80% de efectividad (+ 20% comisión + bonos).
    • PUGNA DIRECTA POR $450 (FAST-TRACK): "Si tú tienes todas las habilidades, cuentas con experiencia y crees que puedes realizar estas siete actividades de golpe, avísanos y pugna por los $450 de una vez". Requiere computadora, celular y disponibilidad de 8 horas de 9:00 AM a 5:00 PM.
 
@@ -487,7 +487,7 @@ https://atomiccotizador.shop/register/vendedor
                 </span>
               </div>
               <p className="text-[11px] text-slate-700 hidden sm:block">
-                Ecosistema Comercial de Empleo: Rendimiento $50, Sueldo Fijo $100-$450 y Comisiones al 20%
+                Ecosistema Comercial de Empleo: Rendimiento $25, Sueldo Fijo $100-$450 y Comisiones al 20%
               </p>
             </div>
           </div>
@@ -520,7 +520,7 @@ https://atomiccotizador.shop/register/vendedor
             </a>
             <span className="text-slate-300">•</span>
             <a href="#escala-rendimiento" className="hover:text-blue-600 transition-colors whitespace-nowrap">
-              Escala ($50 - $450)
+              Escala ($25 - $450)
             </a>
             <span className="text-slate-300">•</span>
             <a href="#sueldo-fijo" className="hover:text-blue-600 transition-colors whitespace-nowrap">
@@ -560,7 +560,7 @@ https://atomiccotizador.shop/register/vendedor
           </h1>
 
           <p className="text-base sm:text-lg text-slate-700 max-w-3xl mx-auto leading-relaxed mb-6">
-            Un esquema progresivo diseñado para premiar el esfuerzo real: desde el <strong className="text-amber-800 font-bold">Rendimiento Básico de $50 USD</strong> para quienes inician con pequeñas actividades activas, el <strong className="text-blue-700 font-bold">Plan Laboral de $100 a $450 USD mensuales</strong> con dedicación diaria, hasta la opción de <strong className="text-slate-950 font-bold">Pugnar Directamente por los $450 Fijos</strong> si cuentas con experiencia, computadora, celular y disponibilidad completa de 8 horas. Todos con el <strong className="text-emerald-700 font-bold">20% de comisión directa</strong>.
+            Un esquema progresivo diseñado para premiar el esfuerzo real: desde el <strong className="text-amber-800 font-bold">Rendimiento Base de $25 USD</strong> para quienes inician con pequeñas actividades activas <span className="text-slate-600 font-normal">(pese a un bajo rendimiento siguen perteneciendo al grupo y accediendo a bonos)</span>, el <strong className="text-blue-700 font-bold">Plan Laboral de $100 a $450 USD mensuales</strong> con dedicación diaria, hasta la opción de <strong className="text-slate-950 font-bold">Pugnar Directamente por los $450 Fijos</strong> si cuentas con experiencia, computadora, celular y disponibilidad completa de 8 horas. Todos con el <strong className="text-emerald-700 font-bold">20% de comisión directa</strong>.
           </p>
 
           {/* Selector de pestañas para filtrar la vista según preferencia */}
@@ -586,7 +586,7 @@ https://atomiccotizador.shop/register/vendedor
               }`}
             >
               <Briefcase size={13} />
-              <span>Sueldo Fijo ($50 - $450)</span>
+              <span>Sueldo Fijo ($25 - $450)</span>
             </button>
             <button
               type="button"
@@ -609,8 +609,11 @@ https://atomiccotizador.shop/register/vendedor
                 <Target size={16} />
                 <span className="text-[11px] font-mono font-bold uppercase">Rendimiento Base</span>
               </div>
-              <p className="text-xl font-black text-slate-900">$50 USD</p>
-              <p className="text-[11px] text-amber-900 font-medium">Asist. + Posts + 3 Maps + 3 Llamadas</p>
+              <p className="text-xl font-black text-slate-900">$25 USD</p>
+              <p className="text-[11px] text-amber-900 font-medium leading-tight mt-1">
+                Asist. + Posts + 3 Maps + 3 Llamadas <br />
+                <span className="text-slate-600 text-[10px] font-normal">(pese a bajo rendimiento sigues en el grupo accediendo a bonos)</span>
+              </p>
             </div>
 
             <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-xs">
@@ -654,13 +657,13 @@ https://atomiccotizador.shop/register/vendedor
             </a>
 
             <a
-              href={whatsappLinkRendimiento50}
+              href={whatsappLinkRendimiento25}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto px-6 py-3.5 rounded-xl border-2 border-amber-500 bg-amber-50 hover:bg-amber-100 text-amber-900 font-black text-sm transition-all flex items-center justify-center gap-2"
             >
               <Target size={16} className="text-amber-600" />
-              <span>Aplicar a Rendimiento $50</span>
+              <span>Aplicar a Rendimiento $25</span>
             </a>
 
             <a
@@ -710,18 +713,18 @@ https://atomiccotizador.shop/register/vendedor
                   <span>1. ¿Qué cumples si solo haces asistencia y publicaciones?</span>
                 </div>
                 <p className="text-slate-700">
-                  Si una persona simplemente cumple con marcar su asistencia diaria en la plataforma y realizar sus publicaciones en Facebook Marketplace, <strong className="text-slate-950">cumple con lo estrictamente mínimo para pertenecer y permanecer dentro del grupo comercial</strong>, nada más. <strong className="text-rose-700 underline">NO es acreedora a ningún tipo de sueldo ni remuneración fija</strong>. Mientras tanto, goza de todos los beneficios de la empresa: acceso al catálogo completo de 11 categorías, herramientas del cotizador PROP (PDF y Excel) y gana el <strong className="text-emerald-700 font-black">20% de comisión directa</strong> por cada venta que concrete.
+                  Si una persona simplemente cumple con marcar su asistencia diaria en la plataforma y realizar sus publicaciones en Facebook Marketplace, <strong className="text-slate-950">cumple con lo estrictamente mínimo para pertenecer y permanecer dentro del grupo comercial</strong>, nada más <span className="text-amber-900 font-semibold">(pese a un bajo rendimiento siguen perteneciendo al grupo, accediendo a bonos comerciales y ganando el 20% de comisión directa por cada venta)</span>. <strong className="text-rose-700 underline">NO es acreedora a ningún tipo de sueldo ni remuneración fija</strong>. Mientras tanto, goza de todos los beneficios de la empresa: acceso al catálogo completo de 11 categorías, herramientas del cotizador PROP (PDF y Excel) y gana el <strong className="text-emerald-700 font-black">20% de comisión directa</strong> por cada venta que concrete.
                 </p>
               </div>
 
-              {/* Cláusula 2: El Requisito para los $50 de Rendimiento */}
+              {/* Cláusula 2: El Requisito para los $25 de Rendimiento */}
               <div className="p-4 rounded-2xl bg-white/90 border border-emerald-300 space-y-2">
                 <div className="flex items-center gap-2 text-emerald-950 font-black text-sm">
                   <Award size={16} className="text-emerald-600" />
-                  <span>2. ¿Cómo acceder a la Remuneración de al menos $50 USD al mes?</span>
+                  <span>2. ¿Cómo acceder a la Remuneración de al menos $25 USD al mes? (pese a un bajo rendimiento siguen perteneciendo al grupo y accediendo a bonos)</span>
                 </div>
                 <p className="text-slate-700">
-                  Para ser acreedor a una remuneración económica mensual de <strong className="text-emerald-800 font-bold">al menos $50 USD fijos</strong> como rendimiento por esfuerzo comercial activo, debes cumplir con este rendimiento comprobado en el mes:
+                  Para ser acreedor a una remuneración económica mensual de <strong className="text-emerald-800 font-bold">al menos $25 USD fijos</strong> como rendimiento por esfuerzo comercial activo <span className="text-slate-600 font-normal">(pese a un bajo rendimiento siguen perteneciendo al grupo y accediendo a bonos)</span>, debes cumplir con este rendimiento comprobado en el mes:
                 </p>
 
                 <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-2.5 pt-1">
@@ -751,7 +754,7 @@ https://atomiccotizador.shop/register/vendedor
                 </div>
 
                 <p className="text-xs text-emerald-900 pt-1 font-medium">
-                  ✓ Al cumplir estos 4 puntos, cobras tus <strong>$50 USD fijos</strong> al final del mes, más el <strong>20% de comisión directa</strong> de todas las cotizaciones que cierres.
+                  ✓ Al cumplir estos 4 puntos, cobras tus <strong>$25 USD fijos</strong> al final del mes, más el <strong>20% de comisión directa</strong> de todas las cotizaciones que cierres <span className="font-semibold text-slate-700">(pese a un bajo rendimiento sigues perteneciendo al grupo y accediendo a bonos comerciales y herramientas oficiales)</span>.
                 </p>
               </div>
 
@@ -767,16 +770,16 @@ https://atomiccotizador.shop/register/vendedor
 
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
               <span className="text-xs text-amber-900 font-medium">
-                ¿Prefieres el esquema de rendimiento intermedio de $50?
+                ¿Prefieres el esquema de rendimiento base de $25? (sigues en el grupo y con acceso a bonos)
               </span>
               <a
-                href={whatsappLinkRendimiento50}
+                href={whatsappLinkRendimiento25}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider transition-all shadow-xs flex items-center gap-1.5"
               >
                 <Target size={14} />
-                <span>Postular a Rendimiento $50</span>
+                <span>Postular a Rendimiento $25</span>
               </a>
             </div>
 
@@ -797,7 +800,7 @@ https://atomiccotizador.shop/register/vendedor
               Los 4 Niveles de Remuneración y Crecimiento
             </h2>
             <p className="text-slate-700 text-xs sm:text-sm">
-              Desde el rendimiento intermedio de $50 USD hasta el puesto laboral fijo definitivo de $450 USD mensuales con contrato.
+              Desde el rendimiento base de $25 USD <span className="font-semibold text-slate-900">(pese a bajo rendimiento siguen perteneciendo al grupo y accediendo a bonos)</span> hasta el puesto laboral fijo definitivo de $450 USD mensuales con contrato.
             </p>
           </div>
 
@@ -1284,7 +1287,7 @@ https://atomiccotizador.shop/register/vendedor
                     Criterio de Evaluación
                   </th>
                   <th className="py-4 px-4 border-r border-slate-800 font-bold w-[38%] bg-blue-950 text-blue-200">
-                    Modalidad Sueldo Fijo ($50 a $450)
+                    Modalidad Sueldo Fijo ($25 a $450)
                   </th>
                   <th className="py-4 px-4 font-bold w-[37%] bg-amber-950 text-amber-200">
                     Modalidad Bajo Comisión (Freelance - 20%)
@@ -1324,13 +1327,13 @@ https://atomiccotizador.shop/register/vendedor
               <span>Pugnar por los $450 Fijos (Fast-Track)</span>
             </a>
             <a
-              href={whatsappLinkRendimiento50}
+              href={whatsappLinkRendimiento25}
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition-all shadow-xs flex items-center gap-2"
             >
               <Target size={15} />
-              <span>Postular a Rendimiento $50</span>
+              <span>Postular a Rendimiento $25</span>
             </a>
             <a
               href={whatsappLinkFreelance}
@@ -1439,13 +1442,13 @@ https://atomiccotizador.shop/register/vendedor
             </a>
 
             <a
-              href={whatsappLinkRendimiento50}
+              href={whatsappLinkRendimiento25}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto px-6 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2"
             >
               <Target size={16} />
-              <span>Postular a Rendimiento $50</span>
+              <span>Postular a Rendimiento $25</span>
             </a>
 
             <a
@@ -1655,7 +1658,7 @@ https://atomiccotizador.shop/register/vendedor
                   Herramienta de Coordinación
                 </span>
                 <h4 className="font-bold text-slate-900 text-sm">
-                  Plantilla de Mensaje de WhatsApp para Enviar al Postulante (Con Nivel $50, $100 y Fast-Track $450)
+                  Plantilla de Mensaje de WhatsApp para Enviar al Postulante (Con Nivel $25, $100 y Fast-Track $450)
                 </h4>
               </div>
               <button
