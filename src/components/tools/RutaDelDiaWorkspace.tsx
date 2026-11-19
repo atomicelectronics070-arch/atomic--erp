@@ -1593,7 +1593,7 @@ export default function RutaDelDiaWorkspace({
                         <div className="bg-slate-950 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
                             <div className="relative aspect-video bg-black">
                                 <iframe
-                                    src="https://www.youtube.com/embed/tFyDBikor4I?rel=0&modestbranding=1&color=white"
+                                    src="https://www.youtube.com/embed/Jm7RPpxJ54E?rel=0&modestbranding=1&color=white"
                                     title="Capítulo 1: Capacitación Oficial de Ventas ATOMIC"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                     allowFullScreen

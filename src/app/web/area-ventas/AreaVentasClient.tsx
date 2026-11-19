@@ -28,11 +28,11 @@ interface Chapter {
 const CHAPTERS_DATA: Chapter[] = [
   {
     id: 1,
-    title: "Introducción al Puesto de Ventas: Comisión vs Fijo ($450) y Bitácora Digital",
-    subtitle: "Reglas de permanencia, términos, condiciones y métricas del plan laboral de 30 días.",
+    title: "Introducción al Puesto de Ventas: Comisión vs Fijo ($450), Bitácora y Catálogo",
+    subtitle: "Reglas de permanencia, términos, condiciones, catálogo digital y métricas del plan laboral.",
     unlocked: true,
-    youtubeId: "tFyDBikor4I",
-    duration: "21:41 min",
+    youtubeId: "Jm7RPpxJ54E",
+    duration: "47:20 min",
     date: "18 de Noviembre de 2026",
     instructor: "Juan Pablo Guzmán (Supervisor de Ventas)",
     summary: [
