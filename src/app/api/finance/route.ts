@@ -30,73 +30,108 @@ export async function POST(req: Request) {
     try {
         const session = await getServerSession(authOptions)
         if (!session) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+            return NextResponse.json({ error: "No autorizado. Inicie sesión nuevamente." }, { status: 401 })
         }
 
         const isAdmin = session.user.role === "ADMIN" || session.user.role === "MANAGEMENT"
         const body = await req.json()
         
-        const lastTrx = await prisma.transaction.findFirst({
-            orderBy: { trxId: 'desc' }
+        // Find all existing transactions to calculate the next numeric trxId reliably
+        const allTrx = await prisma.transaction.findMany({
+            select: { trxId: true }
         })
 
-        let nextNumber = 1
-        if (lastTrx) {
-            const matches = lastTrx.trxId.match(/TRX-(\d+)/)
+        let maxNumber = 0
+        for (const t of allTrx) {
+            const matches = t.trxId ? t.trxId.match(/^TRX-(\d+)$/) : null
             if (matches) {
-                nextNumber = parseInt(matches[1]) + 1
+                const num = parseInt(matches[1], 10)
+                if (num > maxNumber) {
+                    maxNumber = num
+                }
             }
         }
 
-        const trxId = `TRX-${nextNumber.toString().padStart(3, '0')}`
+        let nextNumber = Math.max(maxNumber + 1, 1)
+        let trxId = `TRX-${nextNumber.toString().padStart(3, '0')}`
 
-        // If not admin, force status PENDING and no financial details
+        const existingSet = new Set(allTrx.map(t => t.trxId))
+        while (existingSet.has(trxId)) {
+            nextNumber++
+            trxId = `TRX-${nextNumber.toString().padStart(3, '0')}`
+        }
+
+        // Status & Salesperson
         const status = isAdmin ? (body.status || "PAGADO") : "PENDIENTE"
         const salespersonId = isAdmin ? (body.salespersonId || session.user.id) : session.user.id
+
+        // Values
+        const amount = parseFloat(body.amount) || 0
+        const pvp = parseFloat(body.pvp || body.amount) || amount
+        const cost = isAdmin ? (parseFloat(body.cost) || 0) : 0
+        const profit = isAdmin ? (parseFloat(body.profit) || (pvp - cost)) : 0
+        const commission = isAdmin ? (parseFloat(body.commission) || 0) : 0
+        const bonus = isAdmin ? (parseFloat(body.bonus) || 0) : 0
+
+        // Parse date safely
+        let trxDate = new Date()
+        if (body.date) {
+            const parsedDate = new Date(body.date)
+            if (!isNaN(parsedDate.getTime())) {
+                trxDate = parsedDate
+            }
+        }
 
         const transaction = await prisma.transaction.create({
             data: {
                 trxId,
-                client: body.client,
-                amount: parseFloat(body.amount),
-                pvp: isAdmin ? parseFloat(body.pvp || body.amount) : 0,
-                cost: isAdmin ? parseFloat(body.cost || 0) : 0,
-                profit: isAdmin ? parseFloat(body.profit || 0) : 0,
-                commission: isAdmin ? parseFloat(body.commission || 0) : 0,
-                bonus: isAdmin ? parseFloat(body.bonus || 0) : 0,
+                client: body.client || "SIN ESPECIFICAR",
+                amount,
+                pvp,
+                cost,
+                profit,
+                commission,
+                bonus,
                 quoteNumber: body.quoteNumber || null,
                 status,
                 type: body.type || "Venta Directa",
-                date: body.date ? new Date(body.date) : new Date(),
+                date: trxDate,
                 proofUrl: body.proofUrl || null,
                 salespersonId
             }
         })
 
-        // Notify admins if created by salesperson
+        // Notify admins if created by non-admin advisor / coordinator
         if (!isAdmin) {
-            const admins = await prisma.user.findMany({
-                where: { role: { in: ["ADMIN", "MANAGEMENT"] } }
-            })
-            
-            await Promise.all(admins.map(admin => 
-                prisma.notification.create({
-                    data: {
-                        userId: admin.id,
-                        title: "🛒 NUEVA VENTA REGISTRADA",
-                        message: `El asesor ${session.user.name} ha registrado una venta para ${body.client}. Requiere aprobación técnica.`,
-                        type: "TICKET",
-                        relatedId: transaction.id
-                    }
+            try {
+                const admins = await prisma.user.findMany({
+                    where: { role: { in: ["ADMIN", "MANAGEMENT"] } }
                 })
-            ))
+                
+                await Promise.all(admins.map(admin => 
+                    prisma.notification.create({
+                        data: {
+                            userId: admin.id,
+                            title: "🛒 NUEVA VENTA REGISTRADA",
+                            message: `El asesor ${session.user.name || 'Asesor'} ha registrado una venta para ${body.client || 'Cliente'}. Requiere aprobación técnica.`,
+                            type: "TICKET",
+                            relatedId: transaction.id
+                        }
+                    })
+                ))
+            } catch (notifyErr) {
+                console.error("Warning: Could not create admin notifications:", notifyErr)
+            }
         }
 
-        return NextResponse.json(transaction)
-    } catch (error) {
-        console.error(error)
-        return NextResponse.json({ error: "Failed to create transaction" }, { status: 500 })
+        return NextResponse.json({ ok: true, transaction })
+    } catch (error: any) {
+        console.error("Error creating transaction in /api/finance:", error)
+        return NextResponse.json({ 
+            error: error?.message || "No se pudo crear la transacción en la base de datos." 
+        }, { status: 500 })
     }
 }
+
 
 

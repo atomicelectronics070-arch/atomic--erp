@@ -21,22 +21,30 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         if (!oldTrx) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
         const data: any = {
-            client: body.client,
-            type: body.type,
-            date: body.date ? new Date(body.date) : undefined,
+            client: body.client || oldTrx.client,
+            type: body.type || oldTrx.type,
+            date: body.date ? new Date(body.date) : oldTrx.date,
+            proofUrl: body.proofUrl !== undefined ? body.proofUrl : oldTrx.proofUrl,
+            quoteNumber: body.quoteNumber !== undefined ? body.quoteNumber : oldTrx.quoteNumber,
         }
 
         if (isAdmin) {
-            data.pvp = parseFloat(body.pvp || body.amount)
-            data.amount = parseFloat(body.amount)
-            data.cost = parseFloat(body.cost)
-            data.profit = parseFloat(body.profit)
-            data.commission = parseFloat(body.commission)
+            data.pvp = parseFloat(body.pvp || body.amount) || 0
+            data.amount = parseFloat(body.amount) || 0
+            data.cost = parseFloat(body.cost) || 0
+            data.profit = parseFloat(body.profit) || 0
+            data.commission = parseFloat(body.commission) || 0
             data.bonus = parseFloat(body.bonus || 0)
-            data.quoteNumber = body.quoteNumber || oldTrx.quoteNumber
-            data.status = body.status
+            data.status = body.status || oldTrx.status
             data.commissionStatus = body.commissionStatus || oldTrx.commissionStatus
             data.salespersonId = body.salespersonId || oldTrx.salespersonId
+        } else if (oldTrx.salespersonId === session.user.id) {
+            // Salesperson can update their pending transaction amount before approval
+            if (oldTrx.status === "PENDIENTE") {
+                const amount = parseFloat(body.amount) || oldTrx.amount
+                data.amount = amount
+                data.pvp = parseFloat(body.pvp || body.amount) || amount
+            }
         }
 
         const transaction = await prisma.transaction.update({
@@ -46,21 +54,25 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
         // Notify user if was pending and now approved
         if (isAdmin && oldTrx.status === "PENDIENTE" && body.status === "PAGADO" && transaction.salespersonId) {
-            await prisma.notification.create({
-                data: {
-                    userId: transaction.salespersonId,
-                    title: "💰 VENTA CONSOLIDADA",
-                    message: `Tu venta con ${transaction.client} ha sido procesada. PVP: $${transaction.amount}, Comisión: $${transaction.commission}.`,
-                    type: "GOAL",
-                    relatedId: transaction.id
-                }
-            })
+            try {
+                await prisma.notification.create({
+                    data: {
+                        userId: transaction.salespersonId,
+                        title: "💰 VENTA CONSOLIDADA",
+                        message: `Tu venta con ${transaction.client} ha sido procesada. PVP: $${transaction.amount}, Comisión: $${transaction.commission}.`,
+                        type: "GOAL",
+                        relatedId: transaction.id
+                    }
+                })
+            } catch (notifyErr) {
+                console.error("Warning: Notification failed on transaction approval:", notifyErr)
+            }
         }
 
-        return NextResponse.json(transaction)
-    } catch (error) {
-        console.error(error)
-        return NextResponse.json({ error: "Failed to update transaction" }, { status: 500 })
+        return NextResponse.json({ ok: true, transaction })
+    } catch (error: any) {
+        console.error("Error updating transaction:", error)
+        return NextResponse.json({ error: error?.message || "Failed to update transaction" }, { status: 500 })
     }
 }
 

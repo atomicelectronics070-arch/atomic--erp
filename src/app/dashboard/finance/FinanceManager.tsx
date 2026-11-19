@@ -10,7 +10,7 @@ import {
     ArrowUpRight, ArrowDownRight, Info, Clock,
     Target, Briefcase, FileText, PieChart,
     ExternalLink, Upload, ShieldCheck, AlertCircle,
-    TrendingUp, Ban
+    TrendingUp, Ban, Loader2, CheckCircle2
 } from "lucide-react"
 
 interface Transaction {
@@ -50,6 +50,11 @@ export default function FinanceManager() {
     const [hasCommission, setHasCommission] = useState(false)
     const [commissionDueDate, setCommissionDueDate] = useState("")
     const [entryMode, setEntryMode] = useState<"INGRESO" | "EGRESO">("INGRESO")
+
+    // Submission & Feedback states
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
+    const [statusMessage, setStatusMessage] = useState("")
 
     const [formData, setFormData] = useState<Partial<Transaction>>({
         client: "",
@@ -129,9 +134,9 @@ export default function FinanceManager() {
     }, [data, searchTerm, periodFilter])
 
     const activeData = filteredData.filter(i => i.status !== "CANCELADO")
-    const EGRESO_TYPES = ["Egreso Operativo", "Egreso Comision"]
-    const ventas = activeData.filter(i => !EGRESO_TYPES.includes(i.type))
-    const egresos = activeData.filter(i => EGRESO_TYPES.includes(i.type))
+    const isEgresoItem = (itemType: string) => (itemType || "").startsWith("Egreso") || itemType === "Ticket de Pago"
+    const ventas = activeData.filter(i => !isEgresoItem(i.type))
+    const egresos = activeData.filter(i => isEgresoItem(i.type))
 
     // Ingresos cobrados vs pendientes
     const ingresosCobrados = ventas.filter(i => i.status === "PAGADO").reduce((a,c) => a + c.amount, 0)
@@ -149,11 +154,15 @@ export default function FinanceManager() {
     const netProfit = totalProfit - totalCommission - totalEgresos
 
     const handleOpenModal = (item?: Transaction, mode: "INGRESO" | "EGRESO" = "INGRESO") => {
+        setIsSubmitting(false)
+        setSubmitStatus("idle")
+        setStatusMessage("")
+
         if (item) {
             setEditingItem(item)
             setFormData(item)
             setHasCommission(item.commission > 0)
-            const isEgresoType = ["Egreso Operativo", "Egreso Comision"].includes(item.type || "")
+            const isEgresoType = isEgresoItem(item.type || "")
             setEntryMode(isEgresoType ? "EGRESO" : "INGRESO")
         } else {
             setEditingItem(null)
@@ -184,6 +193,10 @@ export default function FinanceManager() {
     const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (file) {
+            if (file.size > 8 * 1024 * 1024) {
+                alert("⚠️ El archivo es demasiado pesado (máximo 8MB). Por favor adjunta un archivo o imagen más liviana.")
+                return
+            }
             const reader = new FileReader()
             reader.onloadend = () => {
                 setFormData(prev => ({ ...prev, proofUrl: reader.result as string }))
@@ -196,13 +209,34 @@ export default function FinanceManager() {
         e.preventDefault()
         
         if (!isAdmin && !editingItem && !formData.proofUrl) {
-            alert("⚠️ ERROR DE SEGURIDAD: Es obligatorio subir la cotización correspondiente para registrar una venta.")
+            setSubmitStatus("error")
+            setStatusMessage("Es obligatorio subir la cotización o comprobante correspondiente para registrar una venta.")
             return
         }
 
+        if (!formData.client || formData.client.trim() === "") {
+            setSubmitStatus("error")
+            setStatusMessage("Debes especificar el nombre del cliente o concepto del movimiento.")
+            return
+        }
+
+        if (!formData.amount || formData.amount <= 0) {
+            setSubmitStatus("error")
+            setStatusMessage("El monto / valor ingresado debe ser mayor a 0.")
+            return
+        }
+
+        setIsSubmitting(true)
+        setSubmitStatus("idle")
+        setStatusMessage("")
+
         const payload = { ...formData }
+        // Default PVP if not present
+        if (!payload.pvp || payload.pvp === 0) {
+            payload.pvp = payload.amount
+        }
         if (isAdmin) {
-            payload.profit = (formData.pvp || formData.amount || 0) - (formData.cost || 0)
+            payload.profit = (payload.pvp || payload.amount || 0) - (formData.cost || 0)
         }
         // If no commission, zero it out
         if (!hasCommission) {
@@ -221,27 +255,57 @@ export default function FinanceManager() {
             })
 
             if (res.ok) {
-                const savedTrx = await res.json()
+                const responseData = await res.json()
+                const savedTrx = responseData.transaction || responseData
+
                 // Auto-create payment ticket if hasCommission and asesor selected
                 if (hasCommission && payload.commission && (payload.commission > 0) && payload.salespersonId && !editingItem) {
-                    const dueDate = commissionDueDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-                    await fetch("/api/finance/tickets", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            advisorId: payload.salespersonId,
-                            amount: payload.commission,
-                            dueDate,
-                            issueDate: payload.date || new Date().toISOString().split('T')[0],
-                            concept: `Comisión por venta - ${payload.client} | TRX: ${savedTrx.trxId}`
+                    try {
+                        const dueDate = commissionDueDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+                        await fetch("/api/finance/tickets", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                advisorId: payload.salespersonId,
+                                amount: payload.commission,
+                                dueDate,
+                                issueDate: payload.date || new Date().toISOString().split('T')[0],
+                                concept: `Comisión por venta - ${payload.client} | TRX: ${savedTrx?.trxId || 'N/A'}`
+                            })
                         })
-                    })
+                    } catch (ticketErr) {
+                        console.error("Warning: Could not create commission ticket:", ticketErr)
+                    }
                 }
-                fetchTransactions()
-                setIsModalOpen(false)
+
+                setSubmitStatus("success")
+                setStatusMessage(
+                    isAdmin 
+                        ? (editingItem ? "¡Registro actualizado con éxito en el sistema!" : "¡Registro guardado exitosamente en Finanzas!") 
+                        : "¡Venta registrada y enviada para aprobación técnica con éxito!"
+                )
+
+                // Refresh transaction list
+                await fetchTransactions()
+
+                // Keep feedback visible for 1.8 seconds before smoothly closing the modal
+                setTimeout(() => {
+                    setIsModalOpen(false)
+                    setIsSubmitting(false)
+                    setSubmitStatus("idle")
+                    setStatusMessage("")
+                }, 1800)
+            } else {
+                const errData = await res.json().catch(() => ({ error: "Error de servidor al guardar la transacción" }))
+                setSubmitStatus("error")
+                setStatusMessage(errData.error || "Ocurrió un error en el servidor. Tus datos no se perdieron; puedes intentar enviarlo nuevamente.")
+                setIsSubmitting(false)
             }
-        } catch (e) {
+        } catch (e: any) {
             console.error("Error saving transaction", e)
+            setSubmitStatus("error")
+            setStatusMessage("Fallo de conexión al enviar los datos. El formulario sigue intacto, revisa tu conexión e inténtalo de nuevo.")
+            setIsSubmitting(false)
         }
     }
 
@@ -485,6 +549,29 @@ export default function FinanceManager() {
                             </div>
 
                             <form onSubmit={handleSave} className="p-6 space-y-6 overflow-y-auto custom-scrollbar">
+                                {/* Feedback Notifications inside Modal */}
+                                {submitStatus === "error" && (
+                                    <div className="p-4 rounded-xl bg-rose-50 border-2 border-rose-300 text-rose-800 flex items-start gap-3 shadow-sm animate-shake">
+                                        <AlertCircle className="w-5 h-5 text-rose-600 mt-0.5 shrink-0" />
+                                        <div className="flex-1">
+                                            <h4 className="text-sm font-black text-rose-900 uppercase tracking-wide">Error al procesar el registro</h4>
+                                            <p className="text-xs font-bold text-rose-700 mt-0.5">{statusMessage}</p>
+                                            <p className="text-[11px] text-rose-600 mt-1 font-semibold">⚠️ Tus datos ingresados siguen intactos en el formulario. Puedes corregir o presionar el botón de nuevo para reintentar.</p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {submitStatus === "success" && (
+                                    <div className="p-4 rounded-xl bg-emerald-50 border-2 border-emerald-400 text-emerald-900 flex items-start gap-3 shadow-md animate-pulse">
+                                        <CheckCircle2 className="w-6 h-6 text-emerald-600 mt-0.5 shrink-0" />
+                                        <div className="flex-1">
+                                            <h4 className="text-sm font-black text-emerald-900 uppercase tracking-wide">✅ ¡REGISTRO GUARDADO Y ENVIADO CON ÉXITO!</h4>
+                                            <p className="text-xs font-bold text-emerald-700 mt-0.5">{statusMessage}</p>
+                                            <p className="text-[11px] text-emerald-600 mt-1 font-semibold">Guardado en la base de datos sin pérdidas. Cerrando ventana en un momento...</p>
+                                        </div>
+                                    </div>
+                                )}
+
                                 {/* ===== EGRESO FORM ===== */}
                                 {entryMode === 'EGRESO' ? (
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -554,10 +641,31 @@ export default function FinanceManager() {
                                         <div className="md:col-span-2 pt-4">
                                             <button
                                                 type="submit"
-                                                className="w-full bg-rose-600 text-white font-bold py-4 rounded-lg text-sm shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:bg-rose-700 transition-all flex items-center justify-center gap-3"
+                                                disabled={isSubmitting || submitStatus === "success"}
+                                                className={`w-full text-white font-bold py-4 rounded-lg text-sm shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-all flex items-center justify-center gap-3 ${
+                                                    submitStatus === "success"
+                                                        ? "bg-emerald-600 cursor-default shadow-emerald-500/30"
+                                                        : isSubmitting
+                                                            ? "bg-rose-400 cursor-wait opacity-80"
+                                                            : "bg-rose-600 hover:bg-rose-700 hover:shadow-[0_12px_40px_rgba(225,29,72,0.4)] cursor-pointer"
+                                                }`}
                                             >
-                                                <ArrowDownRight size={20} />
-                                                <span>REGISTRAR EGRESO</span>
+                                                {isSubmitting ? (
+                                                    <>
+                                                        <Loader2 size={20} className="animate-spin" />
+                                                        <span>GUARDANDO EGRESO...</span>
+                                                    </>
+                                                ) : submitStatus === "success" ? (
+                                                    <>
+                                                        <Check size={20} />
+                                                        <span>¡EGRESO REGISTRADO CON ÉXITO!</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <ArrowDownRight size={20} />
+                                                        <span>REGISTRAR EGRESO</span>
+                                                    </>
+                                                )}
                                             </button>
                                         </div>
                                     </div>
@@ -817,10 +925,31 @@ export default function FinanceManager() {
                                     <div className="md:col-span-2 pt-4">
                                         <button
                                             type="submit"
-                                            className="w-full bg-emerald-600 text-white font-bold py-4 rounded-lg text-sm shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:bg-emerald-700 hover:shadow-[0_12px_40px_rgba(0,0,0,0.5)] transition-all flex items-center justify-center gap-3"
+                                            disabled={isSubmitting || submitStatus === "success"}
+                                            className={`w-full text-white font-bold py-4 rounded-lg text-sm shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-all flex items-center justify-center gap-3 ${
+                                                submitStatus === "success"
+                                                    ? "bg-emerald-600 cursor-default shadow-emerald-500/30"
+                                                    : isSubmitting
+                                                        ? "bg-emerald-400 cursor-wait opacity-80"
+                                                        : "bg-emerald-600 hover:bg-emerald-700 hover:shadow-[0_12px_40px_rgba(5,150,105,0.4)] cursor-pointer"
+                                            }`}
                                         >
-                                            <ArrowUpRight size={20} />
-                                            <span>{isAdmin ? (editingItem ? 'ACTUALIZAR REGISTRO' : 'GUARDAR INGRESO') : 'ENVIAR PARA APROBACIÓN'}</span>
+                                            {isSubmitting ? (
+                                                <>
+                                                    <Loader2 size={20} className="animate-spin" />
+                                                    <span>GUARDANDO Y ENVIANDO...</span>
+                                                </>
+                                            ) : submitStatus === "success" ? (
+                                                <>
+                                                    <Check size={20} />
+                                                    <span>¡GUARDADO Y ENVIADO CON ÉXITO!</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <ArrowUpRight size={20} />
+                                                    <span>{isAdmin ? (editingItem ? 'ACTUALIZAR REGISTRO' : 'GUARDAR INGRESO') : '↗ ENVIAR PARA APROBACIÓN'}</span>
+                                                </>
+                                            )}
                                         </button>
                                     </div>
                                 </div>
