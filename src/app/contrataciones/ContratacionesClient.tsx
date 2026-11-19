@@ -42,7 +42,10 @@ import {
   Scale,
   CheckSquare,
   Target,
-  FileSpreadsheet
+  FileSpreadsheet,
+  AlertTriangle,
+  Monitor,
+  Laptop
 } from "lucide-react"
 
 // ── 1. LAS 7 ACTIVIDADES ORDINARIAS (MODALIDAD SUELDO FIJO) ──
@@ -214,18 +217,35 @@ const MATRIZ_EXCEL = [
   }
 ]
 
-// ── 3. ESCALA SALARIAL PROGRESIVA (MODALIDAD FIJA) ──
+// ── 3. ESCALA SALARIAL Y NIVELES DE RENDIMIENTO COMPLETO ──
 const ESCALA_SALARIAL = [
+  {
+    mes: "Nivel Rendimiento",
+    etapa: "Rendimiento Intermedio / Esfuerzo Base",
+    sueldoFijo: "$50 USD",
+    condicion: "Asistencia >80%, Publicaciones >80%, 3 números de Maps diarios contactados y al menos 3 llamadas a la semana",
+    comision: "20% de comisión en ventas generadas",
+    bono: "Puente directo al Plan Laboral de $100",
+    totalPotencial: "$50 - $120+ USD",
+    destacado: false,
+    color: "border-amber-300 bg-amber-50/30",
+    badge: "Rendimiento Intermedio",
+    badgeColor: "bg-amber-100 text-amber-900 border border-amber-300",
+    descripcion:
+      "Para quien no alcanza a cubrir las 7 actividades completas, pero demuestra disciplina constante cumpliendo asistencia, publicaciones, prospección de 3 contactos diarios por Maps y 3 llamadas por semana."
+  },
   {
     mes: "Mes 1",
     etapa: "Capacitación & Prueba Laboral",
     sueldoFijo: "$100 Fijos",
-    condicion: "Cumplimiento del 80% en asistencia y las 7 actividades ordinarias",
-    comision: "15% de comisión en ventas generadas",
+    condicion: "Cumplimiento del 80% en asistencia y las 7 actividades ordinarias completas (2h/día)",
+    comision: "20% de comisión en ventas generadas",
     bono: "$50 bono por cumplimiento y constancia completa",
-    totalPotencial: "$150+ USD",
+    totalPotencial: "$150 - $250+ USD",
     destacado: false,
     color: "border-slate-300",
+    badge: "Plan Laboral Oficial",
+    badgeColor: "bg-blue-100 text-blue-900 border border-blue-200",
     descripcion:
       "Mes de inducción técnica intensiva, familiarización con el catálogo, manejo del cotizador y creación guiada de tu primera base de clientes."
   },
@@ -233,12 +253,14 @@ const ESCALA_SALARIAL = [
     mes: "Mes 2",
     etapa: "Refuerzo & Manejo Autónomo",
     sueldoFijo: "$200 Fijos",
-    condicion: "Superación del mes de prueba y dominio de la dinámica ordinaria",
-    comision: "20% de comisión en ventas generadas (sube un 5%)",
+    condicion: "Superación del mes de prueba y dominio de las 7 actividades diarias",
+    comision: "20% de comisión en ventas generadas",
     bono: "$65 bono por cumplimiento y constancia mensual",
-    totalPotencial: "$265+ USD",
+    totalPotencial: "$265 - $400+ USD",
     destacado: true,
     color: "border-blue-500",
+    badge: "Paso Clave al 2do Mes",
+    badgeColor: "bg-blue-600 text-white",
     descripcion:
       "Duplicación de sueldo fijo. Consolidación de hábitos comerciales, maduración de prospectos acumulados y acompañamiento en cierres corporativos."
   },
@@ -246,14 +268,16 @@ const ESCALA_SALARIAL = [
     mes: "Mes 3",
     etapa: "Puesto Laboral Fijo Definitivo",
     sueldoFijo: "$450 Fijos Mensuales",
-    condicion: "Contrato de trabajo fijo firmado con base en rendimiento comprobado",
-    comision: "Comisiones y bonificaciones corporativas permanentes",
+    condicion: "Disponibilidad de 8 horas (9am-5pm), computadora + celular y contrato formal firmado",
+    comision: "20% comisiones corporativas permanentes",
     bono: "Bonos por metas trimestrales y cartera propia",
-    totalPotencial: "$450 - $750+ USD",
+    totalPotencial: "$450 - $800+ USD",
     destacado: false,
     color: "border-emerald-500",
+    badge: "Contrato Laboral Fijo",
+    badgeColor: "bg-emerald-600 text-white",
     descripcion:
-      "Establecimiento oficial en la nómina de ATOMIC con contrato firmado, cartera de clientes activa y estabilidad laboral a largo plazo."
+      "Establecimiento oficial en la nómina de ATOMIC con contrato laboral firmado, 8 horas disponibles (9am a 5pm), equipo informático y cartera activa."
   }
 ]
 
@@ -297,8 +321,8 @@ const CONDICIONES_FREELANCE = [
 // ── 5. BENEFICIOS & HERRAMIENTAS DEL VENDEDOR FREELANCE ──
 const BENEFICIOS_FREELANCE = [
   {
-    titulo: "Comisiones por Cierre Sin Techo",
-    desc: "Gana comisiones directas por cada venta concretada (hasta 25% de margen). Tú defines cuánto ganar según tu esfuerzo y velocidad.",
+    titulo: "20% de Comisión Directa por Cierre",
+    desc: "Gana el 20% de comisión directa por cada venta concretada. Sin límites ni techos mensuales de ganancia.",
     icono: DollarSign,
     color: "text-amber-600 bg-amber-50 border-amber-200"
   },
@@ -326,26 +350,32 @@ const BENEFICIOS_FREELANCE = [
 const TABLA_COMPARATIVA = [
   {
     criterio: "Remuneración Base",
-    fijo: "$100 (M1) ➔ $200 (M2) ➔ $450 (M3) Fijos Garantizados",
-    comision: "100% Variable por Comisión Directa (Sin Techo de Ganancias)",
+    fijo: "$50 (Rendimiento) ➔ $100 (M1) ➔ $200 (M2) ➔ $450 (M3) Fijos Garantizados",
+    comision: "100% Variable por Comisión Directa del 20% (Sin Techo de Ganancias)",
     icono: DollarSign
   },
   {
     criterio: "Salto con Experiencia (Fast-Track)",
-    fijo: "✓ Sí: Postulantes con experiencia pueden saltar directo al Mes 3 ($450 Fijos)",
+    fijo: "✓ Sí: Puedes pugnar directo por los $450 Fijos si tienes experiencia, PC, celular y 8h disponibles",
     comision: "Ingreso inmediato sin filtro de experiencia comercial previa",
     icono: Rocket
   },
   {
     criterio: "Dedicación y Horario",
-    fijo: "2 Horas diarias dedicadas con timbrado de cumplimiento",
+    fijo: "2 Horas diarias dedicadas ($100-$200) u 8 Horas (9am a 5pm para puesto de $450)",
     comision: "100% Flexible y autónomo. Administras tus propios horarios",
     icono: Clock
   },
   {
+    criterio: "Equipamiento Obligatorio",
+    fijo: "Obligatorio Computadora (Laptop o PC) y Teléfono Celular operativo",
+    comision: "Teléfono celular con WhatsApp y acceso a la plataforma web",
+    icono: Monitor
+  },
+  {
     criterio: "Tareas Requeridas",
-    fijo: "7 Actividades Diarias Verificables (Marketplace, Maps, Zoom, etc.)",
-    comision: "Las 3 Únicas Tareas Obligatorias (5 posts/día, 15 Maps/semana, Timbrado)",
+    fijo: "7 Actividades Diarias Verificables (o 4 tareas para el bono de rendimiento de $50)",
+    comision: "Asistencia y publicaciones (mínimo de permanencia en grupo sin sueldo fijo)",
     icono: CheckSquare
   },
   {
@@ -356,8 +386,8 @@ const TABLA_COMPARATIVA = [
   },
   {
     criterio: "Comisiones Adicionales",
-    fijo: "15% a 20% adicional de comisiones sobre ventas + Bonos",
-    comision: "Comisión total por margen de producto comercializado (hasta 25%)",
+    fijo: "20% de comisión adicional sobre ventas concretadas + Bonos",
+    comision: "20% de comisión directa por cada producto o proyecto cerrado",
     icono: TrendingUp
   },
   {
@@ -368,7 +398,7 @@ const TABLA_COMPARATIVA = [
   },
   {
     criterio: "¿Para quién es ideal?",
-    fijo: "Personas que buscan sueldo fijo estable, disciplina y carrera laboral",
+    fijo: "Personas que buscan sueldo fijo estable, disciplina y carrera laboral formal",
     comision: "Personas que desean ingresos extras, flexibilidad total o emprender",
     icono: Users
   }
@@ -387,13 +417,18 @@ export default function ContratacionesClient() {
   )
   const whatsappLinkFijo = `https://wa.me/${whatsappNumber}?text=${whatsappPreMsgFijo}`
 
+  const whatsappPreMsgRendimiento50 = encodeURIComponent(
+    "Hola, deseo postularme a la opción de Rendimiento Intermedio ($50 USD al mes + 20% comisión) cumpliendo asistencia >80%, publicaciones >80%, 3 números de Maps diarios contactados y 3 llamadas semanales."
+  )
+  const whatsappLinkRendimiento50 = `https://wa.me/${whatsappNumber}?text=${whatsappPreMsgRendimiento50}`
+
   const whatsappPreMsgFastTrack = encodeURIComponent(
-    "Hola, tengo experiencia previa comprobable en ventas comerciales / tecnología y deseo solicitar la evaluación Fast-Track para saltar directamente al Mes 3 con Sueldo Fijo de $450 USD mensuales + contrato laboral."
+    "Hola, cuento con experiencia previa en ventas, dispongo de computadora, celular y disponibilidad completa de 8 horas (de 9:00 AM a 5:00 PM) para realizar las 7 actividades de golpe. Deseo pugnar por el puesto fijo de $450 fijos mensuales de una vez."
   )
   const whatsappLinkFastTrack = `https://wa.me/${whatsappNumber}?text=${whatsappPreMsgFastTrack}`
 
   const whatsappPreMsgFreelance = encodeURIComponent(
-    "Hola, deseo unirme como Vendedor Bajo Comisión (Freelance 100% Remoto y Flexible) y cumplir con las 3 condiciones obligatorias."
+    "Hola, deseo unirme como Vendedor Bajo Comisión (Freelance 100% Remoto y Flexible, 20% de comisión) y cumplir con las condiciones para pertenecer al grupo."
   )
   const whatsappLinkFreelance = `https://wa.me/${whatsappNumber}?text=${whatsappPreMsgFreelance}`
 
@@ -405,15 +440,16 @@ export default function ContratacionesClient() {
   // Plantilla oficial que el reclutador copia para enviar a postulantes
   const plantillaReclutador = `¡Hola [Nombre]! Bienvenido al equipo comercial de ATOMIC.
 
-Aquí tienes los enlaces e información oficial de nuestras dos modalidades comerciales:
+Aquí tienes el instructivo oficial y los enlaces para incorporarte a nuestro equipo:
 
 1. Manual e Instructivo Completo Oficial:
 https://atomiccotizador.shop/contrataciones#manual
 
-2. Selecciona la modalidad que mejor se adapte a tu perfil:
-   • MODALIDAD A (Sueldo Fijo & Carrera Laboral): 2 horas al día, 7 actividades ordinarias ($100 Mes 1 ➔ $200 Mes 2 ➔ $450 Mes 3 con contrato laboral).
-   *NOTA:* Si ya tienes experiencia previa comprobable en ventas o tecnología, ¡puedes postular al Fast-Track para saltar directamente al Mes 3 ($450 Fijos Mensuales)!
-   • MODALIDAD B (Bajo Comisión & Freelance): 100% Remoto y flexible sin horarios fijos. Cumples únicamente con las 3 tareas condicionantes: 5 posts diarios en Marketplace, 15 números de Maps a la semana y timbrado diario de asistencia.
+2. Esquema de Ingresos y Niveles de Desempeño:
+   • PERMANENCIA EN EL GRUPO (Sin Sueldo Fijo): Si cumples tu asistencia diaria y tus publicaciones en Marketplace, te mantienes activo en el grupo comercial y ganas el 20% DE COMISIÓN DIRECTA por cada venta que cierres, pero NO genera remuneración fija.
+   • RENDIMIENTO BÁSICO ($50 USD FIJOS): Para cobrar al menos $50 al mes, debes cumplir asistencia >80%, publicaciones >80%, registrar y escribir a 3 números diarios de Google Maps y hacer al menos 3 llamadas en la semana (+ 20% comisión).
+   • PLAN LABORAL 30 DÍAS ($100 Mes 1 ➔ $200 Mes 2 ➔ $450 Mes 3): 2 horas diarias cumpliendo las 7 actividades ordinarias completas con más del 80% de efectividad (+ 20% comisión + bonos).
+   • PUGNA DIRECTA POR $450 (FAST-TRACK): "Si tú tienes todas las habilidades, cuentas con experiencia y crees que puedes realizar estas siete actividades de golpe, avísanos y pugna por los $450 de una vez". Requiere computadora, celular y disponibilidad de 8 horas de 9:00 AM a 5:00 PM.
 
 3. Enlace de Registro Exclusivo para Vendedores:
 https://atomiccotizador.shop/register/vendedor
@@ -421,7 +457,7 @@ https://atomiccotizador.shop/register/vendedor
 4. Grupo de WhatsApp de tu cuadrilla:
 [Ingresa al enlace del grupo que te pasamos aquí]
 
-*Una vez registrado, ingresa al grupo de WhatsApp y notifícanos tu modalidad elegida para habilitar tus accesos y productos asignados.*
+*Una vez registrado, ingresa al grupo y confírmanos tu nivel elegido para habilitar tus accesos y productos.*
 
 ¡Muchos éxitos en tu incorporación!`
 
@@ -451,7 +487,7 @@ https://atomiccotizador.shop/register/vendedor
                 </span>
               </div>
               <p className="text-[11px] text-slate-700 hidden sm:block">
-                Ecosistema Comercial de Empleo: Sueldo Fijo, Comisiones y Fast-Track
+                Ecosistema Comercial de Empleo: Rendimiento $50, Sueldo Fijo $100-$450 y Comisiones al 20%
               </p>
             </div>
           </div>
@@ -479,20 +515,24 @@ https://atomiccotizador.shop/register/vendedor
         {/* Barra de Navegación Rápida */}
         <div className="bg-slate-50 border-t border-slate-200 px-4 sm:px-6 py-2 overflow-x-auto scrollbar-none">
           <div className="max-w-6xl mx-auto flex items-center gap-4 text-xs font-bold text-slate-600">
-            <a href="#modalidades" className="hover:text-blue-600 transition-colors whitespace-nowrap">
-              Modalidades
+            <a href="#permanencia" className="text-amber-800 hover:text-amber-950 transition-colors whitespace-nowrap flex items-center gap-1">
+              <AlertTriangle size={13} className="text-amber-600" /> Permanencia vs. Sueldo
+            </a>
+            <span className="text-slate-300">•</span>
+            <a href="#escala-rendimiento" className="hover:text-blue-600 transition-colors whitespace-nowrap">
+              Escala ($50 - $450)
             </a>
             <span className="text-slate-300">•</span>
             <a href="#sueldo-fijo" className="hover:text-blue-600 transition-colors whitespace-nowrap">
-              Sueldo Fijo ($100-$450)
+              7 Actividades Diarias
             </a>
             <span className="text-slate-300">•</span>
             <a href="#fast-track" className="text-blue-600 hover:text-blue-800 transition-colors whitespace-nowrap flex items-center gap-1">
-              <Rocket size={13} /> Fast-Track Mes 3 ($450)
+              <Rocket size={13} /> Pugna por los $450 (8h)
             </a>
             <span className="text-slate-300">•</span>
             <a href="#bajo-comision" className="hover:text-amber-600 transition-colors whitespace-nowrap flex items-center gap-1">
-              <Zap size={13} className="text-amber-500" /> Bajo Comisión (Freelance)
+              <Zap size={13} className="text-amber-500" /> Bajo Comisión (20%)
             </a>
             <span className="text-slate-300">•</span>
             <a href="#comparativa" className="hover:text-blue-600 transition-colors whitespace-nowrap">
@@ -506,7 +546,7 @@ https://atomiccotizador.shop/register/vendedor
         </div>
       </header>
 
-      {/* ── HERO BANNER: CONVOCATORIA UNIFICADA ── */}
+      {/* ── HERO BANNER: CONVOCATORIA UNIFICADA CON ESCALAFÓN CLARO ── */}
       <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-white pt-12 pb-16 border-b border-slate-200">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
           
@@ -516,11 +556,11 @@ https://atomiccotizador.shop/register/vendedor
           </div>
 
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-slate-950 tracking-tight leading-[1.15] max-w-4xl mx-auto mb-6">
-            Dos Formas de Trabajar en el Equipo Comercial de <span className="text-blue-600">ATOMIC</span>
+            Estructura de Contratación Comercial de <span className="text-blue-600">ATOMIC</span>
           </h1>
 
           <p className="text-base sm:text-lg text-slate-700 max-w-3xl mx-auto leading-relaxed mb-6">
-            En ATOMIC ofrecemos dos rutas de contratación adaptadas a tu disponibilidad y perfil: <strong className="text-slate-950">Carrera Laboral con Sueldo Fijo Progresivo ($100 a $450/mes)</strong> con 2 horas diarias de trabajo y opción a <strong className="text-blue-700 font-bold">Fast-Track directo al Mes 3 ($450) por experiencia previa</strong>, o la <strong className="text-amber-700 font-bold">Modalidad Bajo Comisión & Freelance 100% Remota</strong> cumpliendo únicamente 3 tareas condicionantes.
+            Un esquema progresivo diseñado para premiar el esfuerzo real: desde el <strong className="text-amber-800 font-bold">Rendimiento Básico de $50 USD</strong> para quienes inician con pequeñas actividades activas, el <strong className="text-blue-700 font-bold">Plan Laboral de $100 a $450 USD mensuales</strong> con dedicación diaria, hasta la opción de <strong className="text-slate-950 font-bold">Pugnar Directamente por los $450 Fijos</strong> si cuentas con experiencia, computadora, celular y disponibilidad completa de 8 horas. Todos con el <strong className="text-emerald-700 font-bold">20% de comisión directa</strong>.
           </p>
 
           {/* Selector de pestañas para filtrar la vista según preferencia */}
@@ -534,7 +574,7 @@ https://atomiccotizador.shop/register/vendedor
                   : "text-slate-600 hover:text-slate-900"
               }`}
             >
-              ✦ Vista Completa (Ambas)
+              ✦ Vista Completa (Todos los Niveles)
             </button>
             <button
               type="button"
@@ -546,7 +586,7 @@ https://atomiccotizador.shop/register/vendedor
               }`}
             >
               <Briefcase size={13} />
-              <span>Sueldo Fijo ($100-$450)</span>
+              <span>Sueldo Fijo ($50 - $450)</span>
             </button>
             <button
               type="button"
@@ -558,69 +598,69 @@ https://atomiccotizador.shop/register/vendedor
               }`}
             >
               <Zap size={13} />
-              <span>Bajo Comisión (Freelance)</span>
+              <span>Bajo Comisión (20%)</span>
             </button>
           </div>
 
-          {/* Tarjetas de Beneficios Rápidos */}
+          {/* Tarjetas de Beneficios Rápidos (Los 4 Niveles Clave) */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 max-w-4xl mx-auto mb-10 text-left">
+            <div className="p-4 rounded-xl border border-amber-300 bg-amber-50/40 shadow-xs">
+              <div className="flex items-center gap-2 text-amber-700 mb-1.5">
+                <Target size={16} />
+                <span className="text-[11px] font-mono font-bold uppercase">Rendimiento Base</span>
+              </div>
+              <p className="text-xl font-black text-slate-900">$50 USD</p>
+              <p className="text-[11px] text-amber-900 font-medium">Asist. + Posts + 3 Maps + 3 Llamadas</p>
+            </div>
+
             <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-xs">
               <div className="flex items-center gap-2 text-blue-600 mb-1.5">
-                <Clock size={16} />
-                <span className="text-[11px] font-mono font-bold uppercase">Dedicación Fija</span>
-              </div>
-              <p className="text-xl font-black text-slate-900">2 Horas / Día</p>
-              <p className="text-[11px] text-slate-700">O 100% autónomo freelance</p>
-            </div>
-
-            <div className="p-4 rounded-xl border border-slate-200 bg-white shadow-xs">
-              <div className="flex items-center gap-2 text-emerald-600 mb-1.5">
                 <DollarSign size={16} />
-                <span className="text-[11px] font-mono font-bold uppercase">Mes 1 Fijo</span>
+                <span className="text-[11px] font-mono font-bold uppercase">Plan Laboral M1</span>
               </div>
               <p className="text-xl font-black text-slate-900">$100 USD</p>
-              <p className="text-[11px] text-slate-700">+ 15% Comisión + Bonos</p>
+              <p className="text-[11px] text-slate-700">7 Actividades completas + 20% com.</p>
             </div>
 
-            <div className="p-4 rounded-xl border border-blue-300 bg-blue-50/50 shadow-xs ring-2 ring-blue-400/20">
+            <div className="p-4 rounded-xl border border-blue-400 bg-blue-50/50 shadow-xs ring-2 ring-blue-400/20">
               <div className="flex items-center gap-2 text-blue-700 mb-1.5">
                 <Rocket size={16} />
-                <span className="text-[11px] font-mono font-bold uppercase">Salto Experiencia</span>
+                <span className="text-[11px] font-mono font-bold uppercase">Pugna por los $450</span>
               </div>
-              <p className="text-xl font-black text-blue-900">$450 Mes 3</p>
-              <p className="text-[11px] text-blue-700 font-medium">Fast-Track directo</p>
+              <p className="text-xl font-black text-blue-900">$450 Fijo</p>
+              <p className="text-[11px] text-blue-700 font-medium">8h de 9 a 5 + PC y Celular</p>
             </div>
 
-            <div className="p-4 rounded-xl border border-amber-300 bg-amber-50/50 shadow-xs">
-              <div className="flex items-center gap-2 text-amber-700 mb-1.5">
-                <Zap size={16} />
-                <span className="text-[11px] font-mono font-bold uppercase">Bajo Comisión</span>
+            <div className="p-4 rounded-xl border border-emerald-300 bg-emerald-50/40 shadow-xs">
+              <div className="flex items-center gap-2 text-emerald-700 mb-1.5">
+                <TrendingUp size={16} />
+                <span className="text-[11px] font-mono font-bold uppercase">Comisiones</span>
               </div>
-              <p className="text-xl font-black text-slate-900">Sin Techo</p>
-              <p className="text-[11px] text-amber-800 font-medium">3 Tareas Condicionantes</p>
+              <p className="text-xl font-black text-slate-900">20% Directo</p>
+              <p className="text-[11px] text-emerald-800 font-medium">En todos los productos y ventas</p>
             </div>
           </div>
 
           {/* Botones de acción principales */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 max-w-2xl mx-auto">
             <a
-              href={whatsappLinkFijo}
+              href={whatsappLinkFastTrack}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition-all shadow-sm hover:shadow flex items-center justify-center gap-2 group"
+              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-sm transition-all shadow-sm hover:shadow flex items-center justify-center gap-2 group"
             >
-              <Briefcase size={16} />
-              <span>Postular a Sueldo Fijo ($100-$450)</span>
+              <Rocket size={16} />
+              <span>Pugnar por los $450 (Fast-Track 8 Horas)</span>
             </a>
 
             <a
-              href={whatsappLinkFreelance}
+              href={whatsappLinkRendimiento50}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full sm:w-auto px-6 py-3.5 rounded-xl border-2 border-amber-500 bg-amber-50 hover:bg-amber-100 text-amber-900 font-black text-sm transition-all flex items-center justify-center gap-2"
             >
-              <Zap size={16} className="text-amber-600" />
-              <span>Postular Bajo Comisión (Freelance)</span>
+              <Target size={16} className="text-amber-600" />
+              <span>Aplicar a Rendimiento $50</span>
             </a>
 
             <a
@@ -628,143 +668,277 @@ https://atomiccotizador.shop/register/vendedor
               className="w-full sm:w-auto px-5 py-3.5 rounded-xl border border-slate-300 hover:border-slate-400 bg-white text-slate-800 font-bold text-sm transition-all flex items-center justify-center gap-2"
             >
               <FileText size={15} />
-              <span>Ver Manual</span>
+              <span>Manual</span>
             </a>
           </div>
 
         </div>
       </section>
 
-      {/* ── SECCIÓN 2: PRESENTACIÓN RESUMIDA DE LAS 2 MODALIDADES ── */}
-      <section id="modalidades" className="py-14 bg-slate-50 border-b border-slate-200">
+      {/* ── ⭐ APARTADO MUY EVIDENTE: PERMANENCIA EN EL GRUPO VS. REMUNERACIÓN ── */}
+      <section id="permanencia" className="py-12 bg-white border-b border-slate-200">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
-          <div className="text-center max-w-2xl mx-auto mb-10">
+          
+          <div className="p-7 sm:p-10 rounded-3xl bg-gradient-to-br from-amber-500/15 via-orange-500/10 to-amber-500/5 border-2 border-amber-500 shadow-sm relative overflow-hidden space-y-6">
+            
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-amber-300 pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center font-black shadow-xs shrink-0">
+                  <AlertTriangle size={24} />
+                </div>
+                <div>
+                  <span className="text-[11px] font-mono font-black uppercase tracking-wider text-amber-900 block">
+                    Regla Fundamental de Contratación
+                  </span>
+                  <h2 className="text-xl sm:text-2xl font-black text-slate-950">
+                    Permanencia en el Grupo vs. Remuneración Económica
+                  </h2>
+                </div>
+              </div>
+
+              <span className="px-3.5 py-1.5 rounded-xl bg-amber-500 text-slate-950 font-black text-xs font-mono uppercase tracking-wider shrink-0 shadow-xs">
+                Lectura Obligatoria
+              </span>
+            </div>
+
+            <div className="space-y-4 text-xs sm:text-sm text-slate-800 leading-relaxed">
+              
+              {/* Cláusula 1: Lo Mínimo para Permanecer */}
+              <div className="p-4 rounded-2xl bg-white/90 border border-amber-300 space-y-1.5">
+                <div className="flex items-center gap-2 text-amber-900 font-black text-sm">
+                  <CheckCircle2 size={16} className="text-amber-600" />
+                  <span>1. ¿Qué cumples si solo haces asistencia y publicaciones?</span>
+                </div>
+                <p className="text-slate-700">
+                  Si una persona simplemente cumple con marcar su asistencia diaria en la plataforma y realizar sus publicaciones en Facebook Marketplace, <strong className="text-slate-950">cumple con lo estrictamente mínimo para pertenecer y permanecer dentro del grupo comercial</strong>, nada más. <strong className="text-rose-700 underline">NO es acreedora a ningún tipo de sueldo ni remuneración fija</strong>. Mientras tanto, goza de todos los beneficios de la empresa: acceso al catálogo completo de 11 categorías, herramientas del cotizador PROP (PDF y Excel) y gana el <strong className="text-emerald-700 font-black">20% de comisión directa</strong> por cada venta que concrete.
+                </p>
+              </div>
+
+              {/* Cláusula 2: El Requisito para los $50 de Rendimiento */}
+              <div className="p-4 rounded-2xl bg-white/90 border border-emerald-300 space-y-2">
+                <div className="flex items-center gap-2 text-emerald-950 font-black text-sm">
+                  <Award size={16} className="text-emerald-600" />
+                  <span>2. ¿Cómo acceder a la Remuneración de al menos $50 USD al mes?</span>
+                </div>
+                <p className="text-slate-700">
+                  Para ser acreedor a una remuneración económica mensual de <strong className="text-emerald-800 font-bold">al menos $50 USD fijos</strong> como rendimiento por esfuerzo comercial activo, debes cumplir con este rendimiento comprobado en el mes:
+                </p>
+
+                <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-2.5 pt-1">
+                  <div className="p-3 rounded-xl bg-emerald-50/60 border border-emerald-200">
+                    <span className="text-[10px] font-mono font-bold text-emerald-800 uppercase block">Requisito 1</span>
+                    <strong className="text-slate-950 text-xs">Asistencias &gt; 80%</strong>
+                    <p className="text-[11px] text-slate-600 mt-0.5">Correctamente timbradas en el mes.</p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-emerald-50/60 border border-emerald-200">
+                    <span className="text-[10px] font-mono font-bold text-emerald-800 uppercase block">Requisito 2</span>
+                    <strong className="text-slate-950 text-xs">Publicaciones &gt; 80%</strong>
+                    <p className="text-[11px] text-slate-600 mt-0.5">Porcentaje de acierto en Marketplace.</p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-emerald-50/60 border border-emerald-200">
+                    <span className="text-[10px] font-mono font-bold text-emerald-800 uppercase block">Requisito 3</span>
+                    <strong className="text-slate-950 text-xs">3 Números Diarios Maps</strong>
+                    <p className="text-[11px] text-slate-600 mt-0.5">Obtenidos por Google Maps y escribirles.</p>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-emerald-50/60 border border-emerald-200">
+                    <span className="text-[10px] font-mono font-bold text-emerald-800 uppercase block">Requisito 4</span>
+                    <strong className="text-slate-950 text-xs">3 Llamadas Semanales</strong>
+                    <p className="text-[11px] text-slate-600 mt-0.5">Al menos 3 llamadas efectivas por semana.</p>
+                  </div>
+                </div>
+
+                <p className="text-xs text-emerald-900 pt-1 font-medium">
+                  ✓ Al cumplir estos 4 puntos, cobras tus <strong>$50 USD fijos</strong> al final del mes, más el <strong>20% de comisión directa</strong> de todas las cotizaciones que cierres.
+                </p>
+              </div>
+
+              {/* Cláusula 3: Escalón al Plan Laboral de $100 */}
+              <div className="p-4 rounded-2xl bg-white/90 border border-blue-200 text-xs sm:text-sm text-slate-700">
+                <strong className="text-blue-900 font-bold block mb-1">
+                  3. Puente hacia el Plan Laboral Oficial ($100 a $450/mes):
+                </strong>
+                Si deseas dar el siguiente salto y cobrar <strong>$100 fijos el Mes 1</strong>, solo debes cumplir con las <strong>7 actividades ordinarias completas</strong> (2 horas al día), lo cual te posiciona para subir a <strong>$200 el Mes 2</strong> y a <strong>$450 el Mes 3</strong> con contrato de trabajo firmado.
+              </div>
+
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+              <span className="text-xs text-amber-900 font-medium">
+                ¿Prefieres el esquema de rendimiento intermedio de $50?
+              </span>
+              <a
+                href={whatsappLinkRendimiento50}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider transition-all shadow-xs flex items-center gap-1.5"
+              >
+                <Target size={14} />
+                <span>Postular a Rendimiento $50</span>
+              </a>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      {/* ── SECCIÓN 2: ESCALA SALARIAL Y NIVELES DE PROYECCIÓN ── */}
+      <section id="escala-rendimiento" className="py-16 bg-slate-50 border-b border-slate-200">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          
+          <div className="text-center max-w-2xl mx-auto mb-12">
             <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest block mb-1">
-              Rutas de Incorporación
+              Escalafón Económico Transparente
             </span>
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-950 tracking-tight mb-2">
-              Elige el Modelo de Trabajo que Mejor se Ajuste a Ti
+            <h2 className="text-2xl sm:text-4xl font-black text-slate-950 tracking-tight mb-2">
+              Los 4 Niveles de Remuneración y Crecimiento
             </h2>
             <p className="text-slate-700 text-xs sm:text-sm">
-              Tanto si buscas la estabilidad y progresión de un sueldo fijo como si prefieres la flexibilidad horaria absoluta y ganar comisiones directas sin límite.
+              Desde el rendimiento intermedio de $50 USD hasta el puesto laboral fijo definitivo de $450 USD mensuales con contrato.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            
-            {/* Tarjeta Modalidad A: Sueldo Fijo */}
-            <div className="bg-white rounded-3xl border-2 border-blue-500/80 p-7 shadow-sm relative overflow-hidden flex flex-col justify-between">
-              <div className="absolute top-0 right-0 bg-blue-600 text-white font-mono text-[10px] font-bold uppercase tracking-widest px-4 py-1 rounded-bl-xl">
-                Carrera Laboral
-              </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 mb-12">
+            {ESCALA_SALARIAL.map((etapa, idx) => (
+              <div
+                key={idx}
+                className={`bg-white rounded-2xl border-2 p-5 flex flex-col justify-between shadow-xs transition-all relative ${
+                  etapa.destacado ? "border-blue-600 shadow-md ring-4 ring-blue-50" : etapa.color
+                }`}
+              >
+                {etapa.destacado && (
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[9px] font-mono font-bold uppercase tracking-widest px-3 py-0.5 rounded-full shadow-xs">
+                    {etapa.badge}
+                  </span>
+                )}
 
-              <div>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center font-black">
-                    <Briefcase size={24} />
-                  </div>
-                  <div>
-                    <span className="text-xs font-mono font-bold text-blue-600 uppercase">Modalidad A</span>
-                    <h3 className="text-xl font-black text-slate-900">Sueldo Fijo & Oficina Virtual</h3>
-                  </div>
-                </div>
-
-                <p className="text-xs text-slate-700 leading-relaxed mb-5">
-                  Diseñado para quienes buscan estabilidad económica, aprendizaje guiado y crecimiento dentro de la estructura corporativa de ATOMIC.
-                </p>
-
-                <ul className="space-y-2.5 text-xs text-slate-800 mb-6 font-medium">
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 size={15} className="text-emerald-600 shrink-0 mt-0.5" />
-                    <span><strong>Sueldo progresivo:</strong> $100 (Mes 1) ➔ $200 (Mes 2) ➔ $450 (Mes 3 con contrato laboral firmado).</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 size={15} className="text-emerald-600 shrink-0 mt-0.5" />
-                    <span><strong>Dedicación:</strong> 2 horas al día para cumplir las 7 actividades ordinarias diarias.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 size={15} className="text-emerald-600 shrink-0 mt-0.5" />
-                    <span><strong>Acompañamiento:</strong> 7 llamadas diarias grabadas en Zoom con tu coordinadora para apoyo en cierres.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Rocket size={15} className="text-blue-600 shrink-0 mt-0.5" />
-                    <span><strong className="text-blue-700">Opción Fast-Track:</strong> Si tienes experiencia comercial comprobable, ¡salta directo al Mes 3 ($450 Fijos)!</span>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] font-mono text-slate-500 uppercase block">Meta Mensual</span>
-                  <span className="text-lg font-black text-blue-700">$100 a $450 Fijo</span>
-                </div>
-                <a
-                  href="#sueldo-fijo"
-                  className="px-4 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs transition-colors flex items-center gap-1.5"
-                >
-                  <span>Ver Actividades y Escala</span>
-                  <ArrowRight size={13} />
-                </a>
-              </div>
-            </div>
-
-            {/* Tarjeta Modalidad B: Bajo Comisión */}
-            <div className="bg-white rounded-3xl border-2 border-amber-400 p-7 shadow-sm relative overflow-hidden flex flex-col justify-between">
-              <div className="absolute top-0 right-0 bg-amber-500 text-slate-950 font-mono text-[10px] font-black uppercase tracking-widest px-4 py-1 rounded-bl-xl">
-                100% Remoto & Flexible
-              </div>
-
-              <div>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center font-black">
-                    <Zap size={24} />
+                  <div className="flex items-center justify-between mb-2.5">
+                    <span className="text-[11px] font-mono font-bold text-slate-600 uppercase">
+                      {etapa.mes}
+                    </span>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${etapa.badgeColor}`}>
+                      {etapa.etapa}
+                    </span>
                   </div>
-                  <div>
-                    <span className="text-xs font-mono font-bold text-amber-700 uppercase">Modalidad B</span>
-                    <h3 className="text-xl font-black text-slate-900">Vendedor Bajo Comisión & Freelance</h3>
+
+                  <div className="mb-3">
+                    <p className="text-2xl sm:text-3xl font-black text-slate-950">{etapa.sueldoFijo}</p>
+                    <p className="text-[11px] text-slate-700 mt-1 font-medium">{etapa.condicion}</p>
+                  </div>
+
+                  <p className="text-xs text-slate-600 leading-relaxed mb-4">
+                    {etapa.descripcion}
+                  </p>
+
+                  <div className="space-y-1.5 pt-3 border-t border-slate-100 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-600 text-[11px]">Comisión:</span>
+                      <strong className="text-slate-900 font-bold">{etapa.comision}</strong>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-slate-600 text-[11px]">Beneficio extra:</span>
+                      <strong className="text-slate-900 text-[11px]">{etapa.bono}</strong>
+                    </div>
                   </div>
                 </div>
 
-                <p className="text-xs text-slate-700 leading-relaxed mb-5">
-                  Ideal para personas que desean generar ingresos extras sin horarios fijos, desde cualquier lugar de Ecuador y administrando su propio tiempo.
-                </p>
-
-                <ul className="space-y-2.5 text-xs text-slate-800 mb-6 font-medium">
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 size={15} className="text-amber-600 shrink-0 mt-0.5" />
-                    <span><strong>Sin techo de ingresos:</strong> Comisiones directas por cada producto o proyecto cerrado (hasta 25% de margen).</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 size={15} className="text-amber-600 shrink-0 mt-0.5" />
-                    <span><strong>Las 3 Únicas Tareas Obligatorias:</strong> 5 publicaciones diarias en Marketplace, 15 números de Maps a la semana y timbrado diario.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 size={15} className="text-amber-600 shrink-0 mt-0.5" />
-                    <span><strong>Autonomía absoluta:</strong> Sin reuniones obligatorias continuas ni supervisión de horario fijo.</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <CheckCircle2 size={15} className="text-amber-600 shrink-0 mt-0.5" />
-                    <span><strong>Puente a Sueldo Fijo:</strong> Si demuestras constancia y resultados, puedes solicitar tu paso a Sueldo Fijo.</span>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                <div>
-                  <span className="text-[10px] font-mono text-slate-500 uppercase block">Potencial de Ganancia</span>
-                  <span className="text-lg font-black text-amber-700">Sin Límite Mensual</span>
+                <div className="mt-5 pt-3 border-t border-slate-200 bg-slate-50 -mx-5 -mb-5 p-3 rounded-b-2xl text-center">
+                  <span className="text-[10px] font-mono text-slate-500 uppercase block mb-0.5">
+                    Ingreso Proyectado
+                  </span>
+                  <span className="text-lg font-black text-blue-700">{etapa.totalPotencial}</span>
                 </div>
-                <a
-                  href="#bajo-comision"
-                  className="px-4 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold text-xs transition-colors flex items-center gap-1.5"
-                >
-                  <span>Ver 3 Condiciones</span>
-                  <ArrowRight size={13} />
-                </a>
               </div>
-            </div>
-
+            ))}
           </div>
+
+          {/* ── ⭐ AVISO OFICIAL FAST-TRACK: PUGNA DIRECTA POR LOS $450 FIJOS ── */}
+          <div id="fast-track" className="p-8 sm:p-10 rounded-3xl bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-950 text-white shadow-xl border-2 border-blue-400/60 relative overflow-hidden space-y-6">
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-72 h-72 rounded-full bg-blue-500/20 blur-3xl pointer-events-none" />
+            
+            <div className="relative z-10 space-y-6">
+              
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-blue-400/20 pb-4">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/30 border border-blue-400 text-blue-200 text-xs font-mono font-bold uppercase tracking-wider">
+                  <Rocket size={14} className="text-blue-300" />
+                  <span>Convocatoria Directa para Vendedores Experimentados</span>
+                </div>
+
+                <span className="px-3.5 py-1 rounded-full bg-emerald-500 text-slate-950 font-mono font-black text-xs uppercase tracking-wider shadow-xs">
+                  Sueldo Fijo Inmediato: $450 USD / Mes
+                </span>
+              </div>
+
+              {/* Cita Textual Exigida */}
+              <div className="p-6 rounded-2xl bg-white/10 border-2 border-blue-400/40 backdrop-blur-md">
+                <p className="text-xl sm:text-2xl md:text-3xl font-black text-white italic tracking-tight leading-snug">
+                  “Si tú tienes todas las habilidades, cuentas con experiencia y crees que puedes realizar estas siete actividades de golpe, avísanos y pugna por los $450 de una vez.”
+                </p>
+              </div>
+
+              <p className="text-blue-100 text-xs sm:text-sm leading-relaxed max-w-3xl">
+                No te hacemos pasar por los Meses 1 ($100) ni Mes 2 ($200) si ya tienes un perfil comercial sólido, dominio en ventas o cartera activa. Puedes saltarte el plan formativo e ingresar directamente en el <strong className="text-white">Mes 3 con Sueldo Fijo de $450 USD Mensuales + 20% de Comisiones Corporativas y Contrato Laboral Formal Firmado</strong>.
+              </p>
+
+              {/* Requisitos Indispensables No Negociables */}
+              <div className="bg-blue-900/40 border border-blue-400/30 rounded-2xl p-5 sm:p-6 space-y-4">
+                <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-300 flex items-center gap-2">
+                  <ShieldCheck size={16} />
+                  <span>Requisitos Obligatorios No Negociables para Pugnar por el Puesto Fijo ($450):</span>
+                </h4>
+
+                <div className="grid sm:grid-cols-2 gap-4 text-xs">
+                  <div className="p-4 rounded-xl bg-white/5 border border-white/10 flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-blue-500/20 text-cyan-300 flex items-center justify-center shrink-0 font-bold">
+                      <Monitor size={20} />
+                    </div>
+                    <div>
+                      <strong className="text-white block text-sm mb-1">Uso Obligatorio de Computadora y Celular</strong>
+                      <p className="text-blue-200/90 leading-relaxed text-xs">
+                        Es <strong>indispensable contar con una computadora (laptop o PC) y un teléfono celular inteligente</strong> activos y con buena conexión, ya que para cumplir de vendedor fijo se requiere cotizar al instante, operar el CRM y atender clientes en línea.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-white/5 border border-white/10 flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-emerald-500/20 text-emerald-300 flex items-center justify-center shrink-0 font-bold">
+                      <Clock size={20} />
+                    </div>
+                    <div>
+                      <strong className="text-white block text-sm mb-1">Disponibilidad Total de 8 Horas Diarias (9 a 5)</strong>
+                      <p className="text-blue-200/90 leading-relaxed text-xs">
+                        Para cumplir el rol de vendedor fijo oficial, es requisito estar disponible las <strong>8 horas laborales de 9:00 AM a 5:00 PM (Lunes a Viernes)</strong>, pendientes, activos y en línea en tiempo real para llamadas y coordinación.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Botón WhatsApp de Pugna por los $450 */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+                <div className="text-xs text-blue-200">
+                  ¿Cumples con las 8 horas (9 a 5), la computadora, el celular y la experiencia previa?
+                </div>
+
+                <a
+                  href={whatsappLinkFastTrack}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 hover:from-cyan-300 hover:to-indigo-400 text-slate-950 font-black text-sm uppercase tracking-wider transition-all shadow-xl hover:scale-[1.02] flex items-center justify-center gap-2 group"
+                >
+                  <Rocket size={18} />
+                  <span>Pugnar por los $450 Fijos (Entrevista Inmediata)</span>
+                  <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
+                </a>
+              </div>
+
+            </div>
+          </div>
+
         </div>
       </section>
 
@@ -784,7 +958,7 @@ https://atomiccotizador.shop/register/vendedor
                     Las 7 Actividades Diarias Ordinarias
                   </h2>
                   <p className="text-slate-700 text-xs sm:text-sm mt-1 max-w-2xl">
-                    Dedicación de solo 2 horas al día. Cumplir con el 80% de estas actividades garantiza tu sueldo fijo de $100 el primer mes, $200 el segundo y $450 el tercero.
+                    Dedicación de solo 2 horas al día para el Plan Laboral formativo. Cumplir con el 80% de estas actividades garantiza tu sueldo fijo de $100 el primer mes, $200 el segundo y $450 el tercero (+ 20% comisiones).
                   </p>
                 </div>
 
@@ -961,136 +1135,6 @@ https://atomiccotizador.shop/register/vendedor
 
             </div>
           </section>
-
-          {/* ── PLAN DE CARRERA Y ESCALA SALARIAL (3 MESES) ── */}
-          <section className="py-16 bg-slate-50 border-b border-slate-200">
-            <div className="max-w-5xl mx-auto px-4 sm:px-6">
-              
-              <div className="text-center max-w-2xl mx-auto mb-12">
-                <span className="text-xs font-mono font-bold text-blue-600 uppercase tracking-widest block mb-1">
-                  Crecimiento Laboral y Económico
-                </span>
-                <h2 className="text-2xl sm:text-4xl font-black text-slate-950 tracking-tight mb-2">
-                  Plan de Proyección Salarial de 3 Meses
-                </h2>
-                <p className="text-slate-700 text-sm">
-                  Desde tu primer mes de capacitación hasta la firma de tu contrato laboral fijo con cartera propia de clientes.
-                </p>
-              </div>
-
-              <div className="grid md:grid-cols-3 gap-6 mb-12">
-                {ESCALA_SALARIAL.map((etapa, idx) => (
-                  <div
-                    key={idx}
-                    className={`bg-white rounded-2xl border-2 p-6 flex flex-col justify-between shadow-xs transition-all relative ${
-                      etapa.destacado ? "border-blue-600 shadow-md ring-4 ring-blue-50" : etapa.color
-                    }`}
-                  >
-                    {etapa.destacado && (
-                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[10px] font-mono font-bold uppercase tracking-widest px-3 py-0.5 rounded-full shadow-xs">
-                        Paso Clave al 2do Mes
-                      </span>
-                    )}
-
-                    <div>
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-xs font-mono font-bold text-slate-700 uppercase">
-                          {etapa.mes}
-                        </span>
-                        <span className="text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-800">
-                          {etapa.etapa}
-                        </span>
-                      </div>
-
-                      <div className="mb-4">
-                        <p className="text-3xl font-black text-slate-950">{etapa.sueldoFijo}</p>
-                        <p className="text-xs text-slate-700 mt-1">{etapa.condicion}</p>
-                      </div>
-
-                      <p className="text-xs text-slate-700 leading-relaxed mb-6">
-                        {etapa.descripcion}
-                      </p>
-
-                      <div className="space-y-2 pt-4 border-t border-slate-100 text-xs">
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-700">Comisión por Ventas:</span>
-                          <strong className="text-slate-900">{etapa.comision}</strong>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-700">Bono por Constancia:</span>
-                          <strong className="text-slate-900">{etapa.bono}</strong>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="mt-6 pt-4 border-t border-slate-200 bg-slate-50 -mx-6 -mb-6 p-4 rounded-b-2xl text-center">
-                      <span className="text-[11px] font-mono text-slate-700 uppercase block mb-0.5">
-                        Ingreso Proyectado
-                      </span>
-                      <span className="text-xl font-black text-blue-700">{etapa.totalPotencial}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* ── ⭐ BANNER DE FAST-TRACK: SALTO DIRECTO AL 3ER MES POR EXPERIENCIA PREVIA ── */}
-              <div id="fast-track" className="p-8 sm:p-10 rounded-3xl bg-gradient-to-br from-blue-900 via-indigo-950 to-slate-900 text-white shadow-xl border-2 border-blue-400/40 relative overflow-hidden">
-                <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 rounded-full bg-blue-500/20 blur-3xl pointer-events-none" />
-                
-                <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                  <div className="space-y-4 max-w-2xl">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/30 border border-blue-400 text-blue-200 text-xs font-mono font-bold uppercase tracking-wider">
-                      <Rocket size={14} className="text-blue-300" />
-                      <span>Acceso Directo por Experiencia Comprobada</span>
-                    </div>
-
-                    <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-tight leading-tight">
-                      ¿Tienes Experiencia en Ventas? <br />
-                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-cyan-200 to-white">
-                        Salta Directamente al 3er Mes ($450 Fijos Mensuales).
-                      </span>
-                    </h3>
-
-                    <p className="text-blue-100 text-xs sm:text-sm leading-relaxed">
-                      Si ya cuentas con trayectoria comprobable en ventas comerciales, telemarketing, atención a clientes o aportas cartera comercial afín a nuestras categorías (cámaras de seguridad, redes, domótica, cercos, etc.), <strong>no requieres empezar desde el Mes 1 ($100)</strong>. Puedes solicitar la <strong>Evaluación Fast-Track</strong>: tras una entrevista técnica y validación con Coordinación y Gerencia, ingresarás directamente al <strong>Mes 3 con Sueldo Fijo de $450 USD Mensuales + Comisiones Corporativas y Contrato de Trabajo Firmado</strong>.
-                    </p>
-
-                    <div className="grid sm:grid-cols-3 gap-3 pt-2 text-xs">
-                      <div className="p-3 rounded-xl bg-white/10 border border-white/10">
-                        <span className="text-blue-300 font-bold block mb-1">1. Experiencia Previa</span>
-                        <p className="text-[11px] text-blue-100">Trayectoria en ventas comerciales o tecnología.</p>
-                      </div>
-                      <div className="p-3 rounded-xl bg-white/10 border border-white/10">
-                        <span className="text-blue-300 font-bold block mb-1">2. Validación Rápida</span>
-                        <p className="text-[11px] text-blue-100">Entrevista técnica con coordinación por Zoom/llamada.</p>
-                      </div>
-                      <div className="p-3 rounded-xl bg-white/10 border border-white/10">
-                        <span className="text-blue-300 font-bold block mb-1">3. Puesto Inmediato</span>
-                        <p className="text-[11px] text-blue-100">$450 Fijo mensual + contrato de trabajo.</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="shrink-0 w-full md:w-auto">
-                    <a
-                      href={whatsappLinkFastTrack}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full md:w-auto px-7 py-4 rounded-2xl bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-400 hover:to-cyan-300 text-slate-950 font-black text-sm uppercase tracking-wider transition-all shadow-lg hover:shadow-cyan-500/20 flex items-center justify-center gap-2 group"
-                    >
-                      <Rocket size={18} />
-                      <span>Postular al Fast-Track ($450 Fijo)</span>
-                      <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
-                    </a>
-                    <span className="block text-center text-[10px] text-blue-300 font-mono mt-2">
-                      Previa validación en entrevista de coordinación
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </section>
         </>
       )}
 
@@ -1103,13 +1147,13 @@ https://atomiccotizador.shop/register/vendedor
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-amber-200 pb-6">
                 <div>
                   <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-900 font-mono text-xs font-bold uppercase tracking-widest mb-3">
-                    <ShieldAlert size={14} className="text-amber-600" /> Modalidad Bajo Comisión • 100% Remoto
+                    <ShieldAlert size={14} className="text-amber-600" /> Modalidad Bajo Comisión • 100% Remoto • 20% Comisión
                   </span>
                   <h2 className="text-2xl sm:text-4xl font-black text-slate-950 tracking-tight">
-                    Las 3 Tareas Obligatorias y Condicionantes
+                    Las 3 Tareas Obligatorias para Permanecer en el Grupo
                   </h2>
                   <p className="text-slate-700 text-xs sm:text-sm mt-2 max-w-2xl leading-relaxed">
-                    Para pertenecer y permanecer activo en el grupo comercial bajo comisión sin horario fijo, debes cumplir estrictamente con estas 3 actividades de lunes a viernes:
+                    Para pertenecer y permanecer activo en el grupo comercial bajo comisión y gozar de las herramientas y comisiones al 20%, debes cumplir estrictamente con estas 3 actividades de lunes a viernes:
                   </p>
                 </div>
 
@@ -1152,7 +1196,7 @@ https://atomiccotizador.shop/register/vendedor
                       <div className="pt-3 border-t border-slate-100">
                         <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800">
                           <CheckCircle2 size={13} className="text-amber-600" />
-                          <span>Condición de membresía activa</span>
+                          <span>Mínimo de permanencia en grupo</span>
                         </span>
                       </div>
                     </div>
@@ -1170,7 +1214,7 @@ https://atomiccotizador.shop/register/vendedor
 
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-amber-200">
                 <div className="text-xs text-slate-700">
-                  ¿Listo para comenzar a comisionar sin horarios fijos?
+                  ¿Listo para comenzar a comisionar al 20% sin horarios fijos?
                 </div>
                 <a
                   href={whatsappLinkFreelance}
@@ -1179,7 +1223,7 @@ https://atomiccotizador.shop/register/vendedor
                   className="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider transition-all shadow-xs flex items-center gap-2"
                 >
                   <Zap size={15} />
-                  <span>Unirme como Vendedor Bajo Comisión</span>
+                  <span>Unirme como Vendedor Bajo Comisión (20%)</span>
                 </a>
               </div>
             </div>
@@ -1190,7 +1234,7 @@ https://atomiccotizador.shop/register/vendedor
                 Herramientas y Ventajas Comerciales del Asesor Freelance
               </h3>
               <p className="text-slate-700 text-xs sm:text-sm mb-6">
-                Aunque trabajes de forma independiente, cuentas con todo el respaldo tecnológico e inventario de ATOMIC.
+                Aunque trabajes de forma independiente, cuentas con todo el respaldo tecnológico, catálogo de 11 categorías y 20% de comisión en cada venta.
               </p>
 
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -1228,7 +1272,7 @@ https://atomiccotizador.shop/register/vendedor
               Tabla Comparativa: Sueldo Fijo vs. Bajo Comisión
             </h2>
             <p className="text-slate-700 text-xs sm:text-sm">
-              Compara directamente ambas modalidades para tomar la mejor decisión según tu tiempo, metas económicas y experiencia previa.
+              Compara directamente ambas modalidades para tomar la mejor decisión según tu tiempo, equipamiento y experiencia comercial.
             </p>
           </div>
 
@@ -1240,10 +1284,10 @@ https://atomiccotizador.shop/register/vendedor
                     Criterio de Evaluación
                   </th>
                   <th className="py-4 px-4 border-r border-slate-800 font-bold w-[38%] bg-blue-950 text-blue-200">
-                    Modalidad Sueldo Fijo ($100 a $450)
+                    Modalidad Sueldo Fijo ($50 a $450)
                   </th>
                   <th className="py-4 px-4 font-bold w-[37%] bg-amber-950 text-amber-200">
-                    Modalidad Bajo Comisión (Freelance)
+                    Modalidad Bajo Comisión (Freelance - 20%)
                   </th>
                 </tr>
               </thead>
@@ -1271,22 +1315,31 @@ https://atomiccotizador.shop/register/vendedor
 
           <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
-              href={whatsappLinkFijo}
+              href={whatsappLinkFastTrack}
               target="_blank"
               rel="noopener noreferrer"
               className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-all shadow-xs flex items-center gap-2"
             >
-              <Briefcase size={15} />
-              <span>Postular a Sueldo Fijo / Fast-Track</span>
+              <Rocket size={15} />
+              <span>Pugnar por los $450 Fijos (Fast-Track)</span>
+            </a>
+            <a
+              href={whatsappLinkRendimiento50}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition-all shadow-xs flex items-center gap-2"
+            >
+              <Target size={15} />
+              <span>Postular a Rendimiento $50</span>
             </a>
             <a
               href={whatsappLinkFreelance}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition-all shadow-xs flex items-center gap-2"
+              className="px-6 py-3 rounded-xl border border-slate-300 hover:bg-slate-100 text-slate-800 font-bold text-xs transition-all flex items-center gap-2"
             >
-              <Zap size={15} />
-              <span>Postular Bajo Comisión</span>
+              <Zap size={15} className="text-amber-500" />
+              <span>Bajo Comisión (20%)</span>
             </a>
           </div>
 
@@ -1325,7 +1378,7 @@ https://atomiccotizador.shop/register/vendedor
                 En <strong className="text-slate-950">ATOMIC</strong> desarrollamos y comercializamos soluciones de alta tecnología y equipamiento para constructoras, industrias, comercios y hogares en todo el Ecuador. No te dejamos solo: a cada vendedor seleccionado se le asigna una <strong className="text-slate-950">categoría específica de productos</strong> para que se vuelva un especialista conocedor de la materia y domine las características técnicas de venta.
               </p>
               <p>
-                Nos encargamos de orientarte y acompañarte para que generes una <strong className="text-slate-950">cartera de clientes sólida</strong> que te pertenezca y siga produciendo comisiones mes a mes.
+                Nos encargamos de orientarte y acompañarte para que generes una <strong className="text-slate-950">cartera de clientes sólida</strong> que te pertenezca y siga produciendo comisiones del 20% mes a mes.
               </p>
             </div>
 
@@ -1371,10 +1424,30 @@ https://atomiccotizador.shop/register/vendedor
             ¿Listo para Empezar a Generar Ingresos en ATOMIC?
           </h2>
           <p className="text-blue-100 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed mb-8">
-            Elige la modalidad que prefieras, escríbenos directamente por WhatsApp para coordinar tu incorporación y crea tu cuenta de vendedor en el sistema.
+            Elige el nivel que mejor se ajuste a tu capacidad, escríbenos directamente por WhatsApp para coordinar tu incorporación y crea tu cuenta de vendedor en el sistema.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a
+              href={whatsappLinkFastTrack}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto px-6 py-4 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-black text-xs uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2"
+            >
+              <Rocket size={16} />
+              <span>Pugnar por los $450 Fijos (Fast-Track)</span>
+            </a>
+
+            <a
+              href={whatsappLinkRendimiento50}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full sm:w-auto px-6 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2"
+            >
+              <Target size={16} />
+              <span>Postular a Rendimiento $50</span>
+            </a>
+
             <a
               href={whatsappLinkFijo}
               target="_blank"
@@ -1382,27 +1455,7 @@ https://atomiccotizador.shop/register/vendedor
               className="w-full sm:w-auto px-6 py-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2"
             >
               <Briefcase size={16} />
-              <span>Postular a Sueldo Fijo ($100 - $450)</span>
-            </a>
-
-            <a
-              href={whatsappLinkFastTrack}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto px-6 py-4 rounded-xl bg-white hover:bg-slate-100 text-blue-950 font-black text-xs uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2"
-            >
-              <Rocket size={16} className="text-blue-600" />
-              <span>Fast-Track al Mes 3 ($450)</span>
-            </a>
-
-            <a
-              href={whatsappLinkFreelance}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto px-6 py-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider transition-all shadow-lg flex items-center justify-center gap-2"
-            >
-              <Zap size={16} />
-              <span>Postular Bajo Comisión</span>
+              <span>Plan Laboral ($100 - $450)</span>
             </a>
           </div>
 
@@ -1602,7 +1655,7 @@ https://atomiccotizador.shop/register/vendedor
                   Herramienta de Coordinación
                 </span>
                 <h4 className="font-bold text-slate-900 text-sm">
-                  Plantilla de Mensaje de WhatsApp para Enviar al Postulante (Ambas Modalidades)
+                  Plantilla de Mensaje de WhatsApp para Enviar al Postulante (Con Nivel $50, $100 y Fast-Track $450)
                 </h4>
               </div>
               <button
