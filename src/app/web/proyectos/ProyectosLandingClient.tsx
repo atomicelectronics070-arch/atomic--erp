@@ -2,13 +2,12 @@
 
 import React, { useState, useRef } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { 
   Shield, Building2, Home, Camera, Lock, Zap, CheckCircle2, 
   ArrowRight, Phone, MessageSquare, Mail, MapPin, Clock, Award, 
   Wrench, Users, ChevronRight, Sparkles, Send, Check, AlertCircle,
-  FileCheck, ShieldCheck, Cpu, BatteryCharging, Radio
+  FileCheck, ShieldCheck, Cpu, BatteryCharging, Radio, Eye, Layers
 } from "lucide-react"
 
 export default function ProyectosLandingClient() {
@@ -30,7 +29,10 @@ export default function ProyectosLandingClient() {
   const officialWhatsapp = "593980319050"
   const formattedWhatsapp = "098 031 9050"
 
-  const scrollToForm = () => {
+  const scrollToForm = (prefillType?: string) => {
+    if (prefillType) {
+      setProjectType(prefillType)
+    }
     formRef.current?.scrollIntoView({ behavior: "smooth" })
   }
 
@@ -70,40 +72,111 @@ export default function ProyectosLandingClient() {
 
   const CATEGORIAS_TECNOLOGICAS = [
     {
-      icon: <Building2 className="text-blue-400" size={28} />,
+      icon: <Building2 className="text-blue-400" size={26} />,
       title: "Edificios, Torres & Condominios",
+      badge: "EDIFICIOS & CONDOMINIOS",
+      image: "/images/porteros/portero-inteligente-app-movil-198.jpg",
       desc: "Centrales colectivas de citofonía inteligente (Intelbras Collective para 4 a 24 departamentos), desvío de llamadas del portero a celulares de los copropietarios y apertura remota de accesos.",
       tags: ["Citofonía Colectiva", "App Móvil", "Apertura Remota", "Cableado UTP"]
     },
     {
-      icon: <Lock className="text-amber-400" size={28} />,
+      icon: <Lock className="text-amber-400" size={26} />,
       title: "Cerraduras Inteligentes & Biometría 3D",
+      badge: "HOGAR INTELIGENTE",
+      image: "/images/cerraduras/cerraduras-instalacion-portada.jpg",
       desc: "Cerraduras WiFi con reconocimiento facial 3D, sensor biométrico de huella, código dinámico y pestillos de 5 pistones de alta seguridad. Ideales para puertas residenciales y oficinas.",
       tags: ["Reconocimiento Facial 3D", "Tuya Smart", "5 Pistones", "Auditoría"]
     },
     {
-      icon: <Camera className="text-cyan-400" size={28} />,
+      icon: <Camera className="text-cyan-400" size={26} />,
       title: "CCTV 4K & Cámaras con IA",
+      badge: "VIGILANCIA 24/7",
+      image: "/images/camaras/camaras-hogar-portada-4k.jpg",
       desc: "Sistemas de videovigilancia de alta resolución para interiores y exteriores IP66 con autotracking 360°, visión nocturna Full Color 24/7 y grabación continua en NVR sin cuotas mensuales.",
       tags: ["Visión Full Color", "Autotracking 360°", "Intemperie IP66", "NVR Central"]
     },
     {
-      icon: <Zap className="text-yellow-400" size={28} />,
+      icon: <Zap className="text-yellow-400" size={26} />,
       title: "Cercos Eléctricos Perimetrales",
+      badge: "ALTA SEGURIDAD",
+      image: "/images/cercos/kits-cercos-electricos-pauta.jpg",
       desc: "Protección perimetral disuasiva de alto voltaje con electrificadores certificados JFL y Hagroy, baterías de respaldo de 12V, sirenas de 30W y monitoreo en tiempo real desde tu smartphone.",
       tags: ["Alto Voltaje JFL/Hagroy", "Batería Respaldo", "Sirena 30W", "App Alertas"]
     },
     {
-      icon: <Users className="text-purple-400" size={28} />,
-      title: "Control de Acceso Peatonal & Vehicular",
-      desc: "Torniquetes trípode y molinetes en acero inoxidable ZKTeco, barreras vehiculares automáticas Dítec de 2.0s y telepeaje RFID para urbanizaciones, clubes y empresas.",
-      tags: ["Torniquetes ZKTeco", "Barreras Dítec", "Tags RFID", "LPR Placas"]
+      icon: <Users className="text-purple-400" size={26} />,
+      title: "Control de Acceso & Barreras Vehiculares",
+      badge: "TRÁFICO PESADO & 2.0s",
+      image: "/images/barreras/barreras-portada-promociones.jpg",
+      desc: "Barreras vehiculares automáticas Dítec Serie 2027 de ciclo continuo 24V (apertura rápida de 2s), telepeaje RFID para urbanizaciones y torniquetes peatonales ZKTeco en acero 304.",
+      tags: ["Barreras Dítec 2.0s", "Torniquetes ZKTeco", "Tags RFID", "LPR Placas"]
     },
     {
-      icon: <BatteryCharging className="text-emerald-400" size={28} />,
+      icon: <BatteryCharging className="text-emerald-400" size={26} />,
       title: "Respaldo Energético & Estaciones LiFePO4",
+      badge: "ENERGÍA LIMPIA 24/7",
+      image: "/images/anker-solix/anker-solix-c300-hero-hogar.jpg",
       desc: "Generadores solares y estaciones eléctricas portátiles Anker SOLIX C300 con baterías LiFePO4 para mantener encendidos tus sistemas de seguridad, routers y cámaras durante apagones.",
       tags: ["LiFePO4 Durabilidad", "Sin Ruido ni Humo", "Carga Solar", "Respaldo 24/7"]
+    }
+  ]
+
+  const DISPOSITIVOS_DESTACADOS = [
+    {
+      title: "Barrera Vehicular Dítec Qik 24V",
+      category: "Acceso Vehicular",
+      image: "/images/barreras/ditec-qik-37-60.jpg",
+      spec: "Ciclo continuo 100% · Apertura 2.0s · Mástiles 3m a 6m",
+      highlight: "Tecnología Europea para Urbanizaciones"
+    },
+    {
+      title: "Cámara Panorámica Doble Lente 360°",
+      category: "CCTV Inteligente",
+      image: "/images/camaras/camara-doble-lente-360-interior.jpg",
+      spec: "2 Cámaras en 1 · Seguimiento humano IA · App móvil",
+      highlight: "Ideal para Cuidado Familiar y Bebés"
+    },
+    {
+      title: "Cámara Mini PT Full-Color Exterior",
+      category: "Vigilancia Exterior",
+      image: "/images/camaras/camara-imou-mini-pt-fullcolor-13067.jpg",
+      spec: "IP66 Intemperie · Focos cálidos a color · Sirena activa",
+      highlight: "Resistente a Lluvia y Niebla"
+    },
+    {
+      title: "Portero Inteligente ZKTeco ZKBio",
+      category: "Videoportería",
+      image: "/images/porteros/portero-inteligente-app-movil-198.jpg",
+      spec: "Facial 0.3s · Huella · RFID · Videollamada a Celular",
+      highlight: "6 Métodos de Acceso Sin Mensualidades"
+    },
+    {
+      title: "Kit Cerco Eléctrico JFL Platino",
+      category: "Perímetro Disuasivo",
+      image: "/images/cercos/cerco-jfl-platino-11208.jpg",
+      spec: "Módulo Ethernet ME-05 · Sirena 30W · Batería 12V 4Ah",
+      highlight: "Control y Armado Desde tu Smartphone"
+    },
+    {
+      title: "Cerradura Biométrica Smart Lock 3D",
+      category: "Acceso Smart",
+      image: "/images/cerraduras/bp-bremen.png",
+      spec: "Reconocimiento Facial 3D · 5 Pistones Acero · Tuya App",
+      highlight: "Máxima Seguridad Anti-Palanca"
+    },
+    {
+      title: "Estación de Carga Anker SOLIX C300",
+      category: "Energía & Respaldo",
+      image: "/images/anker-solix/anker-solix-c300-hero-hogar.jpg",
+      spec: "300W / 288Wh LiFePO4 · 3000 ciclos · Carga solar",
+      highlight: "Cero Apagones para Cámaras y WiFi"
+    },
+    {
+      title: "Antenas Anti-Hurto Retail 8.2MHz",
+      category: "Seguridad Comercial",
+      image: "/images/antihurto/antenas-antihurto-retail-seguridad.jpg",
+      spec: "Par pedestales RF · Detección hasta 1.80m · Sirena 95dB",
+      highlight: "Protección Total Anti-Robo Hormiga"
     }
   ]
 
@@ -168,7 +241,7 @@ export default function ProyectosLandingClient() {
 
           <div className="flex items-center gap-3">
             <button
-              onClick={scrollToForm}
+              onClick={() => scrollToForm()}
               className="px-4 py-2 rounded-full bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:brightness-110 text-white font-black text-xs uppercase tracking-wider transition-all shadow-md shadow-purple-600/20 flex items-center gap-1.5 cursor-pointer"
             >
               <span>Solicitar Asesoría</span>
@@ -207,7 +280,7 @@ export default function ProyectosLandingClient() {
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
               <button
                 type="button"
-                onClick={scrollToForm}
+                onClick={() => scrollToForm()}
                 className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:brightness-110 text-white font-black text-sm uppercase tracking-wider transition-all shadow-xl shadow-purple-600/30 flex items-center justify-center gap-3 cursor-pointer group"
               >
                 <FileCheck size={18} />
@@ -233,10 +306,68 @@ export default function ProyectosLandingClient() {
               <span className="px-3 py-1 rounded-full bg-slate-900 border border-slate-700">✓ Facturación SRI Autorizada</span>
               <span className="px-3 py-1 rounded-full bg-slate-900 border border-slate-700">✓ Cobertura Nacional</span>
             </div>
+
+            {/* ── HERO VISUAL COLLAGE (REAL EQUIPMENT PREVIEW) ── */}
+            <div className="pt-8 max-w-5xl mx-auto">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-3 rounded-3xl bg-slate-900/60 border border-slate-800 backdrop-blur-md shadow-2xl">
+                <div className="relative h-28 sm:h-36 rounded-2xl overflow-hidden group border border-slate-800">
+                  <img 
+                    src="/images/barreras/barreras-portada-promociones.jpg" 
+                    alt="Barreras Vehiculares Automáticas" 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
+                  <span className="absolute bottom-2 left-2 text-[10px] font-mono font-bold uppercase text-white bg-slate-900/80 px-2 py-0.5 rounded border border-white/10">
+                    Barreras 2.0s
+                  </span>
+                </div>
+
+                <div className="relative h-28 sm:h-36 rounded-2xl overflow-hidden group border border-slate-800">
+                  <img 
+                    src="/images/camaras/camaras-hogar-portada-4k.jpg" 
+                    alt="Cámaras de Seguridad 360" 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
+                  <span className="absolute bottom-2 left-2 text-[10px] font-mono font-bold uppercase text-cyan-300 bg-slate-900/80 px-2 py-0.5 rounded border border-cyan-500/30">
+                    CCTV 4K & Hogar
+                  </span>
+                </div>
+
+                <div className="relative h-28 sm:h-36 rounded-2xl overflow-hidden group border border-slate-800">
+                  <img 
+                    src="/images/cerraduras/cerraduras-instalacion-portada.jpg" 
+                    alt="Cerraduras Biométricas 3D" 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
+                  <span className="absolute bottom-2 left-2 text-[10px] font-mono font-bold uppercase text-amber-300 bg-slate-900/80 px-2 py-0.5 rounded border border-amber-500/30">
+                    Cerraduras 3D
+                  </span>
+                </div>
+
+                <div className="relative h-28 sm:h-36 rounded-2xl overflow-hidden group border border-slate-800">
+                  <img 
+                    src="/images/porteros/portero-inteligente-app-movil-198.jpg" 
+                    alt="Citofonía Edificios" 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
+                  <span className="absolute bottom-2 left-2 text-[10px] font-mono font-bold uppercase text-purple-300 bg-slate-900/80 px-2 py-0.5 rounded border border-purple-500/30">
+                    Citofonía Edificios
+                  </span>
+                </div>
+              </div>
+            </div>
+
           </motion.div>
         </section>
 
-        {/* ── SHOWCASE DE CATEGORÍAS ── */}
+        {/* ── SHOWCASE DE CATEGORÍAS (CON IMÁGENES REALES) ── */}
         <section className="px-4 sm:px-6 max-w-7xl mx-auto py-12">
           <div className="space-y-3 mb-10 text-center">
             <span className="text-[11px] font-mono font-black uppercase tracking-widest text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20 inline-block">
@@ -254,40 +385,137 @@ export default function ProyectosLandingClient() {
             {CATEGORIAS_TECNOLOGICAS.map((cat, i) => (
               <div
                 key={i}
-                className="p-6 rounded-3xl bg-slate-900/40 border border-slate-800 hover:border-slate-700 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl space-y-4 flex flex-col justify-between"
+                className="rounded-3xl bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl overflow-hidden flex flex-col justify-between group"
               >
-                <div className="space-y-3">
-                  <div className="p-3 rounded-2xl bg-slate-950 w-fit border border-slate-800">
+                {/* Image Banner */}
+                <div className="relative h-48 sm:h-52 w-full overflow-hidden bg-slate-950">
+                  <img 
+                    src={cat.image} 
+                    alt={cat.title} 
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 brightness-95 group-hover:brightness-105"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent" />
+                  
+                  {/* Category Badge */}
+                  <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-slate-950/85 backdrop-blur-md border border-white/20 text-[9px] font-mono font-black text-white uppercase tracking-wider shadow-md">
+                    {cat.badge}
+                  </div>
+
+                  {/* Icon */}
+                  <div className="absolute bottom-3 right-3 p-2.5 rounded-2xl bg-slate-950/90 border border-white/10 shadow-lg">
                     {cat.icon}
                   </div>
-                  <h3 className="text-lg font-black text-white font-heading">
-                    {cat.title}
-                  </h3>
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    {cat.desc}
-                  </p>
                 </div>
 
-                <div className="space-y-3 pt-2">
-                  <div className="flex flex-wrap gap-1.5">
-                    {cat.tags.map((t, idx) => (
-                      <span key={idx} className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-950 text-slate-400 border border-slate-800">
-                        {t}
-                      </span>
-                    ))}
+                {/* Content */}
+                <div className="p-6 space-y-4 flex-grow flex flex-col justify-between">
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-black text-white font-heading group-hover:text-cyan-300 transition-colors">
+                      {cat.title}
+                    </h3>
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      {cat.desc}
+                    </p>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={scrollToForm}
-                    className="w-full py-2 px-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 border border-slate-800 cursor-pointer"
-                  >
-                    <span>Cotizar esta Solución</span>
-                    <ChevronRight size={13} />
-                  </button>
+                  <div className="space-y-3 pt-2">
+                    <div className="flex flex-wrap gap-1.5">
+                      {cat.tags.map((t, idx) => (
+                        <span key={idx} className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-950 text-slate-400 border border-slate-800">
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => scrollToForm(cat.title)}
+                      className="w-full py-2.5 px-4 rounded-xl bg-purple-600/20 hover:bg-purple-600 text-purple-200 hover:text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 border border-purple-500/30 cursor-pointer"
+                    >
+                      <span>Cotizar esta Solución</span>
+                      <ChevronRight size={14} />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* ── GALERÍA DE EQUIPOS & DISPOSITIVOS EN PRODUCCIÓN ── */}
+        <section className="px-4 sm:px-6 max-w-7xl mx-auto py-16">
+          <div className="p-6 sm:p-10 rounded-3xl bg-slate-900/40 border border-slate-800 space-y-8">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+              <div className="space-y-2">
+                <span className="text-[11px] font-mono font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 inline-block">
+                  CATÁLOGO VISUAL DE EQUIPAMIENTO
+                </span>
+                <h2 className="text-2xl sm:text-4xl font-black uppercase tracking-tight font-heading text-white">
+                  Dispositivos Homologados para Proyectos
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-400 max-w-xl">
+                  Equipos certificados con stock permanente y repuestos garantizados para instalaciones residenciales y corporativas.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => scrollToForm()}
+                className="px-5 py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs uppercase tracking-wider transition-all border border-slate-700 flex items-center gap-2 self-start md:self-auto cursor-pointer"
+              >
+                <Layers size={14} className="text-cyan-400" />
+                <span>Solicitar Proforma por Lote</span>
+              </button>
+            </div>
+
+            {/* Grid of Devices */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {DISPOSITIVOS_DESTACADOS.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="rounded-2xl bg-slate-950/80 border border-slate-800/90 overflow-hidden hover:border-slate-700 transition-all hover:shadow-lg flex flex-col justify-between group"
+                >
+                  <div className="relative h-44 w-full bg-slate-900 overflow-hidden">
+                    <img 
+                      src={item.image} 
+                      alt={item.title} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent" />
+                    <span className="absolute top-2 left-2 text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-950/80 text-cyan-300 border border-cyan-500/30">
+                      {item.category}
+                    </span>
+                  </div>
+
+                  <div className="p-4 space-y-2 flex-grow flex flex-col justify-between">
+                    <div>
+                      <h4 className="text-sm font-black text-white font-heading group-hover:text-purple-300 transition-colors">
+                        {item.title}
+                      </h4>
+                      <p className="text-[11px] text-slate-400 font-mono mt-1">
+                        {item.spec}
+                      </p>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-800/80 space-y-2">
+                      <span className="text-[10px] text-emerald-400 font-bold block">
+                        ✓ {item.highlight}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => scrollToForm(item.title)}
+                        className="w-full py-1.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white text-[11px] font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-1 cursor-pointer border border-slate-800"
+                      >
+                        <span>Cotizar este equipo</span>
+                        <ChevronRight size={12} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -460,6 +688,10 @@ export default function ProyectosLandingClient() {
                       <option value="Casa / Residencia Familiar">🏠 Casa / Residencia Familiar</option>
                       <option value="Edificio de Departamentos">🏢 Edificio de Departamentos</option>
                       <option value="Conjunto Residencial / Urbanización">🏘️ Conjunto Residencial / Urbanización</option>
+                      <option value="Barreras Vehiculares / Acceso Rápido">🚧 Barreras Vehiculares / Acceso Rápido</option>
+                      <option value="Cámaras de Hogar / CCTV 4K">📹 Cámaras de Hogar / CCTV 4K</option>
+                      <option value="Cerraduras Inteligentes / Biometría">🔒 Cerraduras Inteligentes / Biometría</option>
+                      <option value="Cercos Eléctricos Perimetrales">⚡ Cercos Eléctricos Perimetrales</option>
                       <option value="Local Comercial / Tienda">🛍️ Local Comercial / Tienda</option>
                       <option value="Empresa / Industria / Bodega">🏭 Empresa / Industria / Bodega</option>
                       <option value="Obra en Construcción">🏗️ Obra en Construcción</option>
@@ -493,7 +725,7 @@ export default function ProyectosLandingClient() {
                     rows={4}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Describe cuántos departamentos son, qué equipos buscas (cámaras, videoportero, cerco, cerradura), si necesitas instalación o visita técnica..."
+                    placeholder="Describe cuántos departamentos son, qué equipos buscas (barreras, cámaras, videoportero, cerco, cerradura), si necesitas instalación o visita técnica..."
                     className="w-full bg-slate-950/80 border border-slate-700 rounded-xl p-4 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-purple-500 leading-relaxed"
                   />
                 </div>
@@ -540,7 +772,7 @@ export default function ProyectosLandingClient() {
         </a>
 
         <button
-          onClick={scrollToForm}
+          onClick={() => scrollToForm()}
           className="px-4 py-3 rounded-full bg-slate-900/90 border border-purple-500/40 text-purple-200 hover:text-white hover:bg-slate-800 text-xs font-bold font-mono uppercase tracking-wider shadow-2xl transition-all flex items-center gap-2 cursor-pointer backdrop-blur-md"
         >
           <span>Cotizar Proyecto</span>
