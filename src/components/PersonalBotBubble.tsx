@@ -9,7 +9,7 @@ import {
     ShoppingBag, Users, Map, Smartphone, DollarSign, Palette, 
     FileSpreadsheet, Bot, GraduationCap, ArrowRight, Table,
     Settings, Sliders, CalendarCheck, ShieldAlert, Globe, Monitor,
-    Building2, MessageSquare, Plus, CheckCircle2
+    Building2, MessageSquare, Plus, CheckCircle2, Crown
 } from "lucide-react"
 
 interface BotMessage {
@@ -39,6 +39,16 @@ export interface FloatingShortcut {
 }
 
 export const ALL_AVAILABLE_SHORTCUTS: FloatingShortcut[] = [
+    {
+        id: "karen_ai",
+        label: "Karen Bot WhatsApp IA",
+        shortLabel: "Karen IA",
+        icon: "🤖",
+        path: "/dashboard/whatsapp/crm",
+        gradient: "from-pink-500 via-rose-500 to-fuchsia-600",
+        border: "border-pink-400/60 shadow-[0_0_15px_rgba(244,63,94,0.4)]",
+        description: "Acceso y control exclusivo de Karen WhatsApp IA"
+    },
     {
         id: "landings",
         label: "Landings ATOMIC 2026",
@@ -154,6 +164,16 @@ const QUICK_MODULES: ModuleQuickAction[] = [
     { id: "bot", label: "Bot Ruta & IA", icon: <Bot size={12} />, query: "¿Cómo funciona el bot de ruta y automatización?", path: "/dashboard/bot-ruta" }
 ]
 
+const SUPERVISOR_QUICK_MODULES: ModuleQuickAction[] = [
+    { id: "briefing", label: "Hoy / Briefing", icon: <Sparkles size={12} />, query: "Dame el briefing de hoy con Soft 3, ventas y Karen", path: "/dashboard" },
+    { id: "contactos", label: "Contactos Globales", icon: <Users size={12} />, query: "contactos globales", path: "/dashboard/whatsapp/crm" },
+    { id: "soft3", label: "Soft 3 (Rómulo)", icon: <DollarSign size={12} />, query: "Estado y mora de Soft 3 con el Sr. Rómulo", path: "/dashboard/finance" },
+    { id: "karen", label: "Karen IA", icon: <Bot size={12} />, query: "Estado y supervisión de Karen IA", path: "/dashboard/whatsapp/crm" },
+    { id: "domum", label: "Domum ($4,229)", icon: <FileText size={12} />, query: "Detalle de la cotización Domum Construcciones", path: "/dashboard/quotes" },
+    { id: "quotes", label: "Cotizaciones PROP", icon: <FileText size={12} />, query: "¿Cómo va la emisión de cotizaciones?", path: "/dashboard/quotes" },
+    { id: "finance", label: "Finanzas", icon: <DollarSign size={12} />, query: "Revisión del balance de finanzas y transacciones", path: "/dashboard/finance" }
+]
+
 export default function PersonalBotBubble() {
     const { data: session, status } = useSession()
     const pathname = usePathname()
@@ -167,23 +187,45 @@ export default function PersonalBotBubble() {
     const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
     const messagesEndRef = useRef<HTMLDivElement>(null)
 
+    // Supervisor Detection: Juan Guzmán / Supervisor / Coordinator / Admin
+    const userRole = String((session?.user as any)?.role || "").toUpperCase()
+    const userEmail = String(session?.user?.email || "").toLowerCase()
+    const userName = String(session?.user?.name || "").toLowerCase()
+    const isSupervisor = Boolean(
+        userEmail.includes("juanguzman") || 
+        userEmail.includes("supervisor") || 
+        userName.includes("guzman") || 
+        userRole.includes("SUPERVISOR") || 
+        userRole.includes("COORDINATOR") || 
+        userRole.includes("ADMIN")
+    )
+
     // ── CONFIGURABLE FLOATING SHORTCUTS (UP TO 4 BUTTONS ABOVE BOT) ──
     const [activeShortcutIds, setActiveShortcutIds] = useState<string[]>(["landings", "ruta_dia", "suicide_squad", "quotes"])
     const [isConfigShortcutsOpen, setIsConfigShortcutsOpen] = useState(false)
     const [tempSelectedShortcuts, setTempSelectedShortcuts] = useState<string[]>([])
 
-    // Load active shortcuts from localStorage
+    // Load active shortcuts from localStorage (auto-include Karen IA for supervisor if not present)
     useEffect(() => {
         try {
             const saved = localStorage.getItem("atomic_floating_shortcuts")
             if (saved) {
                 const parsed = JSON.parse(saved)
                 if (Array.isArray(parsed) && parsed.length > 0) {
-                    setActiveShortcutIds(parsed.slice(0, 4))
+                    if (isSupervisor && !parsed.includes("karen_ai")) {
+                        const merged = ["karen_ai", ...parsed.filter(id => id !== "karen_ai")].slice(0, 4)
+                        setActiveShortcutIds(merged)
+                    } else {
+                        setActiveShortcutIds(parsed.slice(0, 4))
+                    }
+                    return
                 }
             }
+            if (isSupervisor) {
+                setActiveShortcutIds(["karen_ai", "landings", "ruta_dia", "quotes"])
+            }
         } catch (e) {}
-    }, [])
+    }, [isSupervisor])
 
     const handleOpenShortcutConfig = (e: React.MouseEvent) => {
         e.stopPropagation()
@@ -215,6 +257,13 @@ export default function PersonalBotBubble() {
         setIsConfigShortcutsOpen(false)
     }
 
+    const alfredWelcomeMessage: BotMessage = {
+        id: "welcome-alfred",
+        role: "assistant",
+        content: `👑 **Alfred a tu servicio, Juan.**\n\nOpero como tu copiloto ejecutivo de alto nivel, con visibilidad completa sobre **Karen IA**, **WhatsApp CRM**, **Finanzas**, las metas del equipo y el estado crítico de **Soft 3 (Sr. Rómulo)** y **Domum Construcciones** ($4,229).\n\n📌 **Skills ejecutivas activas:**\n• *\"Hoy\"* o *\"Briefing\"*: Resumen diario de operaciones, ventas y Karen.\n• *\"Contactos globales\"*: Lista completa sin filtros de todos los contactos del CRM.\n• *\"Soft 3\"* o *\"Rómulo\"*: Estado de la deuda (43+ días en mora), entregas y ciclo de cobro.\n• *\"Karen\"*: Supervisión en vivo y estado del bot de WhatsApp.\n• *\"Domum\"*: Detalle del proyecto de barreras de $4,229.\n\n¿Qué orden ejecutiva tienes para hoy?`,
+        suggestions: ["Hoy / Briefing del día", "Contactos globales", "Estado Soft 3 (Rómulo)", "Supervisar Karen IA", "Domum Construcciones ($4,229)"]
+    }
+
     // Load memory on mount
     useEffect(() => {
         if (!session?.user) {
@@ -224,6 +273,12 @@ export default function PersonalBotBubble() {
                 content: `👋 ¡Hola! Soy el asistente de **ATOMIC Industries**.\n\nPuedo ayudarte a registrarte en el sistema diciendo:\n*"Quiero registrarme como vendedor"*\n\nO si eres asesor con código de trabajador, escribe:\n*"Ayúdame a generar una cotización"* (Código \`1111\`).\n\n¿En qué te puedo ayudar hoy?`,
                 suggestions: ["Quiero registrarme como vendedor", "Quiero registrarme como técnico", "Ayúdame a generar un contrato"]
             }])
+            setIsInitializing(false)
+            return
+        }
+
+        if (isSupervisor) {
+            setMessages([alfredWelcomeMessage])
             setIsInitializing(false)
             return
         }
@@ -263,7 +318,7 @@ export default function PersonalBotBubble() {
                 }])
             })
             .finally(() => setIsInitializing(false))
-    }, [session])
+    }, [session, isSupervisor])
 
     // Contextual pop notification on route change
     useEffect(() => {
@@ -394,19 +449,25 @@ export default function PersonalBotBubble() {
                 className="fixed bottom-28 lg:bottom-8 right-4 sm:right-6 z-40 flex flex-col-reverse items-center gap-2.5 pointer-events-none"
                 style={{ display: isOpen ? "none" : "flex" }}
             >
-                {/* 1. BOTÓN PRINCIPAL GUÍA DE ATOMIC */}
+                {/* 1. BOTÓN PRINCIPAL GUÍA DE ATOMIC / ALFRED SUPERVISOR */}
                 <motion.button
                     onClick={() => { setIsOpen(true); setHasNewMessage(false) }}
-                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shadow-[0_0_35px_rgba(6,182,212,0.55)] group cursor-pointer border-2 border-cyan-400/50 pointer-events-auto relative"
+                    className={`w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center shadow-[0_0_35px_${isSupervisor ? "rgba(16,185,129,0.65)" : "rgba(6,182,212,0.55)"}] group cursor-pointer border-2 ${isSupervisor ? "border-emerald-400/70" : "border-cyan-400/50"} pointer-events-auto relative`}
                     whileHover={{ scale: 1.08 }}
                     whileTap={{ scale: 0.95 }}
-                    title="Abrir Guía de ATOMIC"
+                    title={isSupervisor ? "Alfred — Copiloto Ejecutivo Supervisor" : "Abrir Guía de ATOMIC"}
                 >
-                    <div className="absolute inset-0 rounded-full bg-cyan-500 opacity-25 animate-ping" />
-                    <div className="absolute inset-1 rounded-full bg-gradient-to-br from-cyan-400 via-indigo-600 to-teal-500 shadow-[0_0_30px_rgba(6,182,212,0.6)]" />
+                    <div className={`absolute inset-0 rounded-full ${isSupervisor ? "bg-emerald-500" : "bg-cyan-500"} opacity-25 animate-ping`} />
+                    <div className={`absolute inset-1 rounded-full bg-gradient-to-br ${isSupervisor ? "from-emerald-400 via-teal-600 to-green-700 shadow-[0_0_30px_rgba(16,185,129,0.7)]" : "from-cyan-400 via-indigo-600 to-teal-500 shadow-[0_0_30px_rgba(6,182,212,0.6)]"}`} />
                     <div className="relative z-10 flex flex-col items-center justify-center text-white">
-                        <Bot size={26} className="drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] group-hover:scale-110 transition-transform" />
-                        <span className="text-[8px] font-mono font-black uppercase tracking-tighter text-cyan-200 -mt-0.5">GUÍA</span>
+                        {isSupervisor ? (
+                            <Crown size={25} className="drop-shadow-[0_0_8px_rgba(255,255,255,0.9)] group-hover:scale-110 transition-transform text-amber-200" />
+                        ) : (
+                            <Bot size={26} className="drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] group-hover:scale-110 transition-transform" />
+                        )}
+                        <span className={`text-[8px] font-mono font-black uppercase tracking-tighter ${isSupervisor ? "text-emerald-200" : "text-cyan-200"} -mt-0.5`}>
+                            {isSupervisor ? "ALFRED" : "GUÍA"}
+                        </span>
                         {hasNewMessage && (
                             <div className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 rounded-full border-2 border-slate-950 animate-bounce" />
                         )}
@@ -559,22 +620,26 @@ export default function PersonalBotBubble() {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
                         transition={{ type: "spring", damping: 20, stiffness: 300 }}
-                        className="fixed bottom-24 lg:bottom-10 right-4 sm:right-6 z-50 w-[92vw] sm:w-[440px] h-[78vh] sm:h-[640px] flex flex-col rounded-3xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.9)] border border-cyan-500/30"
-                        style={{ background: "linear-gradient(145deg, #090e1a 0%, #0d1527 50%, #060a12 100%)" }}
+                        className={`fixed bottom-24 lg:bottom-10 right-4 sm:right-6 z-50 w-[92vw] sm:w-[440px] h-[78vh] sm:h-[640px] flex flex-col rounded-3xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.9)] border ${isSupervisor ? "border-emerald-500/40 shadow-[0_0_35px_rgba(16,185,129,0.25)]" : "border-cyan-500/30"}`}
+                        style={{ background: isSupervisor ? "linear-gradient(145deg, #021109 0%, #062316 50%, #010a05 100%)" : "linear-gradient(145deg, #090e1a 0%, #0d1527 50%, #060a12 100%)" }}
                     >
                         {/* Header */}
-                        <div className="flex items-center gap-3 px-5 py-4 border-b border-cyan-500/20 bg-slate-950/70 backdrop-blur-md">
-                            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-cyan-400 to-indigo-600 flex items-center justify-center text-white shadow-[0_0_15px_rgba(6,182,212,0.5)]">
-                                <Bot size={22} />
+                        <div className={`flex items-center gap-3 px-5 py-4 border-b ${isSupervisor ? "border-emerald-500/25 bg-[#03150d]/85" : "border-cyan-500/20 bg-slate-950/70"} backdrop-blur-md`}>
+                            <div className={`w-10 h-10 rounded-2xl bg-gradient-to-br ${isSupervisor ? "from-emerald-400 via-teal-600 to-green-700 shadow-[0_0_20px_rgba(16,185,129,0.5)]" : "from-cyan-400 to-indigo-600 shadow-[0_0_15px_rgba(6,182,212,0.5)]"} flex items-center justify-center text-white`}>
+                                {isSupervisor ? <Crown size={22} className="text-amber-200" /> : <Bot size={22} />}
                             </div>
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2">
-                                    <h3 className="text-white font-black text-sm tracking-wide truncate">Guía de ATOMIC</h3>
-                                    <span className="px-1.5 py-0.5 rounded-full bg-cyan-400/15 text-cyan-300 text-[9px] font-mono font-bold">Tutorial</span>
+                                    <h3 className="text-white font-black text-sm tracking-wide truncate">
+                                        {isSupervisor ? "Alfred — Supervisor IA" : "Guía de ATOMIC"}
+                                    </h3>
+                                    <span className={`px-1.5 py-0.5 rounded-full ${isSupervisor ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40" : "bg-cyan-400/15 text-cyan-300"} text-[9px] font-mono font-bold`}>
+                                        {isSupervisor ? "Esmeralda Executive" : "Tutorial"}
+                                    </span>
                                 </div>
-                                <p className="text-cyan-400 text-[10px] font-mono uppercase tracking-widest flex items-center gap-1.5 truncate">
-                                    <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse shrink-0" />
-                                    Estoy para enseñarte el sistema
+                                <p className={`${isSupervisor ? "text-emerald-400" : "text-cyan-400"} text-[10px] font-mono uppercase tracking-widest flex items-center gap-1.5 truncate`}>
+                                    <span className={`w-1.5 h-1.5 ${isSupervisor ? "bg-emerald-400" : "bg-cyan-400"} rounded-full animate-pulse shrink-0`} />
+                                    {isSupervisor ? "Copiloto Ejecutivo de Juan Guzmán" : "Estoy para enseñarte el sistema"}
                                 </p>
                             </div>
 
@@ -590,7 +655,7 @@ export default function PersonalBotBubble() {
                         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-700">
                             {isInitializing ? (
                                 <div className="flex flex-col items-center justify-center h-full gap-2 text-slate-400">
-                                    <Loader2 className="text-cyan-400 animate-spin" size={32} />
+                                    <Loader2 className={`${isSupervisor ? "text-emerald-400" : "text-cyan-400"} animate-spin`} size={32} />
                                     <span className="text-xs font-mono">Conectando asistente...</span>
                                 </div>
                             ) : (
@@ -598,16 +663,20 @@ export default function PersonalBotBubble() {
                                     {messages.map(msg => (
                                         <div key={msg.id} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                                             {msg.role === "assistant" && (
-                                                <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-cyan-400 to-indigo-600 flex items-center justify-center font-black text-white text-xs mr-2 mt-0.5 shrink-0 shadow-[0_0_10px_rgba(6,182,212,0.4)]">
-                                                    <Bot size={13} />
+                                                <div className={`w-7 h-7 rounded-xl bg-gradient-to-br ${isSupervisor ? "from-emerald-400 to-teal-700 shadow-[0_0_10px_rgba(16,185,129,0.4)]" : "from-cyan-400 to-indigo-600 shadow-[0_0_10px_rgba(6,182,212,0.4)]"} flex items-center justify-center font-black text-white text-xs mr-2 mt-0.5 shrink-0`}>
+                                                    {isSupervisor ? <Crown size={13} className="text-amber-200" /> : <Bot size={13} />}
                                                 </div>
                                             )}
                                             <div className={`max-w-[88%] ${msg.role === "user" ? "order-1" : ""}`}>
                                                 <div
                                                     className={`px-4 py-3 rounded-2xl text-xs sm:text-sm leading-relaxed ${
                                                         msg.role === "user"
-                                                            ? "bg-gradient-to-br from-cyan-600 to-indigo-600 text-white rounded-br-sm shadow-[0_0_15px_rgba(6,182,212,0.3)] font-medium"
-                                                            : "bg-slate-900/90 text-slate-100 rounded-bl-sm border border-slate-800 shadow-md"
+                                                            ? isSupervisor
+                                                                ? "bg-gradient-to-br from-emerald-600 to-teal-700 text-white rounded-br-sm shadow-[0_0_15px_rgba(16,185,129,0.3)] font-medium"
+                                                                : "bg-gradient-to-br from-cyan-600 to-indigo-600 text-white rounded-br-sm shadow-[0_0_15px_rgba(6,182,212,0.3)] font-medium"
+                                                            : isSupervisor
+                                                                ? "bg-[#051c12]/90 text-slate-100 rounded-bl-sm border border-emerald-900/60 shadow-md"
+                                                                : "bg-slate-900/90 text-slate-100 rounded-bl-sm border border-slate-800 shadow-md"
                                                     }`}
                                                     dangerouslySetInnerHTML={{ __html: formatContent(msg.content) }}
                                                 />
@@ -617,7 +686,7 @@ export default function PersonalBotBubble() {
                                                             <button
                                                                 key={i}
                                                                 onClick={() => sendMessage(s)}
-                                                                className="px-3 py-1.5 bg-slate-950/80 border border-cyan-500/30 text-cyan-300 rounded-xl text-[10px] font-bold hover:bg-cyan-500/20 hover:border-cyan-400 transition-all text-left cursor-pointer"
+                                                                className={`px-3 py-1.5 bg-slate-950/80 border ${isSupervisor ? "border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/20 hover:border-emerald-400" : "border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 hover:border-cyan-400"} rounded-xl text-[10px] font-bold transition-all text-left cursor-pointer`}
                                                             >
                                                                 {s}
                                                             </button>
@@ -630,13 +699,13 @@ export default function PersonalBotBubble() {
 
                                     {isLoading && (
                                         <div className="flex justify-start">
-                                            <div className="w-7 h-7 rounded-xl bg-gradient-to-br from-cyan-400 to-indigo-600 flex items-center justify-center font-black text-white text-xs mr-2 shrink-0">
-                                                <Bot size={13} />
+                                            <div className={`w-7 h-7 rounded-xl bg-gradient-to-br ${isSupervisor ? "from-emerald-400 to-teal-700" : "from-cyan-400 to-indigo-600"} flex items-center justify-center font-black text-white text-xs mr-2 shrink-0`}>
+                                                {isSupervisor ? <Crown size={13} className="text-amber-200" /> : <Bot size={13} />}
                                             </div>
                                             <div className="bg-slate-900/90 border border-slate-800 px-4 py-3 rounded-2xl rounded-bl-sm flex gap-1.5 items-center">
-                                                <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                                                <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                                                <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                                                <span className={`w-2 h-2 ${isSupervisor ? "bg-emerald-400" : "bg-cyan-400"} rounded-full animate-bounce`} style={{ animationDelay: "0ms" }} />
+                                                <span className={`w-2 h-2 ${isSupervisor ? "bg-emerald-400" : "bg-cyan-400"} rounded-full animate-bounce`} style={{ animationDelay: "150ms" }} />
+                                                <span className={`w-2 h-2 ${isSupervisor ? "bg-emerald-400" : "bg-cyan-400"} rounded-full animate-bounce`} style={{ animationDelay: "300ms" }} />
                                             </div>
                                         </div>
                                     )}
@@ -645,23 +714,27 @@ export default function PersonalBotBubble() {
                             <div ref={messagesEndRef} />
                         </div>
 
-                        {/* Interactive Mini Scroll Menu for Modules */}
+                        {/* Interactive Mini Scroll Menu for Modules / Supervisor Skills */}
                         <div className="px-3 py-2 border-t border-slate-800/80 bg-slate-950/70">
                             <div className="flex items-center justify-between mb-1.5 px-1">
-                                <span className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                                    <Sparkles size={11} className="text-cyan-400" />
-                                    <span>Módulos del Sistema (Haz clic para consultar)</span>
+                                <span className={`text-[9px] font-mono font-bold ${isSupervisor ? "text-emerald-400" : "text-slate-400"} uppercase tracking-wider flex items-center gap-1.5`}>
+                                    <Sparkles size={11} className={isSupervisor ? "text-emerald-400" : "text-cyan-400"} />
+                                    <span>{isSupervisor ? "Skills & Acciones Ejecutivas de Alfred" : "Módulos del Sistema (Haz clic para consultar)"}</span>
                                 </span>
                             </div>
                             <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none custom-scrollbar">
-                                {QUICK_MODULES.map((m) => (
+                                {(isSupervisor ? SUPERVISOR_QUICK_MODULES : QUICK_MODULES).map((m) => (
                                     <button
                                         key={m.id}
                                         onClick={() => sendMessage(m.query)}
-                                        className="shrink-0 px-2.5 py-1.5 bg-slate-900/90 hover:bg-cyan-500/20 border border-slate-800 hover:border-cyan-400/50 text-slate-300 hover:text-cyan-200 text-[10px] font-bold rounded-xl flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap"
-                                        title={`Preguntar sobre ${m.label}`}
+                                        className={`shrink-0 px-2.5 py-1.5 border text-[10px] font-bold rounded-xl flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
+                                            isSupervisor
+                                                ? "bg-[#061e14]/90 hover:bg-emerald-500/20 border-emerald-900/60 hover:border-emerald-400/60 text-emerald-200 hover:text-emerald-100"
+                                                : "bg-slate-900/90 hover:bg-cyan-500/20 border-slate-800 hover:border-cyan-400/50 text-slate-300 hover:text-cyan-200"
+                                        }`}
+                                        title={`Ejecutar ${m.label}`}
                                     >
-                                        <span className="text-cyan-400">{m.icon}</span>
+                                        <span className={isSupervisor ? "text-emerald-400" : "text-cyan-400"}>{m.icon}</span>
                                         <span>{m.label}</span>
                                     </button>
                                 ))}
@@ -675,9 +748,9 @@ export default function PersonalBotBubble() {
                                     value={input}
                                     onChange={e => setInput(e.target.value)}
                                     onKeyDown={handleKeyDown}
-                                    placeholder="Pregunta al Asistente sobre cualquier módulo..."
+                                    placeholder={isSupervisor ? "Instrucción a Alfred: 'contactos globales', 'soft 3', 'karen', 'hoy'..." : "Pregunta al Asistente sobre cualquier módulo..."}
                                     rows={1}
-                                    className="flex-1 bg-slate-900 border border-slate-800 text-white text-xs placeholder:text-slate-500 rounded-2xl px-4 py-3 outline-none resize-none focus:border-cyan-400/60 focus:ring-1 focus:ring-cyan-400/30 transition-all"
+                                    className={`flex-1 bg-slate-900 border ${isSupervisor ? "border-emerald-900/60 focus:border-emerald-400/60 focus:ring-emerald-400/30" : "border-slate-800 focus:border-cyan-400/60 focus:ring-cyan-400/30"} text-white text-xs placeholder:text-slate-500 rounded-2xl px-4 py-3 outline-none resize-none focus:ring-1 transition-all`}
                                     style={{ maxHeight: "90px" }}
                                     onInput={(e: any) => {
                                         e.target.style.height = "auto"
@@ -687,7 +760,7 @@ export default function PersonalBotBubble() {
                                 <button
                                     onClick={() => sendMessage()}
                                     disabled={!input.trim() || isLoading}
-                                    className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:scale-105 disabled:opacity-40 disabled:scale-100 transition-all shrink-0 cursor-pointer"
+                                    className={`w-10 h-10 bg-gradient-to-br ${isSupervisor ? "from-emerald-500 to-teal-600 shadow-[0_0_20px_rgba(16,185,129,0.4)]" : "from-cyan-500 to-indigo-600 shadow-[0_0_20px_rgba(6,182,212,0.4)]"} rounded-2xl flex items-center justify-center text-white hover:scale-105 disabled:opacity-40 disabled:scale-100 transition-all shrink-0 cursor-pointer`}
                                 >
                                     {isLoading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
                                 </button>

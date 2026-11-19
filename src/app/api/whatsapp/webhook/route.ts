@@ -334,14 +334,21 @@ export async function POST(req: Request) {
                     data: { updatedAt: new Date(), lastMessageAt: new Date() }
                 });
 
-                // 7. Auto-respuesta Inteligente con IA (NVIDIA 90B Vision)
-                handleIncomingWhatsAppBot({
-                    whatsappId: from,
-                    contactName,
-                    messageText: finalBody,
-                    mediaUrl,
-                    conversationId: conversation.id
-                }).catch(err => console.error('[BOT_AUTO_REPLY_ERROR]', err));
+                // 7. Auto-respuesta Inteligente con IA (NVIDIA 90B Vision / Fallback Resiliente)
+                try {
+                    await Promise.race([
+                        handleIncomingWhatsAppBot({
+                            whatsappId: from,
+                            contactName,
+                            messageText: finalBody,
+                            mediaUrl,
+                            conversationId: conversation.id
+                        }),
+                        new Promise((_, reject) => setTimeout(() => reject(new Error('Bot handler webhook execution window reached')), 9500))
+                    ]);
+                } catch (err: any) {
+                    console.error('[BOT_AUTO_REPLY_OR_TIMEOUT]', err?.message || err);
+                }
             }
         }
 

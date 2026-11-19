@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { processConversationalBotMessage } from "@/lib/bot/botBrain"
+import { processAlfredSupervisorMessage } from "@/lib/alfred/alfredBrain"
 
 // Fallback intelligent responses for all modules if AI API is offline
 const MODULE_KNOWLEDGE_BASE: Record<string, { title: string; text: string; suggestions: string[]; link?: string }> = {
@@ -182,7 +183,66 @@ export async function POST(req: Request) {
             })
         }
 
-        const botName = memory.botName || "Alfred"
+        const isSupervisorOrJuan = 
+            session.user?.email?.toLowerCase().includes("juanguzman") ||
+            session.user?.email?.toLowerCase().includes("supervisor") ||
+            session.user?.name?.toLowerCase().includes("guzman") ||
+            user.role === "SUPERVISOR" ||
+            user.role === "COORDINATOR" ||
+            user.role === "ADMIN" ||
+            user.role.includes("COORDINATOR")
+
+        const botName = isSupervisorOrJuan ? "Alfred" : (memory.botName || "Alfred")
+
+        // 3.5 Interceptar habilidades ejecutivas de ALFRED para supervisión / Juan
+        if (isSupervisorOrJuan) {
+            const isAlfredSkill = 
+                lowerMsg.includes("contacto") || 
+                lowerMsg.includes("global") || 
+                lowerMsg.includes("soft 3") || 
+                lowerMsg.includes("soft3") || 
+                lowerMsg.includes("softres") || 
+                lowerMsg.includes("rómulo") || 
+                lowerMsg.includes("romulo") || 
+                lowerMsg.includes("karen") || 
+                lowerMsg.includes("auditoria") || 
+                lowerMsg.includes("auditoría") || 
+                lowerMsg.includes("hoy") || 
+                lowerMsg.includes("briefing") || 
+                lowerMsg.includes("resumen") || 
+                lowerMsg.includes("domum") || 
+                lowerMsg.includes("domun") || 
+                lowerMsg.includes("arellano") || 
+                lowerMsg.includes("cabrera") || 
+                lowerMsg.includes("alfred") ||
+                lowerMsg.includes("deuda") ||
+                lowerMsg.includes("atraso") ||
+                lowerMsg.includes("pago")
+
+            if (isAlfredSkill) {
+                const alfredReply = await processAlfredSupervisorMessage(message)
+                await prisma.personalBotMessage.createMany({
+                    data: [
+                        { memoryId: memory.id, role: "user", content: message },
+                        { memoryId: memory.id, role: "assistant", content: alfredReply }
+                    ]
+                })
+
+                return NextResponse.json({
+                    text: alfredReply,
+                    reply: alfredReply,
+                    suggestions: [
+                        "Hoy en Soft 3, ventas y Karen",
+                        "Contactos globales WhatsApp",
+                        "Estado de Soft 3 (Rómulo)",
+                        "Auditoría y control de Karen IA"
+                    ],
+                    botName: "Alfred",
+                    isAlfred: true,
+                    themeColor: "emerald"
+                })
+            }
+        }
 
         // 4. Quick match with Knowledge Base for instant high-quality answers
         for (const [key, info] of Object.entries(MODULE_KNOWLEDGE_BASE)) {

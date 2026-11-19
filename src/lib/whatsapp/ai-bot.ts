@@ -797,7 +797,7 @@ METODOLOGÍA DE VENTA CONSULTIVA Y REGLAS DE ORO:
                         "Authorization": `Bearer ${NVIDIA_API_KEY}`,
                         "Content-Type": "application/json"
                     },
-                    timeout: 22000
+                    timeout: 7000
                 }
             );
 
