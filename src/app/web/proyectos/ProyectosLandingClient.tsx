@@ -7,7 +7,8 @@ import {
   Shield, Building2, Home, Camera, Lock, Zap, CheckCircle2, 
   ArrowRight, Phone, MessageSquare, Mail, MapPin, Clock, Award, 
   Wrench, Users, ChevronRight, Sparkles, Send, Check, AlertCircle,
-  FileCheck, ShieldCheck, Cpu, BatteryCharging, Radio, Eye, Layers
+  FileCheck, ShieldCheck, Cpu, BatteryCharging, Radio, Eye, Layers,
+  SlidersHorizontal, ArrowDownUp, Filter, Tag
 } from "lucide-react"
 
 export default function ProyectosLandingClient() {
@@ -21,6 +22,10 @@ export default function ProyectosLandingClient() {
   const [projectType, setProjectType] = useState("Casa / Residencia Familiar")
   const [city, setCity] = useState("Quito (Centro / Norte / Sur)")
   const [message, setMessage] = useState("")
+
+  // Catalog Filter & Sort State (Industrial a Genérico y Económico)
+  const [catalogFilter, setCatalogFilter] = useState<'all' | 'industrial' | 'residencial' | 'generico'>('all')
+  const [catalogSort, setCatalogSort] = useState<'industrial_first' | 'economic_first'>('industrial_first')
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
@@ -70,46 +75,39 @@ export default function ProyectosLandingClient() {
     }
   }
 
+  // Ordenadas de Infraestructura Pesada e Industrial a Genérico y Económico
   const CATEGORIAS_TECNOLOGICAS = [
+    {
+      icon: <Users className="text-purple-400" size={26} />,
+      title: "Control de Acceso & Barreras Vehiculares",
+      badge: "INDUSTRIAL & TRÁFICO PESADO",
+      image: "/images/barreras/ditec-qik-37-60.jpg",
+      desc: "Barreras vehiculares automáticas Dítec Serie 2027 de ciclo continuo 24V (apertura rápida de 2s), telepeaje RFID para urbanizaciones y torniquetes peatonales ZKTeco en acero 304.",
+      tags: ["Barreras Dítec 2.0s", "Torniquetes ZKTeco", "Tags RFID", "LPR Placas"]
+    },
     {
       icon: <Building2 className="text-blue-400" size={26} />,
       title: "Edificios, Torres & Condominios",
-      badge: "EDIFICIOS & CONDOMINIOS",
+      badge: "EDIFICIOS & CITOFONÍA",
       image: "/images/porteros/portero-inteligente-app-movil-198.jpg",
       desc: "Centrales colectivas de citofonía inteligente (Intelbras Collective para 4 a 24 departamentos), desvío de llamadas del portero a celulares de los copropietarios y apertura remota de accesos.",
       tags: ["Citofonía Colectiva", "App Móvil", "Apertura Remota", "Cableado UTP"]
     },
     {
-      icon: <Lock className="text-amber-400" size={26} />,
-      title: "Cerraduras Inteligentes & Biometría 3D",
-      badge: "HOGAR INTELIGENTE",
-      image: "/images/cerraduras/cerraduras-instalacion-portada.jpg",
-      desc: "Cerraduras WiFi con reconocimiento facial 3D, sensor biométrico de huella, código dinámico y pestillos de 5 pistones de alta seguridad. Ideales para puertas residenciales y oficinas.",
-      tags: ["Reconocimiento Facial 3D", "Tuya Smart", "5 Pistones", "Auditoría"]
-    },
-    {
-      icon: <Camera className="text-cyan-400" size={26} />,
-      title: "CCTV 4K & Cámaras con IA",
-      badge: "VIGILANCIA 24/7",
-      image: "/images/camaras/camaras-hogar-portada-4k.jpg",
-      desc: "Sistemas de videovigilancia de alta resolución para interiores y exteriores IP66 con autotracking 360°, visión nocturna Full Color 24/7 y grabación continua en NVR sin cuotas mensuales.",
-      tags: ["Visión Full Color", "Autotracking 360°", "Intemperie IP66", "NVR Central"]
-    },
-    {
       icon: <Zap className="text-yellow-400" size={26} />,
       title: "Cercos Eléctricos Perimetrales",
-      badge: "ALTA SEGURIDAD",
-      image: "/images/cercos/kits-cercos-electricos-pauta.jpg",
+      badge: "ALTA SEGURIDAD 18.000V",
+      image: "/images/cercos/cerco-jfl-platino-11208.jpg",
       desc: "Protección perimetral disuasiva de alto voltaje con electrificadores certificados JFL y Hagroy, baterías de respaldo de 12V, sirenas de 30W y monitoreo en tiempo real desde tu smartphone.",
       tags: ["Alto Voltaje JFL/Hagroy", "Batería Respaldo", "Sirena 30W", "App Alertas"]
     },
     {
-      icon: <Users className="text-purple-400" size={26} />,
-      title: "Control de Acceso & Barreras Vehiculares",
-      badge: "TRÁFICO PESADO & 2.0s",
-      image: "/images/barreras/barreras-portada-promociones.jpg",
-      desc: "Barreras vehiculares automáticas Dítec Serie 2027 de ciclo continuo 24V (apertura rápida de 2s), telepeaje RFID para urbanizaciones y torniquetes peatonales ZKTeco en acero 304.",
-      tags: ["Barreras Dítec 2.0s", "Torniquetes ZKTeco", "Tags RFID", "LPR Placas"]
+      icon: <Lock className="text-amber-400" size={26} />,
+      title: "Cerraduras Inteligentes & Biometría 3D",
+      badge: "RESIDENCIAL & OFICINAS",
+      image: "/images/cerraduras/bp-bremen.png",
+      desc: "Cerraduras WiFi con reconocimiento facial 3D, sensor biométrico de huella, código dinámico y pestillos de 5 pistones de alta seguridad. Ideales para puertas residenciales y oficinas.",
+      tags: ["Reconocimiento Facial 3D", "Tuya Smart", "5 Pistones", "Auditoría"]
     },
     {
       icon: <BatteryCharging className="text-emerald-400" size={26} />,
@@ -118,67 +116,147 @@ export default function ProyectosLandingClient() {
       image: "/images/anker-solix/anker-solix-c300-hero-hogar.jpg",
       desc: "Generadores solares y estaciones eléctricas portátiles Anker SOLIX C300 con baterías LiFePO4 para mantener encendidos tus sistemas de seguridad, routers y cámaras durante apagones.",
       tags: ["LiFePO4 Durabilidad", "Sin Ruido ni Humo", "Carga Solar", "Respaldo 24/7"]
+    },
+    {
+      icon: <Camera className="text-cyan-400" size={26} />,
+      title: "CCTV 4K & Cámaras con IA para Hogar",
+      badge: "GENÉRICO & ECONÓMICO HOGAR",
+      image: "/images/camaras/camara-doble-lente-360-interior.jpg",
+      desc: "Sistemas de videovigilancia de alta resolución para interiores y exteriores IP66 con autotracking 360°, visión nocturna Full Color 24/7 y grabación continua en NVR sin cuotas mensuales.",
+      tags: ["Visión Full Color", "Autotracking 360°", "Intemperie IP66", "NVR Central"]
     }
   ]
 
+  // Dispositivos ordenados explícitamente: De Industrial / Pesado a Genérico / Económico
   const DISPOSITIVOS_DESTACADOS = [
     {
+      id: "barrera-ditec",
       title: "Barrera Vehicular Dítec Qik 24V",
-      category: "Acceso Vehicular",
+      tier: "🏭 INDUSTRIAL & URBANO",
+      segment: "industrial" as const,
+      priceTag: "Desde $890",
+      priceRef: "Proyectos e Infraestructura Pesada",
+      orderIndustrial: 1,
+      orderEconomic: 9,
       image: "/images/barreras/ditec-qik-37-60.jpg",
-      spec: "Ciclo continuo 100% · Apertura 2.0s · Mástiles 3m a 6m",
-      highlight: "Tecnología Europea para Urbanizaciones"
+      spec: "Ciclo continuo 100% · Apertura 2.0s · Mástiles 3m a 6m · Desbloqueo manual",
+      highlight: "Para condominios, urbanizaciones y alto flujo vehicular"
     },
     {
-      title: "Cámara Panorámica Doble Lente 360°",
-      category: "CCTV Inteligente",
-      image: "/images/camaras/camara-doble-lente-360-interior.jpg",
-      spec: "2 Cámaras en 1 · Seguimiento humano IA · App móvil",
-      highlight: "Ideal para Cuidado Familiar y Bebés"
-    },
-    {
-      title: "Cámara Mini PT Full-Color Exterior",
-      category: "Vigilancia Exterior",
-      image: "/images/camaras/camara-imou-mini-pt-fullcolor-13067.jpg",
-      spec: "IP66 Intemperie · Focos cálidos a color · Sirena activa",
-      highlight: "Resistente a Lluvia y Niebla"
-    },
-    {
-      title: "Portero Inteligente ZKTeco ZKBio",
-      category: "Videoportería",
+      id: "citofonia-edificios",
+      title: "Central Colectiva de Citofonía para Edificios",
+      tier: "🏢 EDIFICIOS & CONDOMINIOS",
+      segment: "industrial" as const,
+      priceTag: "Desde $280",
+      priceRef: "Sistemas Colectivos 4 a 24 Deptos",
+      orderIndustrial: 2,
+      orderEconomic: 8,
       image: "/images/porteros/portero-inteligente-app-movil-198.jpg",
-      spec: "Facial 0.3s · Huella · RFID · Videollamada a Celular",
-      highlight: "6 Métodos de Acceso Sin Mensualidades"
+      spec: "Central colectiva UTP · Desvío a smartphone · Apertura de portones remota",
+      highlight: "Atención desde el celular y sin cuotas fijas de mantenimiento"
     },
     {
-      title: "Kit Cerco Eléctrico JFL Platino",
-      category: "Perímetro Disuasivo",
+      id: "cerco-electrico-jfl",
+      title: "Kit Cerco Eléctrico Perimetral JFL Platino",
+      tier: "⚡ SEGURIDAD INDUSTRIAL & PERIMETRAL",
+      segment: "industrial" as const,
+      priceTag: "Desde $380",
+      priceRef: "Infraestructura Perimetral 18.000V",
+      orderIndustrial: 3,
+      orderEconomic: 7,
       image: "/images/cercos/cerco-jfl-platino-11208.jpg",
-      spec: "Módulo Ethernet ME-05 · Sirena 30W · Batería 12V 4Ah",
-      highlight: "Control y Armado Desde tu Smartphone"
+      spec: "Módulo ME-05 red · Sirena 30W · Respaldo batería 12V · Disuasión 18kV",
+      highlight: "Protección perimetral ante intrusiones para conjuntos y naves"
     },
     {
-      title: "Cerradura Biométrica Smart Lock 3D",
-      category: "Acceso Smart",
-      image: "/images/cerraduras/bp-bremen.png",
-      spec: "Reconocimiento Facial 3D · 5 Pistones Acero · Tuya App",
-      highlight: "Máxima Seguridad Anti-Palanca"
-    },
-    {
-      title: "Estación de Carga Anker SOLIX C300",
-      category: "Energía & Respaldo",
-      image: "/images/anker-solix/anker-solix-c300-hero-hogar.jpg",
-      spec: "300W / 288Wh LiFePO4 · 3000 ciclos · Carga solar",
-      highlight: "Cero Apagones para Cámaras y WiFi"
-    },
-    {
-      title: "Antenas Anti-Hurto Retail 8.2MHz",
-      category: "Seguridad Comercial",
+      id: "antenas-antihurto",
+      title: "Antenas Anti-Hurto Dual Pedestal RF 8.2MHz",
+      tier: "🏬 COMERCIAL & RETAIL",
+      segment: "industrial" as const,
+      priceTag: "Par $576",
+      priceRef: "Comercio, Tiendas & Almacenes",
+      orderIndustrial: 4,
+      orderEconomic: 6,
       image: "/images/antihurto/antenas-antihurto-retail-seguridad.jpg",
-      spec: "Par pedestales RF · Detección hasta 1.80m · Sirena 95dB",
-      highlight: "Protección Total Anti-Robo Hormiga"
+      spec: "Detección hasta 1.80m · Alarma acústica 95dB · Compatible tags rígidos y blandos",
+      highlight: "Cero pérdidas por robo hormiga en tiendas y locales"
+    },
+    {
+      id: "cerradura-smart-lock-3d",
+      title: "Cerradura Biométrica Smart Lock 3D Face ID",
+      tier: "🏠 RESIDENCIAL & OFICINAS",
+      segment: "residencial" as const,
+      priceTag: "Desde $195",
+      priceRef: "Seguridad Alta en Puertas",
+      orderIndustrial: 5,
+      orderEconomic: 5,
+      image: "/images/cerraduras/bp-bremen.png",
+      spec: "Reconocimiento facial 3D · 5 pestillos de acero · Auditoría Tuya Smart",
+      highlight: "Máxima protección anti-palanca para casas y oficinas"
+    },
+    {
+      id: "anker-solix-c300",
+      title: "Estación Solar y Batería LiFePO4 Anker SOLIX C300",
+      tier: "🔋 RESPALDO ENERGÉTICO HOGAR",
+      segment: "residencial" as const,
+      priceTag: "Oferta $380",
+      priceRef: "Precio Normal $420",
+      orderIndustrial: 6,
+      orderEconomic: 4,
+      image: "/images/anker-solix/anker-solix-c300-hero-hogar.jpg",
+      spec: "300W / 288Wh LiFePO4 · 3000 ciclos útiles · Cero humo ni combustible",
+      highlight: "Mantén encendidos routers, cámaras y luces durante apagones"
+    },
+    {
+      id: "camara-mini-pt-exterior",
+      title: "Cámara Exterior Mini PT Full-Color IP66",
+      tier: "💡 GENÉRICO & ECONÓMICO EXTERIOR",
+      segment: "generico" as const,
+      priceTag: "Desde $44",
+      priceRef: "Vigilancia Exterior Accesible",
+      orderIndustrial: 7,
+      orderEconomic: 3,
+      image: "/images/camaras/camara-imou-mini-pt-fullcolor-13067.jpg",
+      spec: "Rotación 360° · Focos cálidos a color nocturnos · Sirena activa",
+      highlight: "Ideal para patios, garajes y entradas residenciales"
+    },
+    {
+      id: "camara-doble-lente-360",
+      title: "Cámara Interior Panorámica 360° Doble Lente IA",
+      tier: "💡 GENÉRICO & ECONÓMICO HOGAR",
+      segment: "generico" as const,
+      priceTag: "Desde $39",
+      priceRef: "Hogar & Cuidado Familiar",
+      orderIndustrial: 8,
+      orderEconomic: 2,
+      image: "/images/camaras/camara-doble-lente-360-interior.jpg",
+      spec: "2 Cámaras en 1 sola · Seguimiento de personas · Audio bidireccional",
+      highlight: "Cuidado de bebés, adultos mayores y mascotas en el hogar"
+    },
+    {
+      id: "camara-ezviz-h6c",
+      title: "Cámara Domo Wi-Fi EZVIZ H6c 3MP Plug & Play",
+      tier: "💡 GENÉRICO & ECONÓMICO ACCESIBLE",
+      segment: "generico" as const,
+      priceTag: "Desde $35",
+      priceRef: "Super Económico para Cuartos",
+      orderIndustrial: 9,
+      orderEconomic: 1,
+      image: "/images/camaras/camara-ezviz-h6c-3mp-basica-44.jpg",
+      spec: "Resolución 2K 3MP · Detección de movimiento · Visión nocturna y audio",
+      highlight: "La solución de vigilancia más accesible y fácil de configurar"
     }
   ]
+
+  const filteredAndSortedDispositivos = DISPOSITIVOS_DESTACADOS
+    .filter(d => catalogFilter === "all" || d.segment === catalogFilter)
+    .sort((a, b) => {
+      if (catalogSort === "industrial_first") {
+        return a.orderIndustrial - b.orderIndustrial
+      } else {
+        return a.orderEconomic - b.orderEconomic
+      }
+    })
 
   const PILARES_EXPERIENCIA = [
     {
@@ -307,59 +385,87 @@ export default function ProyectosLandingClient() {
               <span className="px-3 py-1 rounded-full bg-slate-900 border border-slate-700">✓ Cobertura Nacional</span>
             </div>
 
-            {/* ── HERO VISUAL COLLAGE (REAL EQUIPMENT PREVIEW) ── */}
+            {/* ── HERO VISUAL COLLAGE (REAL EQUIPMENT PREVIEW - ZERO RECORTES) ── */}
             <div className="pt-8 max-w-5xl mx-auto">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-3 rounded-3xl bg-slate-900/60 border border-slate-800 backdrop-blur-md shadow-2xl">
-                <div className="relative h-28 sm:h-36 rounded-2xl overflow-hidden group border border-slate-800">
-                  <img 
-                    src="/images/barreras/barreras-portada-promociones.jpg" 
-                    alt="Barreras Vehiculares Automáticas" 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
-                  <span className="absolute bottom-2 left-2 text-[10px] font-mono font-bold uppercase text-white bg-slate-900/80 px-2 py-0.5 rounded border border-white/10">
-                    Barreras 2.0s
-                  </span>
+                {/* 1. Barreras Dítec (Industrial) */}
+                <div className="relative h-36 sm:h-44 rounded-2xl overflow-hidden group border border-slate-800 bg-slate-950 p-3 flex flex-col items-center justify-center">
+                  <div className="w-full h-full flex items-center justify-center">
+                    <img 
+                      src="/images/barreras/ditec-qik-37-60.jpg" 
+                      alt="Barreras Vehiculares Dítec" 
+                      className="max-h-full max-w-full object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.8)] group-hover:scale-105 transition-transform duration-500" 
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent flex items-center justify-between">
+                    <span className="text-[10px] font-mono font-bold uppercase text-white bg-slate-900/90 px-2 py-0.5 rounded border border-white/10">
+                      Barreras 2.0s
+                    </span>
+                    <span className="text-[9px] font-mono text-cyan-300 font-bold hidden sm:inline-block">
+                      Industrial
+                    </span>
+                  </div>
                 </div>
 
-                <div className="relative h-28 sm:h-36 rounded-2xl overflow-hidden group border border-slate-800">
-                  <img 
-                    src="/images/camaras/camaras-hogar-portada-4k.jpg" 
-                    alt="Cámaras de Seguridad 360" 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
-                  <span className="absolute bottom-2 left-2 text-[10px] font-mono font-bold uppercase text-cyan-300 bg-slate-900/80 px-2 py-0.5 rounded border border-cyan-500/30">
-                    CCTV 4K & Hogar
-                  </span>
+                {/* 2. Citofonía Edificios */}
+                <div className="relative h-36 sm:h-44 rounded-2xl overflow-hidden group border border-slate-800 bg-slate-950 p-3 flex flex-col items-center justify-center">
+                  <div className="w-full h-full flex items-center justify-center">
+                    <img 
+                      src="/images/porteros/portero-inteligente-app-movil-198.jpg" 
+                      alt="Citofonía Edificios" 
+                      className="max-h-full max-w-full object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.8)] group-hover:scale-105 transition-transform duration-500" 
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent flex items-center justify-between">
+                    <span className="text-[10px] font-mono font-bold uppercase text-purple-300 bg-slate-900/90 px-2 py-0.5 rounded border border-purple-500/30">
+                      Citofonía Edificios
+                    </span>
+                    <span className="text-[9px] font-mono text-purple-300 font-bold hidden sm:inline-block">
+                      Torres
+                    </span>
+                  </div>
                 </div>
 
-                <div className="relative h-28 sm:h-36 rounded-2xl overflow-hidden group border border-slate-800">
-                  <img 
-                    src="/images/cerraduras/cerraduras-instalacion-portada.jpg" 
-                    alt="Cerraduras Biométricas 3D" 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
-                  <span className="absolute bottom-2 left-2 text-[10px] font-mono font-bold uppercase text-amber-300 bg-slate-900/80 px-2 py-0.5 rounded border border-amber-500/30">
-                    Cerraduras 3D
-                  </span>
+                {/* 3. Cerraduras 3D */}
+                <div className="relative h-36 sm:h-44 rounded-2xl overflow-hidden group border border-slate-800 bg-slate-950 p-3 flex flex-col items-center justify-center">
+                  <div className="w-full h-full flex items-center justify-center">
+                    <img 
+                      src="/images/cerraduras/bp-bremen.png" 
+                      alt="Cerraduras Biométricas 3D" 
+                      className="max-h-full max-w-full object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.8)] group-hover:scale-105 transition-transform duration-500" 
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent flex items-center justify-between">
+                    <span className="text-[10px] font-mono font-bold uppercase text-amber-300 bg-slate-900/90 px-2 py-0.5 rounded border border-amber-500/30">
+                      Cerraduras 3D
+                    </span>
+                    <span className="text-[9px] font-mono text-amber-300 font-bold hidden sm:inline-block">
+                      Residencial
+                    </span>
+                  </div>
                 </div>
 
-                <div className="relative h-28 sm:h-36 rounded-2xl overflow-hidden group border border-slate-800">
-                  <img 
-                    src="/images/porteros/portero-inteligente-app-movil-198.jpg" 
-                    alt="Citofonía Edificios" 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
-                  <span className="absolute bottom-2 left-2 text-[10px] font-mono font-bold uppercase text-purple-300 bg-slate-900/80 px-2 py-0.5 rounded border border-purple-500/30">
-                    Citofonía Edificios
-                  </span>
+                {/* 4. CCTV Hogar & Económico */}
+                <div className="relative h-36 sm:h-44 rounded-2xl overflow-hidden group border border-slate-800 bg-slate-950 p-3 flex flex-col items-center justify-center">
+                  <div className="w-full h-full flex items-center justify-center">
+                    <img 
+                      src="/images/camaras/camara-doble-lente-360-interior.jpg" 
+                      alt="Cámaras de Seguridad 360" 
+                      className="max-h-full max-w-full object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.8)] group-hover:scale-105 transition-transform duration-500" 
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent flex items-center justify-between">
+                    <span className="text-[10px] font-mono font-bold uppercase text-cyan-300 bg-slate-900/90 px-2 py-0.5 rounded border border-cyan-500/30">
+                      Cámaras 360°
+                    </span>
+                    <span className="text-[9px] font-mono text-emerald-300 font-bold hidden sm:inline-block">
+                      Económico
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -367,7 +473,7 @@ export default function ProyectosLandingClient() {
           </motion.div>
         </section>
 
-        {/* ── SHOWCASE DE CATEGORÍAS (CON IMÁGENES REALES) ── */}
+        {/* ── SHOWCASE DE CATEGORÍAS (ORDENADAS DE INDUSTRIAL A ECONÓMICO) ── */}
         <section className="px-4 sm:px-6 max-w-7xl mx-auto py-12">
           <div className="space-y-3 mb-10 text-center">
             <span className="text-[11px] font-mono font-black uppercase tracking-widest text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20 inline-block">
@@ -387,18 +493,19 @@ export default function ProyectosLandingClient() {
                 key={i}
                 className="rounded-3xl bg-slate-900/50 border border-slate-800 hover:border-slate-700 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl overflow-hidden flex flex-col justify-between group"
               >
-                {/* Image Banner */}
-                <div className="relative h-48 sm:h-52 w-full overflow-hidden bg-slate-950">
+                {/* Image Banner - Full view, ZERO crop */}
+                <div className="relative h-56 sm:h-64 w-full bg-slate-950 p-4 flex items-center justify-center overflow-hidden border-b border-slate-800/80">
+                  <div className="absolute inset-0 bg-radial from-purple-500/5 via-transparent to-transparent pointer-events-none" />
+                  
                   <img 
                     src={cat.image} 
                     alt={cat.title} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 brightness-95 group-hover:brightness-105"
+                    className="max-h-full max-w-full object-contain filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.8)] group-hover:scale-105 transition-transform duration-500"
                     loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent" />
                   
                   {/* Category Badge */}
-                  <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-slate-950/85 backdrop-blur-md border border-white/20 text-[9px] font-mono font-black text-white uppercase tracking-wider shadow-md">
+                  <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-slate-950/90 backdrop-blur-md border border-white/20 text-[9px] font-mono font-black text-white uppercase tracking-wider shadow-md">
                     {cat.badge}
                   </div>
 
@@ -443,19 +550,19 @@ export default function ProyectosLandingClient() {
           </div>
         </section>
 
-        {/* ── GALERÍA DE EQUIPOS & DISPOSITIVOS EN PRODUCCIÓN ── */}
+        {/* ── GALERÍA DE EQUIPOS & DISPOSITIVOS EN PRODUCCIÓN (ORDENADO + FILTRABLE) ── */}
         <section className="px-4 sm:px-6 max-w-7xl mx-auto py-16">
           <div className="p-6 sm:p-10 rounded-3xl bg-slate-900/40 border border-slate-800 space-y-8">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
               <div className="space-y-2">
                 <span className="text-[11px] font-mono font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 inline-block">
-                  CATÁLOGO VISUAL DE EQUIPAMIENTO
+                  CATÁLOGO VISUAL DE EQUIPAMIENTO HOMOLOGADO
                 </span>
                 <h2 className="text-2xl sm:text-4xl font-black uppercase tracking-tight font-heading text-white">
-                  Dispositivos Homologados para Proyectos
+                  Dispositivos para Proyectos & Hogar
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-400 max-w-xl">
-                  Equipos certificados con stock permanente y repuestos garantizados para instalaciones residenciales y corporativas.
+                  Equipos organizados desde infraestructura pesada e industrial para edificios y conjuntos, hasta soluciones genéricas y económicas para el hogar.
                 </p>
               </div>
 
@@ -469,47 +576,131 @@ export default function ProyectosLandingClient() {
               </button>
             </div>
 
-            {/* Grid of Devices */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {DISPOSITIVOS_DESTACADOS.map((item, idx) => (
-                <div
-                  key={idx}
-                  className="rounded-2xl bg-slate-950/80 border border-slate-800/90 overflow-hidden hover:border-slate-700 transition-all hover:shadow-lg flex flex-col justify-between group"
+            {/* ── CONTROLES DE FILTRADO Y ORDENAMIENTO (INDUSTRIAL A ECONÓMICO) ── */}
+            <div className="p-4 rounded-2xl bg-slate-950/90 border border-slate-800 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+              {/* Segment Filter Pills */}
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+                <button
+                  type="button"
+                  onClick={() => setCatalogFilter("all")}
+                  className={`shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+                    catalogFilter === "all"
+                      ? "bg-purple-600 text-white border-purple-500 shadow-md shadow-purple-600/30"
+                      : "bg-slate-900 text-slate-400 border-slate-800 hover:text-white"
+                  }`}
                 >
-                  <div className="relative h-44 w-full bg-slate-900 overflow-hidden">
+                  ✦ Todos ({DISPOSITIVOS_DESTACADOS.length})
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setCatalogFilter("industrial")}
+                  className={`shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+                    catalogFilter === "industrial"
+                      ? "bg-cyan-600 text-white border-cyan-500 shadow-md shadow-cyan-600/30"
+                      : "bg-slate-900 text-slate-400 border-slate-800 hover:text-white"
+                  }`}
+                >
+                  🏭 Industrial & Macro (4)
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setCatalogFilter("residencial")}
+                  className={`shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+                    catalogFilter === "residencial"
+                      ? "bg-amber-600 text-white border-amber-500 shadow-md shadow-amber-600/30"
+                      : "bg-slate-900 text-slate-400 border-slate-800 hover:text-white"
+                  }`}
+                >
+                  🏠 Residencial Smart (2)
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setCatalogFilter("generico")}
+                  className={`shrink-0 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+                    catalogFilter === "generico"
+                      ? "bg-emerald-600 text-white border-emerald-500 shadow-md shadow-emerald-600/30"
+                      : "bg-slate-900 text-slate-400 border-slate-800 hover:text-white"
+                  }`}
+                >
+                  💡 Genérico & Económico (3)
+                </button>
+              </div>
+
+              {/* Sort Direction Toggle */}
+              <div className="flex items-center gap-2 shrink-0">
+                <ArrowDownUp size={14} className="text-slate-400 hidden sm:inline-block" />
+                <span className="text-[11px] font-mono text-slate-400 uppercase hidden sm:inline-block">Orden:</span>
+                <select
+                  value={catalogSort}
+                  onChange={(e) => setCatalogSort(e.target.value as any)}
+                  className="bg-slate-900 border border-slate-700 text-slate-200 text-xs font-bold rounded-xl px-3 py-1.5 focus:outline-none focus:border-purple-500 cursor-pointer"
+                >
+                  <option value="industrial_first">🏭 De Industrial a Genérico / Económico</option>
+                  <option value="economic_first">💡 De Genérico / Económico a Industrial</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Grid of Devices - 100% visible, ZERO cropped images */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {filteredAndSortedDispositivos.map((item) => (
+                <div
+                  key={item.id}
+                  className="rounded-3xl bg-slate-950/80 border border-slate-800/90 overflow-hidden hover:border-slate-700 transition-all hover:shadow-2xl flex flex-col justify-between group"
+                >
+                  {/* Photo Container with padding & dark frame so equipment is never cut off */}
+                  <div className="relative h-56 sm:h-60 w-full bg-slate-950 p-4 flex items-center justify-center overflow-hidden border-b border-slate-800/80 group-hover:bg-slate-900/80 transition-colors">
+                    <div className="absolute inset-0 bg-radial from-purple-500/5 via-transparent to-transparent pointer-events-none" />
+                    
                     <img 
                       src={item.image} 
                       alt={item.title} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="max-h-full max-w-full object-contain filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.8)] group-hover:scale-105 transition-transform duration-500"
                       loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent" />
-                    <span className="absolute top-2 left-2 text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-950/80 text-cyan-300 border border-cyan-500/30">
-                      {item.category}
-                    </span>
+
+                    {/* Corner Badges */}
+                    <div className="absolute top-3 left-3 z-10">
+                      <span className="text-[9px] font-mono font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-950/90 text-cyan-300 border border-cyan-500/30 backdrop-blur-md shadow-sm">
+                        {item.tier}
+                      </span>
+                    </div>
+
+                    <div className="absolute top-3 right-3 z-10">
+                      <span className="text-[10px] font-mono font-black px-2 py-0.5 rounded-md bg-emerald-950/90 text-emerald-300 border border-emerald-500/40 backdrop-blur-md shadow-sm">
+                        {item.priceTag}
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="p-4 space-y-2 flex-grow flex flex-col justify-between">
-                    <div>
-                      <h4 className="text-sm font-black text-white font-heading group-hover:text-purple-300 transition-colors">
+                  {/* Device Specs & Information */}
+                  <div className="p-5 space-y-3 flex-grow flex flex-col justify-between">
+                    <div className="space-y-1.5">
+                      <div className="text-[11px] text-slate-400 font-mono">
+                        <span>{item.priceRef}</span>
+                      </div>
+                      <h4 className="text-base font-black text-white font-heading group-hover:text-purple-300 transition-colors">
                         {item.title}
                       </h4>
-                      <p className="text-[11px] text-slate-400 font-mono mt-1">
+                      <p className="text-xs text-slate-400 font-mono leading-relaxed">
                         {item.spec}
                       </p>
                     </div>
 
-                    <div className="pt-2 border-t border-slate-800/80 space-y-2">
-                      <span className="text-[10px] text-emerald-400 font-bold block">
+                    <div className="pt-3 border-t border-slate-800/80 space-y-2.5">
+                      <span className="text-[11px] text-emerald-400 font-bold block">
                         ✓ {item.highlight}
                       </span>
                       <button
                         type="button"
                         onClick={() => scrollToForm(item.title)}
-                        className="w-full py-1.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white text-[11px] font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-1 cursor-pointer border border-slate-800"
+                        className="w-full py-2.5 px-3 rounded-xl bg-purple-600/20 hover:bg-purple-600 text-purple-200 hover:text-white text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-purple-500/30"
                       >
                         <span>Cotizar este equipo</span>
-                        <ChevronRight size={12} />
+                        <ChevronRight size={13} />
                       </button>
                     </div>
                   </div>
@@ -685,16 +876,33 @@ export default function ProyectosLandingClient() {
                       onChange={(e) => setProjectType(e.target.value)}
                       className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-purple-500 cursor-pointer"
                     >
-                      <option value="Casa / Residencia Familiar">🏠 Casa / Residencia Familiar</option>
-                      <option value="Edificio de Departamentos">🏢 Edificio de Departamentos</option>
-                      <option value="Conjunto Residencial / Urbanización">🏘️ Conjunto Residencial / Urbanización</option>
-                      <option value="Barreras Vehiculares / Acceso Rápido">🚧 Barreras Vehiculares / Acceso Rápido</option>
-                      <option value="Cámaras de Hogar / CCTV 4K">📹 Cámaras de Hogar / CCTV 4K</option>
-                      <option value="Cerraduras Inteligentes / Biometría">🔒 Cerraduras Inteligentes / Biometría</option>
-                      <option value="Cercos Eléctricos Perimetrales">⚡ Cercos Eléctricos Perimetrales</option>
-                      <option value="Local Comercial / Tienda">🛍️ Local Comercial / Tienda</option>
-                      <option value="Empresa / Industria / Bodega">🏭 Empresa / Industria / Bodega</option>
-                      <option value="Obra en Construcción">🏗️ Obra en Construcción</option>
+                      {/* Si se seleccionó un equipo específico desde las tarjetas, mostrarlo arriba */}
+                      {DISPOSITIVOS_DESTACADOS.some(d => d.title === projectType) && (
+                        <option value={projectType}>🎯 {projectType} (Seleccionado)</option>
+                      )}
+                      <optgroup label="🏭 Infraestructura Industrial & Edificios">
+                        <option value="Barrera Vehicular Dítec Qik 24V">🚧 Barrera Vehicular Dítec 24V (Alto Flujo)</option>
+                        <option value="Central Colectiva de Citofonía para Edificios">🏢 Citofonía para Edificios (4 a 24 Deptos)</option>
+                        <option value="Kit Cerco Eléctrico Perimetral JFL Platino">⚡ Cerco Eléctrico Perimetral 18.000V</option>
+                        <option value="Antenas Anti-Hurto Dual Pedestal RF 8.2MHz">🏬 Antenas Anti-Hurto Retail 8.2MHz</option>
+                      </optgroup>
+                      <optgroup label="🏠 Residencial Inteligente & Respaldo">
+                        <option value="Cerradura Biométrica Smart Lock 3D Face ID">🔒 Cerradura Biométrica 3D Smart Lock</option>
+                        <option value="Estación Solar y Batería LiFePO4 Anker SOLIX C300">🔋 Estación LiFePO4 Anker SOLIX C300</option>
+                      </optgroup>
+                      <optgroup label="💡 Cámaras de Vigilancia & Económico">
+                        <option value="Cámara Exterior Mini PT Full-Color IP66">📹 Cámara Exterior Mini PT Full-Color IP66</option>
+                        <option value="Cámara Interior Panorámica 360° Doble Lente IA">📹 Cámara Interior Panorámica 360° Doble Lente</option>
+                        <option value="Cámara Domo Wi-Fi EZVIZ H6c 3MP Plug & Play">📹 Cámara Domo Wi-Fi EZVIZ 3MP Económica</option>
+                      </optgroup>
+                      <optgroup label="🏘️ Inmuebles Generales">
+                        <option value="Casa / Residencia Familiar">🏠 Casa / Residencia Familiar</option>
+                        <option value="Edificio de Departamentos">🏢 Edificio de Departamentos</option>
+                        <option value="Conjunto Residencial / Urbanización">🏘️ Conjunto Residencial / Urbanización</option>
+                        <option value="Local Comercial / Tienda">🛍️ Local Comercial / Tienda</option>
+                        <option value="Empresa / Industria / Bodega">🏭 Empresa / Industria / Bodega</option>
+                        <option value="Obra en Construcción">🏗️ Obra en Construcción</option>
+                      </optgroup>
                     </select>
                   </div>
 
