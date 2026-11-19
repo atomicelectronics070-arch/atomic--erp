@@ -37,10 +37,17 @@ export default function EmpleoFreelancePageClient() {
 
                     <div className="flex items-center gap-3">
                         <Link 
-                            href="/web/empleo" 
-                            className="hidden sm:inline-flex px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 font-bold text-xs transition-all"
+                            href="/contrataciones#manual" 
+                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-blue-600/30 border border-blue-400/50 text-blue-200 font-bold text-xs hover:bg-blue-600/50 transition-all"
                         >
-                            Ver Vendedor Fijo (Oficina Virtual) →
+                            <span>🚀 Convocatoria Unificada Oficial (Fijo, Fast-Track y Freelance)</span>
+                            <ArrowRight size={13} />
+                        </Link>
+                        <Link 
+                            href="/contrataciones#bajo-comision" 
+                            className="hidden md:inline-flex px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 font-bold text-xs transition-all"
+                        >
+                            Ver 3 Tareas Obligatorias →
                         </Link>
                         <Link 
                             href="/register?role=SALESPERSON" 

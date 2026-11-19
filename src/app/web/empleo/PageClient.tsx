@@ -56,8 +56,12 @@ export default function EmpleoLandingPage() {
                         <span className="text-xl font-black text-white tracking-tight">Atomic Careers</span>
                     </div>
                     <div className="flex items-center gap-3">
-                        <Link href="/web/empleo-freelance" className="hidden sm:inline-flex px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 font-bold text-xs hover:bg-amber-500/20 transition-all">
-                            ⚡ Ver Vendedor Bajo Comisión (Freelance)
+                        <Link href="/contrataciones#manual" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-blue-600/30 border border-blue-400/50 text-blue-200 font-bold text-xs hover:bg-blue-600/50 transition-all">
+                            <span>🚀 Convocatoria Unificada Oficial (Fijo, Fast-Track y Freelance)</span>
+                            <ArrowRight size={13} />
+                        </Link>
+                        <Link href="/contrataciones#sueldo-fijo" className="hidden md:inline-flex px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-bold text-xs hover:bg-emerald-500/20 transition-all">
+                            Sueldo Fijo ($100-$450)
                         </Link>
                         <Link href="/register?role=SALESPERSON" className="px-6 py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-black text-sm transition-all shadow-lg shadow-emerald-950/50">
                             Aplicar Ahora
