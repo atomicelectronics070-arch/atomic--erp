@@ -141,9 +141,13 @@ export default function QuotePublicViewer({ quote, items }: PublicQuoteViewerPro
               <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
                 Propuesta Técnica Comercial
               </h1>
-              <p className="text-xs text-slate-400 font-mono mt-1 capitalize">
-                {formattedDate}
-              </p>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-400 font-mono mt-1">
+                <span className="capitalize">{formattedDate}</span>
+                <span className="text-slate-600">•</span>
+                <span className="text-slate-300">RUC: <strong className="text-cyan-300">1709540478001</strong></span>
+                <span className="text-slate-600">•</span>
+                <span className="text-slate-300">Sector El Labrador, Quito</span>
+              </div>
             </div>
 
             <div className="text-left sm:text-right">
@@ -189,6 +193,53 @@ export default function QuotePublicViewer({ quote, items }: PublicQuoteViewerPro
             >
               <MessageCircle size={15} /> Solicitar Descuento
             </a>
+          </div>
+        </div>
+
+        {/* Corporate Summary Box - A qué nos dedicamos */}
+        <div className="bg-gradient-to-br from-slate-900 via-slate-900/90 to-blue-950/40 border border-cyan-500/20 rounded-3xl p-5 sm:p-6 shadow-xl relative overflow-hidden">
+          <div className="flex items-center gap-2 text-cyan-400 font-mono text-xs font-bold uppercase tracking-wider mb-2">
+            <Building2 size={16} /> ATOMIC SOLUTIONS · Importación, Distribución & Soluciones Tecnológicas Integrales
+          </div>
+          <p className="text-xs text-slate-300 leading-relaxed mb-4">
+            Somos distribuidores e importadores directos con respaldo técnico y de fábrica. Proveemos equipamiento de alta tecnología e integración para proyectos residenciales, comerciales e industriales en todo el Ecuador:
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-[11px] font-mono text-slate-300">
+            <div className="bg-slate-950/70 p-3 rounded-2xl border border-slate-800/80 flex items-start gap-2.5">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 shrink-0 mt-1.5 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
+              <div>
+                <strong className="text-white block">Seguridad & CCTV IA</strong>
+                <span className="text-slate-400">Dahua, Hikvision, EZVIZ, Uniview con analítica inteligente.</span>
+              </div>
+            </div>
+            <div className="bg-slate-950/70 p-3 rounded-2xl border border-slate-800/80 flex items-start gap-2.5">
+              <span className="w-2 h-2 rounded-full bg-indigo-400 shrink-0 mt-1.5 shadow-[0_0_8px_rgba(129,140,248,0.8)]" />
+              <div>
+                <strong className="text-white block">Acceso & Tráfico Vehicular</strong>
+                <span className="text-slate-400">Motores y barreras de alta exigencia Dítec y biometría ZKTeco.</span>
+              </div>
+            </div>
+            <div className="bg-slate-950/70 p-3 rounded-2xl border border-slate-800/80 flex items-start gap-2.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0 mt-1.5 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+              <div>
+                <strong className="text-white block">Smart Home & Biometría</strong>
+                <span className="text-slate-400">Cerraduras 3D con videoportero y domótica residencial avanzada.</span>
+              </div>
+            </div>
+            <div className="bg-slate-950/70 p-3 rounded-2xl border border-slate-800/80 flex items-start gap-2.5">
+              <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0 mt-1.5 shadow-[0_0_8px_rgba(251,191,36,0.8)]" />
+              <div>
+                <strong className="text-white block">Respaldo de Energía LiFePO4</strong>
+                <span className="text-slate-400">Estaciones solares portátiles silenciosas EcoFlow y Anker SOLIX.</span>
+              </div>
+            </div>
+            <div className="bg-slate-950/70 p-3 rounded-2xl border border-slate-800/80 flex items-start gap-2.5 sm:col-span-2">
+              <span className="w-2 h-2 rounded-full bg-teal-400 shrink-0 mt-1.5 shadow-[0_0_8px_rgba(45,212,191,0.8)]" />
+              <div>
+                <strong className="text-white block">Conectividad, Redes & Servidores</strong>
+                <span className="text-slate-400">Cableado estructurado certificado, fibra óptica, switches y servidores.</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -245,6 +296,7 @@ export default function QuotePublicViewer({ quote, items }: PublicQuoteViewerPro
                   <th className="py-3 px-4 w-12 text-center">#</th>
                   <th className="py-3 px-4">Descripción del Ítem</th>
                   <th className="py-3 px-4 w-20 text-center">Cant.</th>
+                  <th className="py-3 px-4 w-24 text-center">Disponible</th>
                   <th className="py-3 px-4 w-28 text-right">P. Unit</th>
                   <th className="py-3 px-4 w-28 text-right">Total</th>
                 </tr>
@@ -262,6 +314,11 @@ export default function QuotePublicViewer({ quote, items }: PublicQuoteViewerPro
                         )}
                       </td>
                       <td className="py-3.5 px-4 text-center font-bold text-white">{item.quantity}</td>
+                      <td className="py-3.5 px-4 text-center">
+                        <span className="px-2.5 py-0.5 bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[10px] font-black rounded-md tracking-wider">
+                          SÍ
+                        </span>
+                      </td>
                       <td className="py-3.5 px-4 text-right">${Number(item.unitPrice).toFixed(2)}</td>
                       <td className="py-3.5 px-4 text-right font-black text-cyan-300">${lineTotal.toFixed(2)}</td>
                     </tr>
@@ -271,15 +328,33 @@ export default function QuotePublicViewer({ quote, items }: PublicQuoteViewerPro
             </table>
           </div>
 
-          {/* Financial Summary */}
-          <div className="bg-slate-950 p-6 border-t border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
-            <div className="space-y-1.5 text-xs text-slate-400 font-mono">
-              <p className="flex items-center gap-2"><CheckCircle2 size={13} className="text-emerald-400"/> Garantía oficial de 1 año con soporte técnico</p>
-              <p className="flex items-center gap-2"><CheckCircle2 size={13} className="text-emerald-400"/> Precios en Dólares Americanos (USD)</p>
-              <p className="flex items-center gap-2"><CheckCircle2 size={13} className="text-emerald-400"/> Envíos seguros y despachos a todo el Ecuador</p>
+          {/* Financial Summary & Commercial Terms */}
+          <div className="bg-slate-950 p-6 border-t border-slate-800 flex flex-col lg:flex-row justify-between items-start gap-6">
+            <div className="space-y-2 text-xs text-slate-300 font-mono flex-1">
+              <p className="text-[11px] font-bold text-cyan-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <ShieldCheck size={14} /> Condiciones Comerciales & Cláusula de Garantía
+              </p>
+              <div className="space-y-2">
+                <p className="flex items-start gap-2">
+                  <CheckCircle2 size={13} className="text-emerald-400 shrink-0 mt-0.5"/> 
+                  <span><strong>Forma de Pago:</strong> Anticipo del 70% para confirmación y saldo restante a acordar con el cliente contra entrega o instalación.</span>
+                </p>
+                <p className="flex items-start gap-2">
+                  <CheckCircle2 size={13} className="text-emerald-400 shrink-0 mt-0.5"/> 
+                  <span><strong>Garantía & Respaldo Oficial:</strong> Como distribuidores autorizados, brindamos garantía con respaldo directo de cada marca y fabricante, sumado a garantía técnica sobre mano de obra, inducción/capacitación al cliente y resolución ágil de problemas técnicos.</span>
+                </p>
+                <p className="flex items-start gap-2">
+                  <CheckCircle2 size={13} className="text-emerald-400 shrink-0 mt-0.5"/> 
+                  <span><strong>Envíos Disponibles:</strong> Entregas directas inmediatas para Quito y despachos diarios asegurados a todas las ciudades y provincias del país.</span>
+                </p>
+                <p className="flex items-start gap-2">
+                  <CheckCircle2 size={13} className="text-emerald-400 shrink-0 mt-0.5"/> 
+                  <span><strong>Moneda:</strong> Valores expresados en Dólares de los Estados Unidos de América (USD).</span>
+                </p>
+              </div>
             </div>
 
-            <div className="w-full sm:w-64 space-y-2 text-xs font-mono">
+            <div className="w-full lg:w-72 space-y-2 text-xs font-mono bg-slate-900/60 p-4 rounded-2xl border border-slate-800 shrink-0">
               <div className="flex justify-between text-slate-400">
                 <span>Subtotal:</span>
                 <span>${Number(quote.subtotal || quote.total).toFixed(2)}</span>
@@ -306,6 +381,24 @@ export default function QuotePublicViewer({ quote, items }: PublicQuoteViewerPro
           </div>
         </div>
 
+        {/* Dual Signatures Responsivas */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl text-center space-y-1.5">
+            <div className="w-28 h-0.5 bg-slate-700 mx-auto mb-2.5" />
+            <p className="text-sm font-black text-white uppercase tracking-wider">Santiago Guzmán</p>
+            <p className="text-xs font-mono text-cyan-400 font-bold">Gerente General · Dirección Ejecutiva</p>
+            <p className="text-[11px] font-mono text-slate-400">ATOMIC SOLUTIONS · RUC: 1709540478001</p>
+            <p className="text-[10px] font-mono text-slate-500">Sector El Labrador (Av. Amazonas) · Quito, Ecuador</p>
+          </div>
+          <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl text-center space-y-1.5">
+            <div className="w-28 h-0.5 bg-slate-700 mx-auto mb-2.5" />
+            <p className="text-sm font-black text-white uppercase tracking-wider">{quote.advisorName || "Juan Pablo Guzmán"}</p>
+            <p className="text-xs font-mono text-indigo-400 font-bold">Asesor Técnico Comercial / Proyectos</p>
+            <p className="text-[11px] font-mono text-slate-400">Departamento Técnico Comercial</p>
+            <p className="text-[10px] font-mono text-slate-500">Telf: 0999047979 / 0969043453</p>
+          </div>
+        </div>
+
         {/* Share & Notice Box */}
         <div className="bg-slate-900/60 border border-slate-800 p-6 rounded-3xl text-center space-y-3">
           <p className="text-xs font-mono text-slate-300">
@@ -328,7 +421,7 @@ export default function QuotePublicViewer({ quote, items }: PublicQuoteViewerPro
             </a>
           </div>
           <p className="text-[10px] text-slate-500 font-mono">
-            Documento emitido electrónicamente por ATOMIC Ecuador · www.atomiccotizador.shop
+            Documento emitido electrónicamente por ATOMIC SOLUTIONS · RUC: 1709540478001 · Sector El Labrador, Quito, Ecuador · www.atomiccotizador.shop
           </p>
         </div>
 

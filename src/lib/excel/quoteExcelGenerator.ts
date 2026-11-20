@@ -281,6 +281,9 @@ export function generateQuoteExcelBuffer(data: QuoteExcelData): Buffer {
     sstXml = sstXml.replace(/PROP-09-71/g, normQuoteNumber);
     sstXml = sstXml.replace(/Anthony Ávila/g, advisor);
     sstXml = sstXml.replace(/ANTHONY ÁVILA/g, advisor);
+    sstXml = sstXml.replace(/Ven\. Juan Pablo Morales/g, "Santiago Guzmán / Juan Pablo Guzmán");
+    sstXml = sstXml.replace(/70 % anticipo por acordar, 50 %   contra entrega\./g, "70% anticipo y restante a acordar contra entrega.");
+    sstXml = sstXml.replace(/GARANTIA Y SOPORTE POR 1 AÑO/g, "GARANTÍA DE FABRICANTE, MANO DE OBRA Y SOPORTE");
     unzipped[sstKey] = new Uint8Array(Buffer.from(sstXml, "utf-8"));
   }
 
