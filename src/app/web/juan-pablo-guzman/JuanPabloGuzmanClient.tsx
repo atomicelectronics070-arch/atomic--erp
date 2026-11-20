@@ -8,6 +8,7 @@ import {
   CheckCircle2, Share2, BookOpen, Users, TrendingUp, ShieldAlert, 
   Flame, Award, Eye, Clock, MessageSquare, ChevronRight, User, ExternalLink
 } from "lucide-react"
+import PermanentSocialBar from "@/components/PermanentSocialBar"
 
 // Las 48 Leyes del Poder canónicas de Robert Greene
 const LAWS_OF_POWER = [
@@ -466,6 +467,11 @@ export default function JuanPabloGuzmanClient() {
         </div>
 
       </section>
+
+      {/* ── REDES SOCIALES OFICIALES PERMANENTES ── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 my-10">
+        <PermanentSocialBar variant="profileCard" />
+      </div>
 
       {/* ── FOOTER & CROSS LINK TO SANTIAGO GUZMÁN ── */}
       <footer className="mt-20 border-t border-stone-800 bg-[#04060c] py-12 px-4 text-center text-xs text-stone-500 font-mono">

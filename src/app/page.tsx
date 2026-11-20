@@ -7,6 +7,7 @@ import Globe from "@/components/originkit/ui/globe";
 import OrbitControls from "@/components/originkit/ui/orbit-controls";
 import { LogIn, ShoppingBag, ArrowRight, MessageCircle, Globe as GlobeIcon, Briefcase } from "lucide-react";
 import Link from "next/link";
+import PermanentSocialBar from "@/components/PermanentSocialBar";
 
 const METRICS = [
   { value: "100%", label: "Cobertura a Nivel Nacional" },
@@ -149,6 +150,11 @@ export default function Presence01() {
             </li>
           ))}
         </ul>
+
+        {/* ═══════════ REDES SOCIALES OFICIALES ATOMIC (PERMANENTE EN HOME) ═══════════ */}
+        <div className="w-full mt-14">
+          <PermanentSocialBar variant="inline" />
+        </div>
 
       </section>
 

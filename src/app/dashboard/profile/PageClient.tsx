@@ -11,6 +11,7 @@ import {
     ChevronRight, LogOut, Key, Map, Search, DollarSign, Package,
     Palette, Check, Zap, Eye, RefreshCw, Sun, Moon, Shield
 } from "lucide-react"
+import PermanentSocialBar from "@/components/PermanentSocialBar"
 
 interface ThemeOption {
     id: string
@@ -742,6 +743,9 @@ export default function ProfilePage() {
                     </div>
                 </div>
             )}
+
+            {/* ═══════════ REDES SOCIALES OFICIALES ATOMIC (PERMANENTE EN PERFIL) ═══════════ */}
+            <PermanentSocialBar variant="profileCard" className="mt-8" />
 
         </div>
     )
