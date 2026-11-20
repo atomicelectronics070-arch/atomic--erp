@@ -82,6 +82,32 @@ export async function POST(req: Request) {
             }
         }
 
+        // Process proofUrl & multi-attachment metadata
+        let proofUrlToStore = body.proofUrl || null
+        if (body.attachments || body.exercise || body.costCenter || body.paymentMethod || body.metadata) {
+            const rawMeta = body.metadata || body
+            const meta = {
+                attachments: Array.isArray(rawMeta.attachments) ? rawMeta.attachments : (body.proofUrl ? [{
+                    id: "att-1",
+                    name: "Comprobante Principal",
+                    size: "Adjunto",
+                    type: "image",
+                    dataUrl: body.proofUrl,
+                    uploadedAt: new Date().toISOString()
+                }] : []),
+                exercise: rawMeta.exercise || "2026",
+                period: rawMeta.period || "Q4",
+                costCenter: rawMeta.costCenter || "Operaciones",
+                paymentMethod: rawMeta.paymentMethod || "Transferencia Bancaria",
+                bankReference: rawMeta.bankReference || "",
+                paymentTarget: rawMeta.paymentTarget || "",
+                isPaymentAssigned: Boolean(rawMeta.isPaymentAssigned),
+                paymentAssignmentType: rawMeta.paymentAssignmentType || "PROVEEDOR",
+                taxDetails: rawMeta.taxDetails || null
+            }
+            proofUrlToStore = JSON.stringify(meta)
+        }
+
         const transaction = await prisma.transaction.create({
             data: {
                 trxId,
@@ -96,7 +122,7 @@ export async function POST(req: Request) {
                 status,
                 type: body.type || "Venta Directa",
                 date: trxDate,
-                proofUrl: body.proofUrl || null,
+                proofUrl: proofUrlToStore,
                 salespersonId
             }
         })

@@ -20,11 +20,36 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
         if (!oldTrx) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
+        let proofUrlToStore = body.proofUrl !== undefined ? body.proofUrl : oldTrx.proofUrl
+        if (body.attachments || body.exercise || body.costCenter || body.paymentMethod || body.metadata) {
+            const rawMeta = body.metadata || body
+            const meta = {
+                attachments: Array.isArray(rawMeta.attachments) ? rawMeta.attachments : (body.proofUrl ? [{
+                    id: "att-1",
+                    name: "Comprobante Principal",
+                    size: "Adjunto",
+                    type: "image",
+                    dataUrl: body.proofUrl,
+                    uploadedAt: new Date().toISOString()
+                }] : []),
+                exercise: rawMeta.exercise || "2026",
+                period: rawMeta.period || "Q4",
+                costCenter: rawMeta.costCenter || "Operaciones",
+                paymentMethod: rawMeta.paymentMethod || "Transferencia Bancaria",
+                bankReference: rawMeta.bankReference || "",
+                paymentTarget: rawMeta.paymentTarget || "",
+                isPaymentAssigned: Boolean(rawMeta.isPaymentAssigned),
+                paymentAssignmentType: rawMeta.paymentAssignmentType || "PROVEEDOR",
+                taxDetails: rawMeta.taxDetails || null
+            }
+            proofUrlToStore = JSON.stringify(meta)
+        }
+
         const data: any = {
             client: body.client || oldTrx.client,
             type: body.type || oldTrx.type,
             date: body.date ? new Date(body.date) : oldTrx.date,
-            proofUrl: body.proofUrl !== undefined ? body.proofUrl : oldTrx.proofUrl,
+            proofUrl: proofUrlToStore,
             quoteNumber: body.quoteNumber !== undefined ? body.quoteNumber : oldTrx.quoteNumber,
         }
 
