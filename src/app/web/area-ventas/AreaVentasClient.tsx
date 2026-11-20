@@ -51,22 +51,23 @@ const CHAPTERS_DATA: Chapter[] = [
   },
   {
     id: 2,
-    title: "Técnicas de Publicación en Marketplace & Redes (Algoritmo y Captación)",
-    subtitle: "Estructura de copy persuasivo, elección de palabras clave y tácticas anti-baneo.",
+    title: "Técnicas de Retargeting y Cierre con Clientes de la Temporada",
+    subtitle: "Reactivación de prospectos previos, ofertas de temporada alta y cierre con base de datos existente.",
     unlocked: false,
     duration: "Próximamente",
-    date: "En Grabación",
-    instructor: "Equipo Comercial ATOMIC",
+    date: "Próximo Módulo",
+    instructor: "Juan Pablo Guzmán (Supervisor de Ventas)",
     summary: [
-      "Configuración de publicaciones con alta tasa de respuesta en Facebook Marketplace y grupos locales.",
-      "Cómo seleccionar títulos y fotografías para evitar advertencias de algoritmo.",
-      "Captura de pantalla obligatoria y reporte diario al grupo de supervisión."
+      "Filtrado estratégico de la base de datos de clientes y cotizaciones anteriores para identificar prospectos no cerrados.",
+      "Estructura del mensaje de reenganche por WhatsApp: ofertas especiales de temporada, promociones por fin de año y sentido de urgencia.",
+      "Llamadas de reactivación técnica supervisadas: cómo verificar necesidades acumuladas sin sonar insistente.",
+      "Aprovechamiento de presupuestos de cierre de año y aguinaldos para compras corporativas e individuales de seguridad y tecnología."
     ],
     keyTakeaways: [
-      "El título y la imagen definen el 80% del click en Marketplace.",
-      "Publicar todos los días en la misma franja horaria alimenta el algoritmo de tracción."
+      "Un cliente que ya consultó antes tiene una probabilidad de cierre 5 veces mayor durante la temporada alta.",
+      "El retargeting disciplinado sobre la base acumulada convierte contactos fríos en ventas inmediatas sin costo publicitario."
     ],
-    tags: ["Marketplace", "Copywriting", "Generación de Leads"]
+    tags: ["Retargeting", "Clientes de Temporada", "Cierre Comercial", "Reactivación"]
   },
   {
     id: 3,
