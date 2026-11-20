@@ -217,7 +217,25 @@ export async function POST(req: Request) {
                 lowerMsg.includes("alfred") ||
                 lowerMsg.includes("deuda") ||
                 lowerMsg.includes("atraso") ||
-                lowerMsg.includes("pago")
+                lowerMsg.includes("pago") ||
+                lowerMsg.includes("manta") ||
+                lowerMsg.includes("foto") ||
+                lowerMsg.includes("fotos") ||
+                lowerMsg.includes("video") ||
+                lowerMsg.includes("stefy") ||
+                lowerMsg.includes("credencial") ||
+                lowerMsg.includes("contrase") ||
+                lowerMsg.includes("clave") ||
+                lowerMsg.includes("usuario") ||
+                lowerMsg.includes("antena") ||
+                lowerMsg.includes("giovanni") ||
+                lowerMsg.includes("martha") ||
+                lowerMsg.includes("yosvel") ||
+                lowerMsg.includes("ramiro") ||
+                lowerMsg.includes("proveedor") ||
+                lowerMsg.includes("tecnomega") ||
+                lowerMsg.includes("tecnoglobal") ||
+                lowerMsg.includes("mayorista")
 
             if (isAlfredSkill) {
                 const alfredReply = await processAlfredSupervisorMessage(message)
@@ -232,10 +250,12 @@ export async function POST(req: Request) {
                     text: alfredReply,
                     reply: alfredReply,
                     suggestions: [
+                        "Proyecto Manta (Mis fotos)",
+                        "Stefy & Credenciales Soft 3",
                         "Hoy en Soft 3, ventas y Karen",
                         "Contactos globales WhatsApp",
-                        "Estado de Soft 3 (Rómulo)",
-                        "Auditoría y control de Karen IA"
+                        "Técnicos & Antenas (Giovanni / Martha)",
+                        "Proveedores (TecnoMega / TecnoGlobal)"
                     ],
                     botName: "Alfred",
                     isAlfred: true,

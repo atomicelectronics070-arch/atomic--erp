@@ -260,8 +260,15 @@ export default function PersonalBotBubble() {
     const alfredWelcomeMessage: BotMessage = {
         id: "welcome-alfred",
         role: "assistant",
-        content: `👑 **Alfred a tu servicio, Juan.**\n\nOpero como tu copiloto ejecutivo de alto nivel, con visibilidad completa sobre **Karen IA**, **WhatsApp CRM**, **Finanzas**, las metas del equipo y el estado crítico de **Soft 3 (Sr. Rómulo)** y **Domum Construcciones** ($4,229).\n\n📌 **Skills ejecutivas activas:**\n• *\"Hoy\"* o *\"Briefing\"*: Resumen diario de operaciones, ventas y Karen.\n• *\"Contactos globales\"*: Lista completa sin filtros de todos los contactos del CRM.\n• *\"Soft 3\"* o *\"Rómulo\"*: Estado de la deuda (43+ días en mora), entregas y ciclo de cobro.\n• *\"Karen\"*: Supervisión en vivo y estado del bot de WhatsApp.\n• *\"Domum\"*: Detalle del proyecto de barreras de $4,229.\n\n¿Qué orden ejecutiva tienes para hoy?`,
-        suggestions: ["Hoy / Briefing del día", "Contactos globales", "Estado Soft 3 (Rómulo)", "Supervisar Karen IA", "Domum Construcciones ($4,229)"]
+        content: `👑 **Alfred a tu servicio, Juan.**\n\nOpero como tu copiloto ejecutivo de alto nivel, con visibilidad completa sobre **Karen IA**, **WhatsApp CRM**, **Finanzas**, **Proyecto Manta** (84 archivos multimedia personales), los chats con **Stefy**, **Giovanni**, **Martha**, **TecnoMega**, **TecnoGlobal**, y el estado crítico de **Soft 3 (Sr. Rómulo)** y **Domum Construcciones** ($4,229).\n\n📌 **Skills ejecutivas nucleares:**\n• *\"Proyecto Manta\"* o *\"Mis fotos\"*: Entrega y catálogo de fotos y videos personales.\n• *\"Stefy\"* o *\"Credenciales\"*: Cuentas maestras Atomic, redes de Rómulo y contrato de Stefy.\n• *\"Hoy\"* o *\"Briefing\"*: Resumen diario consolidado de operaciones, ventas y Karen.\n• *\"Contactos globales\"*: Lista sin filtros de todos los contactos del CRM y chats recientes.\n• *\"Soft 3\"* o *\"Rómulo\"*: Estado de la deuda (43+ días en mora), entregas y ciclo de cobro.\n• *\"Antenas\"*: Seguimiento a Giovanni (técnico) y Sra. Martha (cliente urgente).\n• *\"Proveedores\"*: Precios y pedidos con TecnoMega y TecnoGlobal.\n\n¿Qué orden ejecutiva tienes para hoy?`,
+        suggestions: [
+            "Proyecto Manta (Mis fotos)",
+            "Stefy & Credenciales Soft 3",
+            "Hoy / Briefing del día",
+            "Contactos globales",
+            "Estado Soft 3 (Rómulo)",
+            "Supervisar Karen IA"
+        ]
     }
 
     // Load memory on mount
