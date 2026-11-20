@@ -101,11 +101,11 @@ export const ALFRED_SUPERVISOR_CONTEXT: AlfredContext = {
     keyDeals: [
         {
             name: "DOMUM CONSTRUCCIONES (DOMUN-CONS CIA.LTDA)",
-            type: "Implementación Sistema Asistencia Vehicular",
+            type: "Implementación Sistema Asistencia Vehicular Dítec",
             amount: 4229.00,
             date: "26/10/2026",
-            status: "Registrado en Finanzas para Aprobación Técnica",
-            details: "Cotización TMIT-00056: 2 Barreras vehiculares Dítec 3m ($3,300), fotoceldas anticierre ($165), tótems de soporte ($600), puntos de trabajo Costa ($788), breaker, materiales y red."
+            status: "ABONADO 60% ($2,537.40 cobrados) | Saldo 40% ($1,691.60 por cobrar)",
+            details: "Cotización TMIT-00056: 2 Barreras vehiculares Dítec 3m ($3,300), fotoceldas anticierre ($165), tótems de soporte ($600), puntos de trabajo Costa ($788), breaker, materiales y red. Registrado en Finanzas como TRX-015 con abono de cliente del 60%."
         }
     ],
     contacts: [
@@ -604,11 +604,13 @@ export async function processAlfredSupervisorMessage(message: string): Promise<s
         const deal = ALFRED_SUPERVISOR_CONTEXT.keyDeals[0];
         return `👑 **ALFRED — Proyecto DOMUM CONSTRUCCIONES**\n\n` +
             `🏗️ **Cliente:** ${deal.name}\n` +
-            `💰 **PVP Total:** **$${deal.amount.toLocaleString()} USD** | Fecha: ${deal.date}\n` +
+            `💰 **PVP Total Factura:** **$${deal.amount.toLocaleString()} USD** (Cotización \`TMIT-00056\`)\n` +
+            `💵 **Abono 60% del Cliente:** 🟢 **$2,537.40 USD** (Registrado y cobrado en Finanzas \`TRX-015\`)\n` +
+            `⏳ **Saldo 40% Pendiente:** 🟠 **$1,691.60 USD** (En Cartera por liquidar contra instalación)\n` +
             `📋 **Objeto:** ${deal.type}\n` +
             `📦 **Equipos y Alcance:** ${deal.details}\n` +
-            `📌 **Estado Actual:** ${deal.status}\n\n` +
-            `¿Deseas emitir la orden de instalación o coordinar con Yosvel Zamora los anclajes y tótems de soporte?`;
+            `📄 **Comprobante:** [Ver PDF Cotización TMIT-00056](/DOMUM%20CONSTRUCCIONES-00056.pdf)\n\n` +
+            `¿Deseas registrar un nuevo abono o coordinar con Yosvel Zamora los anclajes y tótems de soporte?`;
     }
 
     // Default: Asistente Ejecutivo Esmeralda de Juan

@@ -444,7 +444,7 @@ export default function FinanceManager() {
     const egresosTotales = egresos.reduce((a, c) => a + c.amount, 0)
     const margenBruto = ventas.reduce((a, c) => a + c.profit, 0)
     const comisionesPagadas = ventas.filter(i => i.commissionStatus === "PAGADO").reduce((a, c) => a + c.commission, 0)
-    const comisionesPendientes = ventas.filter(i => i.commissionStatus === "PENDIENTE" && c.commission > 0).reduce((a, c) => a + c.commission, 0)
+    const comisionesPendientes = ventas.filter(i => i.commissionStatus === "PENDIENTE" && i.commission > 0).reduce((a, c) => a + c.commission, 0)
     
     const flujoCajaNeto = (ingresosCobrados + ingresosAbonados) - egresosTotales - comisionesPagadas
     const margenOperativoPct = ingresosTotales > 0 ? ((margenBruto / ingresosTotales) * 100).toFixed(1) : "0.0"
