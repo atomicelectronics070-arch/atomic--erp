@@ -2057,6 +2057,33 @@ export default function PublicWebClient({
               <span className="text-[10px] bg-yellow-400 text-stone-950 px-2 py-0.5 rounded-full font-mono font-black">DESDE $260</span>
             </Link>
 
+            {/* NEW CATEGORY PILL: BARRERAS DÍTEC & CONTROL ACCESO */}
+            <Link
+              href="/web/barreras-ditec"
+              className="px-5 py-3 rounded-full bg-[#160d29] border-2 border-violet-500 hover:border-violet-400 text-xs font-bold text-violet-200 transition-all flex items-center gap-2 shadow-md group"
+            >
+              <span className="font-heading uppercase tracking-wider text-[11px] text-violet-300 font-black">🚧 BARRERAS DÍTEC 6M</span>
+              <span className="text-[10px] bg-violet-400 text-stone-950 px-2 py-0.5 rounded-full font-mono font-black">SERIE 2027</span>
+            </Link>
+
+            {/* NEW CATEGORY PILL: TABLETS SAMSUNG GALAXY */}
+            <Link
+              href="/web/phones"
+              className="px-5 py-3 rounded-full bg-[#081b2a] border-2 border-sky-500 hover:border-sky-400 text-xs font-bold text-sky-200 transition-all flex items-center gap-2 shadow-md group"
+            >
+              <span className="font-heading uppercase tracking-wider text-[11px] text-sky-300 font-black">📱 TABLETS SAMSUNG GALAXY</span>
+              <span className="text-[10px] bg-sky-400 text-stone-950 px-2 py-0.5 rounded-full font-mono font-black">TAB A11+ / S10</span>
+            </Link>
+
+            {/* NEW CATEGORY PILL: CÁMARAS ESPÍA & CCTV IA */}
+            <Link
+              href="/web/camaras-espia"
+              className="px-5 py-3 rounded-full bg-[#1a1205] border-2 border-amber-500 hover:border-amber-400 text-xs font-bold text-amber-200 transition-all flex items-center gap-2 shadow-md group"
+            >
+              <span className="font-heading uppercase tracking-wider text-[11px] text-amber-300 font-black">🕶️ CÁMARAS ESPÍA DISCRETAS</span>
+              <span className="text-[10px] bg-amber-400 text-stone-950 px-2 py-0.5 rounded-full font-mono font-black">FULL HD</span>
+            </Link>
+
             {/* NEW CATEGORY PILL: ANKER SOLIX C300 GENERADOR */}
             <Link
               href="/web/anker-solix"
