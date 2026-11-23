@@ -825,148 +825,6 @@ export default function PublicWebClient({
             {/* LÍNEA DIVISORIA VERTICAL 2 */}
             <div className="h-5 w-[1px] bg-slate-300 shrink-0" />
 
-            {/* ─── PESTAÑA DESTACADA: ATOMIC STUDIO & CONTENIDO ─── */}
-            <Link
-              href="/web/creacion-contenido"
-              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:brightness-110 text-white shadow-sm flex items-center gap-1.5 border border-pink-400/40"
-              title="ATOMIC Studio: Creación de Contenido & Redes Sociales"
-            >
-              <span>🎬 STUDIO CONTENIDO</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-yellow-300 animate-ping" />
-            </Link>
-
-            {/* ─── PESTAÑA DESTACADA: CARROS INDUSTRIALES BP ─── */}
-            <Link
-              href="/web/carros-industriales"
-              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-slate-900 hover:bg-black text-yellow-400 border border-yellow-500/40 shadow-sm flex items-center gap-1.5"
-              title="Línea Industrial Banco del Perno"
-            >
-              <span>🚚 CARROS INDUSTRIALES</span>
-            </Link>
-
-            {/* ─── PESTAÑA DESTACADA: PANELES RANURADOS WPC ─── */}
-            <Link
-              href="/web/paneles-ranurados"
-              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-gradient-to-r from-stone-900 to-amber-950 hover:brightness-110 text-amber-300 border border-amber-500/50 shadow-sm flex items-center gap-1.5"
-              title="Paneles Ranurados WPC & Remodelaciones ($9.09)"
-            >
-              <span>🪵 PANELES RANURADOS ($9.09)</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-            </Link>
-
-            {/* ─── PESTAÑA DESTACADA: 1HORA POWERBANKS MULTITECNOLOGÍA ─── */}
-            <Link
-              href="/web/1hora"
-              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-gradient-to-r from-[#061826] to-[#0c2438] hover:brightness-110 text-cyan-300 border border-cyan-500/50 shadow-sm flex items-center gap-1.5"
-              title="1Hora Bancos de Carga 20000 mAh & MagSafe 15W ($27.10)"
-            >
-              <span>⚡ 1HORA POWERBANKS ($27.10)</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
-            </Link>
-
-            {/* ─── PESTAÑA DESTACADA: ATOMIC GAMING CONSOLAS ─── */}
-            <Link
-              href="/web/gaming"
-              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-gradient-to-r from-[#002266] to-[#003791] hover:brightness-110 text-white border border-blue-400/50 shadow-sm flex items-center gap-1.5"
-              title="ATOMIC Gaming • Consolas Certificadas con 2 Años de Garantía ($260)"
-            >
-              <span>🎮 ATOMIC GAMING ($260)</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
-            </Link>
-
-            {/* ─── PESTAÑA DESTACADA: ANKER SOLIX GENERADOR ELÉCTRICO ─── */}
-            <Link
-              href="/web/anker-solix"
-              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-gradient-to-r from-emerald-950 via-teal-900 to-slate-900 hover:brightness-110 text-emerald-300 border border-emerald-500/50 shadow-sm flex items-center gap-1.5"
-              title="Generador Eléctrico Anker SOLIX C300 • LiFePO4 ($380)"
-            >
-              <span>🔋 ANKER SOLIX C300 ($380)</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            </Link>
-
-            {/* ─── PESTAÑA DESTACADA: CERRADURAS INTELIGENTES FIN DE AÑO ─── */}
-            <Link
-              href="/web/cerraduras-oferta"
-              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-gradient-to-r from-red-950 via-rose-900 to-amber-950 hover:brightness-110 text-rose-300 border border-rose-500/50 shadow-sm flex items-center gap-1.5"
-              title="Cerraduras Inteligentes Oferta Fin de Año • Entrega Inmediata (Desde $89.80)"
-            >
-              <span>🔒 CERRADURAS SMART ($89.80)</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-ping" />
-            </Link>
-
-            {/* ─── PESTAÑA DESTACADA: DISCOS DUROS ADATA HD710 ─── */}
-            <Link
-              href="/web/adata-hd710"
-              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-stone-900 hover:bg-stone-800 text-yellow-400 border border-yellow-500/50 shadow-sm flex items-center gap-1.5"
-              title="Discos Duros ADATA HD710 AntiShock & IP68 • 1TB ($148.12) y 2TB ($178.80)"
-            >
-              <span>💾 ADATA HD710 ($148.12)</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
-            </Link>
-
-            {/* ─── PESTAÑA DESTACADA: MONITORES GAMING & PRO ─── */}
-            <Link
-              href="/web/monitores"
-              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-gradient-to-r from-blue-950 via-indigo-900 to-slate-900 hover:brightness-110 text-cyan-300 border border-cyan-500/50 shadow-sm flex items-center gap-1.5"
-              title="Monitores Gaming & Pro 120Hz/144Hz IPS • ASUS, LG, Gigabyte, Dell"
-            >
-              <span>🖥️ MONITORES 144Hz/IPS</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-            </Link>
-
-            {/* ─── PESTAÑA DESTACADA: JUAN PABLO GUZMÁN (48 LEYES DEL PODER) ─── */}
-            <Link
-              href="/web/juan-pablo-guzman"
-              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-gradient-to-r from-purple-950 via-slate-900 to-amber-950 hover:brightness-110 text-amber-300 border border-amber-500/50 shadow-sm flex items-center gap-1.5"
-              title="Juan Pablo Guzmán • Las 48 Leyes del Poder & Crecimiento Viral"
-            >
-              <span>👑 JUAN PABLO GUZMÁN</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-            </Link>
-
-            {/* ─── PESTAÑA DESTACADA: SANTIAGO GUZMÁN (CEO) ─── */}
-            <Link
-              href="/web/santiago-guzman"
-              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 hover:brightness-110 text-blue-300 border border-blue-500/50 shadow-sm flex items-center gap-1.5"
-              title="Santiago Guzmán • Fundador & CEO ATOMIC Ecuador"
-            >
-              <span>⚡ SANTIAGO GUZMÁN</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-            </Link>
-
-            {/* ─── PESTAÑA DESTACADA: SOFTWARE & SISTEMAS ERP 2027 ─── */}
-            <Link
-              href="/web/software"
-              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-gradient-to-r from-emerald-950 via-teal-900 to-slate-900 hover:brightness-110 text-emerald-300 border border-emerald-500/50 shadow-sm flex items-center gap-1.5"
-              title="Desarrollo de Software, Sistemas ERP & IA 2027 • Demos en Vivo"
-            >
-              <span>💻 SOFTWARE & ERP 2027</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            </Link>
-
-            {/* ─── PESTAÑA DESTACADA: PROYECTOS & INFRAESTRUCTURA ─── */}
-            <Link
-              href="/web/proyectos"
-              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-gradient-to-r from-purple-950 via-indigo-900 to-slate-900 hover:brightness-110 text-purple-300 border border-purple-500/50 shadow-sm flex items-center gap-1.5"
-              title="Proyectos de Seguridad, Edificios e Infraestructura Residencial • Asesoría Técnica"
-            >
-              <span>🏗️ PROYECTOS & SEGURIDAD</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
-            </Link>
-
-            {/* ─── PESTAÑA DESTACADA: ÁREA DE VENTAS & CAPACITACIONES ─── */}
-            <Link
-              href="/web/area-ventas"
-              className="shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wider font-heading transition-all duration-200 whitespace-nowrap bg-gradient-to-r from-amber-950 via-yellow-900 to-slate-900 hover:brightness-110 text-yellow-300 border border-yellow-500/50 shadow-sm flex items-center gap-1.5"
-              title="Área de Ventas • Academia Comercial ATOMIC • Capítulos Oficiales"
-            >
-              <span>🎓 ÁREA DE VENTAS</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
-            </Link>
-
-            {/* LÍNEA DIVISORIA VERTICAL 3 */}
-            <div className="h-5 w-[1px] bg-slate-300 shrink-0" />
-
             {/* ─── SECCIÓN 3: CONFIANZA, EMPRESA & SOPORTE ─── */}
             <div className="flex items-center gap-1 bg-slate-100 hover:bg-slate-200/70 p-1 rounded-full border border-slate-200/80 backdrop-blur-md shrink-0 shadow-inner transition-colors">
               {[
@@ -991,6 +849,16 @@ export default function PublicWebClient({
 
           {/* RIGHT: WHATSAPP, LOGIN & USER */}
           <div className="flex items-center gap-2 shrink-0">
+            {/* PORTAL VENDEDORES & LISTA DE PRECIOS */}
+            <Link
+              href="/web/precios-vendedor"
+              className="px-3 py-1.5 rounded-full border border-orange-500/40 hover:border-orange-600 bg-orange-50 hover:bg-orange-100 text-orange-800 hover:text-orange-950 font-bold font-heading uppercase tracking-wider text-[10px] sm:text-[11px] shadow-sm transition-all flex items-center gap-1.5"
+              title="Portal de Vendedores & Lista de Precios"
+            >
+              <span className="text-orange-600">⚡</span>
+              <span>PRECIOS VENDEDOR</span>
+            </Link>
+
             {/* WHATSAPP CON CONTORNO ELEGANTE */}
             <a
               href="https://wa.me/593969043453?text=Hola%20ATOMIC!%20Deseo%20informaci%C3%B3n%20sobre%20sus%20productos."
@@ -1156,6 +1024,24 @@ export default function PublicWebClient({
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                   </div>
                   <div className="w-0.5 h-5 bg-gradient-to-b from-blue-500/60 to-blue-500/20 my-1" />
+                </div>
+
+                {/* Quick Link to Portal de Vendedores */}
+                <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50 border border-orange-300 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">⚡</span>
+                    <div>
+                      <h4 className="text-sm font-black text-slate-900 uppercase">Portal de Vendedores & Lista de Precios PVP</h4>
+                      <p className="text-xs text-slate-600">Accede a las políticas de entrega, cuentas bancarias, descuentos y 100 mensajes sugeridos.</p>
+                    </div>
+                  </div>
+                  <Link
+                    href="/web/precios-vendedor"
+                    onClick={() => setIsMegaMenuOpen(false)}
+                    className="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs shrink-0 transition-all shadow-md shadow-orange-600/20"
+                  >
+                    Entrar al Portal Vendedores →
+                  </Link>
                 </div>
 
                 {/* Conceptual Map Grid with Interconnected Tree Lines */}
@@ -2012,113 +1898,6 @@ export default function PublicWebClient({
 
           {/* QUICK CATEGORY HUB BUTTONS */}
           <div className="flex flex-wrap items-center justify-center gap-3 max-w-4xl mx-auto mb-16">
-            {/* NEW CATEGORY PILL: ATOMIC STUDIO */}
-            <Link
-              href="/web/creacion-contenido"
-              className="px-5 py-3 rounded-full bg-gradient-to-r from-purple-50 via-pink-50 to-indigo-50 border-2 border-purple-400 hover:border-pink-500 text-xs font-bold text-slate-800 transition-all flex items-center gap-2 shadow-sm group"
-            >
-              <span className="font-heading uppercase tracking-wider text-[11px] text-purple-950 font-black">🎬 ATOMIC STUDIO (CONTENIDO)</span>
-              <span className="text-[10px] bg-gradient-to-r from-pink-600 to-purple-600 text-white px-2 py-0.5 rounded-full font-mono font-bold">TICKETS $100</span>
-            </Link>
-
-            {/* NEW CATEGORY PILL: CARROS INDUSTRIALES BP */}
-            <Link
-              href="/web/carros-industriales"
-              className="px-5 py-3 rounded-full bg-slate-900 border-2 border-yellow-400 hover:border-yellow-300 text-xs font-bold text-yellow-400 transition-all flex items-center gap-2 shadow-md group"
-            >
-              <span className="font-heading uppercase tracking-wider text-[11px] text-yellow-400 font-black">🚚 CARROS INDUSTRIALES BP</span>
-              <span className="text-[10px] bg-yellow-400 text-black px-2 py-0.5 rounded-full font-mono font-black">CARGA 200KG</span>
-            </Link>
-
-            {/* NEW CATEGORY PILL: PANELES RANURADOS WPC */}
-            <Link
-              href="/web/paneles-ranurados"
-              className="px-5 py-3 rounded-full bg-stone-950 border-2 border-amber-500/80 hover:border-amber-400 text-xs font-bold text-amber-200 transition-all flex items-center gap-2 shadow-md group"
-            >
-              <span className="font-heading uppercase tracking-wider text-[11px] text-amber-300 font-black">🪵 PANELES RANURADOS WPC</span>
-              <span className="text-[10px] bg-amber-400 text-stone-950 px-2 py-0.5 rounded-full font-mono font-black">$9.09 C/U</span>
-            </Link>
-
-            {/* NEW CATEGORY PILL: 1HORA POWERBANKS MULTITECNOLOGÍA */}
-            <Link
-              href="/web/1hora"
-              className="px-5 py-3 rounded-full bg-[#081322] border-2 border-cyan-400 hover:border-cyan-300 text-xs font-bold text-cyan-200 transition-all flex items-center gap-2 shadow-md group"
-            >
-              <span className="font-heading uppercase tracking-wider text-[11px] text-cyan-300 font-black">⚡ 1HORA BANCOS DE CARGA</span>
-              <span className="text-[10px] bg-cyan-400 text-stone-950 px-2 py-0.5 rounded-full font-mono font-black">DESDE $27.10</span>
-            </Link>
-
-            {/* NEW CATEGORY PILL: ATOMIC GAMING ECOSYSTEM */}
-            <Link
-              href="/web/gaming"
-              className="px-5 py-3 rounded-full bg-[#071329] border-2 border-blue-500 hover:border-blue-400 text-xs font-bold text-blue-200 transition-all flex items-center gap-2 shadow-md group"
-            >
-              <span className="font-heading uppercase tracking-wider text-[11px] text-blue-300 font-black">🎮 ATOMIC GAMING CONSOLAS</span>
-              <span className="text-[10px] bg-yellow-400 text-stone-950 px-2 py-0.5 rounded-full font-mono font-black">DESDE $260</span>
-            </Link>
-
-            {/* NEW CATEGORY PILL: BARRERAS DÍTEC & CONTROL ACCESO */}
-            <Link
-              href="/web/barreras-ditec"
-              className="px-5 py-3 rounded-full bg-[#160d29] border-2 border-violet-500 hover:border-violet-400 text-xs font-bold text-violet-200 transition-all flex items-center gap-2 shadow-md group"
-            >
-              <span className="font-heading uppercase tracking-wider text-[11px] text-violet-300 font-black">🚧 BARRERAS DÍTEC 6M</span>
-              <span className="text-[10px] bg-violet-400 text-stone-950 px-2 py-0.5 rounded-full font-mono font-black">SERIE 2027</span>
-            </Link>
-
-            {/* NEW CATEGORY PILL: TABLETS SAMSUNG GALAXY */}
-            <Link
-              href="/web/phones"
-              className="px-5 py-3 rounded-full bg-[#081b2a] border-2 border-sky-500 hover:border-sky-400 text-xs font-bold text-sky-200 transition-all flex items-center gap-2 shadow-md group"
-            >
-              <span className="font-heading uppercase tracking-wider text-[11px] text-sky-300 font-black">📱 TABLETS SAMSUNG GALAXY</span>
-              <span className="text-[10px] bg-sky-400 text-stone-950 px-2 py-0.5 rounded-full font-mono font-black">TAB A11+ / S10</span>
-            </Link>
-
-            {/* NEW CATEGORY PILL: CÁMARAS ESPÍA & CCTV IA */}
-            <Link
-              href="/web/camaras-espia"
-              className="px-5 py-3 rounded-full bg-[#1a1205] border-2 border-amber-500 hover:border-amber-400 text-xs font-bold text-amber-200 transition-all flex items-center gap-2 shadow-md group"
-            >
-              <span className="font-heading uppercase tracking-wider text-[11px] text-amber-300 font-black">🕶️ CÁMARAS ESPÍA DISCRETAS</span>
-              <span className="text-[10px] bg-amber-400 text-stone-950 px-2 py-0.5 rounded-full font-mono font-black">FULL HD</span>
-            </Link>
-
-            {/* NEW CATEGORY PILL: ANKER SOLIX C300 GENERADOR */}
-            <Link
-              href="/web/anker-solix"
-              className="px-5 py-3 rounded-full bg-[#0a191f] border-2 border-emerald-500 hover:border-emerald-400 text-xs font-bold text-emerald-200 transition-all flex items-center gap-2 shadow-md group"
-            >
-              <span className="font-heading uppercase tracking-wider text-[11px] text-emerald-300 font-black">🔋 GENERADOR ANKER SOLIX</span>
-              <span className="text-[10px] bg-emerald-400 text-stone-950 px-2 py-0.5 rounded-full font-mono font-black">$380 OFERTA</span>
-            </Link>
-
-            {/* NEW CATEGORY PILL: CERRADURAS INTELIGENTES OFERTA FIN DE AÑO */}
-            <Link
-              href="/web/cerraduras-oferta"
-              className="px-5 py-3 rounded-full bg-[#180a0e] border-2 border-rose-500 hover:border-rose-400 text-xs font-bold text-rose-200 transition-all flex items-center gap-2 shadow-md group"
-            >
-              <span className="font-heading uppercase tracking-wider text-[11px] text-rose-300 font-black">🔒 CERRADURAS INTELIGENTES</span>
-              <span className="text-[10px] bg-rose-500 text-white px-2 py-0.5 rounded-full font-mono font-black">DESDE $89.80</span>
-            </Link>
-
-            {/* NEW CATEGORY PILL: DISCOS DUROS ADATA HD710 */}
-            <Link
-              href="/web/adata-hd710"
-              className="px-5 py-3 rounded-full bg-stone-900 border-2 border-yellow-400 hover:border-yellow-300 text-xs font-bold text-yellow-300 transition-all flex items-center gap-2 shadow-md group"
-            >
-              <span className="font-heading uppercase tracking-wider text-[11px] text-yellow-300 font-black">💾 ADATA HD710 ANTISHOCK</span>
-              <span className="text-[10px] bg-yellow-400 text-stone-950 px-2 py-0.5 rounded-full font-mono font-black">$148.12</span>
-            </Link>
-
-            {/* NEW CATEGORY PILL: MONITORES GAMING & PRO TECNOMEGA */}
-            <Link
-              href="/web/monitores"
-              className="px-5 py-3 rounded-full bg-[#0a1128] border-2 border-cyan-400 hover:border-cyan-300 text-xs font-bold text-cyan-200 transition-all flex items-center gap-2 shadow-md group"
-            >
-              <span className="font-heading uppercase tracking-wider text-[11px] text-cyan-300 font-black">🖥️ MONITORES GAMING & PRO</span>
-              <span className="text-[10px] bg-cyan-400 text-stone-950 px-2 py-0.5 rounded-full font-mono font-black">120Hz/144Hz</span>
-            </Link>
             <Link
               href="/web/camaras-hogar"
               className="px-5 py-3 rounded-full bg-white border border-amber-400 hover:border-amber-500 hover:bg-amber-50/40 text-xs font-bold text-slate-800 transition-all flex items-center gap-2 shadow-sm group"
@@ -2294,14 +2073,7 @@ export default function PublicWebClient({
 
                 {/* Buttons styled like FrontendJoe */}
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 mt-auto">
-                  {c.id === 'cat-software' ? (
-                    <Link
-                      href="/web/software"
-                      className="px-5 py-2.5 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white text-xs font-black font-heading transition-all shadow-md hover:scale-105 flex items-center gap-1.5"
-                    >
-                      <span>💻 Plataformas & Demos 2027</span>
-                    </Link>
-                  ) : c.id === 'cat-residencial' ? (
+                  {c.id === 'cat-residencial' ? (
                     <Link
                       href="/web/cerraduras-smart"
                       className="px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black font-heading transition-all shadow-md hover:scale-105 flex items-center gap-1.5"
@@ -2596,54 +2368,6 @@ export default function PublicWebClient({
             <Award className="mx-auto text-blue-600" size={32} />
             <h4 className="font-bold text-sm text-slate-950 uppercase font-heading">Atención Especializada</h4>
             <p className="text-xs text-slate-600 leading-relaxed">Asesoría técnica instantánea vía WhatsApp antes, durante y después de tu compra.</p>
-          </div>
-        </div>
-      
-
-        {/* ── BANNER OFICIAL DE MIEMBROS & LIDERAZGO ATOMIC ── */}
-        <div className="mt-12 p-8 rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white border border-slate-800 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="space-y-2 text-center md:text-left">
-              <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-amber-400 bg-amber-400/10 px-3 py-1 rounded-full border border-amber-400/20 inline-block">
-                EQUIPO DIRECTIVO & MARCA OFICIAL
-              </span>
-              <h3 className="text-2xl font-black uppercase tracking-tight font-heading">
-                Conoce a los Miembros de ATOMIC Ecuador
-              </h3>
-              <p className="text-sm text-slate-400 max-w-xl">
-                Liderazgo estratégico, psicología aplicada, arquitectura de software e infraestructura comercial directa.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap items-center justify-center gap-3">
-              <Link
-                href="/web/juan-pablo-guzman"
-                className="px-5 py-3 rounded-2xl bg-gradient-to-r from-amber-500/20 to-purple-500/20 border border-amber-500/40 hover:border-amber-400 text-amber-200 hover:text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg flex items-center gap-2 group"
-              >
-                <span>👑 Juan Pablo Guzmán</span>
-                <span className="text-[10px] text-amber-400 font-mono">(48 Leyes)</span>
-                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
-
-              <Link
-                href="/web/santiago-guzman"
-                className="px-5 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg shadow-blue-600/30 flex items-center gap-2 group"
-              >
-                <span>⚡ Santiago Guzmán</span>
-                <span className="text-[10px] text-cyan-200 font-mono">(CEO)</span>
-                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
-
-              <Link
-                href="/web/software"
-                className="px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg shadow-emerald-600/30 flex items-center gap-2 group"
-              >
-                <span>💻 Software & ERP 2027</span>
-                <span className="text-[10px] text-emerald-200 font-mono">(Demos)</span>
-                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
           </div>
         </div>
       </section>
