@@ -7,7 +7,7 @@ import Link from "next/link"
 import {
     Briefcase, Globe, Target, Cpu, CheckCircle2, ChevronRight,
     Users, Star, TrendingUp, Monitor, ShieldCheck, ArrowRight,
-    Award, Layers, Zap, Video, CalendarCheck, Clock, Sparkles, PhoneCall
+    Award, Layers, Zap, Video, CalendarCheck, Clock, Sparkles, PhoneCall, Download
 } from "lucide-react"
 
 const BENEFITS = [
@@ -56,12 +56,8 @@ export default function EmpleoLandingPage() {
                         <span className="text-xl font-black text-white tracking-tight">Atomic Careers</span>
                     </div>
                     <div className="flex items-center gap-3">
-                        <Link href="/contrataciones#manual" className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-blue-600/30 border border-blue-400/50 text-blue-200 font-bold text-xs hover:bg-blue-600/50 transition-all">
-                            <span>🚀 Convocatoria Unificada Oficial (Fijo, Fast-Track y Freelance)</span>
-                            <ArrowRight size={13} />
-                        </Link>
-                        <Link href="/contrataciones#sueldo-fijo" className="hidden md:inline-flex px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-bold text-xs hover:bg-emerald-500/20 transition-all">
-                            Sueldo Fijo ($100-$450)
+                        <Link href="/web/empleo-freelance" className="hidden sm:inline-flex px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 font-bold text-xs hover:bg-amber-500/20 transition-all">
+                            ⚡ Ver Vendedor Bajo Comisión (Freelance)
                         </Link>
                         <Link href="/register?role=SALESPERSON" className="px-6 py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black font-black text-sm transition-all shadow-lg shadow-emerald-950/50">
                             Aplicar Ahora
@@ -277,54 +273,186 @@ export default function EmpleoLandingPage() {
                     </div>
                 </section>
 
-                {/* 4. BENEFICIOS Y CONDICIONES (TABS) */}
-                <section className="max-w-7xl mx-auto px-6">
-                    <div className="bg-gradient-to-b from-slate-900 to-black border border-white/10 rounded-[2.5rem] p-8 md:p-12">
-                        <h2 className="text-3xl md:text-4xl font-black text-white mb-10 text-center">Trayectoria y Clasificación</h2>
+                {/* 4. ESCALAFÓN Y NORMATIVA DE SUELDOS FIJOS 2026 */}
+                <section id="escalafon" className="max-w-7xl mx-auto px-6">
+                    <div className="bg-gradient-to-b from-slate-900 via-slate-950 to-black border-2 border-cyan-500/30 rounded-[2.5rem] p-6 sm:p-10 md:p-12 shadow-[0_0_80px_rgba(6,182,212,0.12)] space-y-8">
                         
-                        <div className="flex flex-col md:flex-row gap-8 lg:gap-16">
-                            {/* Tabs Selectors */}
-                            <div className="flex md:flex-col gap-2 overflow-x-auto pb-4 md:pb-0 md:min-w-[250px] scrollbar-hide">
-                                {BENEFITS.map((tab) => (
-                                    <button
-                                        key={tab.id}
-                                        onClick={() => setActiveTab(tab.id)}
-                                        className={`flex items-center gap-3 px-6 py-4 rounded-2xl text-left font-bold transition-all whitespace-nowrap ${
-                                            activeTab === tab.id 
-                                            ? "bg-emerald-500 text-slate-100 shadow-[0_12px_40px_rgba(0,0,0,0.5)] shadow-emerald-500/20" 
-                                            : "text-slate-400 hover:bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 hover:text-white"
-                                        }`}
-                                    >
-                                        <tab.icon size={20} />
-                                        {tab.label}
-                                    </button>
-                                ))}
+                        {/* Header Section */}
+                        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/10 pb-8">
+                            <div className="space-y-3">
+                                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 font-mono text-xs font-bold uppercase tracking-widest">
+                                    <Sparkles size={14} /> Normativa Oficial & Escalafón Laboral 2026
+                                </div>
+                                <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight">
+                                    Escalafón Comercial y Asignación de Sueldos Fijos
+                                </h2>
+                                <p className="text-slate-400 text-sm md:text-base max-w-3xl leading-relaxed">
+                                    En ATOMIC las reglas son transparentes y meritocráticas. Conoce con total exactitud qué actividades debes cumplir para cada nivel de remuneración fija y comisiones.
+                                </p>
                             </div>
 
-                            {/* Tab Content */}
-                            <div className="flex-1">
-                                <AnimatePresence mode="wait">
-                                    {BENEFITS.map((tab) => activeTab === tab.id && (
-                                        <motion.div
-                                            key={tab.id}
-                                            initial={{ opacity: 0, x: 20 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            exit={{ opacity: 0, x: -20 }}
-                                            transition={{ duration: 0.3 }}
-                                            className="h-full flex flex-col justify-center"
-                                        >
-                                            <div className="w-16 h-16 rounded-2xl bg-slate-900/50 backdrop-blur-xl border-slate-700/50/5 border border-white/10 flex items-center justify-center mb-8">
-                                                <tab.icon size={32} className="text-emerald-400" />
-                                            </div>
-                                            <h3 className="text-3xl font-black text-white mb-6">{tab.title}</h3>
-                                            <p className="text-xl text-slate-300 leading-relaxed font-medium">
-                                                {tab.content}
-                                            </p>
-                                        </motion.div>
-                                    ))}
-                                </AnimatePresence>
+                            {/* Download / View Graphic Table Button */}
+                            <div className="shrink-0 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                                <a 
+                                    href="/tabla-escalafon-atomic-2026.png" 
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="px-5 py-3 rounded-2xl bg-cyan-500 hover:bg-cyan-400 text-black font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg shadow-cyan-950/50 hover:scale-105"
+                                >
+                                    <Download size={15} />
+                                    <span>Ver Tabla Gráfica (PNG)</span>
+                                </a>
                             </div>
                         </div>
+
+                        {/* Regulatory Alert Banner (El Blindaje Normativo Oficial) */}
+                        <div className="p-6 rounded-2xl bg-amber-500/10 border-2 border-amber-500/40 text-amber-200 space-y-2">
+                            <div className="flex items-center gap-2 font-bold text-amber-400 text-sm font-mono uppercase tracking-wide">
+                                <ShieldCheck size={18} className="text-amber-400" />
+                                <span>Blindaje Normativo Oficial: Del Día 0 al 29 vs. Día 30 en Adelante</span>
+                            </div>
+                            <div className="text-xs sm:text-sm text-slate-300 space-y-1.5 leading-relaxed">
+                                <p>
+                                    <strong className="text-amber-300">1. Período Día 0 al 29 (Comisión Directa al 20%):</strong> Todo nuevo asesor ingresa bajo comisión directa. La asistencia y publicaciones diarias en Marketplace otorgan <strong>Permanencia en el Grupo (Nivel 0)</strong> y acceso a herramientas, pero <strong className="text-rose-400">NO generan remuneración fija alguna</strong> por solo publicar.
+                                </p>
+                                <p>
+                                    <strong className="text-amber-300">2. Clasificación a partir del Día 30 (Sueldos Fijos):</strong> Solo tras cumplir al menos 1 mes continuo con asistencia y publicaciones activas, el asesor puede reclamar bonos y clasificar a los escalafones de <strong>Sueldo Fijo ($25, $100, $200 o $450 USD)</strong> demostrando el cumplimiento estricto del plan de prospección y llamadas activas.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* The 5 Interactive Tier Cards */}
+                        <div className="grid lg:grid-cols-5 md:grid-cols-2 gap-4 pt-2">
+                            {/* Nivel 0 */}
+                            <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between space-y-4">
+                                <div>
+                                    <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-md bg-slate-800 text-slate-400 uppercase tracking-wider block w-fit mb-3">
+                                        Nivel 0 • Base
+                                    </span>
+                                    <h3 className="text-base font-black text-white leading-snug">Permanencia en Grupo</h3>
+                                    <div className="my-3 py-2 px-3 rounded-xl bg-black/40 border border-white/5">
+                                        <p className="text-xl font-black text-slate-400 font-mono">$0.00 USD Fijo</p>
+                                        <p className="text-[10px] text-slate-500 font-mono">100% Variable • 20% Comisión</p>
+                                    </div>
+                                    <ul className="text-xs text-slate-400 space-y-2">
+                                        <li>• Asistencia timbrada diaria en plataforma.</li>
+                                        <li>• Publicaciones activas en Marketplace (3-5 días/sem).</li>
+                                        <li>• Aplica del Día 0 al 29 para todo ingreso.</li>
+                                    </ul>
+                                </div>
+                                <div className="p-2.5 rounded-lg bg-black/30 border border-white/5 text-[11px] text-slate-400">
+                                    Catálogo de 3.000+ productos, cotizador web y 20% de comisión directa por venta.
+                                </div>
+                            </div>
+
+                            {/* Nivel 1 */}
+                            <div className="p-5 rounded-2xl bg-[#091528] border-2 border-cyan-500/40 hover:border-cyan-400 transition-all flex flex-col justify-between space-y-4 shadow-lg shadow-cyan-950/20">
+                                <div>
+                                    <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-md bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 uppercase tracking-wider block w-fit mb-3">
+                                        Nivel 1 • Incentivo
+                                    </span>
+                                    <h3 className="text-base font-black text-white leading-snug">Rendimiento Básico</h3>
+                                    <div className="my-3 py-2 px-3 rounded-xl bg-black/40 border border-cyan-500/20">
+                                        <p className="text-xl font-black text-cyan-300 font-mono">$25.00 USD Fijo</p>
+                                        <p className="text-[10px] text-cyan-400/80 font-mono">Mensual + 20% Comisiones</p>
+                                    </div>
+                                    <ul className="text-xs text-slate-300 space-y-2">
+                                        <li>• <strong>3 números diarios</strong> de empresas con WhatsApp comprobable y <strong>ACTIVO</strong> (se valida si llegan mensajes y responde).</li>
+                                        <li>• Envío de mensaje con texto e imagen publicitaria (captura obligatoria).</li>
+                                        <li>• <strong>1 llamada larga semanal</strong> a clientes.</li>
+                                    </ul>
+                                </div>
+                                <div className="p-2.5 rounded-lg bg-cyan-950/40 border border-cyan-500/20 text-[11px] text-cyan-200">
+                                    Estímulo fijo de $25 USD + 20% comisiones directas. Requiere &gt;30 días en el grupo.
+                                </div>
+                            </div>
+
+                            {/* Nivel 2 */}
+                            <div className="p-5 rounded-2xl bg-[#061e1b] border-2 border-emerald-500/40 hover:border-emerald-400 transition-all flex flex-col justify-between space-y-4 shadow-lg shadow-emerald-950/20">
+                                <div>
+                                    <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 uppercase tracking-wider block w-fit mb-3">
+                                        Nivel 2 • Plan Mes 1
+                                    </span>
+                                    <h3 className="text-base font-black text-white leading-snug">Puesto Fijo Junior</h3>
+                                    <div className="my-3 py-2 px-3 rounded-xl bg-black/40 border border-emerald-500/20">
+                                        <p className="text-xl font-black text-emerald-300 font-mono">$100.00 USD Fijo</p>
+                                        <p className="text-[10px] text-emerald-400/80 font-mono">+ 20% Comis. + Bono $50</p>
+                                    </div>
+                                    <ul className="text-xs text-slate-300 space-y-2">
+                                        <li>• <strong>5 números diarios</strong> de empresas comprobables (escribir a todos con texto e imagen).</li>
+                                        <li>• <strong>3 llamadas largas semanales</strong> de prospección y cierre.</li>
+                                        <li>• <strong>Seguimiento diario</strong> a clientes en Messenger y WhatsApp.</li>
+                                        <li>• Mínimo 30 días con asistencia activa.</li>
+                                    </ul>
+                                </div>
+                                <div className="p-2.5 rounded-lg bg-emerald-950/40 border border-emerald-500/20 text-[11px] text-emerald-200">
+                                    Sueldo fijo base de $100 USD + 20% comisiones + bono $50 por metas.
+                                </div>
+                            </div>
+
+                            {/* Nivel 3 */}
+                            <div className="p-5 rounded-2xl bg-[#170e24] border-2 border-purple-500/40 hover:border-purple-400 transition-all flex flex-col justify-between space-y-4 shadow-lg shadow-purple-950/20">
+                                <div>
+                                    <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-md bg-purple-500/20 text-purple-300 border border-purple-500/40 uppercase tracking-wider block w-fit mb-3">
+                                        Nivel 3 • Plan Mes 2
+                                    </span>
+                                    <h3 className="text-base font-black text-white leading-snug">Puesto Fijo Intermedio</h3>
+                                    <div className="my-3 py-2 px-3 rounded-xl bg-black/40 border border-purple-500/20">
+                                        <p className="text-xl font-black text-purple-300 font-mono">$200.00 USD Fijo</p>
+                                        <p className="text-[10px] text-purple-400/80 font-mono">+ 20% Comis. + Bono $65</p>
+                                    </div>
+                                    <ul className="text-xs text-slate-300 space-y-2">
+                                        <li>• <strong>7 números diarios</strong> de empresas comprobables (contacto texto e imagen).</li>
+                                        <li>• <strong>5 llamadas semanales</strong> (1 diaria de negociación).</li>
+                                        <li>• Seguimiento continuo en Messenger y WhatsApp.</li>
+                                        <li>• <strong className="text-purple-300">Cerrar al menos 1 venta en el mes</strong>.</li>
+                                    </ul>
+                                </div>
+                                <div className="p-2.5 rounded-lg bg-purple-950/40 border border-purple-500/20 text-[11px] text-purple-200">
+                                    Sueldo fijo de $200 USD + 20% comisión + bono $65 + prioridad en leads del bot.
+                                </div>
+                            </div>
+
+                            {/* Nivel 4 */}
+                            <div className="p-5 rounded-2xl bg-[#1e0c15] border-2 border-rose-500/40 hover:border-rose-400 transition-all flex flex-col justify-between space-y-4 shadow-lg shadow-rose-950/20">
+                                <div>
+                                    <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/40 uppercase tracking-wider block w-fit mb-3">
+                                        Nivel 4 • Fast-Track
+                                    </span>
+                                    <h3 className="text-base font-black text-white leading-snug">Puesto Fijo de Planta</h3>
+                                    <div className="my-3 py-2 px-3 rounded-xl bg-black/40 border border-rose-500/20">
+                                        <p className="text-xl font-black text-rose-300 font-mono">$450.00 USD Fijo</p>
+                                        <p className="text-[10px] text-rose-400/80 font-mono">Básico de Ley + Comis. Corp.</p>
+                                    </div>
+                                    <ul className="text-xs text-slate-300 space-y-2">
+                                        <li>• <strong>10 números diarios</strong> (propuesta formal texto e imagen).</li>
+                                        <li>• <strong>2 llamadas diarias</strong> (10 semanales) + seguimiento.</li>
+                                        <li>• Dominio de la plataforma web/ERP ATOMIC.</li>
+                                        <li>• <strong className="text-rose-300">Cerrar al menos 3 ventas en el mes</strong>.</li>
+                                        <li>• Jornada 8h (9:00 a 17:00), PC + Celular y contrato firmado.</li>
+                                    </ul>
+                                </div>
+                                <div className="p-2.5 rounded-lg bg-rose-950/40 border border-rose-500/20 text-[11px] text-rose-200">
+                                    Salario Básico Unificado $450 USD fijos + comisiones corporativas + estabilidad formal.
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Footer Info Box */}
+                        <div className="p-5 rounded-2xl bg-black/40 border border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono text-slate-400">
+                            <div>
+                                <span>Dirección Comercial ATOMIC • Juan Guzmán - Director Comercial • Período Vigente 2026</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <Link 
+                                    href="/register?role=SALESPERSON" 
+                                    className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-black uppercase tracking-wider transition-all shadow-md"
+                                >
+                                    Aplicar y Empezar Hoy
+                                </Link>
+                            </div>
+                        </div>
+
                     </div>
                 </section>
 
