@@ -13,43 +13,62 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const search = searchParams.get('search')?.trim() || '';
     const providerParam = searchParams.get('provider')?.trim() || '';
-    // Only ADMIN/COORDINATOR can filter by provider
     const provider = canSeeProvidersAndCosts ? providerParam : '';
     const categoryId = searchParams.get('categoryId')?.trim() || '';
-    // Only ADMIN/COORDINATOR can view trash/deleted items
     const showDeleted = canSeeProvidersAndCosts && searchParams.get('showDeleted') === 'true';
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '150', 10);
 
     const where: any = {
       isDeleted: showDeleted ? true : false,
+      NOT: [
+        { name: { contains: 'quiénes somos', mode: 'insensitive' } },
+        { name: { contains: 'quienes somos', mode: 'insensitive' } },
+        { name: { contains: 'politica de', mode: 'insensitive' } },
+        { name: { contains: 'política de', mode: 'insensitive' } },
+        { name: { contains: 'terminos y condiciones', mode: 'insensitive' } },
+      ],
     };
 
     if (search) {
-      // Clean stop words and tokenize
       const stopWords = new Set(['de', 'del', 'la', 'el', 'en', 'para', 'con', 'un', 'una', 'y']);
       const tokens = search
         .split(/\s+/)
         .map((t) => t.trim())
         .filter((t) => t.length > 0 && !stopWords.has(t.toLowerCase()));
 
+      const getVariants = (w: string) => {
+        const lower = w.toLowerCase();
+        const clean = lower.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        const set = new Set<string>([w, lower, clean]);
+        if (clean === 'camara') { set.add('cámara'); set.add('camaras'); set.add('cámaras'); }
+        if (clean === 'bateria') { set.add('batería'); set.add('baterias'); set.add('baterías'); }
+        if (clean === 'telefono') { set.add('teléfono'); set.add('telefonos'); set.add('teléfonos'); }
+        if (clean === 'linea') { set.add('línea'); set.add('lineas'); set.add('líneas'); }
+        if (clean === 'electronica') { set.add('electrónica'); }
+        if (clean === 'cocina') { set.add('cocinas'); set.add('encimera'); set.add('induccion'); }
+        if (clean === 'laptop') { set.add('laptops'); set.add('portatil'); set.add('portátil'); }
+        return Array.from(set);
+      };
+
       if (tokens.length > 0) {
         where.AND = tokens.map((token) => {
-          const conditions: any[] = [
-            { name: { contains: token, mode: 'insensitive' } },
-            { sku: { contains: token, mode: 'insensitive' } },
-            { specs: { contains: token, mode: 'insensitive' } },
-            { description: { contains: token, mode: 'insensitive' } },
-            { category: { name: { contains: token, mode: 'insensitive' } } },
-          ];
-          if (canSeeProvidersAndCosts) {
-            conditions.push({ provider: { contains: token, mode: 'insensitive' } });
+          const variants = getVariants(token);
+          const conditions: any[] = [];
+          for (const v of variants) {
+            conditions.push({ name: { contains: v, mode: 'insensitive' } });
+            conditions.push({ sku: { contains: v, mode: 'insensitive' } });
+            conditions.push({ specs: { contains: v, mode: 'insensitive' } });
+            conditions.push({ description: { contains: v, mode: 'insensitive' } });
+            conditions.push({ category: { name: { contains: v, mode: 'insensitive' } } });
+            if (canSeeProvidersAndCosts) {
+              conditions.push({ provider: { contains: v, mode: 'insensitive' } });
+            }
           }
           return { OR: conditions };
         });
       }
     }
-
 
     if (provider && provider !== 'ALL') {
       where.provider = { equals: provider, mode: 'insensitive' };
@@ -67,6 +86,7 @@ export async function GET(req: NextRequest) {
       name: true,
       price: true,
       stock: true,
+      images: true,
       category: {
         select: {
           id: true,
@@ -94,7 +114,6 @@ export async function GET(req: NextRequest) {
       let marginUsd = 0;
       let marginPercent = 0;
 
-      // Calcular costo base interno para derivar el descuento máximo permitido
       let baseCost = 0;
       if (p.compareAtPrice && p.compareAtPrice > 0 && p.compareAtPrice < salePrice) {
         baseCost = p.compareAtPrice;
@@ -111,10 +130,29 @@ export async function GET(req: NextRequest) {
         marginPercent = costPrice > 0 ? Math.round(((salePrice - costPrice) / costPrice) * 10000) / 100 : 15.0;
       }
 
+      // Extraer URL de imagen limpia
+      let cleanImage = '';
+      if (p.images) {
+        try {
+          if (typeof p.images === 'string' && p.images.startsWith('[') && p.images.endsWith(']')) {
+            const parsed = JSON.parse(p.images);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              cleanImage = parsed[0];
+            }
+          } else if (typeof p.images === 'string') {
+            cleanImage = p.images.split(',')[0].trim();
+          }
+        } catch (_) {
+          cleanImage = p.images;
+        }
+      }
+
       return {
         id: p.id,
         sku: p.sku || 'SIN-SKU',
         name: p.name,
+        image: cleanImage,
+        images: p.images,
         provider: canSeeProvidersAndCosts ? (p.provider || 'Atomic') : '',
         category: p.category?.name || 'General',
         categoryId: p.category?.id || '',
@@ -128,7 +166,6 @@ export async function GET(req: NextRequest) {
       };
     });
 
-
     let providers: string[] = [];
     if (canSeeProvidersAndCosts) {
       const providersRaw = await prisma.product.findMany({
@@ -140,8 +177,16 @@ export async function GET(req: NextRequest) {
     }
 
     const categories = await prisma.category.findMany({
-      select: { id: true, name: true },
-      orderBy: { name: 'asc' },
+      select: { 
+        id: true, 
+        name: true,
+        _count: { select: { products: true } }
+      },
+      where: {
+        products: { some: { isDeleted: false } }
+      },
+      orderBy: { products: { _count: 'desc' } },
+      take: 25,
     });
 
     return NextResponse.json({
@@ -160,4 +205,3 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }
-
