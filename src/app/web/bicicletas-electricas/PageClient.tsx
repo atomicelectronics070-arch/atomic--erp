@@ -164,54 +164,69 @@ export default function BicicletasClient() {
                 key={bike.id}
                 className="rounded-3xl bg-white/[0.03] border border-white/10 overflow-hidden hover:border-orange-500/50 transition-all flex flex-col justify-between group shadow-xl"
               >
-                <div className="p-8">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="px-3 py-1 rounded-full bg-orange-500/10 text-orange-400 text-xs font-black uppercase tracking-wider border border-orange-500/20">
+                {/* Product Image Stage (Fondo blanco pulcro de estudio) */}
+                <div className="relative w-full aspect-square bg-white flex items-center justify-center p-6 overflow-hidden">
+                  {/* Floating Badges */}
+                  <div className="absolute top-4 left-4 z-10">
+                    <span className="px-3 py-1 rounded-full bg-slate-900/90 text-orange-400 text-[11px] font-black uppercase tracking-wider border border-white/10 backdrop-blur-md shadow-md">
                       {bike.badge}
                     </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-black">
+                  </div>
+                  <div className="absolute top-4 right-4 z-10">
+                    <span className="px-2.5 py-1 rounded-full bg-emerald-500/90 text-white text-xs font-black backdrop-blur-md shadow-md">
                       {discountPct}% OFF
                     </span>
                   </div>
 
-                  <h3 className="text-2xl font-black text-white group-hover:text-orange-400 transition-colors">
-                    {bike.name}
-                  </h3>
-                  <p className="text-slate-400 text-xs mt-2 leading-relaxed">
-                    {bike.tagline}
-                  </p>
-
-                  <div className="mt-6 space-y-2">
-                    <h4 className="text-[11px] font-bold uppercase text-slate-400 tracking-wider">Detalles:</h4>
-                    <ul className="space-y-1.5 text-xs text-slate-300">
-                      {bike.specs.map((s, idx) => (
-                        <li key={idx} className="flex items-start gap-2">
-                          <CheckCircle2 size={14} className="text-orange-400 shrink-0 mt-0.5" />
-                          <span>{s}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  {/* Bike Image */}
+                  <img
+                    src={bike.img}
+                    alt={bike.name}
+                    className="w-full h-full object-contain group-hover:scale-108 transition-transform duration-500"
+                  />
                 </div>
 
-                <div className="p-8 pt-0 border-t border-white/5 mt-4">
-                  <div className="flex items-baseline justify-between mb-4">
-                    <div>
-                      <span className="text-3xl font-black text-orange-400">${currentPrice} USD</span>
-                      <span className="text-sm text-slate-500 line-through ml-2">${bike.fullOriginalPrice}</span>
+                <div className="p-7 flex flex-col flex-grow justify-between">
+                  <div>
+                    <h3 className="text-2xl font-black text-white group-hover:text-orange-400 transition-colors">
+                      {bike.name}
+                    </h3>
+                    <p className="text-slate-400 text-xs mt-2 leading-relaxed">
+                      {bike.tagline}
+                    </p>
+
+                    <div className="mt-5 space-y-2">
+                      <h4 className="text-[11px] font-bold uppercase text-slate-400 tracking-wider">Detalles Técnicos:</h4>
+                      <ul className="space-y-1.5 text-xs text-slate-300">
+                        {bike.specs.map((s, idx) => (
+                          <li key={idx} className="flex items-start gap-2">
+                            <CheckCircle2 size={14} className="text-orange-400 shrink-0 mt-0.5" />
+                            <span>{s}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                    <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                      Ahorras ${bike.fullOriginalPrice - currentPrice}
-                    </span>
                   </div>
 
-                  <button
-                    onClick={() => handleOrderWhatsApp(bike)}
-                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-slate-950 font-black text-sm hover:brightness-110 shadow-lg shadow-orange-500/25 transition-all flex items-center justify-center gap-2"
-                  >
-                    <MessageSquare size={16} />
-                    <span>Aprovechar Descuento</span>
-                  </button>
+                  <div className="pt-6 border-t border-white/5 mt-6">
+                    <div className="flex items-baseline justify-between mb-4">
+                      <div>
+                        <span className="text-3xl font-black text-orange-400">${currentPrice} USD</span>
+                        <span className="text-sm text-slate-500 line-through ml-2">${bike.fullOriginalPrice}</span>
+                      </div>
+                      <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                        Ahorras ${bike.fullOriginalPrice - currentPrice}
+                      </span>
+                    </div>
+
+                    <button
+                      onClick={() => handleOrderWhatsApp(bike)}
+                      className="w-full py-3.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-slate-950 font-black text-sm hover:brightness-110 shadow-lg shadow-orange-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <MessageSquare size={16} />
+                      <span>Aprovechar Descuento en WhatsApp</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             )
