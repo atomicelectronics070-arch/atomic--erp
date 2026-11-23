@@ -1,18 +1,19 @@
 import { prisma } from '@/lib/prisma';
-import CocinasClient from '../cocinas/CocinasClient';
+import HornosClient from './HornosClient';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: 'Hornos de Empotrar & Encimeras | Equipamiento Premium de Cocina — ATOMIC',
+  title: 'Hornos de Empotrar a Gas y Eléctricos con Convección | ATOMIC Ecuador',
   description:
-    'Catálogo exclusivo de hornos de empotrar eléctricos y a gas de alta gama, encimeras a gas e inducción. Filtra por dimensiones, funciones de horneado y ofertas.',
+    'Catálogo exclusivo de hornos de empotrar a gas y eléctricos de alta gama, hornos con convección 3D y microondas empotrables para nicho de 60 cm en Ecuador.',
 };
 
 export default async function HornosLandingPage() {
   const excludeKeywords = [
     'campana', 'extractora', 'retráctil', 'isla', 'pared', 'timbre',
     'processor', 'procesador', 'alexa', 'tablet', 'laptop', 'celular',
+    'encimera',
   ];
 
   let unique: any[] = [];
@@ -22,10 +23,7 @@ export default async function HornosLandingPage() {
         isDeleted: false,
         OR: [
           { name: { contains: 'horno', mode: 'insensitive' } },
-          { name: { contains: 'encimera', mode: 'insensitive' } },
           { category: { name: { contains: 'horno', mode: 'insensitive' } } },
-          { category: { name: { contains: 'encimera', mode: 'insensitive' } } },
-          { category: { name: { contains: 'cocina', mode: 'insensitive' } } },
         ],
       },
       select: {
@@ -43,9 +41,8 @@ export default async function HornosLandingPage() {
 
     const products = rawProducts.filter((p) => {
       const nameLow = p.name.toLowerCase();
-      const isEncimera = nameLow.includes('encimera');
       const isHorno = nameLow.includes('horno');
-      if (!isEncimera && !isHorno) return false;
+      if (!isHorno) return false;
       for (const kw of excludeKeywords) {
         if (nameLow.includes(kw)) return false;
       }
@@ -62,5 +59,5 @@ export default async function HornosLandingPage() {
     console.error("Error loading hornos products:", e);
   }
 
-  return <CocinasClient products={unique} />;
+  return <HornosClient products={unique} />;
 }

@@ -329,9 +329,13 @@ export default function CocinasClient({ products }: { products: Product[] }) {
             <div className="px-5 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 font-bold">
               🍳 {encimeras.length} Encimeras disponibles
             </div>
-            <div className="px-5 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 font-bold">
-              🔥 {hornos.length} Hornos disponibles
-            </div>
+            <Link
+              href="/web/hornos"
+              className="px-5 py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 rounded-full border border-amber-400/30 font-bold transition-all flex items-center gap-1.5"
+            >
+              <span>🔥 Ver Landing Hornos de Empotrar ({hornos.length})</span>
+              <span>→</span>
+            </Link>
             <a
               href="#combos"
               className="px-5 py-2 bg-amber-500 hover:bg-amber-400 text-black rounded-full font-bold transition-colors shadow-lg shadow-amber-500/30"
