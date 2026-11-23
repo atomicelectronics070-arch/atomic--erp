@@ -7,7 +7,7 @@ import {
     Briefcase, Globe, Target, Cpu, CheckCircle2, ChevronRight,
     Users, Star, TrendingUp, Monitor, ShieldCheck, ArrowRight,
     Award, Layers, Zap, Video, CalendarCheck, Clock, Sparkles, PhoneCall, Download,
-    Flame, AlertCircle, BadgeCheck
+    Flame, AlertCircle, BadgeCheck, Check, Smartphone
 } from "lucide-react"
 
 export default function EmpleoLandingPage() {
@@ -44,7 +44,7 @@ export default function EmpleoLandingPage() {
                 </div>
             </nav>
 
-            <main className="relative z-10 pt-28 pb-24 space-y-12">
+            <main className="relative z-10 pt-28 pb-24 space-y-14">
                 
                 {/* ── 1. HERO EJECUTIVO Y ELEGANTE ── */}
                 <section className="max-w-7xl mx-auto px-6 pt-6 text-center">
@@ -78,7 +78,6 @@ export default function EmpleoLandingPage() {
                         animate={{ opacity: 1, scale: 1 }}
                         className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-[#2a0c12] via-[#1a080c] to-[#120608] border-2 border-rose-600/70 shadow-[0_15px_50px_rgba(225,29,72,0.25)] space-y-5 relative overflow-hidden"
                     >
-                        {/* Subtle background glow */}
                         <div className="absolute top-0 right-0 w-80 h-80 bg-rose-600/10 rounded-full blur-3xl pointer-events-none" />
 
                         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 relative z-10">
@@ -312,7 +311,103 @@ export default function EmpleoLandingPage() {
                     </div>
                 </section>
 
-                {/* ── 4. ACTIVIDADES OPERATIVAS DE OFICINA VIRTUAL (SOBRIAS Y ELEGANTES) ── */}
+                {/* ── 4. OPORTUNIDADES 100% REMOTAS & PLANETA 3D ILUMINADO (IMPACTO REGIONAL) ── */}
+                <section className="max-w-7xl mx-auto px-6">
+                    <div className="grid md:grid-cols-2 gap-10 items-center bg-[#0b101d] border border-slate-800 rounded-3xl p-8 sm:p-12">
+                        <div className="space-y-6">
+                            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-300 font-mono text-xs font-bold uppercase tracking-wider">
+                                <Globe size={14} className="text-blue-400" /> Cobertura Continental
+                            </div>
+                            <h2 className="text-2xl sm:text-4xl font-black text-white font-heading leading-tight">
+                                Oportunidades 100% Remotas en LATAM
+                            </h2>
+                            <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
+                                Nuestro modelo comercial descentralizado te permite operar desde cualquier rincón del país o el continente, conectando clientes con nuestro inventario físico y despacho garantizado.
+                            </p>
+                            <div className="space-y-3.5 pt-2">
+                                {[
+                                    "Trabajo 100% Remoto sin ataduras geográficas ni horarios rígidos.",
+                                    "Transparencia total en el registro de tus ventas y comisiones en tiempo real.",
+                                    "Acceso a productos de alta demanda con garantía escrita y respaldo técnico en Quito."
+                                ].map((item, i) => (
+                                    <div key={i} className="flex items-center gap-3">
+                                        <div className="w-7 h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                                            <Check size={14} className="text-emerald-400" />
+                                        </div>
+                                        <span className="text-slate-300 text-xs sm:text-sm font-medium">{item}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* PLANETA 3D SOFISTICADO CON ANILLOS Y ATMÓSFERA ILUMINADA */}
+                        <div className="relative aspect-square md:aspect-auto md:h-[460px] rounded-3xl bg-gradient-to-b from-[#091122] via-[#060a16] to-[#04060e] border border-slate-700/60 overflow-hidden flex items-center justify-center p-8 group shadow-2xl">
+                            
+                            {/* Radial Glow Halo behind planet */}
+                            <div className="absolute w-72 h-72 rounded-full bg-cyan-500/15 blur-3xl group-hover:bg-cyan-500/25 transition-all duration-700" />
+                            <div className="absolute w-52 h-52 rounded-full bg-blue-600/20 blur-2xl" />
+
+                            {/* Dynamic SVG Planetary Visualization */}
+                            <svg className="w-64 h-64 sm:w-80 sm:h-80 relative z-10 transition-transform duration-700 group-hover:scale-105" viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <radialGradient id="planetBody" cx="35%" cy="30%" r="70%">
+                                        <stop offset="0%" stopColor="#38bdf8" />
+                                        <stop offset="25%" stopColor="#0284c7" />
+                                        <stop offset="60%" stopColor="#0f172a" />
+                                        <stop offset="100%" stopColor="#020617" />
+                                    </radialGradient>
+                                    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.8" />
+                                        <stop offset="50%" stopColor="#818cf8" stopOpacity="0.2" />
+                                        <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.7" />
+                                    </linearGradient>
+                                    <filter id="glow">
+                                        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                                        <feMerge>
+                                            <feMergeNode in="coloredBlur"/>
+                                            <feMergeNode in="SourceGraphic"/>
+                                        </feMerge>
+                                    </filter>
+                                </defs>
+
+                                {/* Background Atmosphere Aura */}
+                                <circle cx="160" cy="160" r="92" fill="#38bdf8" fillOpacity="0.08" filter="url(#glow)" />
+                                
+                                {/* Back Half of Orbit Ring */}
+                                <ellipse cx="160" cy="160" rx="140" ry="42" stroke="url(#ringGrad)" strokeWidth="2" strokeDasharray="6 4" transform="rotate(-24 160 160)" opacity="0.4" />
+
+                                {/* Main Planetary Sphere */}
+                                <circle cx="160" cy="160" r="80" fill="url(#planetBody)" stroke="#38bdf8" strokeWidth="1.5" strokeOpacity="0.5" />
+
+                                {/* Latin America / Globe Meridian Grid Lines */}
+                                <path d="M80 160 Q160 210 240 160" stroke="#38bdf8" strokeWidth="1" strokeOpacity="0.35" fill="none" />
+                                <path d="M85 130 Q160 175 235 130" stroke="#38bdf8" strokeWidth="1" strokeOpacity="0.25" fill="none" />
+                                <path d="M85 190 Q160 245 235 190" stroke="#38bdf8" strokeWidth="1" strokeOpacity="0.25" fill="none" />
+                                <ellipse cx="160" cy="160" rx="35" ry="80" stroke="#38bdf8" strokeWidth="1" strokeOpacity="0.3" fill="none" />
+
+                                {/* Illuminated Cities / Active Commercial Nodes (Ecuador, Peru, Colombia, Chile) */}
+                                <circle cx="140" cy="165" r="4" fill="#10b981" filter="url(#glow)" />
+                                <circle cx="150" cy="145" r="3.5" fill="#38bdf8" filter="url(#glow)" />
+                                <circle cx="165" cy="190" r="3" fill="#f59e0b" filter="url(#glow)" />
+                                <circle cx="130" cy="135" r="2.5" fill="#ec4899" filter="url(#glow)" />
+
+                                {/* Connection Pulse Lines between hubs */}
+                                <path d="M140 165 L150 145 L165 190" stroke="#10b981" strokeWidth="1" strokeOpacity="0.6" strokeDasharray="3 3" />
+
+                                {/* Front Half of Orbit Ring */}
+                                <path d="M22 172 C60 220 260 220 298 148" stroke="url(#ringGrad)" strokeWidth="2.5" fill="none" filter="url(#glow)" />
+                            </svg>
+
+                            {/* Floating Overlay Badge */}
+                            <div className="absolute bottom-6 inset-x-6 z-20 text-center bg-black/60 backdrop-blur-md p-4 rounded-2xl border border-white/10">
+                                <h3 className="text-base font-black text-white">Impacto Regional</h3>
+                                <p className="text-xs text-cyan-400 font-mono font-bold mt-0.5">Operaciones Comerciales en Todo Ecuador & LATAM</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* ── 5. OFICINA VIRTUAL & ACTIVIDADES OPERATIVAS (SOBRIAS Y ELEGANTES) ── */}
                 <section className="max-w-7xl mx-auto px-6">
                     <div className="p-8 rounded-3xl bg-[#0b101d] border border-slate-800 space-y-6">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
@@ -321,7 +416,7 @@ export default function EmpleoLandingPage() {
                                     Actividades que Mantienen Viva la Oficina Virtual
                                 </h3>
                                 <p className="text-slate-400 text-xs sm:text-sm mt-1">
-                                    Tu permanencia y calificación se miden por puntualidad y contacto directo con coordinación.
+                                    Tu permanencia y calificación a sueldo fijo se miden por puntualidad y contacto directo con coordinación.
                                 </p>
                             </div>
                             <Link 
@@ -339,7 +434,7 @@ export default function EmpleoLandingPage() {
                                 </div>
                                 <h4 className="text-base font-bold text-white">Reuniones en Zoom</h4>
                                 <p className="text-slate-400 text-xs leading-relaxed">
-                                    Sesiones sincrónicas para revisión de promociones, stock de remate y soporte comercial.
+                                    Sesiones sincrónicas para revisión de promociones, stock de remate y soporte técnico-comercial.
                                 </p>
                             </div>
 
@@ -359,7 +454,7 @@ export default function EmpleoLandingPage() {
                                 </div>
                                 <h4 className="text-base font-bold text-white">Seguimiento con Stefy</h4>
                                 <p className="text-slate-400 text-xs leading-relaxed">
-                                    Validación de capturas de mensajes, números activos y justificaciones directas con coordinación.
+                                    Validación de capturas de mensajes, números activos comprobables y justificaciones directas.
                                 </p>
                             </div>
                         </div>
@@ -380,41 +475,84 @@ export default function EmpleoLandingPage() {
                     </div>
                 </section>
 
-                {/* ── 5. METODOLOGÍA DE INGRESO EN 3 PASOS ── */}
+                {/* ── 6. METODOLOGÍA DE TRABAJO (PASO 1 COMO GRAN BENEFICIO AUTOMATIZADO) ── */}
                 <section className="max-w-7xl mx-auto px-6">
-                    <div className="grid sm:grid-cols-3 gap-4">
-                        {[
-                            {
-                                step: "1",
-                                title: "Registro en la Plataforma",
-                                desc: "Regístrate con rol 'Vendedor'. Tendrás acceso inmediato al catálogo completo con precios y comisiones calculadas."
-                            },
-                            {
-                                step: "2",
-                                title: "Ingreso a Grupos de Trabajo",
-                                desc: "Te integramos a nuestros canales oficiales de WhatsApp para que recibas promociones de remate del día."
-                            },
-                            {
-                                step: "3",
-                                title: "Guía Directa de Coordinadora",
-                                desc: "Stefy te asignará tus primeros 3 anuncios validados y auditará tus números activos para ayudarte a cerrar rápido."
-                            }
-                        ].map((item, i) => (
-                            <div
-                                key={i}
-                                className="p-6 rounded-2xl bg-[#0b101d] border border-slate-800 space-y-2"
-                            >
-                                <span className="w-8 h-8 rounded-lg bg-slate-800 text-slate-300 font-mono font-black text-sm flex items-center justify-center border border-slate-700">
-                                    {item.step}
-                                </span>
-                                <h4 className="text-base font-bold text-white pt-1">{item.title}</h4>
-                                <p className="text-xs text-slate-400 leading-relaxed">{item.desc}</p>
+                    <div className="text-center mb-8">
+                        <span className="text-xs font-mono text-cyan-400 uppercase font-bold tracking-widest block mb-1">
+                            Tu Recorrido de Crecimiento
+                        </span>
+                        <h2 className="text-2xl sm:text-3xl font-black text-white font-heading">
+                            Metodología y Beneficios de Ingreso
+                        </h2>
+                    </div>
+
+                    <div className="grid sm:grid-cols-3 gap-6">
+                        {/* BENEFICIO 1: HERRAMIENTAS DE REGISTRO AUTOMÁTICO */}
+                        <div className="p-6 rounded-3xl bg-[#09152b] border-2 border-cyan-500/40 hover:border-cyan-400 transition-all space-y-4 shadow-xl">
+                            <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 text-cyan-300 flex items-center justify-center font-bold">
+                                <Sparkles size={24} />
                             </div>
-                        ))}
+                            <div>
+                                <span className="text-[10px] font-mono font-bold text-cyan-400 uppercase tracking-wider block">
+                                    Beneficio Exclusivo #1
+                                </span>
+                                <h3 className="text-lg font-black text-white mt-1">
+                                    Herramientas de Registro Automático
+                                </h3>
+                            </div>
+                            <p className="text-xs text-slate-300 leading-relaxed">
+                                <strong>Cero demoras burocráticas:</strong> Al registrarte con rol &lsquo;Vendedor&rsquo;, el sistema te crea inmediatamente tu cuenta digital. Accedes en el acto a nuestro cotizador web, cálculo automatizado de tu 20% de comisión y acceso a más de 3.000 productos con fichas y precios listos para vender.
+                            </p>
+                            <div className="p-2.5 rounded-xl bg-black/40 border border-cyan-500/20 text-[11px] font-mono text-cyan-200">
+                                ⚡ Alta instantánea sin esperas manuales.
+                            </div>
+                        </div>
+
+                        {/* PASO 2: INGRESO A GRUPOS DE TRABAJO */}
+                        <div className="p-6 rounded-3xl bg-[#0b101d] border border-slate-800 hover:border-slate-700 transition-all space-y-4 shadow-lg">
+                            <div className="w-12 h-12 rounded-2xl bg-slate-800 text-slate-300 flex items-center justify-center font-bold">
+                                <Users size={24} />
+                            </div>
+                            <div>
+                                <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">
+                                    Paso #2 Operativo
+                                </span>
+                                <h3 className="text-lg font-black text-white mt-1">
+                                    Ingreso a Grupos de Trabajo
+                                </h3>
+                            </div>
+                            <p className="text-xs text-slate-400 leading-relaxed">
+                                Te integras inmediatamente a nuestros grupos oficiales de WhatsApp y comunidades operativas. Recibes en tiempo real las ofertas de remate, promociones flash y alertas de stock de bodega desde el minuto cero.
+                            </p>
+                            <div className="p-2.5 rounded-xl bg-black/30 border border-white/5 text-[11px] font-mono text-slate-400">
+                                👥 Trabajo en equipo y dinamismo diario.
+                            </div>
+                        </div>
+
+                        {/* PASO 3: GUÍA DIRECTA DE COORDINADORA */}
+                        <div className="p-6 rounded-3xl bg-[#0b101d] border border-slate-800 hover:border-slate-700 transition-all space-y-4 shadow-lg">
+                            <div className="w-12 h-12 rounded-2xl bg-slate-800 text-slate-300 flex items-center justify-center font-bold">
+                                <ShieldCheck size={24} />
+                            </div>
+                            <div>
+                                <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">
+                                    Paso #3 Acompañamiento
+                                </span>
+                                <h3 className="text-lg font-black text-white mt-1">
+                                    Guía Directa de Coordinadora
+                                </h3>
+                            </div>
+                            <p className="text-xs text-slate-400 leading-relaxed">
+                                Stefy te asigna tus primeros 3 anuncios ya testeados en Marketplace, audita tus primeros números activos y te ayuda a resolver objeciones técnicas de clientes para que concretes tu primera venta rápidamente.
+                            </p>
+                            <div className="p-2.5 rounded-xl bg-black/30 border border-white/5 text-[11px] font-mono text-slate-400">
+                                🛡️ Acompañamiento personalizado permanente.
+                            </div>
+                        </div>
                     </div>
                 </section>
 
-                {/* ── 6. CIERRE Y ACCIÓN ── */}
+                {/* ── 7. CIERRE Y ACCIÓN ── */}
                 <section className="max-w-7xl mx-auto px-6 text-center">
                     <div className="p-10 rounded-3xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border border-slate-700 text-white space-y-4 shadow-xl">
                         <h3 className="text-2xl sm:text-3xl font-black text-white font-heading">
