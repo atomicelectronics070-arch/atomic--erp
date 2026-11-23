@@ -1454,7 +1454,6 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
 export default function CerradurasSmartClient() {
   const [selectedProvinceId, setSelectedProvinceId] = useState<string>("quito")
   const [activeCategory, setActiveCategory] = useState<string>("todos")
-  const [activeProvider, setActiveProvider] = useState<string>("todos")
   const [modalProduct, setModalProduct] = useState<SmartLockProduct | null>(null)
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
 
@@ -1463,14 +1462,12 @@ export default function CerradurasSmartClient() {
     return PROVINCES_DATA.find((p) => p.id === selectedProvinceId) || PROVINCES_DATA[0]
   }, [selectedProvinceId])
 
-  // Filtered products by both Category and Provider
+  // Filtered products by Category
   const filteredProducts = useMemo(() => {
     return SMART_LOCK_KITS.filter((p) => {
-      const matchCat = activeCategory === "todos" || p.category === activeCategory
-      const matchProv = activeProvider === "todos" || p.provider === activeProvider
-      return matchCat && matchProv
+      return activeCategory === "todos" || p.category === activeCategory
     })
-  }, [activeCategory, activeProvider])
+  }, [activeCategory])
 
   // Helper to calculate total installed price
   const calculateTotal = (basePrice: number, installCost: number) => {
@@ -1513,14 +1510,6 @@ export default function CerradurasSmartClient() {
   return (
     <div className="w-full bg-[#07070A] min-h-screen text-white font-sans selection:bg-blue-500/30 selection:text-white overflow-x-hidden">
       
-      {/* ═══════════ BANNER OFERTA FINAL DE AÑO ═══════════ */}
-      <Link 
-        href="/web/cerraduras-oferta"
-        className="block w-full bg-gradient-to-r from-red-600 via-amber-500 to-red-600 text-stone-950 py-2 px-4 text-center font-mono font-black text-xs uppercase tracking-wider hover:brightness-110 transition-all shadow-lg z-50 relative"
-      >
-        <span>🔥 ¡OFERTA DE FINAL DE AÑO! Cerraduras para Entrega Inmediata (Facial 3D $145 • 5 Pistones $89.80 • Con Cámara $91) • ¡Entrega GRATIS en Quito! Click Aquí →</span>
-      </Link>
-
       {/* ═══════════ STICKY TOP BAR: PRODUCTOS 100% ORIGINALES & GARANTÍA ═══════════ */}
       <div className="sticky top-0 z-50 w-full bg-[#050507]/95 backdrop-blur-xl border-b border-emerald-500/20 py-1.5 px-4 text-center shadow-md">
         <div className="max-w-7xl mx-auto flex items-center justify-center gap-2">
@@ -1835,85 +1824,41 @@ export default function CerradurasSmartClient() {
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#14131C] border border-white/10 text-xs font-bold text-neutral-300 mb-2">
                 <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
-                <span className="font-heading uppercase tracking-wider text-[11px]">CATÁLOGO MULTI-PROVEEDOR ({filteredProducts.length} MODELOS)</span>
+                <span className="font-heading uppercase tracking-wider text-[11px]">CATÁLOGO ({filteredProducts.length} MODELOS)</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-black font-heading uppercase text-white tracking-tight">
-                Cerraduras Smart de Proveedores Homologados
+                Cerraduras Smart de Alta Seguridad
               </h2>
             </div>
-
-            {/* Provider Quick Counts */}
-            <div className="flex flex-wrap items-center gap-2 text-xs font-mono text-neutral-400">
-              <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10">CRONTE</span>
-              <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10">YALE</span>
-              <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10">BP</span>
-              <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10">SISEGUSA</span>
-              <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10">STEREN</span>
-              <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10">DIEL</span>
-              <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10">MEELTECH</span>
-              <span className="px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/10">YAE</span>
-            </div>
           </div>
 
-          {/* ─── FILTRO 1: POR PROVEEDOR HOMOLOGADO ─── */}
+          {/* ─── FILTRO POR TIPO DE CERRADURA / CATEGORÍA ─── */}
           <div>
             <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest block mb-2 font-bold">
-              1. Filtrar por Proveedor / Marca:
+              Filtrar por Categoría / Tipo de Mecanismo:
             </span>
             <div className="flex flex-wrap items-center gap-2 bg-[#121118] p-1.5 rounded-2xl border border-white/10 shadow-inner">
               {[
-                { id: "todos", label: "TODOS LOS PROVEEDORES", count: SMART_LOCK_KITS.length },
-                { id: "CRONTE", label: "🛡️ CRONTE TECHNOLOGY", count: SMART_LOCK_KITS.filter(p => p.provider === 'CRONTE').length },
-                { id: "YALE", label: "🏆 YALE ECUADOR", count: SMART_LOCK_KITS.filter(p => p.provider === 'YALE').length },
-                { id: "BP", label: "🔩 BANCO DEL PERNO (BP)", count: SMART_LOCK_KITS.filter(p => p.provider === 'BP').length },
-                { id: "SISEGUSA", label: "🏢 SISEGUSA & ZKTECO", count: SMART_LOCK_KITS.filter(p => p.provider === 'SISEGUSA').length },
-                { id: "STEREN", label: "⚡ STEREN ECUADOR", count: SMART_LOCK_KITS.filter(p => p.provider === 'STEREN').length },
-                { id: "DIEL", label: "🚪 DIEL & KOCOM", count: SMART_LOCK_KITS.filter(p => p.provider === 'DIEL').length },
-                { id: "MEELTECH", label: "📱 MEELTECH / GEEK", count: SMART_LOCK_KITS.filter(p => p.provider === 'MEELTECH').length },
-                { id: "YAE", label: "⭐ YAE SMART LIFE", count: SMART_LOCK_KITS.filter(p => p.provider === 'YAE').length },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveProvider(tab.id)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold font-heading uppercase tracking-wider transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
-                    activeProvider === tab.id
-                      ? "bg-blue-500 text-white shadow-lg shadow-blue-500/25 font-black scale-105"
-                      : "text-neutral-400 hover:text-white hover:bg-white/[0.06]"
-                  }`}
-                >
-                  <span>{tab.label}</span>
-                  <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${activeProvider === tab.id ? 'bg-white/20 text-white' : 'bg-white/10 text-neutral-400'}`}>
-                    {tab.count}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* ─── FILTRO 2: POR TIPO DE CERRADURA ─── */}
-          <div>
-            <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest block mb-2 font-bold">
-              2. Filtrar por Tipo de Mecanismo / Uso:
-            </span>
-            <div className="flex flex-wrap items-center gap-2 bg-[#121118] p-1.5 rounded-2xl border border-white/10 shadow-inner">
-              {[
-                { id: "todos", label: "TODAS LAS CATEGORÍAS" },
-                { id: "facial", label: "FACIAL 3D & MIRILLA" },
-                { id: "manija", label: "MANIJAS CON HUELLA" },
-                { id: "cerrojo", label: "CERROJOS DIGITALES" },
-                { id: "airbnb", label: "AIRBNB & RENTAS" },
-                { id: "edificios", label: "EDIFICIOS & ACCESOS" },
+                { id: "todos", label: "TODAS LAS CATEGORÍAS", count: SMART_LOCK_KITS.length },
+                { id: "facial", label: "FACIAL 3D & MIRILLA", count: SMART_LOCK_KITS.filter(p => p.category === 'facial').length },
+                { id: "manija", label: "MANIJAS CON HUELLA", count: SMART_LOCK_KITS.filter(p => p.category === 'manija').length },
+                { id: "cerrojo", label: "CERROJOS DIGITALES", count: SMART_LOCK_KITS.filter(p => p.category === 'cerrojo').length },
+                { id: "airbnb", label: "AIRBNB & RENTAS", count: SMART_LOCK_KITS.filter(p => p.category === 'airbnb').length },
+                { id: "edificios", label: "EDIFICIOS & ACCESOS", count: SMART_LOCK_KITS.filter(p => p.category === 'edificios').length },
               ].map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveCategory(tab.id)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold font-heading uppercase tracking-wider transition-all duration-200 cursor-pointer ${
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold font-heading uppercase tracking-wider transition-all duration-200 cursor-pointer flex items-center gap-1.5 ${
                     activeCategory === tab.id
                       ? "bg-white text-black shadow-lg shadow-white/20 font-black scale-105"
                       : "text-neutral-400 hover:text-white hover:bg-white/[0.06]"
                   }`}
                 >
-                  {tab.label}
+                  <span>{tab.label}</span>
+                  <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${activeCategory === tab.id ? 'bg-black/15 text-black font-bold' : 'bg-white/10 text-neutral-400'}`}>
+                    {tab.count}
+                  </span>
                 </button>
               ))}
             </div>
@@ -1953,9 +1898,9 @@ export default function CerradurasSmartClient() {
           <div className="bg-[#121118] border border-white/10 rounded-3xl p-12 text-center my-8">
             <Package size={36} className="text-neutral-500 mx-auto mb-3" />
             <h3 className="text-base font-bold text-white uppercase font-heading">No se encontraron productos con estos filtros</h3>
-            <p className="text-xs text-neutral-400 mt-1 mb-4">Prueba seleccionando "Todos los proveedores" o "Todas las categorías".</p>
+            <p className="text-xs text-neutral-400 mt-1 mb-4">Prueba seleccionando "Todas las categorías".</p>
             <button
-              onClick={() => { setActiveProvider("todos"); setActiveCategory("todos"); }}
+              onClick={() => setActiveCategory("todos")}
               className="px-5 py-2 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-xs font-bold cursor-pointer"
             >
               Restablecer Filtros
