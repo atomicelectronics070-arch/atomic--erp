@@ -17,7 +17,7 @@ const SCOOTERS = [
     price: 489,
     oldPrice: 599,
     badge: "Modelo Destacado",
-    img: "/images/scooters/scooter-ninebot-f25.jpg",
+    img: "/images/scooters/scooter-ninebot-f25.png",
     specs: [
       "Velocidad máxima: 25 km/h",
       "Neumáticos de 10 pulgadas de alta absorción",
@@ -35,7 +35,7 @@ const SCOOTERS = [
     price: 412,
     oldPrice: 470,
     badge: "Ultra Ligero 11kg",
-    img: "/images/scooters/scooter-es1l.jpg",
+    img: "/images/scooters/scooter-es1l.png",
     specs: [
       "Ultra ligero: Solo 11 kg (fácil de transportar)",
       "Potencia nominal: 250W",
@@ -53,7 +53,7 @@ const SCOOTERS = [
     price: 269,
     oldPrice: 320,
     badge: "Jóvenes 10-12 años",
-    img: "/images/scooters/scooter-e12.jpg",
+    img: "/images/scooters/scooter-e12.png",
     specs: [
       "Edad recomendada: 10 a 12 años",
       "Velocidad máxima segura: 18 km/h",
@@ -132,54 +132,67 @@ export default function ScootersClient() {
               key={scooter.id}
               className="rounded-3xl bg-white/[0.03] border border-white/10 overflow-hidden hover:border-cyan-500/50 transition-all flex flex-col justify-between group shadow-xl"
             >
-              <div className="p-8">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="px-3 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-xs font-black uppercase tracking-wider border border-cyan-500/20">
+              {/* Product Image Stage (Fondo blanco pulcro de estudio) */}
+              <div className="relative w-full aspect-square bg-white flex items-center justify-center p-6 overflow-hidden">
+                {/* Floating Badges */}
+                <div className="absolute top-4 left-4 z-10">
+                  <span className="px-3 py-1 rounded-full bg-slate-900/90 text-cyan-400 text-[11px] font-black uppercase tracking-wider border border-white/10 backdrop-blur-md shadow-md">
                     {scooter.badge}
                   </span>
-                  <div className="flex items-center gap-1 text-amber-400 text-xs font-bold">
-                    <Star size={13} fill="currentColor" /> 5.0
-                  </div>
+                </div>
+                <div className="absolute top-4 right-4 z-10 flex items-center gap-1 text-amber-500 text-xs font-black bg-slate-900/90 px-2.5 py-1 rounded-full border border-white/10 backdrop-blur-md shadow-md">
+                  <Star size={12} fill="currentColor" /> 5.0
                 </div>
 
-                <h3 className="text-2xl font-black text-white group-hover:text-cyan-400 transition-colors">
-                  {scooter.name}
-                </h3>
-                <p className="text-slate-400 text-xs mt-2 leading-relaxed">
-                  {scooter.tagline}
-                </p>
-
-                <div className="mt-6 space-y-2">
-                  <h4 className="text-[11px] font-bold uppercase text-slate-400 tracking-wider">Ficha Técnica:</h4>
-                  <ul className="space-y-1.5 text-xs text-slate-300">
-                    {scooter.specs.map((s, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <CheckCircle2 size={14} className="text-cyan-400 shrink-0 mt-0.5" />
-                        <span>{s}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                {/* Scooter Image */}
+                <img
+                  src={scooter.img}
+                  alt={scooter.name}
+                  className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
+                />
               </div>
 
-              <div className="p-8 pt-0 border-t border-white/5 mt-4">
-                <div className="flex items-baseline justify-between mb-4">
-                  <div>
-                    <span className="text-3xl font-black text-cyan-400">${scooter.price}</span>
-                    <span className="text-xs text-slate-500 line-through ml-2">${scooter.oldPrice} USD</span>
+              <div className="p-7 flex flex-col flex-grow justify-between">
+                <div>
+                  <h3 className="text-2xl font-black text-white group-hover:text-cyan-400 transition-colors">
+                    {scooter.name}
+                  </h3>
+                  <p className="text-slate-400 text-xs mt-2 leading-relaxed">
+                    {scooter.tagline}
+                  </p>
+
+                  <div className="mt-5 space-y-2">
+                    <h4 className="text-[11px] font-bold uppercase text-slate-400 tracking-wider">Ficha Técnica:</h4>
+                    <ul className="space-y-1.5 text-xs text-slate-300">
+                      {scooter.specs.map((s, idx) => (
+                        <li key={idx} className="flex items-start gap-2">
+                          <CheckCircle2 size={14} className="text-cyan-400 shrink-0 mt-0.5" />
+                          <span>{s}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                    IVA Incluido
-                  </span>
                 </div>
 
-                <button
-                  onClick={() => handleOrderWhatsApp(scooter)}
-                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-black text-sm hover:brightness-110 shadow-lg shadow-cyan-500/25 transition-all flex items-center justify-center gap-2"
-                >
-                  <MessageSquare size={16} />
-                  <span>Comprar por WhatsApp</span>
-                </button>
+                <div className="pt-6 border-t border-white/5 mt-6">
+                  <div className="flex items-baseline justify-between mb-4">
+                    <div>
+                      <span className="text-3xl font-black text-cyan-400">${scooter.price}</span>
+                      <span className="text-xs text-slate-500 line-through ml-2">${scooter.oldPrice} USD</span>
+                    </div>
+                    <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20">
+                      IVA Incluido
+                    </span>
+                  </div>
+
+                  <button
+                    onClick={() => handleOrderWhatsApp(scooter)}
+                    className="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-black text-sm hover:brightness-110 shadow-lg shadow-cyan-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <MessageSquare size={16} />
+                    <span>Comprar por WhatsApp</span>
+                  </button>
+                </div>
               </div>
             </div>
           ))}
