@@ -102,31 +102,46 @@ function ProductCard({ p, onQuote }: { p: Product; onQuote: (p: Product) => void
   const burners = type === 'encimera' ? extractBurners(p.description, p.name) : null;
   const capacity = type === 'horno' ? extractCapacity(p.description) : null;
 
-  const fuelColors: Record<string, string> = {
-    Gas: 'bg-orange-100 text-orange-700 border-orange-200',
-    Inducción: 'bg-blue-100 text-blue-700 border-blue-200',
-    Eléctrico: 'bg-purple-100 text-purple-700 border-purple-200',
+  const fuelBadges: Record<string, { label: string; bg: string; text: string; border: string }> = {
+    Gas: { label: '🔥 A Gas', bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200' },
+    Inducción: { label: '⚡ Inducción', bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200' },
+    Eléctrico: { label: '🔌 Eléctrico', bg: 'bg-stone-100', text: 'text-stone-700', border: 'border-stone-200' },
   };
 
+  const fuelInfo = fuelBadges[fuel] || fuelBadges['Eléctrico'];
+
   return (
-    <div className="group flex flex-col bg-white rounded-3xl overflow-hidden shadow-sm border border-stone-200/80 hover:shadow-2xl hover:-translate-y-2 transition-all duration-400">
-      {/* Image */}
+    <div className="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm border border-stone-200/80 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+      {/* Image Container */}
       <div className="relative aspect-square bg-stone-50 flex items-center justify-center overflow-hidden p-4">
         <img
           src={img}
           alt={p.name}
           onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?q=80&w=800'; }}
-          className="w-full h-full object-contain group-hover:scale-108 transition-transform duration-500"
+          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
         />
 
-        {/* Price badge */}
-        <div className="absolute top-3 right-3 bg-gradient-to-r from-amber-700 to-amber-800 text-white px-4 py-1.5 rounded-full font-bold text-sm shadow-lg font-mono">
-          ${p.price.toFixed(0)}
+        {/* Type badge (Top-Left) */}
+        <div className={`absolute top-3 left-3 text-[11px] font-semibold px-2.5 py-1 rounded-lg border backdrop-blur-sm ${
+          type === 'encimera'
+            ? 'bg-stone-900/90 text-stone-100 border-stone-700'
+            : 'bg-amber-900/90 text-amber-100 border-amber-700'
+        }`}>
+          {type === 'encimera' ? '🍳 Encimera' : '🔥 Horno'}
         </div>
 
-        {/* Type badge */}
-        <div className={`absolute top-3 left-3 text-[11px] font-bold px-3 py-1 rounded-full border ${type === 'encimera' ? 'bg-stone-800 text-stone-100 border-stone-700' : 'bg-amber-800 text-amber-100 border-amber-700'}`}>
-          {type === 'encimera' ? '🍳 Encimera' : '🔥 Horno'}
+        {/* Stock badge (Top-Right) */}
+        <div className="absolute top-3 right-3">
+          {p.stock > 0 ? (
+            <span className="text-[10px] font-semibold px-2.5 py-1 rounded-lg bg-emerald-50/95 text-emerald-700 border border-emerald-200/80 backdrop-blur-sm flex items-center gap-1 shadow-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+              En Stock
+            </span>
+          ) : (
+            <span className="text-[10px] font-medium px-2.5 py-1 rounded-lg bg-white/95 text-stone-600 border border-stone-200/80 backdrop-blur-sm shadow-sm">
+              Bajo Pedido
+            </span>
+          )}
         </div>
 
         {/* Image carousel dots */}
@@ -136,76 +151,99 @@ function ProductCard({ p, onQuote }: { p: Product; onQuote: (p: Product) => void
               <button
                 key={i}
                 onClick={() => setImgIdx(i)}
-                className={`w-1.5 h-1.5 rounded-full transition-all ${i === imgIdx ? 'bg-amber-700 w-3' : 'bg-stone-400'}`}
+                className={`w-1.5 h-1.5 rounded-full transition-all ${i === imgIdx ? 'bg-stone-800 w-3' : 'bg-stone-300'}`}
               />
             ))}
           </div>
         )}
       </div>
 
-      {/* Info */}
-      <div className="p-5 flex flex-col gap-4 flex-grow">
-        <h3 className="text-sm font-bold text-stone-900 leading-snug line-clamp-2 group-hover:text-amber-800 transition-colors">
+      {/* Info Container */}
+      <div className="p-4 flex flex-col gap-3 flex-grow">
+        {/* Title */}
+        <h3 className="text-xs font-bold text-stone-900 leading-snug line-clamp-2 min-h-[32px] group-hover:text-amber-800 transition-colors">
           {p.name}
         </h3>
 
-        {/* ★ BIG DIMENSION DISPLAY */}
-        {dims && (
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 text-center">
-            <div className="text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-0.5">
-              📐 Dimensiones Externas
+        {/* Ficha técnica elegante y legible */}
+        <div className="bg-stone-50/90 rounded-xl border border-stone-200/70 p-2.5 space-y-2">
+          {dims && (
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-[11px] font-medium text-stone-500 flex items-center gap-1.5">
+                <span className="text-stone-400">📐</span> Dim. Externas
+              </span>
+              <span className="font-mono font-bold text-stone-900 text-xs">
+                {dims}
+              </span>
             </div>
-            <div className="text-xl font-black text-stone-900 font-mono tracking-tight">
-              {dims}
-            </div>
-          </div>
-        )}
-
-        {/* ★ BIG BURNERS DISPLAY (encimeras) */}
-        {type === 'encimera' && burners && (
-          <div className="bg-stone-900 rounded-2xl px-4 py-3 flex items-center justify-between">
-            <span className="text-xs font-bold text-stone-400 uppercase tracking-wider">Hornillas</span>
-            <div className="flex items-center gap-2">
-              {Array.from({ length: burners }).map((_, i) => (
-                <div key={i} className="w-4 h-4 rounded-full bg-amber-500 border-2 border-amber-600 shadow-sm shadow-amber-500/50" />
-              ))}
-              <span className="text-2xl font-black text-white ml-1 font-mono">{burners}</span>
-            </div>
-          </div>
-        )}
-
-        {/* ★ OVEN CAPACITY (hornos) */}
-        {type === 'horno' && capacity && (
-          <div className="bg-stone-900 rounded-2xl px-4 py-3 flex items-center justify-between">
-            <span className="text-xs font-bold text-stone-400 uppercase tracking-wider">Capacidad</span>
-            <span className="text-2xl font-black text-white font-mono">{capacity}</span>
-          </div>
-        )}
-
-        {/* Fuel badge */}
-        <div className="flex flex-wrap gap-2">
-          <span className={`text-[11px] font-bold px-3 py-1 rounded-full border ${fuelColors[fuel]}`}>
-            {fuel === 'Gas' ? '🔥' : fuel === 'Inducción' ? '⚡' : '🔌'} {fuel}
-          </span>
-          {p.stock > 0 ? (
-            <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse inline-block" />
-              En Stock
-            </span>
-          ) : (
-            <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-amber-100 text-amber-700 border border-amber-200">
-              Bajo Pedido
-            </span>
           )}
+
+          {type === 'encimera' && burners && (
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-[11px] font-medium text-stone-500 flex items-center gap-1.5">
+                <span className="text-stone-400">🍳</span> Quemadores
+              </span>
+              <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-0.5">
+                  {Array.from({ length: burners }).map((_, i) => (
+                    <span key={i} className="w-1.5 h-1.5 rounded-full bg-amber-600 inline-block" />
+                  ))}
+                </div>
+                <span className="font-mono font-bold text-stone-900 text-xs">
+                  {burners} hornillas
+                </span>
+              </div>
+            </div>
+          )}
+
+          {type === 'horno' && capacity && (
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-[11px] font-medium text-stone-500 flex items-center gap-1.5">
+                <span className="text-stone-400">🔥</span> Capacidad
+              </span>
+              <span className="font-mono font-bold text-stone-900 text-xs">
+                {capacity}
+              </span>
+            </div>
+          )}
+
+          <div className="flex items-center justify-between text-xs pt-0.5 border-t border-stone-200/50">
+            <span className="text-[11px] font-medium text-stone-500">
+              Sistema
+            </span>
+            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border ${fuelInfo.bg} ${fuelInfo.text} ${fuelInfo.border}`}>
+              {fuelInfo.label}
+            </span>
+          </div>
         </div>
 
-        {/* CTA */}
-        <button
-          onClick={() => onQuote(p)}
-          className="mt-auto w-full py-3 bg-gradient-to-r from-stone-800 to-stone-900 hover:from-amber-800 hover:to-amber-900 text-white font-bold text-xs uppercase tracking-widest rounded-2xl transition-all duration-300 shadow-md hover:shadow-amber-900/30"
-        >
-          Consultar por WhatsApp →
-        </button>
+        {/* Pie del producto: Precio al pie + CTA */}
+        <div className="mt-auto pt-3 border-t border-stone-100 flex flex-col gap-2.5">
+          <div className="flex items-baseline justify-between">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400 block">
+                PVP Contado
+              </span>
+              <span className="text-[10px] text-emerald-600 font-medium">
+                Garantía 1 Año Oficial
+              </span>
+            </div>
+            <div className="text-right">
+              <span className="text-xl font-black font-mono text-stone-900 tracking-tight">
+                ${p.price.toFixed(0)}
+              </span>
+              <span className="text-[11px] font-semibold text-stone-400 ml-1">+IVA</span>
+            </div>
+          </div>
+
+          <button
+            onClick={() => onQuote(p)}
+            className="w-full py-2.5 bg-stone-900 hover:bg-amber-800 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all duration-200 shadow-sm flex items-center justify-center gap-2"
+          >
+            <span>Consultar por WhatsApp</span>
+            <span>→</span>
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -559,9 +597,13 @@ export default function CocinasClient({ products }: { products: Product[] }) {
 
             {/* dims reminder */}
             {extractDimensions(quoteProduct.description) && (
-              <div className="bg-amber-50 border border-amber-200 rounded-2xl p-3 text-center mb-4">
-                <div className="text-[10px] text-amber-600 font-bold uppercase tracking-widest">Dimensiones</div>
-                <div className="text-lg font-black text-stone-900 font-mono">{extractDimensions(quoteProduct.description)}</div>
+              <div className="bg-stone-50 border border-stone-200/80 rounded-xl px-4 py-2.5 flex items-center justify-between mb-4">
+                <span className="text-xs text-stone-500 font-medium flex items-center gap-1.5">
+                  <span>📐</span> Medidas Externas
+                </span>
+                <span className="text-xs font-mono font-bold text-stone-900">
+                  {extractDimensions(quoteProduct.description)}
+                </span>
               </div>
             )}
 
