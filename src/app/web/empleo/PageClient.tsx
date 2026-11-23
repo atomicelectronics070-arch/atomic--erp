@@ -288,6 +288,84 @@ export default function EmpleoLandingPage() {
                             </div>
                         </div>
 
+                        {/* SISTEMA DE PUNTOS ATOMIC (GAMIFICACIÓN Y RECOMPENSAS SEMANALES) */}
+                        <div id="puntos" className="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-[#0c1a30] via-[#081224] to-[#050b18] border-2 border-cyan-500/50 shadow-[0_10px_40px_rgba(6,182,212,0.2)] space-y-6">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-cyan-500/30 pb-5">
+                                <div className="space-y-1">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 font-mono text-xs font-bold uppercase tracking-widest">
+                                        <Sparkles size={13} className="text-cyan-400 animate-pulse" />
+                                        <span>Programa Oficial de Gamificación Comercial</span>
+                                    </div>
+                                    <h3 className="text-xl sm:text-2xl font-black text-white font-heading">
+                                        Sistema de Puntos ATOMIC: Recompensas y Bonos Semanales
+                                    </h3>
+                                    <p className="text-xs sm:text-sm text-slate-300 max-w-2xl">
+                                        Premia tu esfuerzo diario en tiempo real. Cada número prospectado, llamada y cotización suma puntos en el Tablero de Honor semanal.
+                                    </p>
+                                </div>
+                                <div className="shrink-0 px-4 py-2 rounded-xl bg-cyan-950/80 border border-cyan-500/40 text-cyan-200 font-mono text-xs font-black uppercase tracking-wider">
+                                    Semana Activa · Lunes a Viernes
+                                </div>
+                            </div>
+
+                            {/* Mecánica de Puntos */}
+                            <div className="grid sm:grid-cols-3 gap-4">
+                                <div className="p-4 rounded-2xl bg-black/40 border border-cyan-500/30 space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[11px] font-mono font-bold text-cyan-400 uppercase">Prospección</span>
+                                        <span className="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 font-mono font-black text-xs">+10 PUNTOS</span>
+                                    </div>
+                                    <h4 className="text-sm font-black text-white">Contacto Calificado Extraído</h4>
+                                    <p className="text-xs text-slate-400 leading-relaxed">
+                                        Subir al grupo el WhatsApp del cliente con la captura de pantalla de su consulta en Marketplace.
+                                    </p>
+                                </div>
+
+                                <div className="p-4 rounded-2xl bg-black/40 border border-amber-500/30 space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[11px] font-mono font-bold text-amber-400 uppercase">Interacción</span>
+                                        <span className="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 font-mono font-black text-xs">+25 PUNTOS</span>
+                                    </div>
+                                    <h4 className="text-sm font-black text-white">Cotización Formal o Llamada</h4>
+                                    <p className="text-xs text-slate-400 leading-relaxed">
+                                        Prospecto que recibe cotización oficial emitida en plataforma o acepta llamada de asesoría comercial.
+                                    </p>
+                                </div>
+
+                                <div className="p-4 rounded-2xl bg-black/40 border border-emerald-500/30 space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[11px] font-mono font-bold text-emerald-400 uppercase">Cierre Efectivo</span>
+                                        <span className="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 font-mono font-black text-xs">+100 PUNTOS</span>
+                                    </div>
+                                    <h4 className="text-sm font-black text-white">Venta Concretada y Liquidada</h4>
+                                    <p className="text-xs text-slate-400 leading-relaxed">
+                                        Venta con comprobante bancario acreditado (+ 20% de comisión directa en efectivo transferida al asesor).
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Beneficios Canjeables */}
+                            <div className="p-4 rounded-2xl bg-cyan-950/40 border border-cyan-500/20 flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-mono">
+                                <div className="space-y-1 text-slate-300">
+                                    <div className="flex items-center gap-2 font-bold text-cyan-300">
+                                        <Award size={15} />
+                                        <span>Beneficios del Ranking Semanal:</span>
+                                    </div>
+                                    <p className="text-[11px] text-slate-400 font-sans">
+                                        🏆 <strong>Top 1 del Viernes:</strong> Bono de $15 USD en efectivo transferido en el acto · 🎯 <strong>Top 2:</strong> Asignación prioritaria de clientes inbound de pauta · 🛡️ <strong>200 Pts/mes:</strong> Habilita postulación directa a Sueldos Fijos.
+                                    </p>
+                                </div>
+                                <a 
+                                    href="https://wa.me/593989476556?text=Saludos%2C%20deseo%20activar%20mi%20participaci%C3%B3n%20en%20el%20Tablero%20de%20Puntos%20ATOMIC." 
+                                    target="_blank" 
+                                    rel="noreferrer"
+                                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black text-xs uppercase tracking-wider shrink-0 transition-transform hover:scale-105 shadow-md shadow-cyan-950/60"
+                                >
+                                    Activar mi Tablero →
+                                </a>
+                            </div>
+                        </div>
+
                         {/* Footer informativo de la tabla */}
                         <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono text-slate-400">
                             <div>
