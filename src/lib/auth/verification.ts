@@ -177,14 +177,16 @@ export async function verifyUserCode(email: string, inputCode: string): Promise<
         return { success: false, message: "El código ingresado es incorrecto. Por favor verifica los 6 dígitos que te enviamos al correo." }
     }
 
-    // Código correcto: Pasamos el usuario a PENDING para que Administración lo apruebe
+    // Código correcto: Activamos automáticamente al usuario
     parsedMeta.isCodeVerified = true
     parsedMeta.verifiedAt = new Date().toISOString()
+    parsedMeta.autoApproved = true
 
     const updatedUser = await prisma.user.update({
         where: { id: user.id },
         data: {
-            status: "PENDING", // Pasa a cola de aprobación de Administración
+            status: "APPROVED", // Activación inmediata automática
+            isActive: true,
             tempResetCode: null, // Limpia el código usado
             profileData: JSON.stringify(parsedMeta)
         }

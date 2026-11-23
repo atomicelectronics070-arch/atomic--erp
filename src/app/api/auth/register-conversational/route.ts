@@ -59,24 +59,59 @@ export async function POST(req: Request) {
                 role: role || "SALESPERSON"
             };
 
-            // Guardar borrador en base de datos
+            // Guardar o actualizar registro en base de datos
             const userDraft = await createOrUpdateRegistrationDraft(draftData, code);
 
-            // Si se envió contraseña en formulario web, encriptarla de una vez
+            // Activación automática inmediata: si se envió contraseña (registro web), activar como APPROVED
             if (password && password.length >= 6) {
                 const passwordHash = await bcrypt.hash(password, 10);
                 await prisma.user.update({
                     where: { id: userDraft.id },
-                    data: { passwordHash }
+                    data: { 
+                        passwordHash,
+                        status: "APPROVED",
+                        isActive: true
+                    }
+                });
+
+                // Notificación interna de nuevo vendedor activo
+                try {
+                    const adminUser = await prisma.user.findFirst({
+                        where: { OR: [{ role: "ADMIN" }, { role: "SUPER_ADMIN" }] }
+                    });
+                    if (adminUser) {
+                        await prisma.notification.create({
+                            data: {
+                                userId: adminUser.id,
+                                title: `⚡ Asesor Activado: ${draftData.name} ${draftData.lastName}`,
+                                message: `Registro comercial completado y auto-aprobado. Ciudad: ${draftData.cityResidence}. WhatsApp: ${draftData.phone || 'No indicado'}.`,
+                                type: "SALES_OPPORTUNITY"
+                            }
+                        });
+                    }
+                } catch (_) {}
+
+                return NextResponse.json({
+                    success: true,
+                    autoActivated: true,
+                    message: `¡Cuenta activada automáticamente con éxito! Ya puedes iniciar sesión en el cotizador y catálogo comercial.`,
+                    email: cleanEmail,
+                    step: "ACTIVATED",
+                    user: {
+                        id: userDraft.id,
+                        name: userDraft.name,
+                        email: cleanEmail,
+                        role: userDraft.role
+                    }
                 });
             }
 
-            // Enviar correo con el código de 6 dígitos
+            // Fallback (solo si no envió contraseña): intentar envío de código
             await sendVerificationEmail(cleanEmail, code, name);
 
             return NextResponse.json({
                 success: true,
-                message: `Código de confirmación enviado exitosamente a ${cleanEmail}. Válido por 24 horas.`,
+                message: `Código de confirmación generado para ${cleanEmail}.`,
                 email: cleanEmail,
                 step: "AWAITING_CODE"
             });
@@ -107,7 +142,8 @@ export async function POST(req: Request) {
 
             return NextResponse.json({
                 success: true,
-                message: "Administración está revisando tu solicitud y en un máximo de 1 hora se activará tu perfil. Te llegará una notificación a tu correo o puedes probar iniciar sesión en unos minutos.",
+                autoActivated: true,
+                message: "¡Tu cuenta ha sido activada automáticamente con éxito! Ya puedes iniciar sesión en la plataforma.",
                 user: result.user
             });
         }

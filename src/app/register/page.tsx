@@ -5,15 +5,16 @@ import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { 
     User, Mail, Lock, ShieldCheck, ArrowRight, Loader2, 
-    CreditCard, Users, Briefcase, Bell, Sparkles, MapPin, 
-    Phone, CheckCircle2, RefreshCw, KeyRound 
+    CreditCard, Briefcase, Sparkles, MapPin, 
+    Phone, CheckCircle2, Eye, EyeOff, MessageSquare
 } from "lucide-react"
 
 function RegisterForm() {
     const router = useRouter()
     const searchParams = useSearchParams()
     
-    const [step, setStep] = useState<"FORM" | "VERIFY_CODE" | "AWAITING_APPROVAL">("FORM")
+    const [step, setStep] = useState<"FORM" | "ACTIVATED">("FORM")
+    const [showPassword, setShowPassword] = useState(false)
     
     const [formData, setFormData] = useState({
         name: "",
@@ -29,10 +30,8 @@ function RegisterForm() {
         receivePromotions: true
     })
     
-    const [verificationCode, setVerificationCode] = useState("")
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
-    const [infoMsg, setInfoMsg] = useState("")
 
     useEffect(() => {
         const roleParam = searchParams.get("role") || searchParams.get("type")
@@ -60,12 +59,17 @@ function RegisterForm() {
         })
     }
 
-    // Paso 1: Enviar datos y solicitar código de verificación
-    const handleStartRegistration = async (e: React.FormEvent) => {
+    // Registro con Activación Automática Inmediata
+    const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
         setError("")
-        setInfoMsg("")
+
+        if (formData.password.length < 8) {
+            setError("La clave de seguridad debe tener al menos 8 caracteres.")
+            setLoading(false)
+            return
+        }
 
         try {
             const res = await fetch("/api/auth/register-conversational", {
@@ -90,127 +94,81 @@ function RegisterForm() {
             if (!res.ok) {
                 setError(data.error || "Error al procesar la solicitud.")
             } else {
-                setInfoMsg(data.message || `Código enviado a ${formData.email}`)
-                setStep("VERIFY_CODE")
+                setStep("ACTIVATED")
             }
         } catch (err) {
-            setError("Error de conexión con el servidor.")
+            setError("Error de conexión con el servidor. Inténtalo nuevamente.")
         } finally {
             setLoading(false)
         }
     }
 
-    // Paso 2: Verificar el código de 6 dígitos
-    const handleVerifyCode = async (e: React.FormEvent) => {
-        e.preventDefault()
-        if (verificationCode.trim().length !== 6) {
-            setError("El código debe tener exactamente 6 dígitos numéricos.")
-            return
-        }
-
-        setLoading(true)
-        setError("")
-
-        try {
-            const res = await fetch("/api/auth/register-conversational", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    action: "verify",
-                    email: formData.email,
-                    code: verificationCode.trim(),
-                    password: formData.password
-                })
-            })
-
-            const data = await res.json()
-
-            if (!res.ok) {
-                setError(data.error || "El código ingresado es incorrecto.")
-            } else {
-                setStep("AWAITING_APPROVAL")
-            }
-        } catch (err) {
-            setError("Error al validar el código. Por favor intenta de nuevo.")
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    // Reenviar código
-    const handleResendCode = async () => {
-        setLoading(true)
-        setError("")
-        setInfoMsg("")
-        try {
-            const res = await fetch("/api/auth/register-conversational", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    action: "start",
-                    name: formData.name,
-                    lastName: formData.lastName,
-                    cedula: formData.cedula,
-                    cityOrigin: formData.cityOrigin || formData.cityResidence,
-                    cityResidence: formData.cityResidence,
-                    email: formData.email,
-                    phone: formData.phone,
-                    role: formData.role,
-                    password: formData.password
-                })
-            })
-            const data = await res.json()
-            if (res.ok) {
-                setInfoMsg(`Nuevo código generado y enviado a ${formData.email}`)
-            } else {
-                setError(data.error || "No se pudo reenviar el código.")
-            }
-        } catch (err) {
-            setError("Error de conexión al reenviar.")
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    // PANTALLA 3: MENSAJE EXACTO DE REVISIÓN ADMINISTRATIVA
-    if (step === "AWAITING_APPROVAL") {
+    // PANTALLA DE ÉXITO: ACTIVACIÓN AUTOMÁTICA CONFIRMADA
+    if (step === "ACTIVATED") {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-[#070b19] text-white p-6 font-sans">
-                <div className="max-w-lg w-full bg-[#0d142b] border border-cyan-500/30 p-10 md:p-14 text-center relative overflow-hidden shadow-2xl rounded-3xl">
-                    <div className="absolute top-0 right-0 w-40 h-40 bg-cyan-500/10 blur-[90px] rounded-full"></div>
-                    <div className="w-20 h-20 bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center mx-auto mb-8 rounded-2xl">
-                        <CheckCircle2 size={42} className="text-emerald-400" />
+            <div className="min-h-screen flex items-center justify-center bg-[#070e23] text-white p-4 sm:p-6 font-sans relative overflow-hidden">
+                {/* Iluminación sutil de fondo azul marino */}
+                <div className="absolute top-[-10%] right-[-5%] w-[450px] h-[450px] bg-blue-600/15 blur-[140px] rounded-full pointer-events-none" />
+                <div className="absolute bottom-[-10%] left-[-5%] w-[450px] h-[450px] bg-cyan-600/15 blur-[140px] rounded-full pointer-events-none" />
+
+                {/* Recuadro Blanco de Confirmación */}
+                <div className="max-w-xl w-full bg-white text-slate-900 border border-slate-200 p-8 sm:p-12 text-center relative overflow-hidden shadow-2xl rounded-3xl z-10">
+                    <div className="w-20 h-20 bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto mb-6 rounded-3xl shadow-sm">
+                        <CheckCircle2 size={44} className="text-emerald-600" />
                     </div>
                     
-                    <span className="inline-block px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold text-[10px] uppercase tracking-widest rounded-full mb-4">
-                        ✓ Correo Electrónico Confirmado
+                    <span className="inline-block px-3.5 py-1.5 bg-emerald-100 border border-emerald-300 text-emerald-800 font-mono font-black text-xs uppercase tracking-widest rounded-full mb-3">
+                        ✓ Cuenta Activada Automáticamente
                     </span>
                     
-                    <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-white mb-6">
-                        ¡CÓDIGO VERIFICADO <span className="text-cyan-400">CON ÉXITO!</span>
+                    <h2 className="text-2xl sm:text-3xl font-black text-slate-900 uppercase tracking-tight mb-3 font-heading">
+                        ¡Bienvenido al Equipo <span className="text-blue-600">ATOMIC</span>!
                     </h2>
                     
-                    <div className="bg-slate-900/80 border border-slate-800 p-6 rounded-2xl mb-8 text-left space-y-3">
-                        <p className="text-slate-200 text-sm font-medium leading-relaxed">
-                            <strong>Administración está revisando tu solicitud y en un máximo de 1 hora se activará tu perfil.</strong>
-                        </p>
-                        <p className="text-slate-400 text-xs leading-relaxed">
-                            Te llegará una notificación a tu correo o puedes probar iniciar sesión en unos minutos.
-                        </p>
+                    <p className="text-slate-600 text-sm leading-relaxed mb-6">
+                        Tu perfil de <strong>{formData.role === "SALESPERSON" ? "Asesor de Ventas" : formData.role}</strong> ha sido habilitado con éxito en el sistema. Ya cuentas con acceso inmediato a nuestro cotizador web, lista de precios mayorista y cálculo del 20% de comisión.
+                    </p>
+
+                    <div className="bg-slate-50 border border-slate-200 p-5 rounded-2xl mb-8 text-left space-y-2 text-xs">
+                        <div className="flex justify-between items-center py-1 border-b border-slate-200">
+                            <span className="text-slate-500 font-bold uppercase">Asesor:</span>
+                            <span className="text-slate-900 font-semibold">{formData.name} {formData.lastName}</span>
+                        </div>
+                        <div className="flex justify-between items-center py-1 border-b border-slate-200">
+                            <span className="text-slate-500 font-bold uppercase">Correo de Acceso:</span>
+                            <span className="text-blue-600 font-mono font-bold">{formData.email}</span>
+                        </div>
+                        <div className="flex justify-between items-center py-1">
+                            <span className="text-slate-500 font-bold uppercase">Estado:</span>
+                            <span className="text-emerald-600 font-black uppercase flex items-center gap-1">
+                                <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse" /> Activo & Autorizado
+                            </span>
+                        </div>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    <div className="space-y-3">
                         <Link 
                             href="/login" 
-                            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-cyan-500/20"
+                            className="w-full inline-flex items-center justify-center gap-2 py-4 px-6 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-widest rounded-2xl transition-all shadow-lg shadow-blue-600/30"
                         >
-                            Ir a Iniciar Sesión <ArrowRight size={14} />
+                            Iniciar Sesión en el Cotizador <ArrowRight size={16} />
                         </Link>
+                        
+                        <a
+                            href={`https://wa.me/593989476556?text=Saludos%20Stefy%2C%20acabo%20de%20registrarme%20en%20ATOMIC.%20Mi%20cuenta%20fue%20activada%20autom%C3%A1ticamente.%20Mi%20nombre%20es%20${encodeURIComponent(formData.name + ' ' + formData.lastName)}%20y%20mi%20correo%20es%20${encodeURIComponent(formData.email)}.%20Solicito%20acceso%20a%20los%20grupos%20de%20trabajo.`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-6 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider rounded-2xl transition-all shadow-md"
+                        >
+                            <MessageSquare size={16} />
+                            Contactar a Coordinación (Stefy) en WhatsApp
+                        </a>
+
                         <Link 
-                            href="/web" 
-                            className="inline-flex items-center justify-center gap-2 px-6 py-4 bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold text-xs uppercase tracking-widest rounded-xl border border-slate-700 transition-all"
+                            href="/web/precios-vendedor" 
+                            className="w-full inline-flex items-center justify-center gap-2 py-3 px-6 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs uppercase tracking-wider rounded-2xl transition-all"
                         >
-                            Ver Catálogo Público
+                            ⚡ Ver Portal de Precios & PVPs
                         </Link>
                     </div>
                 </div>
@@ -218,244 +176,303 @@ function RegisterForm() {
         )
     }
 
-    // PANTALLA 2: INGRESO DE CÓDIGO DE 6 DÍGITOS
-    if (step === "VERIFY_CODE") {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-[#070b19] text-white p-6 font-sans">
-                <div className="max-w-md w-full bg-[#0d142b] border border-cyan-500/30 p-10 md:p-12 text-center relative overflow-hidden shadow-2xl rounded-3xl">
-                    <div className="absolute top-0 right-0 w-36 h-36 bg-blue-500/10 blur-[80px] rounded-full"></div>
-                    
-                    <div className="w-16 h-16 bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center mx-auto mb-6 rounded-2xl">
-                        <KeyRound size={32} className="text-cyan-400" />
-                    </div>
-
-                    <h2 className="text-2xl font-black uppercase tracking-tight text-white mb-2">
-                        Verifica tu <span className="text-cyan-400">Correo</span>
-                    </h2>
-                    
-                    <p className="text-slate-400 text-xs mb-6 leading-relaxed">
-                        Te hemos enviado un código de confirmación de 6 dígitos a: <br/>
-                        <strong className="text-cyan-300 font-mono text-sm">{formData.email}</strong> <br/>
-                        <span className="text-[11px] text-slate-500">(Válido durante 24 horas)</span>
-                    </p>
-
-                    {infoMsg && (
-                        <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-medium rounded-xl">
-                            {infoMsg}
-                        </div>
-                    )}
-
-                    {error && (
-                        <div className="mb-6 p-4 bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-medium rounded-xl">
-                            {error}
-                        </div>
-                    )}
-
-                    <form onSubmit={handleVerifyCode} className="space-y-6">
-                        <div className="space-y-2 text-left">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                                Código de 6 Dígitos
-                            </label>
-                            <input 
-                                type="text"
-                                maxLength={6}
-                                required
-                                autoFocus
-                                value={verificationCode}
-                                onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ''))}
-                                placeholder="123456"
-                                className="w-full bg-slate-900 border-2 border-cyan-500/50 focus:border-cyan-400 px-6 py-4 text-center text-3xl font-mono font-black tracking-[12px] text-cyan-300 rounded-xl outline-none transition-all placeholder:text-slate-700"
-                            />
-                        </div>
-
-                        <button 
-                            type="submit"
-                            disabled={loading || verificationCode.length !== 6}
-                            className="w-full py-4 px-6 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-widest rounded-xl transition-all disabled:opacity-50 shadow-lg shadow-cyan-500/20 flex justify-center items-center gap-3"
-                        >
-                            {loading ? <Loader2 className="animate-spin" size={16} /> : <>Confirmar Código <ArrowRight size={16} /></>}
-                        </button>
-                    </form>
-
-                    <div className="mt-8 pt-6 border-t border-slate-800 flex items-center justify-between text-xs">
-                        <button 
-                            onClick={handleResendCode}
-                            disabled={loading}
-                            type="button"
-                            className="text-cyan-400 hover:text-cyan-300 inline-flex items-center gap-1 font-bold"
-                        >
-                            <RefreshCw size={12} /> Reenviar código
-                        </button>
-                        <button 
-                            onClick={() => setStep("FORM")}
-                            type="button"
-                            className="text-slate-400 hover:text-slate-300"
-                        >
-                            Modificar datos
-                        </button>
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
-    // PANTALLA 1: FORMULARIO PRINCIPAL CON LOS CAMPOS SOLICITADOS
+    // FORMULARIO PRINCIPAL: FONDO AZUL MARINO CON DOS APARTADOS EN RECUADROS BLANCOS
     return (
-        <div className="min-h-screen bg-[#070b19] text-white font-sans py-16 px-6 relative overflow-hidden">
-            <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-cyan-500/10 blur-[150px] rounded-full"></div>
-            <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] bg-blue-600/10 blur-[150px] rounded-full"></div>
+        <div className="min-h-screen bg-[#070e23] text-slate-100 font-sans py-14 px-4 sm:px-6 relative overflow-hidden">
+            {/* Ambient Lighting Azul Marino */}
+            <div className="fixed inset-0 pointer-events-none z-0">
+                <div className="absolute top-[-10%] right-[-5%] w-[550px] h-[550px] bg-blue-600/10 blur-[160px] rounded-full" />
+                <div className="absolute bottom-[-10%] left-[-5%] w-[550px] h-[550px] bg-cyan-600/10 blur-[160px] rounded-full" />
+            </div>
 
-            <div className="max-w-4xl mx-auto relative z-10">
-                <div className="text-center mb-12">
-                    <div className="inline-flex items-center gap-3 px-4 py-2 border border-cyan-500/30 bg-cyan-950/40 rounded-full mb-6">
+            <div className="max-w-4xl mx-auto relative z-10 space-y-8">
+                
+                {/* Header Ejecutivo */}
+                <div className="text-center space-y-3">
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-blue-500/30 bg-blue-950/60 text-blue-300 font-mono text-xs font-semibold">
                         <Sparkles size={14} className="text-cyan-400" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-cyan-300">
-                            Registro Oficial en el Sistema
-                        </span>
+                        <span>Convocatoria Comercial 2026 · Alta Inmediata</span>
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tight text-white leading-tight">
-                        ÚNETE A <span className="text-cyan-400">ATOMIC.</span>
+                    <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight uppercase font-heading">
+                        ÚNETE AL EQUIPO <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">ATOMIC</span>
                     </h1>
-                    <p className="text-slate-400 text-xs font-semibold uppercase tracking-widest mt-3">
-                        Plataforma Mayorista de Seguridad, Tecnología y Soluciones Integrales
+                    <p className="text-slate-400 text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
+                        Completa tus datos para crear tu cuenta comercial. La activación es automática para que comiences a cotizar y vender en el acto.
                     </p>
                 </div>
 
-                <div className="bg-[#0d142b] border border-cyan-500/30 p-8 md:p-14 shadow-2xl relative rounded-3xl backdrop-blur-xl">
-                    {error && (
-                        <div className="mb-8 p-4 bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-bold uppercase tracking-wider flex items-center gap-3 rounded-xl">
-                            <Lock size={16} /> {error}
-                        </div>
-                    )}
+                {error && (
+                    <div className="p-4 bg-rose-500/15 border border-rose-500/40 text-rose-200 text-xs font-bold rounded-2xl flex items-center gap-3 shadow-lg">
+                        <Lock size={16} className="text-rose-400 shrink-0" />
+                        <span>{error}</span>
+                    </div>
+                )}
 
-                    <form onSubmit={handleStartRegistration} className="space-y-8">
-                        {/* 01. Identificación */}
-                        <div>
-                            <h3 className="text-xs font-black text-cyan-400 uppercase tracking-widest mb-6 border-b border-slate-800 pb-3 flex items-center gap-2">
-                                <User size={16} /> 01. Datos Personales & Cédula
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-slate-300 uppercase tracking-wider ml-1">Nombres</label>
-                                    <div className="relative">
-                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
-                                        <input type="text" name="name" required value={formData.name} onChange={handleChange} placeholder="Ej. Juan Alberto"
-                                            className="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 px-11 py-3.5 text-white text-xs font-semibold rounded-xl outline-none transition-all placeholder:text-slate-600" />
-                                    </div>
+                <form onSubmit={handleRegister} className="space-y-8">
+                    
+                    {/* ════════════════════════════════════════════════════════════
+                        APARTADO 01: RECUADRO BLANCO · DATOS PERSONALES & IDENTIFICACIÓN
+                       ════════════════════════════════════════════════════════════ */}
+                    <div className="bg-white text-slate-900 rounded-3xl p-6 sm:p-10 shadow-2xl border border-slate-200/90 space-y-6">
+                        <div className="border-b border-slate-200 pb-4">
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-blue-50 text-blue-700 font-mono text-[11px] font-black uppercase tracking-wider mb-2">
+                                <User size={13} /> Apartado 01 · Información del Asesor
+                            </div>
+                            <h2 className="text-xl sm:text-2xl font-black text-slate-900 font-heading">
+                                Datos Personales & Identificación Oficial
+                            </h2>
+                            <p className="text-xs text-slate-500 mt-1">
+                                Información requerida para el registro en el escalafón comercial y asignación de cartera de clientes.
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            {/* Nombres */}
+                            <div className="space-y-1.5">
+                                <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider ml-1">
+                                    Nombres <span className="text-rose-500">*</span>
+                                </label>
+                                <div className="relative">
+                                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                                    <input 
+                                        type="text" 
+                                        name="name" 
+                                        required 
+                                        value={formData.name} 
+                                        onChange={handleChange} 
+                                        placeholder="Ej. Juan Alberto"
+                                        className="w-full bg-slate-50 border border-slate-300 focus:border-blue-600 focus:bg-white text-slate-900 text-xs font-semibold rounded-xl pl-10 pr-4 py-3.5 outline-none transition-all placeholder:text-slate-400" 
+                                    />
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-slate-300 uppercase tracking-wider ml-1">Apellidos</label>
-                                    <div className="relative">
-                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
-                                        <input type="text" name="lastName" required value={formData.lastName} onChange={handleChange} placeholder="Ej. Pérez García"
-                                            className="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 px-11 py-3.5 text-white text-xs font-semibold rounded-xl outline-none transition-all placeholder:text-slate-600" />
-                                    </div>
+                            </div>
+
+                            {/* Apellidos */}
+                            <div className="space-y-1.5">
+                                <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider ml-1">
+                                    Apellidos <span className="text-rose-500">*</span>
+                                </label>
+                                <div className="relative">
+                                    <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                                    <input 
+                                        type="text" 
+                                        name="lastName" 
+                                        required 
+                                        value={formData.lastName} 
+                                        onChange={handleChange} 
+                                        placeholder="Ej. Pérez Morales"
+                                        className="w-full bg-slate-50 border border-slate-300 focus:border-blue-600 focus:bg-white text-slate-900 text-xs font-semibold rounded-xl pl-10 pr-4 py-3.5 outline-none transition-all placeholder:text-slate-400" 
+                                    />
                                 </div>
-                                <div className="space-y-2 md:col-span-2">
-                                    <label className="text-[10px] font-bold text-slate-300 uppercase tracking-wider ml-1">Cédula de Ciudadanía (o RUC)</label>
-                                    <div className="relative">
-                                        <CreditCard className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
-                                        <input type="text" name="cedula" required value={formData.cedula} onChange={handleChange} placeholder="1723456789"
-                                            className="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 px-11 py-3.5 text-white text-xs font-mono font-semibold rounded-xl outline-none transition-all placeholder:text-slate-600" />
-                                    </div>
+                            </div>
+
+                            {/* Cédula o RUC */}
+                            <div className="space-y-1.5 sm:col-span-2">
+                                <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider ml-1">
+                                    Cédula de Identidad o RUC <span className="text-rose-500">*</span>
+                                </label>
+                                <div className="relative">
+                                    <CreditCard className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                                    <input 
+                                        type="text" 
+                                        name="cedula" 
+                                        required 
+                                        value={formData.cedula} 
+                                        onChange={handleChange} 
+                                        placeholder="1723456789 (10 dígitos para cédula o 13 para RUC)"
+                                        className="w-full bg-slate-50 border border-slate-300 focus:border-blue-600 focus:bg-white text-slate-900 text-xs font-mono font-semibold rounded-xl pl-10 pr-4 py-3.5 outline-none transition-all placeholder:text-slate-400" 
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Ciudad de Residencia */}
+                            <div className="space-y-1.5">
+                                <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider ml-1">
+                                    Ciudad de Residencia <span className="text-rose-500">*</span>
+                                </label>
+                                <div className="relative">
+                                    <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                                    <input 
+                                        type="text" 
+                                        name="cityResidence" 
+                                        required 
+                                        value={formData.cityResidence} 
+                                        onChange={handleChange} 
+                                        placeholder="Ej. Quito / Guayaquil / Cuenca"
+                                        className="w-full bg-slate-50 border border-slate-300 focus:border-blue-600 focus:bg-white text-slate-900 text-xs font-semibold rounded-xl pl-10 pr-4 py-3.5 outline-none transition-all placeholder:text-slate-400" 
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Ciudad de Origen */}
+                            <div className="space-y-1.5">
+                                <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider ml-1">
+                                    Ciudad de Origen (Opcional)
+                                </label>
+                                <div className="relative">
+                                    <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                                    <input 
+                                        type="text" 
+                                        name="cityOrigin" 
+                                        value={formData.cityOrigin} 
+                                        onChange={handleChange} 
+                                        placeholder="Ej. Loja / Ambato / Manta"
+                                        className="w-full bg-slate-50 border border-slate-300 focus:border-blue-600 focus:bg-white text-slate-900 text-xs font-semibold rounded-xl pl-10 pr-4 py-3.5 outline-none transition-all placeholder:text-slate-400" 
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Teléfono WhatsApp Activo */}
+                            <div className="space-y-1.5">
+                                <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider ml-1">
+                                    Teléfono / WhatsApp Activo <span className="text-rose-500">*</span>
+                                </label>
+                                <div className="relative">
+                                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                                    <input 
+                                        type="tel" 
+                                        name="phone" 
+                                        required 
+                                        value={formData.phone} 
+                                        onChange={handleChange} 
+                                        placeholder="Ej. 0989476556"
+                                        className="w-full bg-slate-50 border border-slate-300 focus:border-blue-600 focus:bg-white text-slate-900 text-xs font-semibold rounded-xl pl-10 pr-4 py-3.5 outline-none transition-all placeholder:text-slate-400" 
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Correo Electrónico Activo */}
+                            <div className="space-y-1.5">
+                                <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider ml-1">
+                                    Correo Electrónico Activo <span className="text-rose-500">*</span>
+                                </label>
+                                <div className="relative">
+                                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                                    <input 
+                                        type="email" 
+                                        name="email" 
+                                        required 
+                                        value={formData.email} 
+                                        onChange={handleChange} 
+                                        placeholder="tu-correo@gmail.com"
+                                        className="w-full bg-slate-50 border border-slate-300 focus:border-blue-600 focus:bg-white text-slate-900 text-xs font-semibold rounded-xl pl-10 pr-4 py-3.5 outline-none transition-all placeholder:text-slate-400" 
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* ════════════════════════════════════════════════════════════
+                        APARTADO 02: RECUADRO BLANCO · ACCESO & ACTIVACIÓN AUTOMÁTICA
+                       ════════════════════════════════════════════════════════════ */}
+                    <div className="bg-white text-slate-900 rounded-3xl p-6 sm:p-10 shadow-2xl border border-slate-200/90 space-y-6">
+                        <div className="border-b border-slate-200 pb-4">
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-emerald-50 text-emerald-700 font-mono text-[11px] font-black uppercase tracking-wider mb-2">
+                                <ShieldCheck size={13} /> Apartado 02 · Acceso a la Plataforma & Activación
+                            </div>
+                            <h2 className="text-xl sm:text-2xl font-black text-slate-900 font-heading">
+                                Perfil Comercial & Clave de Seguridad
+                            </h2>
+                            <p className="text-xs text-slate-500 mt-1">
+                                Define tus credenciales de acceso. Al enviar este formulario tu cuenta queda activada automáticamente.
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            {/* Rol Comercial */}
+                            <div className="space-y-1.5">
+                                <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider ml-1">
+                                    ¿Cómo deseas registrarte? <span className="text-rose-500">*</span>
+                                </label>
+                                <div className="relative">
+                                    <Briefcase className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                                    <select 
+                                        name="role" 
+                                        value={formData.role} 
+                                        onChange={handleChange}
+                                        className="w-full bg-slate-50 border border-slate-300 focus:border-blue-600 focus:bg-white text-slate-900 text-xs font-semibold rounded-xl pl-10 pr-4 py-3.5 outline-none appearance-none cursor-pointer"
+                                    >
+                                        <option value="SALESPERSON">Vendedor (Asesor Comercial) - Activación Automática</option>
+                                        <option value="TECNICO">Técnico (Instalador / Soporte Técnico)</option>
+                                        <option value="CONSUMIDOR">Cliente Mayorista / Usuario Directo</option>
+                                        <option value="ACADEMIA">Académico (Capacitaciones & Cursos)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            {/* Contraseña */}
+                            <div className="space-y-1.5">
+                                <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider ml-1">
+                                    Clave de Seguridad (Mínimo 8 caracteres) <span className="text-rose-500">*</span>
+                                </label>
+                                <div className="relative">
+                                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                                    <input 
+                                        type={showPassword ? "text" : "password"} 
+                                        name="password" 
+                                        required 
+                                        minLength={8} 
+                                        value={formData.password} 
+                                        onChange={handleChange} 
+                                        placeholder="••••••••••••"
+                                        className="w-full bg-slate-50 border border-slate-300 focus:border-blue-600 focus:bg-white text-slate-900 text-xs font-semibold rounded-xl pl-10 pr-12 py-3.5 outline-none transition-all placeholder:text-slate-400" 
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1"
+                                    >
+                                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                    </button>
                                 </div>
                             </div>
                         </div>
 
-                        {/* 02. Ubicación & Contacto */}
-                        <div>
-                            <h3 className="text-xs font-black text-cyan-400 uppercase tracking-widest mb-6 border-b border-slate-800 pb-3 flex items-center gap-2">
-                                <MapPin size={16} /> 02. Ubicación Geográfica & Contacto
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-slate-300 uppercase tracking-wider ml-1">Ciudad de Origen</label>
-                                    <div className="relative">
-                                        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
-                                        <input type="text" name="cityOrigin" required value={formData.cityOrigin} onChange={handleChange} placeholder="Ej. Loja / Ambato"
-                                            className="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 px-11 py-3.5 text-white text-xs font-semibold rounded-xl outline-none transition-all placeholder:text-slate-600" />
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-slate-300 uppercase tracking-wider ml-1">Ciudad de Residencia</label>
-                                    <div className="relative">
-                                        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
-                                        <input type="text" name="cityResidence" required value={formData.cityResidence} onChange={handleChange} placeholder="Ej. Quito / Guayaquil"
-                                            className="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 px-11 py-3.5 text-white text-xs font-semibold rounded-xl outline-none transition-all placeholder:text-slate-600" />
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-slate-300 uppercase tracking-wider ml-1">Correo Electrónico Activo</label>
-                                    <div className="relative">
-                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
-                                        <input type="email" name="email" required value={formData.email} onChange={handleChange} placeholder="tu-correo@gmail.com"
-                                            className="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 px-11 py-3.5 text-white text-xs font-semibold rounded-xl outline-none transition-all placeholder:text-slate-600" />
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-slate-300 uppercase tracking-wider ml-1">Teléfono / WhatsApp Activo</label>
-                                    <div className="relative">
-                                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
-                                        <input type="tel" name="phone" required value={formData.phone} onChange={handleChange} placeholder="0998765432"
-                                            className="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 px-11 py-3.5 text-white text-xs font-semibold rounded-xl outline-none transition-all placeholder:text-slate-600" />
-                                    </div>
-                                </div>
+                        {/* Banner Informativo de Activación Automática Inmediata */}
+                        <div className="p-4 rounded-2xl bg-blue-50 border border-blue-200/80 flex items-start gap-3">
+                            <Sparkles size={18} className="text-blue-600 shrink-0 mt-0.5" />
+                            <div className="space-y-1 text-xs text-slate-700">
+                                <p className="font-bold text-blue-900">
+                                    ⚡ Activación Automática Inmediata Garantizada:
+                                </p>
+                                <p className="leading-relaxed">
+                                    Sin códigos de espera por correo ni demoras burocráticas. Al hacer clic en el botón inferior, tu usuario queda registrado con estatus <strong>APROBADO</strong> y podrás iniciar sesión directamente para usar el cotizador y ver tus comisiones.
+                                </p>
                             </div>
                         </div>
 
-                        {/* 03. Perfil y Clave */}
-                        <div>
-                            <h3 className="text-xs font-black text-cyan-400 uppercase tracking-widest mb-6 border-b border-slate-800 pb-3 flex items-center gap-2">
-                                <Briefcase size={16} /> 03. Perfil de Acceso & Clave
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-slate-300 uppercase tracking-wider ml-1">¿Cómo deseas registrarte?</label>
-                                    <div className="relative">
-                                        <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
-                                        <select name="role" value={formData.role} onChange={handleChange}
-                                            className="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 px-11 py-3.5 text-white text-xs font-semibold rounded-xl outline-none appearance-none cursor-pointer">
-                                            <option value="SALESPERSON">Vendedor (Asesor Comercial)</option>
-                                            <option value="TECNICO">Técnico (Instalador / Soporte)</option>
-                                            <option value="CONSUMIDOR">Usuario (Cliente / Tienda Online)</option>
-                                            <option value="ACADEMIA">Académico (Cursos & Certificaciones)</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-bold text-slate-300 uppercase tracking-wider ml-1">Clave de Seguridad (Mínimo 8 caract.)</label>
-                                    <div className="relative">
-                                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
-                                        <input type="password" name="password" required minLength={8} value={formData.password} onChange={handleChange} placeholder="••••••••"
-                                            className="w-full bg-slate-900 border border-slate-700 focus:border-cyan-400 px-11 py-3.5 text-white text-xs font-semibold rounded-xl outline-none transition-all placeholder:text-slate-600" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="pt-4">
-                            <button type="submit" disabled={loading}
-                                className="w-full py-4 px-8 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-widest rounded-xl transition-all disabled:opacity-50 shadow-xl shadow-cyan-500/20 flex justify-center items-center gap-3">
+                        {/* Botón de Submit */}
+                        <div className="pt-2">
+                            <button 
+                                type="submit" 
+                                disabled={loading}
+                                className="w-full py-4 px-8 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-xs sm:text-sm uppercase tracking-wider rounded-2xl transition-all disabled:opacity-50 shadow-xl shadow-blue-600/25 flex justify-center items-center gap-2 hover:scale-[1.01]"
+                            >
                                 {loading ? (
-                                    <Loader2 className="animate-spin" size={18} />
+                                    <>
+                                        <Loader2 className="animate-spin" size={18} />
+                                        <span>Activando Cuenta en el Sistema...</span>
+                                    </>
                                 ) : (
                                     <>
-                                        Continuar y Enviar Código de Verificación <ArrowRight size={16} />
+                                        <span>Completar Registro y Activar Cuenta Inmediatamente</span>
+                                        <ArrowRight size={18} />
                                     </>
                                 )}
                             </button>
                         </div>
-                    </form>
-
-                    <div className="mt-8 text-center border-t border-slate-800 pt-6">
-                        <p className="text-xs text-slate-400">
-                            ¿Ya posees una cuenta autorizada?{" "}
-                            <Link href="/login" className="text-cyan-400 hover:text-cyan-300 font-bold ml-1">
-                                Iniciar Sesión
-                            </Link>
-                        </p>
                     </div>
+                </form>
+
+                {/* Footer de Enlaces */}
+                <div className="text-center pt-2">
+                    <p className="text-xs text-slate-400">
+                        ¿Ya posees una cuenta activa?{" "}
+                        <Link href="/login" className="text-cyan-400 hover:text-cyan-300 font-bold ml-1 underline underline-offset-2">
+                            Iniciar Sesión aquí
+                        </Link>
+                    </p>
                 </div>
+
             </div>
         </div>
     )
@@ -463,7 +480,7 @@ function RegisterForm() {
 
 export default function RegisterPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen bg-[#070b19] flex items-center justify-center"><Loader2 className="animate-spin text-cyan-400" size={32} /></div>}>
+        <Suspense fallback={<div className="min-h-screen bg-[#070e23] flex items-center justify-center"><Loader2 className="animate-spin text-cyan-400" size={32} /></div>}>
             <RegisterForm />
         </Suspense>
     )
