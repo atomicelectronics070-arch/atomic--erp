@@ -52,6 +52,11 @@ function expandSearchTerm(term: string): string[] {
         laptops: ["portatiles", "portátiles", "notebooks", "computadores"],
         portatil: ["laptop", "notebook"],
         portatiles: ["laptops", "notebooks"],
+        marmol: ["mármol", "acabados", "pvc", "plancha", "remodelacion", "wpc", "panel"],
+        mármol: ["marmol", "acabados", "pvc", "plancha", "remodelacion", "wpc", "panel"],
+        acabado: ["marmol", "mármol", "acabados", "pvc", "wpc", "remodelacion"],
+        acabados: ["marmol", "mármol", "acabado", "pvc", "wpc", "remodelacion"],
+        wpc: ["panel", "paneles", "ranurado", "marmol", "remodelacion"],
     }
 
     for (const v of Array.from(variants)) {
