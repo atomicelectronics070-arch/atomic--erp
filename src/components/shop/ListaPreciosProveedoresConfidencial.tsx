@@ -7,8 +7,24 @@ import {
     Truck, Building2, Tag, DollarSign, Image as ImageIcon, FileText,
     Share2, Sparkles, CheckCircle2, AlertTriangle, ArrowRight, Phone,
     Eye, Laptop, Gamepad2, Shield, Zap, Home, ChevronRight, Layers, Lock,
-    ChevronLeft, RefreshCw, X, Maximize2, AlertOctagon, HelpCircle
+    ChevronLeft, RefreshCw, X, Maximize2, AlertOctagon, HelpCircle, Globe
 } from "lucide-react"
+
+// Clean raw HTML tags from product descriptions
+const cleanHtmlDescription = (text: string | null | undefined): string => {
+    if (!text) return ""
+    return text
+        .replace(/<br\s*\/?>/gi, "\n")
+        .replace(/<\/p>/gi, "\n\n")
+        .replace(/<\/li>/gi, "\n")
+        .replace(/<[^>]*>/g, "")
+        .replace(/&nbsp;/g, " ")
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim()
+}
 
 export interface CatalogProduct {
     id: string
@@ -520,13 +536,65 @@ ${product.description ? `\n📝 Características:\n${product.description.slice(0
                                     {/* DESCRIPTION SNIPPET (IF ANY) */}
                                     {product.description && (
                                         <p className="text-[11px] text-slate-400 line-clamp-2 font-sans leading-relaxed">
-                                            {product.description}
+                                            {cleanHtmlDescription(product.description)}
                                         </p>
                                     )}
                                 </div>
 
                                 {/* BOTTOM ACTION TOOLBAR */}
-                                <div className="mt-4 pt-3 border-t border-white/10 space-y-2">
+                                <div className="mt-4 pt-3 border-t border-white/10 space-y-2.5">
+                                    {/* LINK PÚBLICO EN WEB ATOMIC */}
+                                    <div className="p-2 rounded-xl bg-slate-950/90 border border-cyan-500/30 space-y-1">
+                                        <div className="flex items-center justify-between gap-1 text-[10px] font-mono">
+                                            <span className="text-cyan-400 font-bold flex items-center gap-1">
+                                                <Globe size={11} className="text-cyan-400" />
+                                                <span>Link en Web Atomic:</span>
+                                            </span>
+                                            <button
+                                                onClick={() =>
+                                                    copyToClipboard(
+                                                        `https://atomiccotizador.shop/web/product/${product.id}`,
+                                                        `link-${product.id}`,
+                                                        "Link de Web Atomic"
+                                                    )
+                                                }
+                                                className="px-2 py-0.5 rounded bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/40 text-[9px] font-mono font-bold transition-colors flex items-center gap-1"
+                                                title="Copiar link directo para enviar por WhatsApp o clientes"
+                                            >
+                                                {copiedId === `link-${product.id}` ? (
+                                                    <Check size={10} className="text-emerald-400" />
+                                                ) : (
+                                                    <Copy size={10} />
+                                                )}
+                                                <span>{copiedId === `link-${product.id}` ? "¡Copiado!" : "Copiar Link"}</span>
+                                            </button>
+                                        </div>
+                                        <div className="text-[10px] font-mono text-cyan-200/90 truncate bg-black/60 px-2 py-1 rounded border border-white/5 select-all flex items-center justify-between gap-1">
+                                            <span className="truncate">https://atomiccotizador.shop/web/product/{product.id}</span>
+                                            <a
+                                                href={`/web/product/${product.id}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="p-1 rounded bg-cyan-600/80 hover:bg-cyan-500 text-white shrink-0 transition-colors"
+                                                title="Abrir publicación en pestaña nueva"
+                                            >
+                                                <ExternalLink size={10} />
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    {/* BOTÓN IR A PUBLICACIÓN EN WEB ATOMIC */}
+                                    <a
+                                        href={`/web/product/${product.id}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:to-blue-500 text-white font-mono text-xs font-bold shadow-lg shadow-cyan-950/40 transition-all group"
+                                    >
+                                        <Globe size={13} className="text-cyan-200" />
+                                        <span>Ir a Publicación en Web Atomic</span>
+                                        <ExternalLink size={12} className="group-hover:translate-x-0.5 transition-transform" />
+                                    </a>
+
                                     {/* PRIMARY ACCESS: GO TO REAL SCRAPED SUPPLIER */}
                                     {product.hasProvider && product.supplierUrl ? (
                                         <a
@@ -546,7 +614,7 @@ ${product.description ? `\n📝 Características:\n${product.description.slice(0
                                         </div>
                                     )}
 
-                                    {/* SECONDARY ACTION BUTTONS: EXTRACT PHOTOS, COPY DESCRIPTION & COPY AD */}
+                                    {/* SECONDARY ACTION BUTTONS: EXTRACT PHOTOS, COPIAR TITULO & COPIAR DESCRIPCION */}
                                     <div className="grid grid-cols-3 gap-1.5">
                                         {/* EXTRACT PHOTOS */}
                                         <button
@@ -554,45 +622,51 @@ ${product.description ? `\n📝 Características:\n${product.description.slice(0
                                                 setSelectedProductForModal(product)
                                                 setActiveImageIdx(0)
                                             }}
-                                            className="flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px] font-mono font-semibold transition-colors border border-white/5"
+                                            className="flex items-center justify-center gap-1 px-2 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px] font-mono font-semibold transition-colors border border-white/5"
                                             title="Extraer y descargar fotos en alta resolución"
                                         >
                                             <ImageIcon size={11} className="text-cyan-400" />
                                             <span>Fotos ({product.images.length})</span>
                                         </button>
 
-                                        {/* COPY DESCRIPTION */}
+                                        {/* COPIAR TITULO */}
                                         <button
                                             onClick={() =>
                                                 copyToClipboard(
-                                                    product.description || product.name,
-                                                    `desc-${product.id}`,
-                                                    "Descripción"
+                                                    product.name,
+                                                    `title-${product.id}`,
+                                                    "Título de publicación"
                                                 )
                                             }
-                                            className="flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px] font-mono font-semibold transition-colors border border-white/5"
-                                            title="Copiar descripción o ficha técnica"
+                                            className="flex items-center justify-center gap-1 px-2 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px] font-mono font-semibold transition-colors border border-white/5"
+                                            title="Copiar el título de la publicación"
+                                        >
+                                            {copiedId === `title-${product.id}` ? (
+                                                <Check size={11} className="text-emerald-400" />
+                                            ) : (
+                                                <Copy size={11} className="text-amber-400" />
+                                            )}
+                                            <span>{copiedId === `title-${product.id}` ? "¡Copiado!" : "Copiar Título"}</span>
+                                        </button>
+
+                                        {/* COPIAR DESCRIPCION */}
+                                        <button
+                                            onClick={() =>
+                                                copyToClipboard(
+                                                    cleanHtmlDescription(product.description || product.name),
+                                                    `desc-${product.id}`,
+                                                    "Descripción limpia"
+                                                )
+                                            }
+                                            className="flex items-center justify-center gap-1 px-2 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px] font-mono font-semibold transition-colors border border-white/5"
+                                            title="Copiar la descripción del producto"
                                         >
                                             {copiedId === `desc-${product.id}` ? (
                                                 <Check size={11} className="text-emerald-400" />
                                             ) : (
-                                                <FileText size={11} className="text-amber-400" />
+                                                <FileText size={11} className="text-pink-400" />
                                             )}
-                                            <span>{copiedId === `desc-${product.id}` ? "¡Copiado!" : "Copiar"}</span>
-                                        </button>
-
-                                        {/* COPY AD COPY */}
-                                        <button
-                                            onClick={() => copyAdCopy(product)}
-                                            className="flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-[10px] font-mono font-semibold transition-colors border border-white/5"
-                                            title="Generar copy para Facebook / WhatsApp"
-                                        >
-                                            {copiedId === `ad-${product.id}` ? (
-                                                <Check size={11} className="text-emerald-400" />
-                                            ) : (
-                                                <Share2 size={11} className="text-pink-400" />
-                                            )}
-                                            <span>{copiedId === `ad-${product.id}` ? "¡Listo!" : "Copy"}</span>
+                                            <span>{copiedId === `desc-${product.id}` ? "¡Copiada!" : "Copiar Descripción"}</span>
                                         </button>
                                     </div>
                                 </div>
@@ -713,7 +787,43 @@ ${product.description ? `\n📝 Características:\n${product.description.slice(0
                                             </div>
                                         )}
 
-                                        {/* ACTION BUTTONS FOR ACTIVE IMAGE */}
+                                        {/* ENLACE DIRECTO A WEB ATOMIC DENTRO DEL MODAL */}
+                                        <div className="p-2 rounded-xl bg-slate-950 border border-cyan-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] font-mono">
+                                            <div className="flex items-center gap-1.5 text-cyan-300 truncate">
+                                                <Globe size={13} className="text-cyan-400 shrink-0" />
+                                                <span className="truncate">https://atomiccotizador.shop/web/product/{selectedProductForModal.id}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 shrink-0">
+                                                <button
+                                                    onClick={() => {
+                                                        copyToClipboard(
+                                                            `https://atomiccotizador.shop/web/product/${selectedProductForModal.id}`,
+                                                            `modal-link-${selectedProductForModal.id}`,
+                                                            "Link de Web Atomic"
+                                                        )
+                                                    }}
+                                                    className="px-2.5 py-1 rounded-lg bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/40 text-[10px] font-mono font-bold transition-colors flex items-center gap-1"
+                                                >
+                                                    {copiedId === `modal-link-${selectedProductForModal.id}` ? (
+                                                        <Check size={11} className="text-emerald-400" />
+                                                    ) : (
+                                                        <Copy size={11} />
+                                                    )}
+                                                    <span>{copiedId === `modal-link-${selectedProductForModal.id}` ? "¡Copiado!" : "Copiar Link"}</span>
+                                                </button>
+                                                <a
+                                                    href={`/web/product/${selectedProductForModal.id}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="px-2.5 py-1 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-[10px] font-mono font-bold transition-colors flex items-center gap-1"
+                                                >
+                                                    <ExternalLink size={11} />
+                                                    <span>Abrir Web</span>
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        {/* ACTION BUTTONS FOR ACTIVE IMAGE & PRODUCT TEXTS */}
                                         <div className="flex flex-wrap items-center gap-2 pt-2">
                                             <a
                                                 href={selectedProductForModal.images[activeImageIdx]}
@@ -722,7 +832,7 @@ ${product.description ? `\n📝 Características:\n${product.description.slice(0
                                                 className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-mono font-bold transition-colors"
                                             >
                                                 <ExternalLink size={13} />
-                                                <span>Abrir Foto Original HD</span>
+                                                <span>Abrir Foto HD</span>
                                             </a>
 
                                             <button
@@ -735,7 +845,43 @@ ${product.description ? `\n📝 Características:\n${product.description.slice(0
                                                 className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono font-bold transition-colors border border-white/10"
                                             >
                                                 <Copy size={13} />
-                                                <span>Copiar URL de Imagen</span>
+                                                <span>Copiar URL Imagen</span>
+                                            </button>
+
+                                            <button
+                                                onClick={() => {
+                                                    copyToClipboard(
+                                                        selectedProductForModal.name,
+                                                        `modal-title-${selectedProductForModal.id}`,
+                                                        "Título de publicación"
+                                                    )
+                                                }}
+                                                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono font-bold transition-colors border border-white/10"
+                                            >
+                                                {copiedId === `modal-title-${selectedProductForModal.id}` ? (
+                                                    <Check size={12} className="text-emerald-400" />
+                                                ) : (
+                                                    <Copy size={12} className="text-amber-400" />
+                                                )}
+                                                <span>{copiedId === `modal-title-${selectedProductForModal.id}` ? "¡Título Copiado!" : "Copiar Título"}</span>
+                                            </button>
+
+                                            <button
+                                                onClick={() => {
+                                                    copyToClipboard(
+                                                        cleanHtmlDescription(selectedProductForModal.description || selectedProductForModal.name),
+                                                        `modal-desc-${selectedProductForModal.id}`,
+                                                        "Descripción limpia"
+                                                    )
+                                                }}
+                                                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-mono font-bold transition-colors border border-white/10"
+                                            >
+                                                {copiedId === `modal-desc-${selectedProductForModal.id}` ? (
+                                                    <Check size={12} className="text-emerald-400" />
+                                                ) : (
+                                                    <FileText size={12} className="text-pink-400" />
+                                                )}
+                                                <span>{copiedId === `modal-desc-${selectedProductForModal.id}` ? "¡Desc. Copiada!" : "Copiar Descripción"}</span>
                                             </button>
 
                                             {selectedProductForModal.hasProvider && selectedProductForModal.supplierUrl && (
@@ -746,7 +892,7 @@ ${product.description ? `\n📝 Características:\n${product.description.slice(0
                                                     className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-mono font-bold transition-colors ml-auto"
                                                 >
                                                     <Building2 size={13} />
-                                                    <span>Ver en Proveedor Original</span>
+                                                    <span>Ver en Proveedor</span>
                                                 </a>
                                             )}
                                         </div>
