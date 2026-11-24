@@ -130,20 +130,38 @@ export async function GET(req: NextRequest) {
         marginPercent = costPrice > 0 ? Math.round(((salePrice - costPrice) / costPrice) * 10000) / 100 : 15.0;
       }
 
-      // Extraer URL de imagen limpia
+      // Extraer URL de imagen limpia descartando logos de proveedores o marcas
+      const isProviderLogo = (url: string) => {
+        if (!url || typeof url !== 'string') return true;
+        const u = url.toLowerCase();
+        return (
+          u.includes('tms_logow') ||
+          u.includes('tecnomega') ||
+          u.includes('tecnomegastore') ||
+          u.includes('placetopay') ||
+          u.includes('servientrega') ||
+          u.includes('/marcas/') ||
+          u.includes('cropped-favicon') ||
+          u.includes('pago-seguro') ||
+          u.includes('hubfunciones')
+        );
+      };
+
       let cleanImage = '';
       if (p.images) {
         try {
           if (typeof p.images === 'string' && p.images.startsWith('[') && p.images.endsWith(']')) {
             const parsed = JSON.parse(p.images);
             if (Array.isArray(parsed) && parsed.length > 0) {
-              cleanImage = parsed[0];
+              const valid = parsed.find((img: string) => !isProviderLogo(img));
+              cleanImage = valid || '';
             }
           } else if (typeof p.images === 'string') {
-            cleanImage = p.images.split(',')[0].trim();
+            const first = p.images.split(',')[0].trim();
+            cleanImage = !isProviderLogo(first) ? first : '';
           }
         } catch (_) {
-          cleanImage = p.images;
+          cleanImage = !isProviderLogo(p.images) ? p.images : '';
         }
       }
 

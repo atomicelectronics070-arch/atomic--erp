@@ -190,15 +190,31 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
   const comision20 = saleP * 0.20
   const productWebUrl = `https://atomiccotizador.shop/web/product/${p.id}`
 
+  const isInvalidLogo = (url: string) => {
+    if (!url || typeof url !== 'string') return true
+    const u = url.toLowerCase()
+    return (
+      u.includes('tms_logow') ||
+      u.includes('tecnomega') ||
+      u.includes('tecnomegastore') ||
+      u.includes('placetopay') ||
+      u.includes('servientrega') ||
+      u.includes('/marcas/') ||
+      u.includes('cropped-favicon')
+    )
+  }
+
+  const validImage = p.image && !isInvalidLogo(p.image) ? p.image : null
+
   return (
     <div
       className="p-4 rounded-2xl bg-zinc-900/50 border border-white/[0.08] hover:border-cyan-500/30 transition-all flex flex-col justify-between space-y-3.5 group shadow-sm hover:shadow-xl hover:shadow-cyan-950/20 backdrop-blur-sm"
     >
       {/* Image Stage */}
       <div className="w-full h-48 bg-zinc-950/80 rounded-xl border border-white/[0.06] overflow-hidden flex items-center justify-center relative p-3">
-        {p.image ? (
+        {validImage ? (
           <img
-            src={p.image}
+            src={validImage}
             alt={p.name}
             className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
             loading="lazy"
@@ -212,7 +228,7 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
             }}
           />
         ) : null}
-        <div className={`img-fallback flex flex-col items-center justify-center text-zinc-600 gap-1.5 ${p.image ? 'hidden' : ''}`}>
+        <div className={`img-fallback flex flex-col items-center justify-center text-zinc-600 gap-1.5 ${validImage ? 'hidden' : ''}`}>
           <Package size={28} className="text-zinc-600" />
           <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">Sin Imagen Oficial</span>
         </div>
