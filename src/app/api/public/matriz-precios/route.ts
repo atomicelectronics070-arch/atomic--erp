@@ -76,6 +76,60 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    const isLaptopCategoryOrSearch = 
+      categoryId === 'cmrfunoy400031d1g55magimc' || 
+      searchLower.includes('laptop') || 
+      searchLower.includes('notebook') || 
+      searchLower.includes('portatil') || 
+      searchLower.includes('portátil');
+
+    const wantsLaptopParts = 
+      searchLower.includes('bateria') || 
+      searchLower.includes('batería') || 
+      searchLower.includes('cargador') || 
+      searchLower.includes('teclado') || 
+      searchLower.includes('repuesto') || 
+      searchLower.includes('ventilador') || 
+      searchLower.includes('pantalla') || 
+      searchLower.includes('flex');
+
+    if (isLaptopCategoryOrSearch && !wantsLaptopParts) {
+      where.NOT.push(
+        { name: { contains: 'VENTILADOR', mode: 'insensitive' } },
+        { name: { contains: 'BATERIA', mode: 'insensitive' } },
+        { name: { contains: 'BATERÍA', mode: 'insensitive' } },
+        { name: { contains: 'TECLADO PARA', mode: 'insensitive' } },
+        { name: { contains: 'VC-TECLADO', mode: 'insensitive' } },
+        { name: { contains: 'PIN DE CARGA', mode: 'insensitive' } },
+        { name: { contains: 'FLEX DE VIDEO', mode: 'insensitive' } },
+        { name: { contains: 'BISAGRA', mode: 'insensitive' } },
+        { name: { contains: 'CABLE LOCK', mode: 'insensitive' } },
+        { name: { contains: 'STAND PARA NOTEBOOK', mode: 'insensitive' } },
+        { name: { contains: 'COBERTOR NOTEBOOK', mode: 'insensitive' } },
+        { name: { contains: 'MOCHILA NOTEBOOK', mode: 'insensitive' } },
+        { name: { contains: 'SO-DIMM', mode: 'insensitive' } },
+        { name: { contains: 'SIERRA', mode: 'insensitive' } },
+        { name: { contains: 'TALADRO', mode: 'insensitive' } },
+        { name: { contains: 'RASURADORA', mode: 'insensitive' } },
+        { name: { contains: 'SECADOR', mode: 'insensitive' } },
+        { name: { contains: 'INODORO', mode: 'insensitive' } },
+        { name: { contains: 'EXPRIMIDOR', mode: 'insensitive' } },
+        { name: { contains: 'PERFUME', mode: 'insensitive' } },
+        { name: { contains: 'RADIO PORTATIL', mode: 'insensitive' } },
+        { name: { contains: 'PLA+2.0', mode: 'insensitive' } },
+        { name: { contains: 'PLA+1.0', mode: 'insensitive' } },
+        { name: { contains: 'TPU Black', mode: 'insensitive' } },
+        { name: { contains: 'TPU Blue', mode: 'insensitive' } },
+        { name: { contains: 'PETG Glow', mode: 'insensitive' } },
+        { name: { contains: 'ADAPTADOR CONVERTIDOR USB', mode: 'insensitive' } },
+        { name: { contains: 'MBO ASUS', mode: 'insensitive' } },
+        { name: { contains: 'CASE ASUS', mode: 'insensitive' } },
+        { name: { contains: 'VIDEO ASUS', mode: 'insensitive' } },
+        { name: { contains: 'FUENTE DE PODER', mode: 'insensitive' } },
+        { name: { contains: 'MOUSE ASUS', mode: 'insensitive' } }
+      );
+    }
+
     if (search) {
       const stopWords = new Set(['de', 'del', 'la', 'el', 'en', 'para', 'con', 'un', 'una', 'y']);
       const tokens = search
@@ -93,7 +147,22 @@ export async function GET(req: NextRequest) {
         if (clean === 'linea') { set.add('línea'); set.add('lineas'); set.add('líneas'); }
         if (clean === 'electronica') { set.add('electrónica'); }
         if (clean === 'cocina') { set.add('cocinas'); set.add('encimera'); set.add('induccion'); }
-        if (clean === 'laptop') { set.add('laptops'); set.add('portatil'); set.add('portátil'); }
+        if (clean === 'laptop') { 
+          set.add('laptops'); 
+          set.add('not.'); 
+          set.add('notebook'); 
+          set.add('notebooks'); 
+          set.add('portatil'); 
+          set.add('portátil'); 
+          set.add('portatiles'); 
+          set.add('macbook');
+          set.add('vivobook');
+          set.add('ideapad');
+          set.add('thinkpad');
+          set.add('probook');
+          set.add('elitebook');
+          set.add('zenbook');
+        }
         return Array.from(set);
       };
 
@@ -103,9 +172,11 @@ export async function GET(req: NextRequest) {
           const conditions: any[] = [];
           for (const v of variants) {
             conditions.push({ name: { contains: v, mode: 'insensitive' } });
-            conditions.push({ sku: { contains: v, mode: 'insensitive' } });
-            conditions.push({ specs: { contains: v, mode: 'insensitive' } });
-            conditions.push({ description: { contains: v, mode: 'insensitive' } });
+            if (v !== 'portatil' && v !== 'portátil' && v !== 'portatiles') {
+              conditions.push({ sku: { contains: v, mode: 'insensitive' } });
+              conditions.push({ specs: { contains: v, mode: 'insensitive' } });
+              conditions.push({ description: { contains: v, mode: 'insensitive' } });
+            }
             conditions.push({ category: { name: { contains: v, mode: 'insensitive' } } });
             if (canSeeProvidersAndCosts) {
               conditions.push({ provider: { contains: v, mode: 'insensitive' } });

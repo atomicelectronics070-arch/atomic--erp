@@ -139,7 +139,7 @@ const ALL_MESSAGES: Record<string, string[]> = {
 const SUB_CATEGORIES = [
   { id: "camaras", label: "Cámaras de Seguridad", categoryId: "cmr1ljg860003enspbm1m5tic", search: "camara", count: "360+ Cámaras", icon: Shield },
   { id: "celulares", label: "Celulares & Tablets", categoryId: "cmr2n905o0001137wi0ufnmdm", search: "celular", count: "530+ Equipos", icon: Smartphone },
-  { id: "laptops", label: "Laptops & Computación", categoryId: "cmrfunoy400031d1g55magimc", search: "laptop", count: "185+ Portátiles", icon: Laptop },
+  { id: "laptops", label: "Laptops & Computación", categoryId: "cmrfunoy400031d1g55magimc", search: "laptop", count: "120+ Laptops", icon: Laptop },
   { id: "cocina", label: "Cocinas & Encimeras", categoryId: "cmqvwkr8i0009ejkxbduhupxu", search: "cocina", count: "130+ Equipos", icon: Home },
   { id: "cerraduras", label: "Cerraduras Smart", categoryId: "cmoe77b3r000bwwr9nado4n9q", search: "cerradura", count: "100+ Cerraduras", icon: ShieldCheck },
   { id: "energia", label: "UPS & Generadores", categoryId: "cmr2n9xoj0003znjlj8jongdt", search: "regulador", count: "270+ Sistemas", icon: Zap },
@@ -303,6 +303,111 @@ function getIphoneSpecs(p: any) {
   return { gen, model, storage, isRefurbished }
 }
 
+// ─── FILTROS DIFERENCIADORES DE LAPTOPS & COMPUTACIÓN ───
+const LAPTOP_FILTERS = [
+  { id: "all", label: "Todas las Laptops", badge: "Catálogo Completo" },
+  { id: "gamer", label: "Gamer RTX / TUF / ROG", badge: "Alto Rendimiento", color: "rose" },
+  { id: "ultra", label: "Intel Core Ultra", badge: "Ultra 9 / 7 / 5", color: "blue" },
+  { id: "ryzen", label: "AMD Ryzen AI", badge: "Ryzen 9 / 7 / 5", color: "amber" },
+  { id: "apple", label: "Apple MacBook", badge: "M5 / M4 / M3 / M2", color: "violet" },
+  { id: "probook", label: "Ejecutivas & Trabajo", badge: "ProBook / ThinkPad", color: "cyan" },
+  { id: "student", label: "Estudiantes / Oficina", badge: "Desde $295", color: "emerald" },
+]
+
+function getLaptopSpecs(p: any) {
+  const text = `${p?.name || ''} ${p?.sku || ''} ${p?.specs || ''}`.toUpperCase()
+  
+  // Check if it's a laptop
+  const isLaptopName = 
+    text.startsWith('NOT. ') || 
+    text.startsWith('LAPTOP ') || 
+    (text.includes('NOTEBOOK') && !text.includes('STAND') && !text.includes('COBERTOR')) ||
+    text.includes('MACBOOK') ||
+    text.includes('VIVOBOOK') ||
+    text.includes('ZENBOOK') ||
+    text.includes('IDEAPAD') ||
+    text.includes('THINKPAD') ||
+    text.includes('THINKBOOK') ||
+    text.includes('CHROMEBOOK') ||
+    text.includes('INSPIRON') ||
+    text.includes('LATITUDE') ||
+    text.includes('PROBOOK') ||
+    text.includes('ELITEBOOK') ||
+    text.includes('OMNIBOOK') ||
+    text.includes('ZBOOK') ||
+    text.includes('ROG STRIX') ||
+    text.includes('TUF GAMING') ||
+    text.includes('LENOVO LOQ') ||
+    text.includes('ACER NITRO') ||
+    text.includes('ACER ASPIRE') ||
+    text.includes('ACER GO 15') ||
+    text.includes('LG GRAM') ||
+    (p?.category?.name === 'Laptops' || p?.category === 'Laptops');
+
+  if (!isLaptopName) return null
+
+  // 1. Brand / Line Badge
+  let brand: { label: string; bg: string; text: string; border: string; tier: string } | null = null
+  if (text.includes('MACBOOK')) {
+    brand = { label: 'Apple MacBook', bg: 'bg-violet-950/90', text: 'text-violet-300', border: 'border-violet-500/50', tier: 'apple' }
+  } else if (text.includes('ROG') || text.includes('TUF GAMING') || text.includes('LOQ') || text.includes('NITRO') || text.includes('A16') || text.includes('RTX')) {
+    brand = { label: 'Laptop Gaming RTX', bg: 'bg-rose-950/90', text: 'text-rose-300', border: 'border-rose-500/50', tier: 'gamer' }
+  } else if (text.includes('ZBOOK') || text.includes('ELITEBOOK') || text.includes('THINKPAD') || text.includes('LATITUDE') || text.includes('PROBOOK') || text.includes('TECRA')) {
+    brand = { label: 'Gama Corporativa / Pro', bg: 'bg-cyan-950/90', text: 'text-cyan-300', border: 'border-cyan-500/50', tier: 'probook' }
+  } else if (text.includes('ULTRA 9') || text.includes('ULTRA 7') || text.includes('ULTRA 5') || text.includes('CORE ULTRA')) {
+    brand = { label: 'Intel Core Ultra AI', bg: 'bg-blue-950/90', text: 'text-blue-300', border: 'border-blue-500/50', tier: 'ultra' }
+  } else if (text.includes('RYZEN AI') || text.includes('RYZEN 9') || text.includes('RYZEN 7') || text.includes('RYZEN 5')) {
+    brand = { label: 'AMD Ryzen Power', bg: 'bg-amber-950/90', text: 'text-amber-300', border: 'border-amber-500/50', tier: 'ryzen' }
+  } else if (text.includes('VIVOBOOK') || text.includes('ZENBOOK')) {
+    brand = { label: 'ASUS Slim & Oled', bg: 'bg-indigo-950/90', text: 'text-indigo-300', border: 'border-indigo-500/50', tier: 'probook' }
+  } else if (text.includes('IDEAPAD') || text.includes('INSPIRON') || text.includes('ASPIRE') || text.includes('HP 15') || text.includes('HP 250') || text.includes('HP 255')) {
+    brand = { label: 'Ofimática & Estudio', bg: 'bg-emerald-950/90', text: 'text-emerald-300', border: 'border-emerald-500/50', tier: 'student' }
+  }
+
+  // 2. CPU
+  let cpu: string | null = null
+  if (text.includes('ULTRA 9')) cpu = 'Intel Core Ultra 9'
+  else if (text.includes('ULTRA 7')) cpu = 'Intel Core Ultra 7'
+  else if (text.includes('ULTRA 5')) cpu = 'Intel Core Ultra 5'
+  else if (text.includes('I9') || text.includes('CORE 9')) cpu = 'Intel Core i9'
+  else if (text.includes('I7') || text.includes('CORE 7') || text.includes('CORE 5 120U')) cpu = 'Intel Core i7'
+  else if (text.includes('I5') || text.includes('CORE 5') || text.includes('1335U')) cpu = 'Intel Core i5'
+  else if (text.includes('I3') || text.includes('CORE 3') || text.includes('N305') || text.includes('N100')) cpu = 'Intel Core i3 / N-Series'
+  else if (text.includes('RYZEN 9') || text.includes('AI 9')) cpu = 'AMD Ryzen AI 9'
+  else if (text.includes('RYZEN 7') || text.includes('R7')) cpu = 'AMD Ryzen 7'
+  else if (text.includes('RYZEN 5') || text.includes('R5')) cpu = 'AMD Ryzen 5'
+  else if (text.includes('RYZEN 3') || text.includes('R3')) cpu = 'AMD Ryzen 3'
+  else if (text.includes('M5')) cpu = 'Apple Silicon M5'
+  else if (text.includes('M4')) cpu = 'Apple Silicon M4'
+  else if (text.includes('M3')) cpu = 'Apple Silicon M3'
+  else if (text.includes('M2')) cpu = 'Apple Silicon M2'
+  else if (text.includes('SNAPDRAGON')) cpu = 'Snapdragon X Plus'
+
+  // 3. RAM
+  let ram: string | null = null
+  if (text.includes('32GB') || text.includes('36GB') || text.includes('64GB')) ram = '32GB RAM'
+  else if (text.includes('24GB')) ram = '24GB RAM'
+  else if (text.includes('16GB')) ram = '16GB RAM'
+  else if (text.includes('8GB')) ram = '8GB RAM'
+
+  // 4. SSD / Storage
+  let storage: string | null = null
+  if (text.includes('2TB')) storage = '2TB SSD NVMe'
+  else if (text.includes('1TB')) storage = '1TB SSD NVMe'
+  else if (text.includes('512GB')) storage = '512GB SSD'
+  else if (text.includes('256GB')) storage = '256GB SSD'
+  else if (text.includes('128GB')) storage = '128GB SSD'
+
+  // 5. GPU
+  let gpu: string | null = null
+  if (text.includes('RTX-5070') || text.includes('RTX 5070')) gpu = 'RTX 5070'
+  else if (text.includes('RTX-5060') || text.includes('RTX 5060')) gpu = 'RTX 5060'
+  else if (text.includes('RTX-4050') || text.includes('RTX 4050')) gpu = 'RTX 4050'
+  else if (text.includes('RTX')) gpu = 'NVIDIA RTX'
+
+  return { brand, cpu, ram, storage, gpu }
+}
+
 interface ProductCardProps {
   product: any
   copiedId: string | null
@@ -315,6 +420,7 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
   const productWebUrl = `https://atomiccotizador.shop/web/product/${p.id}`
   const specs = getCameraSpecs(p)
   const iphoneSpecs = getIphoneSpecs(p)
+  const laptopSpecs = getLaptopSpecs(p)
 
   const isInvalidLogo = (url: string) => {
     if (!url || typeof url !== 'string') return true
@@ -364,7 +470,7 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
           {p.category || "General"}
         </span>
 
-        {/* Resolution or iPhone Generation Badge (Top Right - Differentiator) */}
+        {/* Resolution, iPhone Generation or Laptop Brand Badge (Top Right - Differentiator) */}
         {specs.resolution ? (
           <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-md border text-[10px] font-mono font-bold shadow-md tracking-wide ${specs.resolution.bg} ${specs.resolution.text} ${specs.resolution.border}`}>
             {specs.resolution.label}
@@ -372,6 +478,10 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
         ) : iphoneSpecs?.gen ? (
           <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-md border text-[10px] font-mono font-bold shadow-md tracking-wide ${iphoneSpecs.gen.bg} ${iphoneSpecs.gen.text} ${iphoneSpecs.gen.border}`}>
             {iphoneSpecs.gen.label}
+          </span>
+        ) : laptopSpecs?.brand ? (
+          <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-md border text-[10px] font-mono font-bold shadow-md tracking-wide ${laptopSpecs.brand.bg} ${laptopSpecs.brand.text} ${laptopSpecs.brand.border}`}>
+            {laptopSpecs.brand.label}
           </span>
         ) : null}
       </div>
@@ -430,6 +540,32 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
             ) : (
               <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono bg-emerald-950/70 text-emerald-300 border border-emerald-500/30 flex items-center gap-1 font-semibold">
                 ✨ 100% Nuevo Sellado
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Differentiation Tags for Laptops (CPU, RAM, SSD, GPU) */}
+        {laptopSpecs && (
+          <div className="flex flex-wrap items-center gap-1 pt-0.5">
+            {laptopSpecs.cpu && (
+              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono bg-blue-950/80 text-blue-300 border border-blue-500/30 font-bold flex items-center gap-1">
+                ⚡ {laptopSpecs.cpu}
+              </span>
+            )}
+            {laptopSpecs.ram && (
+              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono bg-zinc-800 text-zinc-200 border border-white/10 font-medium">
+                {laptopSpecs.ram}
+              </span>
+            )}
+            {laptopSpecs.storage && (
+              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono bg-zinc-800 text-cyan-300 border border-cyan-500/30 font-medium">
+                💾 {laptopSpecs.storage}
+              </span>
+            )}
+            {laptopSpecs.gpu && (
+              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono bg-rose-950/80 text-rose-300 border border-rose-500/30 font-bold flex items-center gap-1">
+                🎮 {laptopSpecs.gpu}
               </span>
             )}
           </div>
@@ -525,7 +661,12 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
                 iphoneSpecs?.gen ? `📱 *Generación:* ${iphoneSpecs.gen.label}` : '',
                 iphoneSpecs?.model ? `💎 *Gama & Acabado:* ${iphoneSpecs.model.label}` : '',
                 iphoneSpecs?.storage ? `💾 *Almacenamiento:* ${iphoneSpecs.storage}` : '',
-                iphoneSpecs ? (iphoneSpecs.isRefurbished ? `♻️ *Condición:* Reacondicionado Certificado Grado A+` : `📦 *Condición:* 100% Nuevo sellado en caja`) : ''
+                iphoneSpecs ? (iphoneSpecs.isRefurbished ? `♻️ *Condición:* Reacondicionado Certificado Grado A+` : `📦 *Condición:* 100% Nuevo sellado en caja`) : '',
+                laptopSpecs?.brand ? `💻 *Línea Oficial:* ${laptopSpecs.brand.label}` : '',
+                laptopSpecs?.cpu ? `⚡ *Procesador:* ${laptopSpecs.cpu}` : '',
+                laptopSpecs?.ram ? `🚀 *Memoria RAM:* ${laptopSpecs.ram}` : '',
+                laptopSpecs?.storage ? `💾 *Almacenamiento:* ${laptopSpecs.storage}` : '',
+                laptopSpecs?.gpu ? `🎮 *Tarjeta Gráfica:* ${laptopSpecs.gpu}` : ''
               ].filter(Boolean).join('\n')
 
               const commercialCopy = `🔥 *${p.name.toUpperCase()}*
@@ -580,6 +721,8 @@ export default function PreciosVendedorClient() {
   const [tab1CameraFilter, setTab1CameraFilter] = useState("all")
   const [iphoneFilter, setIphoneFilter] = useState("all")
   const [tab1IphoneFilter, setTab1IphoneFilter] = useState("all")
+  const [laptopFilter, setLaptopFilter] = useState("all")
+  const [tab1LaptopFilter, setTab1LaptopFilter] = useState("all")
   const [catProducts, setCatProducts] = useState<any[]>([])
   const [loadingCatProducts, setLoadingCatProducts] = useState(false)
 
@@ -590,7 +733,7 @@ export default function PreciosVendedorClient() {
 
   const quickFilters = ["Camara", "iPhone", "Laptop", "Cerradura", "Cocina", "Horno", "Generador", "Bateria"]
 
-  // Lista de productos filtrados en Tab 2 según resolución de cámara o generación de iPhone
+  // Lista de productos filtrados en Tab 2 según resolución de cámara, generación de iPhone o gama de laptop
   const filteredCatProducts = useMemo(() => {
     if (activeSubCat === "camaras" && cameraFilter !== "all") {
       return catProducts.filter(p => {
@@ -618,13 +761,26 @@ export default function PreciosVendedorClient() {
         return true
       })
     }
+    if (activeSubCat === "laptops" && laptopFilter !== "all") {
+      return catProducts.filter(p => {
+        const s = getLaptopSpecs(p)
+        if (laptopFilter === "gamer") return s?.brand?.tier === "gamer" || s?.gpu !== null
+        if (laptopFilter === "ultra") return s?.brand?.tier === "ultra" || s?.cpu?.includes("Ultra")
+        if (laptopFilter === "ryzen") return s?.brand?.tier === "ryzen" || s?.cpu?.includes("Ryzen")
+        if (laptopFilter === "apple") return s?.brand?.tier === "apple"
+        if (laptopFilter === "probook") return s?.brand?.tier === "probook"
+        if (laptopFilter === "student") return s?.brand?.tier === "student"
+        return true
+      })
+    }
     return catProducts
-  }, [catProducts, activeSubCat, cameraFilter, iphoneFilter])
+  }, [catProducts, activeSubCat, cameraFilter, iphoneFilter, laptopFilter])
 
-  // Lista de productos filtrados en Tab 1 según resolución (cámaras) o generación (iPhone)
+  // Lista de productos filtrados en Tab 1 según resolución (cámaras), generación (iPhone) o gama (laptops)
   const filteredTab1Products = useMemo(() => {
     const isCamSearch = searchTerm.toLowerCase().includes("camara") || searchTerm.toLowerCase() === "camaras"
     const isIphoneSearch = searchTerm.toLowerCase().includes("iphone") || searchTerm.toLowerCase().includes("i phone") || searchTerm.toLowerCase().includes("apple")
+    const isLaptopSearch = searchTerm.toLowerCase().includes("laptop") || searchTerm.toLowerCase().includes("notebook") || searchTerm.toLowerCase().includes("portatil") || searchTerm.toLowerCase().includes("portátil")
 
     if (isCamSearch && tab1CameraFilter !== "all") {
       return products.filter(p => {
@@ -653,8 +809,21 @@ export default function PreciosVendedorClient() {
       })
     }
 
+    if (isLaptopSearch && tab1LaptopFilter !== "all") {
+      return products.filter(p => {
+        const s = getLaptopSpecs(p)
+        if (tab1LaptopFilter === "gamer") return s?.brand?.tier === "gamer" || s?.gpu !== null
+        if (tab1LaptopFilter === "ultra") return s?.brand?.tier === "ultra" || s?.cpu?.includes("Ultra")
+        if (tab1LaptopFilter === "ryzen") return s?.brand?.tier === "ryzen" || s?.cpu?.includes("Ryzen")
+        if (tab1LaptopFilter === "apple") return s?.brand?.tier === "apple"
+        if (tab1LaptopFilter === "probook") return s?.brand?.tier === "probook"
+        if (tab1LaptopFilter === "student") return s?.brand?.tier === "student"
+        return true
+      })
+    }
+
     return products
-  }, [products, searchTerm, tab1CameraFilter, tab1IphoneFilter])
+  }, [products, searchTerm, tab1CameraFilter, tab1IphoneFilter, tab1LaptopFilter])
 
   const showToast = (msg: string) => {
     setToastMessage(msg)
@@ -995,6 +1164,34 @@ export default function PreciosVendedorClient() {
                   })}
                 </div>
               )}
+
+              {/* Quick Laptop Filter Pills when searching for laptops */}
+              {(searchTerm.toLowerCase().includes("laptop") || searchTerm.toLowerCase().includes("notebook") || searchTerm.toLowerCase().includes("portatil") || searchTerm.toLowerCase().includes("portátil")) && (
+                <div className="pt-2.5 border-t border-white/[0.08] flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
+                  <span className="text-[10px] font-mono text-blue-400 shrink-0 font-bold uppercase tracking-wider flex items-center gap-1">
+                    <Laptop size={11} className="text-blue-400" /> Gama Laptops:
+                  </span>
+                  {LAPTOP_FILTERS.map(f => {
+                    const isActive = tab1LaptopFilter === f.id
+                    return (
+                      <button
+                        key={f.id}
+                        onClick={() => setTab1LaptopFilter(f.id)}
+                        className={`shrink-0 px-2.5 py-1 rounded-md text-[11px] font-mono transition-all flex items-center gap-1 border ${
+                          isActive
+                            ? "bg-blue-950 text-blue-200 border-blue-400/50 shadow-sm"
+                            : "bg-zinc-950/80 text-zinc-400 border-white/[0.06] hover:text-zinc-200"
+                        }`}
+                      >
+                        <span>{f.label}</span>
+                        <span className={`text-[9px] px-1 py-0.2 rounded ${isActive ? "bg-blue-900/60 text-blue-300 font-bold" : "text-zinc-500"}`}>
+                          {f.badge}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Product List */}
@@ -1136,6 +1333,42 @@ export default function PreciosVendedorClient() {
                         >
                           <span>{f.label}</span>
                           <span className={`text-[10px] px-1.5 py-0.2 rounded ${isActive ? "bg-amber-900/60 text-amber-300 font-bold" : "bg-zinc-900 text-zinc-500"}`}>
+                            {f.badge}
+                          </span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Diferenciador Especial para Laptops & Computación */}
+              {activeSubCat === "laptops" && (
+                <div className="pt-3 border-t border-white/[0.08] space-y-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <span className="text-[11px] font-mono flex items-center gap-1.5 font-bold uppercase tracking-wider text-blue-400">
+                      <Laptop size={12} className="text-blue-400" />
+                      Diferenciador por Gama, Procesador & Gráfica:
+                    </span>
+                    <span className="text-[10px] font-mono text-zinc-400 bg-zinc-950 px-2.5 py-0.5 rounded-full border border-white/5">
+                      Mostrando {filteredCatProducts.length} de {catProducts.length} portátiles
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-1">
+                    {LAPTOP_FILTERS.map(f => {
+                      const isActive = laptopFilter === f.id
+                      return (
+                        <button
+                          key={f.id}
+                          onClick={() => setLaptopFilter(f.id)}
+                          className={`shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-mono font-medium transition-all flex items-center gap-1.5 border ${
+                            isActive
+                              ? "bg-blue-950 text-blue-200 border-blue-400/50 shadow-md shadow-blue-950/40"
+                              : "bg-zinc-950/70 text-zinc-400 border-white/[0.06] hover:text-zinc-200 hover:bg-zinc-900"
+                          }`}
+                        >
+                          <span>{f.label}</span>
+                          <span className={`text-[10px] px-1.5 py-0.2 rounded ${isActive ? "bg-blue-900/60 text-blue-300 font-bold" : "bg-zinc-900 text-zinc-500"}`}>
                             {f.badge}
                           </span>
                         </button>
