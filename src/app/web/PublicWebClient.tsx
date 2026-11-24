@@ -1518,6 +1518,12 @@ export default function PublicWebClient({
 
             {/* ─── SECCIÓN 3: CONFIANZA, EMPRESA & SOPORTE ─── */}
             <div className="flex items-center gap-0.5 lg:gap-1 bg-slate-100 hover:bg-slate-200/70 p-0.5 lg:p-1 rounded-full border border-slate-200/80 backdrop-blur-md shrink-0 shadow-inner transition-colors">
+              <Link
+                href="/web/equipo"
+                className="shrink-0 px-2 lg:px-2.5 xl:px-3.5 py-1 lg:py-1.5 rounded-full text-[10px] lg:text-[11px] font-bold tracking-wider font-heading transition-all duration-200 whitespace-nowrap border bg-transparent text-slate-600 border-transparent hover:bg-white hover:text-slate-950"
+              >
+                EQUIPO
+              </Link>
               {[
                 { id: 'nosotros', label: 'NOSOTROS' },
                 { id: 'contacto', label: 'CONTACTO' },
@@ -1987,6 +1993,18 @@ export default function PublicWebClient({
                         </div>
                         <div className="text-[10px] text-slate-500 pl-3.5">Trayectoria ATOMIC, valores y respaldo comercial</div>
                       </div>
+
+                      <Link
+                        href="/web/equipo"
+                        onClick={() => setIsMegaMenuOpen(false)}
+                        className="relative cursor-pointer hover:bg-cyan-50/60 p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-cyan-400 block"
+                      >
+                        <div className="text-xs font-bold text-slate-800 flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 shrink-0" />
+                          <span>Nuestro Equipo & Liderazgo</span>
+                        </div>
+                        <div className="text-[10px] text-slate-500 pl-3.5">Perfiles de Santiago Guzmán (CEO) y Juan Pablo Guzmán (Ventas)</div>
+                      </Link>
 
                       <div
                         onClick={() => {

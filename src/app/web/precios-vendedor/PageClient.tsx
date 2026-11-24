@@ -165,7 +165,8 @@ const LANDINGS_LIST = [
   { name: "Campanas Extractoras", url: "/web/campanas", category: "Extracción", desc: "Campanas de isla y pared con filtros de carbono activo." },
   { name: "Bicicletas Eléctricas", url: "/web/bicicletas-electricas", category: "Movilidad", desc: "Movilidad urbana ágil, sin gasto de combustible ni emisiones." },
   { name: "Scooters Eléctricos", url: "/web/scooters", category: "Movilidad", desc: "Scooters plegables Segway Ninebot de alta autonomía." },
-  { name: "Generadores Eléctricos", url: "/web/generadores", category: "Energía", desc: "Plantas de respaldo para cortes de luz en hogares e industrias." }
+  { name: "Generadores Eléctricos", url: "/web/generadores", category: "Energía", desc: "Plantas de respaldo para cortes de luz en hogares e industrias." },
+  { name: "Nuestro Equipo & Liderazgo", url: "/web/equipo", category: "Institucional", desc: "Perfiles directivos de Santiago Guzmán (CEO) y Juan Pablo Guzmán (Ventas)." }
 ]
 
 type TabType = 
@@ -1259,6 +1260,23 @@ export default function PreciosVendedorClient() {
     showToast(`${label} copiado`)
   }
 
+  const handleCopyImageToClipboard = async (imageUrl: string, label: string) => {
+    try {
+      const res = await fetch(imageUrl)
+      const blob = await res.blob()
+      await navigator.clipboard.write([
+        new ClipboardItem({ [blob.type]: blob })
+      ])
+      showToast(`${label} copiada al portapapeles`)
+    } catch (err) {
+      const a = document.createElement('a')
+      a.href = imageUrl
+      a.download = imageUrl.split('/').pop() || 'tarjeta-oficial.png'
+      a.click()
+      showToast(`Descargando ${label}`)
+    }
+  }
+
   // 1. Fetch reactivo en vivo para Tab 1 (Buscador General con Debounce)
   useEffect(() => {
     const fetchSearchProducts = async () => {
@@ -1331,6 +1349,17 @@ export default function PreciosVendedorClient() {
     { id: "contacto", label: "Directorio & Legal", icon: Building2 },
   ]
 
+  const modalAccountText = useMemo(() => {
+    if (!imageModalUrl) return null
+    if (imageModalUrl.includes("banco-pichincha")) {
+      return `🟡 DATOS DE PAGO - BANCO PICHINCHA\n• Banco: Banco Pichincha\n• Tipo de Cuenta: Ahorros\n• Número: 2206020091\n• Titular: Santiago Guzmán\n• Cédula: 1709540478\n• Correo: sguzmanpal@yahoo.com\n\nPor favor envía el comprobante visible tras realizar la transferencia.`
+    }
+    if (imageModalUrl.includes("banco-guayaquil")) {
+      return `🔴 DATOS DE PAGO - BANCO GUAYAQUIL\n• Banco: Banco Guayaquil\n• Tipo de Cuenta: Ahorros\n• Número: 0124465041\n• Titular: Juan Pablo Guzmán Morales\n• Cédula: 1751940212\n\nPor favor envía el comprobante visible tras realizar la transferencia.`
+    }
+    return null
+  }, [imageModalUrl])
+
   return (
     <div className="min-h-screen bg-[#09090b] text-zinc-100 font-sans selection:bg-zinc-800 selection:text-white pb-32">
       
@@ -1364,20 +1393,55 @@ export default function PreciosVendedorClient() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="relative max-w-3xl w-full bg-zinc-950 border border-white/10 rounded-2xl p-4 overflow-hidden shadow-2xl"
+              className="relative max-w-4xl w-full bg-zinc-950 border border-white/10 rounded-2xl p-4 sm:p-6 overflow-hidden shadow-2xl space-y-4"
               onClick={e => e.stopPropagation()}
             >
-              <div className="flex items-center justify-between pb-3 border-b border-white/[0.08] mb-3">
-                <span className="text-xs font-mono text-zinc-400">Documento Oficial ATOMIC</span>
-                <button
-                  onClick={() => setImageModalUrl(null)}
-                  className="p-1 rounded-md text-zinc-400 hover:text-white hover:bg-white/10"
-                >
-                  <X size={16} />
-                </button>
+              <div className="flex flex-wrap items-center justify-between pb-3 border-b border-white/[0.08] gap-2">
+                <span className="text-xs font-mono text-zinc-400">Documento Oficial ATOMIC · Alta Definición</span>
+
+                <div className="flex items-center gap-2">
+                  {modalAccountText && (
+                    <button
+                      onClick={() => handleCopyText(modalAccountText, "Datos bancarios en texto")}
+                      className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs font-medium text-zinc-200 hover:text-white border border-white/10 flex items-center gap-1.5 transition-colors shadow-sm"
+                      title="Copiar datos completos para enviar por WhatsApp"
+                    >
+                      <Copy size={13} />
+                      <span className="hidden sm:inline">Copiar Texto</span>
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => handleCopyImageToClipboard(imageModalUrl, "Tarjeta oficial")}
+                    className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs font-medium text-zinc-200 hover:text-white border border-white/10 flex items-center gap-1.5 transition-colors shadow-sm"
+                    title="Copiar imagen al portapapeles"
+                  >
+                    <Copy size={13} />
+                    <span>Copiar Imagen</span>
+                  </button>
+
+                  <a
+                    href={imageModalUrl}
+                    download={imageModalUrl.split('/').pop() || 'tarjeta-oficial.png'}
+                    className="px-3 py-1.5 rounded-lg bg-emerald-950/80 hover:bg-emerald-900 text-xs font-medium text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5 transition-colors shadow-sm font-semibold"
+                    title="Descargar archivo de imagen en alta resolución"
+                  >
+                    <Download size={13} />
+                    <span>Descargar Imagen</span>
+                  </a>
+
+                  <button
+                    onClick={() => setImageModalUrl(null)}
+                    className="p-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-white/10 ml-1"
+                    title="Cerrar visor"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
               </div>
-              <div className="flex justify-center bg-black/60 rounded-xl p-2 max-h-[70vh] overflow-auto">
-                <img src={imageModalUrl} alt="Vista preliminar" className="max-h-[65vh] w-auto object-contain rounded-lg" />
+
+              <div className="flex justify-center bg-black/60 rounded-xl p-3 max-h-[70vh] overflow-auto border border-white/5 shadow-inner">
+                <img src={imageModalUrl} alt="Vista preliminar oficial" className="max-h-[65vh] w-auto object-contain rounded-lg" />
               </div>
             </motion.div>
           </motion.div>
@@ -2438,6 +2502,14 @@ export default function PreciosVendedorClient() {
                   >
                     <ExternalLink size={14} />
                   </button>
+                  <a
+                    href="/images/pagos/banco-guayaquil.png"
+                    download="tarjeta-banco-guayaquil.png"
+                    className="p-2.5 rounded-lg bg-emerald-950/70 hover:bg-emerald-900/80 text-emerald-300 hover:text-white border border-emerald-500/30 transition-all flex items-center justify-center"
+                    title="Descargar Tarjeta Oficial (PNG)"
+                  >
+                    <Download size={14} />
+                  </a>
                 </div>
               </div>
 
@@ -2478,14 +2550,30 @@ export default function PreciosVendedorClient() {
                 </div>
 
                 {/* Details Grid */}
-                <div className="pt-3 border-t border-white/[0.06] grid grid-cols-2 gap-3 text-xs font-mono">
-                  <div>
-                    <span className="text-[10px] text-zinc-400 block uppercase">Titular</span>
-                    <span className="font-semibold text-zinc-200">Santiago Guzmán</span>
+                <div className="pt-3 border-t border-white/[0.06] space-y-2 text-xs font-mono">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <span className="text-[10px] text-zinc-400 block uppercase">Titular</span>
+                      <span className="font-semibold text-zinc-200">Santiago Guzmán</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[10px] text-zinc-400 block uppercase">Cédula</span>
+                      <span className="font-semibold text-zinc-200">1709540478</span>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <span className="text-[10px] text-zinc-400 block uppercase">Cédula</span>
-                    <span className="font-semibold text-zinc-200">1709540478</span>
+                  <div className="pt-2 border-t border-white/[0.04] flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] text-amber-400 block uppercase font-bold">Correo para Transferencias</span>
+                      <span className="text-xs font-semibold text-zinc-200">sguzmanpal@yahoo.com</span>
+                    </div>
+                    <button
+                      onClick={() => handleCopyText("sguzmanpal@yahoo.com", "Correo para transferencias")}
+                      className="px-2 py-1 rounded-md bg-white/[0.05] hover:bg-white/[0.10] text-zinc-300 hover:text-white transition-all flex items-center gap-1 text-[10px]"
+                      title="Copiar correo"
+                    >
+                      <Copy size={12} />
+                      <span className="hidden sm:inline">Copiar Correo</span>
+                    </button>
                   </div>
                 </div>
 
@@ -2508,6 +2596,14 @@ export default function PreciosVendedorClient() {
                   >
                     <ExternalLink size={14} />
                   </button>
+                  <a
+                    href="/images/pagos/banco-pichincha.png"
+                    download="tarjeta-banco-pichincha.png"
+                    className="p-2.5 rounded-lg bg-emerald-950/70 hover:bg-emerald-900/80 text-emerald-300 hover:text-white border border-emerald-500/30 transition-all flex items-center justify-center"
+                    title="Descargar Tarjeta Oficial (PNG)"
+                  >
+                    <Download size={14} />
+                  </a>
                 </div>
               </div>
 
