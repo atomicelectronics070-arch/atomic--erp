@@ -175,7 +175,7 @@ export async function GET(req: NextRequest) {
         // Build where filter
         const where: any = { isDeleted: false };
 
-        if (categoryId) {
+        if (categoryId && categoryId !== "ALL") {
             where.categoryId = categoryId;
         }
 
@@ -316,6 +316,29 @@ export async function GET(req: NextRequest) {
 
         const totalCatalogCount = await prisma.product.count({ where: { isDeleted: false } });
 
+        // Fetch active categories with product counts
+        const categoriesRaw = await prisma.category.findMany({
+            where: { products: { some: { isDeleted: false } } },
+            select: {
+                id: true,
+                name: true,
+                slug: true,
+                _count: {
+                    select: { products: { where: { isDeleted: false } } }
+                }
+            },
+            orderBy: {
+                products: { _count: "desc" }
+            }
+        });
+
+        const formattedCategories = categoriesRaw.map((c) => ({
+            id: c.id,
+            name: c.name,
+            slug: c.slug,
+            count: c._count.products,
+        }));
+
         return NextResponse.json({
             success: true,
             products: processedProducts,
@@ -330,6 +353,7 @@ export async function GET(req: NextRequest) {
                 totalWithoutProvider: withoutProviderCount,
                 totalWithProvider: Math.max(0, totalCatalogCount - withoutProviderCount),
             },
+            categories: formattedCategories,
             topSuppliers: formattedProviderStats.slice(0, 15),
         });
     } catch (error: any) {

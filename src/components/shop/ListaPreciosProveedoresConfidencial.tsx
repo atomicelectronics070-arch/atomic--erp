@@ -46,6 +46,40 @@ export interface CatalogProduct {
     updatedAt: string
 }
 
+export interface CategoryItem {
+    id: string
+    name: string
+    slug: string
+    count: number
+}
+
+// Icon helper for categories
+const getCategoryIcon = (name: string): string => {
+    const n = (name || "").toLowerCase()
+    if (n.includes("monitor") || n.includes("pantalla")) return "🖥"
+    if (n.includes("cerradura")) return "🚪"
+    if (n.includes("generador") || n.includes("energ") || n.includes("ups") || n.includes("bater")) return "⚡"
+    if (n.includes("gaming") || n.includes("consola") || n.includes("juego") || n.includes("mando")) return "🎮"
+    if (n.includes("acabado") || n.includes("marmol") || n.includes("mármol") || n.includes("panel") || n.includes("hogar") || n.includes("remodela")) return "🔍"
+    if (n.includes("audio") || n.includes("sonido") || n.includes("parlante") || n.includes("audifono")) return "🔊"
+    if (n.includes("camara") || n.includes("cámara") || n.includes("vigilancia") || n.includes("cctv")) return "📹"
+    if (n.includes("laptop") || n.includes("computador") || n.includes("pc")) return "💻"
+    if (n.includes("celular") || n.includes("tablet") || n.includes("phone")) return "📱"
+    if (n.includes("cocina") || n.includes("extracc") || n.includes("campana") || n.includes("horno")) return "🍳"
+    if (n.includes("red") || n.includes("telecom") || n.includes("cable") || n.includes("router")) return "🌐"
+    if (n.includes("domotica") || n.includes("domótica") || n.includes("smart") || n.includes("automat")) return "🤖"
+    if (n.includes("videoportero") || n.includes("portero") || n.includes("citofono") || n.includes("citófono") || n.includes("alarma")) return "🛡"
+    if (n.includes("impresora")) return "🖨"
+    if (n.includes("disco") || n.includes("almacen")) return "💾"
+    if (n.includes("herramienta") || n.includes("soldadur")) return "🔧"
+    if (n.includes("calefactor")) return "🔥"
+    if (n.includes("torniquete")) return "🚶"
+    if (n.includes("balanza")) return "⚖️"
+    if (n.includes("sensor")) return "📡"
+    if (n.includes("software") || n.includes("bot")) return "⚙️"
+    return "📦"
+}
+
 interface SupplierStat {
     name: string
     count: number
@@ -71,6 +105,37 @@ export default function ListaPreciosProveedoresConfidencial() {
         totalWithoutProvider: 0,
         totalWithProvider: 0,
     })
+
+    // Categories state
+    const [categories, setCategories] = useState<CategoryItem[]>([])
+    const [selectedCategoryId, setSelectedCategoryId] = useState<string>("ALL")
+    const [showAllCategoryPills, setShowAllCategoryPills] = useState<boolean>(false)
+    const categoryScrollRef = React.useRef<HTMLDivElement>(null)
+
+    // Horizontal category split
+    const horizontalCategories = useMemo(() => {
+        return categories.slice(0, 14)
+    }, [categories])
+
+    const remainingCategories = useMemo(() => {
+        return categories.slice(14)
+    }, [categories])
+
+    const selectedCategory = useMemo(() => {
+        return categories.find((c) => c.id === selectedCategoryId)
+    }, [categories, selectedCategoryId])
+
+    const scrollCategories = (direction: "left" | "right") => {
+        if (categoryScrollRef.current) {
+            const offset = direction === "left" ? -280 : 280
+            categoryScrollRef.current.scrollBy({ left: offset, behavior: "smooth" })
+        }
+    }
+
+    const handleCategorySelect = (catId: string) => {
+        setSelectedCategoryId(catId)
+        setCurrentPage(1)
+    }
 
     // Pagination
     const [currentPage, setCurrentPage] = useState<number>(1)
@@ -123,6 +188,7 @@ export default function ListaPreciosProveedoresConfidencial() {
             if (debouncedSearch) params.set("search", debouncedSearch)
             if (selectedProvider && selectedProvider !== "ALL") params.set("provider", selectedProvider)
             if (statusFilter && statusFilter !== "ALL") params.set("filter", statusFilter)
+            if (selectedCategoryId && selectedCategoryId !== "ALL") params.set("category", selectedCategoryId)
 
             const res = await fetch(`/api/admin/confidential-supplier-products?${params.toString()}`)
             if (!res.ok) {
@@ -140,6 +206,9 @@ export default function ListaPreciosProveedoresConfidencial() {
                 if (data.topSuppliers && data.topSuppliers.length > 0) {
                     setTopSuppliers(data.topSuppliers)
                 }
+                if (data.categories && data.categories.length > 0) {
+                    setCategories(data.categories)
+                }
             } else {
                 throw new Error(data.error || "No se pudo cargar el catálogo")
             }
@@ -149,7 +218,7 @@ export default function ListaPreciosProveedoresConfidencial() {
         } finally {
             setLoading(false)
         }
-    }, [currentPage, pageSize, debouncedSearch, selectedProvider, statusFilter])
+    }, [currentPage, pageSize, debouncedSearch, selectedProvider, statusFilter, selectedCategoryId])
 
     useEffect(() => {
         fetchProducts()
@@ -359,6 +428,174 @@ ${product.description ? `\n📝 Características:\n${product.description.slice(0
                         ))}
                     </div>
                 </div>
+            </div>
+
+            {/* CATÁLOGO GENERAL DE PRODUCTOS - SECCIÓN CON SCROLL HORIZONTAL DE CATEGORÍAS */}
+            <div className="p-4 md:p-6 rounded-2xl bg-slate-900/80 border border-white/10 space-y-4 backdrop-blur-md">
+                {/* ENCABEZADO ESTILO SCREENSHOT */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-white/10">
+                    <div>
+                        <h2 className="text-xl md:text-2xl font-black text-white tracking-tight uppercase">
+                            Catálogo General de Productos
+                        </h2>
+                        <p className="text-xs md:text-sm text-slate-400 font-sans mt-0.5">
+                            <strong className="text-cyan-400 font-mono">{totalProducts.toLocaleString()}</strong> productos disponibles en esta sección
+                            {selectedCategory && (
+                                <span className="ml-2 text-emerald-400 font-semibold font-mono">
+                                    • Filtrado por: {selectedCategory.name}
+                                </span>
+                            )}
+                        </p>
+                    </div>
+
+                    {/* BOTÓN PARA EXPANDIR / MINIMIZAR VIÑETAS */}
+                    <div className="flex items-center gap-2">
+                        {selectedCategoryId !== "ALL" && (
+                            <button
+                                onClick={() => handleCategorySelect("ALL")}
+                                className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-rose-300 text-xs font-mono font-bold transition-all border border-rose-500/30 flex items-center gap-1"
+                            >
+                                <X size={13} />
+                                <span>Quitar Filtro Categoría</span>
+                            </button>
+                        )}
+
+                        <button
+                            onClick={() => setShowAllCategoryPills(!showAllCategoryPills)}
+                            className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all border flex items-center gap-2 shadow-md ${
+                                showAllCategoryPills
+                                    ? "bg-cyan-500 text-black border-cyan-300 shadow-cyan-500/20"
+                                    : "bg-slate-800 hover:bg-slate-700 text-slate-200 border-white/10"
+                            }`}
+                        >
+                            <Layers size={13} className={showAllCategoryPills ? "text-black" : "text-cyan-400"} />
+                            <span>{showAllCategoryPills ? "▲ Minimizar Viñetas" : "▼ Viñetas & Todas las Categorías"}</span>
+                            <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${showAllCategoryPills ? "bg-black/30 text-black" : "bg-black/50 text-cyan-300"}`}>
+                                {categories.length}
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
+                {/* BARRA HORIZONTAL SCROLLEABLE DE CATEGORÍAS */}
+                <div className="relative group">
+                    {/* SCROLL BUTTON LEFT */}
+                    <button
+                        onClick={() => scrollCategories("left")}
+                        className="absolute -left-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-slate-900 border border-white/20 text-white hover:bg-cyan-500 hover:text-black flex items-center justify-center shadow-xl opacity-0 group-hover:opacity-100 transition-all backdrop-blur-md"
+                        title="Desplazar a la izquierda"
+                    >
+                        <ChevronLeft size={16} />
+                    </button>
+
+                    {/* SCROLLABLE PILLS CONTAINER */}
+                    <div
+                        ref={categoryScrollRef}
+                        className="flex items-center gap-2.5 overflow-x-auto pb-2 scroll-smooth select-none px-1"
+                        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                    >
+                        {/* BOTÓN TODOS LOS PRODUCTOS */}
+                        <button
+                            onClick={() => handleCategorySelect("ALL")}
+                            className={`px-4 py-2 rounded-full text-xs font-bold font-sans transition-all shrink-0 flex items-center gap-2 border shadow-sm ${
+                                selectedCategoryId === "ALL"
+                                    ? "bg-slate-950 text-white border-cyan-400 ring-2 ring-cyan-400/40 shadow-cyan-950/40"
+                                    : "bg-slate-900/90 text-slate-300 hover:text-white hover:bg-slate-800 border-white/10"
+                            }`}
+                        >
+                            <Globe size={14} className={selectedCategoryId === "ALL" ? "text-cyan-400" : "text-slate-400"} />
+                            <span>Todos los Productos</span>
+                            <span className="px-1.5 py-0.5 rounded-full text-[10px] font-mono bg-black/40 text-slate-300">
+                                {catalogSummary.totalCatalog.toLocaleString()}
+                            </span>
+                        </button>
+
+                        {/* PILLS DE CATEGORÍAS PRINCIPALES */}
+                        {horizontalCategories.map((cat) => (
+                            <button
+                                key={cat.id}
+                                onClick={() => handleCategorySelect(cat.id)}
+                                className={`px-4 py-2 rounded-full text-xs font-bold font-sans transition-all shrink-0 flex items-center gap-2 border shadow-sm ${
+                                    selectedCategoryId === cat.id
+                                        ? "bg-slate-950 text-white border-cyan-400 ring-2 ring-cyan-400/40 shadow-cyan-950/40"
+                                        : "bg-slate-900/80 text-slate-300 hover:text-white hover:bg-slate-800 border-white/10"
+                                }`}
+                            >
+                                <span className="text-sm">{getCategoryIcon(cat.name)}</span>
+                                <span className="whitespace-nowrap">{cat.name}</span>
+                                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-mono bg-black/40 text-slate-300">
+                                    {cat.count}
+                                </span>
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* SCROLL BUTTON RIGHT */}
+                    <button
+                        onClick={() => scrollCategories("right")}
+                        className="absolute -right-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-slate-900 border border-white/20 text-white hover:bg-cyan-500 hover:text-black flex items-center justify-center shadow-xl opacity-0 group-hover:opacity-100 transition-all backdrop-blur-md"
+                        title="Desplazar a la derecha"
+                    >
+                        <ChevronRight size={16} />
+                    </button>
+                </div>
+
+                {/* PANEL EXPANDIBLE / MINIMIZABLE DE VIÑETAS (CATEGORÍAS RESTANTES Y SUB-CATEGORÍAS) */}
+                <AnimatePresence>
+                    {showAllCategoryPills && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="overflow-hidden rounded-2xl bg-slate-950/90 border border-cyan-500/30 p-4 space-y-3 shadow-2xl backdrop-blur-md"
+                        >
+                            <div className="flex items-center justify-between pb-2 border-b border-white/10">
+                                <div className="flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+                                    <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">
+                                        Viñetas Minimizables de Categorías ({categories.length} disponibles en total)
+                                    </span>
+                                </div>
+                                <button
+                                    onClick={() => setShowAllCategoryPills(false)}
+                                    className="text-xs font-mono text-cyan-400 hover:text-cyan-300 flex items-center gap-1 font-bold"
+                                >
+                                    <span>Minimizar Viñetas</span>
+                                    <ChevronRight size={13} className="-rotate-90" />
+                                </button>
+                            </div>
+
+                            <p className="text-[11px] text-slate-400 font-sans">
+                                Haz clic en cualquiera de las siguientes viñetas para filtrar inmediatamente el catálogo por esa categoría:
+                            </p>
+
+                            {/* GRID DE TODAS LAS VIÑETAS */}
+                            <div className="flex flex-wrap gap-2 max-h-72 overflow-y-auto pr-1">
+                                {categories.map((cat) => (
+                                    <button
+                                        key={cat.id}
+                                        onClick={() => handleCategorySelect(cat.id)}
+                                        className={`px-3 py-1.5 rounded-xl text-xs font-sans font-semibold transition-all flex items-center gap-1.5 border ${
+                                            selectedCategoryId === cat.id
+                                                ? "bg-cyan-500 text-black border-cyan-300 font-bold shadow-lg shadow-cyan-500/20"
+                                                : "bg-slate-900 text-slate-300 hover:text-white hover:bg-slate-800 border-white/5"
+                                        }`}
+                                    >
+                                        <span>{getCategoryIcon(cat.name)}</span>
+                                        <span>{cat.name}</span>
+                                        <span
+                                            className={`px-1.5 py-0.2 rounded text-[10px] font-mono ${
+                                                selectedCategoryId === cat.id ? "bg-black/20 text-black" : "bg-black/50 text-slate-400"
+                                            }`}
+                                        >
+                                            {cat.count}
+                                        </span>
+                                    </button>
+                                ))}
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
 
             {/* MAIN PRODUCTS GRID */}
