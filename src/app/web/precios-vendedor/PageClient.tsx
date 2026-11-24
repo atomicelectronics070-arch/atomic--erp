@@ -179,6 +179,71 @@ type TabType =
   | "mensajes"
   | "contacto"
 
+// ─── FILTROS DIFERENCIADORES DE CÁMARAS Y RESOLUCIÓN ───
+const CAMERA_FILTERS = [
+  { id: "all", label: "Todas las Cámaras", badge: "Catálogo Completo" },
+  { id: "2mp", label: "2MP · 1080P FHD", badge: "$19 - $35", color: "emerald" },
+  { id: "4mp", label: "4MP · 2K QHD", badge: "$54 - $125", color: "cyan" },
+  { id: "5mp", label: "5MP / 6MP · 3K", badge: "$35 - $130", color: "blue" },
+  { id: "8mp", label: "8MP · 4K UHD", badge: "$135 - $195", color: "purple" },
+  { id: "wifi", label: "Wi-Fi & Solar", badge: "EZVIZ / Tapo", color: "sky" },
+  { id: "ptz", label: "PTZ 360° / Dome", badge: "Giro Motorizado", color: "indigo" },
+  { id: "kit", label: "Kits CCTV + DVR", badge: "Sistemas Completos", color: "amber" },
+  { id: "nvr", label: "Grabadores", badge: "NVR / DVR", color: "zinc" }
+]
+
+function getCameraSpecs(p: any) {
+  const text = `${p?.name || ''} ${p?.sku || ''} ${p?.specs || ''}`.toUpperCase()
+  
+  // 1. Resolution
+  let resolution: { label: string; bg: string; text: string; border: string; tier: string } | null = null
+  if (text.includes('8MP') || text.includes('4K') || text.includes('3840') || text.includes('UHD')) {
+    resolution = { label: '8MP · 4K UHD', bg: 'bg-purple-950/90', text: 'text-purple-300', border: 'border-purple-500/50', tier: '8mp' }
+  } else if (text.includes('6MP')) {
+    resolution = { label: '6MP · 3K Panoramic', bg: 'bg-indigo-950/90', text: 'text-indigo-300', border: 'border-indigo-500/50', tier: '6mp' }
+  } else if (text.includes('5MP') || text.includes('3K') || text.includes('3 K') || text.includes('3072')) {
+    resolution = { label: '5MP · 3K HD', bg: 'bg-blue-950/90', text: 'text-blue-300', border: 'border-blue-500/50', tier: '5mp' }
+  } else if (text.includes('4MP') || text.includes('4 MP') || text.includes('2K') || text.includes('QHD') || text.includes('2560')) {
+    resolution = { label: '4MP · 2K QHD', bg: 'bg-cyan-950/90', text: 'text-cyan-300', border: 'border-cyan-500/50', tier: '4mp' }
+  } else if (text.includes('3MP') || text.includes('3 MP') || text.includes('3 MPX')) {
+    resolution = { label: '3MP · 2K', bg: 'bg-sky-950/90', text: 'text-sky-300', border: 'border-sky-500/50', tier: '3mp' }
+  } else if (text.includes('2MP') || text.includes('2 MP') || text.includes('1080P') || text.includes('1080') || text.includes('FHD') || text.includes('FULL HD')) {
+    resolution = { label: '2MP · 1080P FHD', bg: 'bg-emerald-950/90', text: 'text-emerald-300', border: 'border-emerald-500/50', tier: '2mp' }
+  } else if (text.includes('720P') || text.includes('1MP') || text.includes('1 MP')) {
+    resolution = { label: '1MP · 720P HD', bg: 'bg-amber-950/90', text: 'text-amber-300', border: 'border-amber-500/50', tier: '1mp' }
+  } else if (text.includes('KIT') || text.includes('SISTEMA DE SEGURIDAD')) {
+    resolution = { label: 'Kit CCTV + Disco', bg: 'bg-amber-950/90', text: 'text-amber-300', border: 'border-amber-500/50', tier: 'kit' }
+  } else if (text.includes('NVR') || text.includes('DVR')) {
+    resolution = { label: 'Grabador NVR / DVR', bg: 'bg-zinc-800/90', text: 'text-zinc-200', border: 'border-white/20', tier: 'nvr' }
+  }
+
+  // 2. Technology & Optic
+  let tech: { label: string; bg: string; text: string; border: string } | null = null
+  if (text.includes('SOLAR') || text.includes('BATERIA') || text.includes('BATERÍA')) {
+    tech = { label: 'Solar & Batería', bg: 'bg-emerald-950/70', text: 'text-emerald-300', border: 'border-emerald-500/40' }
+  } else if (text.includes('PTZ') || text.includes('PANTILT') || text.includes('ROTACION') || text.includes('SPEED DOME') || text.includes('ROBOTICA')) {
+    tech = { label: 'PTZ 360° Motorizada', bg: 'bg-indigo-950/70', text: 'text-indigo-300', border: 'border-indigo-500/40' }
+  } else if (text.includes('COLOR VU') || text.includes('COLORVU') || text.includes('COLOR MAKER') || text.includes('FULL COLOR') || text.includes('NOCHE A COLOR')) {
+    tech = { label: 'ColorVu Noche Color', bg: 'bg-amber-950/70', text: 'text-amber-300', border: 'border-amber-500/40' }
+  } else if (text.includes('LUZ HIBRIDA') || text.includes('DUAL LIGHT') || text.includes('SMART DUAL')) {
+    tech = { label: 'Luz Híbrida Smart', bg: 'bg-yellow-950/70', text: 'text-yellow-300', border: 'border-yellow-500/40' }
+  } else if (text.includes('WIFI') || text.includes('WI-FI') || text.includes('EZVIZ') || text.includes('TAPO')) {
+    tech = { label: 'Wi-Fi Inalámbrica', bg: 'bg-cyan-950/70', text: 'text-cyan-300', border: 'border-cyan-500/40' }
+  } else if (text.includes('POE') || text.includes('IP ')) {
+    tech = { label: 'PoE IP Digital', bg: 'bg-blue-950/70', text: 'text-blue-300', border: 'border-blue-500/40' }
+  } else if (text.includes('HD-TVI') || text.includes('TURBOHD') || text.includes('4 EN 1') || text.includes('AHD')) {
+    tech = { label: 'TurboHD Coaxial', bg: 'bg-zinc-800/80', text: 'text-zinc-300', border: 'border-white/10' }
+  } else if (text.includes('TERMICA') || text.includes('TÉRMICA')) {
+    tech = { label: 'Térmica Industrial', bg: 'bg-rose-950/70', text: 'text-rose-300', border: 'border-rose-500/40' }
+  }
+
+  // 3. Audio & Alarm
+  const hasAudio = text.includes('MIC') || text.includes('AUDIO') || text.includes('PARLANTE') || text.includes('DOS VIAS')
+  const hasAlarm = text.includes('ALARMA') || text.includes('SIRENA') || text.includes('ESTROBO') || text.includes('SRB') || text.includes('SL')
+
+  return { resolution, tech, hasAudio, hasAlarm }
+}
+
 interface ProductCardProps {
   product: any
   copiedId: string | null
@@ -189,6 +254,7 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
   const saleP = Number(p.salePrice) || 0
   const comision20 = saleP * 0.20
   const productWebUrl = `https://atomiccotizador.shop/web/product/${p.id}`
+  const specs = getCameraSpecs(p)
 
   const isInvalidLogo = (url: string) => {
     if (!url || typeof url !== 'string') return true
@@ -232,9 +298,18 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
           <Package size={28} className="text-zinc-600" />
           <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">Sin Imagen Oficial</span>
         </div>
+        
+        {/* Category Tag (Top Left) */}
         <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-zinc-900/90 border border-white/[0.08] text-[10px] font-mono text-zinc-300">
           {p.category || "General"}
         </span>
+
+        {/* Resolution Badge (Top Right - Differentiator) */}
+        {specs.resolution && (
+          <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-md border text-[10px] font-mono font-bold shadow-md tracking-wide ${specs.resolution.bg} ${specs.resolution.text} ${specs.resolution.border}`}>
+            {specs.resolution.label}
+          </span>
+        )}
       </div>
 
       {/* Info */}
@@ -249,6 +324,27 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
         <h4 className="text-xs sm:text-sm font-semibold text-zinc-100 group-hover:text-cyan-300 transition-colors line-clamp-2 leading-snug">
           {p.name}
         </h4>
+
+        {/* Differentiation Tags (Tech, Audio, Sirena) */}
+        {(specs.tech || specs.hasAudio || specs.hasAlarm) && (
+          <div className="flex flex-wrap items-center gap-1 pt-0.5">
+            {specs.tech && (
+              <span className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold border ${specs.tech.bg} ${specs.tech.text} ${specs.tech.border}`}>
+                {specs.tech.label}
+              </span>
+            )}
+            {specs.hasAudio && (
+              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono bg-zinc-800 text-zinc-300 border border-white/10 flex items-center gap-1 font-medium">
+                <span>🎙️</span> Audio
+              </span>
+            )}
+            {specs.hasAlarm && (
+              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono bg-rose-950/70 text-rose-300 border border-rose-500/30 flex items-center gap-1 font-semibold">
+                <span>🚨</span> Sirena
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Pricing Breakdown */}
@@ -332,9 +428,16 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
 
           <button
             onClick={() => {
+              const specLines = [
+                specs.resolution ? `🎯 *Resolución Oficial:* ${specs.resolution.label}` : '',
+                specs.tech ? `⚡ *Tecnología Óptica:* ${specs.tech.label}` : '',
+                specs.hasAudio ? `🎙️ *Audio:* Micrófono incorporado de alta fidelidad` : '',
+                specs.hasAlarm ? `🚨 *Seguridad:* Disuasión activa con alarma y sirena` : ''
+              ].filter(Boolean).join('\n')
+
               const commercialCopy = `🔥 *${p.name.toUpperCase()}*
 ━━━━━━━━━━━━━━━━━━━━━
-🏷️ *SKU / Código:* ${p.sku || 'N/A'}
+${specLines ? specLines + '\n' : ''}🏷️ *SKU / Código:* ${p.sku || 'N/A'}
 📂 *Categoría:* ${p.category || 'Tecnología & Equipamiento'}
 🛡️ *Garantía Oficial:* 1 Año directa con ATOMIC Ecuador
 📦 *Condición:* 100% Nuevo sellado en empaque original
@@ -380,6 +483,8 @@ export default function PreciosVendedorClient() {
 
   // Sub-categoría seleccionada en Tab 2
   const [activeSubCat, setActiveSubCat] = useState("camaras")
+  const [cameraFilter, setCameraFilter] = useState("all")
+  const [tab1CameraFilter, setTab1CameraFilter] = useState("all")
   const [catProducts, setCatProducts] = useState<any[]>([])
   const [loadingCatProducts, setLoadingCatProducts] = useState(false)
 
@@ -389,6 +494,42 @@ export default function PreciosVendedorClient() {
   const [searchTerm, setSearchTerm] = useState("")
 
   const quickFilters = ["Camara", "iPhone", "Laptop", "Cerradura", "Cocina", "Horno", "Generador", "Bateria"]
+
+  // Lista de productos filtrados en Tab 2 según resolución de cámara
+  const filteredCatProducts = useMemo(() => {
+    if (activeSubCat !== "camaras" || cameraFilter === "all") return catProducts
+    return catProducts.filter(p => {
+      const s = getCameraSpecs(p)
+      if (cameraFilter === "2mp") return s.resolution?.tier === "2mp"
+      if (cameraFilter === "4mp") return s.resolution?.tier === "4mp"
+      if (cameraFilter === "3mp") return s.resolution?.tier === "3mp"
+      if (cameraFilter === "5mp") return s.resolution?.tier === "5mp" || s.resolution?.tier === "6mp"
+      if (cameraFilter === "8mp") return s.resolution?.tier === "8mp"
+      if (cameraFilter === "wifi") return s.tech?.label?.includes("Wi-Fi") || s.tech?.label?.includes("Solar")
+      if (cameraFilter === "ptz") return s.tech?.label?.includes("PTZ")
+      if (cameraFilter === "kit") return s.resolution?.tier === "kit"
+      if (cameraFilter === "nvr") return s.resolution?.tier === "nvr"
+      return true
+    })
+  }, [catProducts, activeSubCat, cameraFilter])
+
+  // Lista de productos filtrados en Tab 1 según resolución si se busca cámaras
+  const filteredTab1Products = useMemo(() => {
+    const isCamSearch = searchTerm.toLowerCase().includes("camara") || searchTerm.toLowerCase() === "camaras"
+    if (!isCamSearch || tab1CameraFilter === "all") return products
+    return products.filter(p => {
+      const s = getCameraSpecs(p)
+      if (tab1CameraFilter === "2mp") return s.resolution?.tier === "2mp"
+      if (tab1CameraFilter === "4mp") return s.resolution?.tier === "4mp"
+      if (tab1CameraFilter === "5mp") return s.resolution?.tier === "5mp" || s.resolution?.tier === "6mp"
+      if (tab1CameraFilter === "8mp") return s.resolution?.tier === "8mp"
+      if (tab1CameraFilter === "wifi") return s.tech?.label?.includes("Wi-Fi") || s.tech?.label?.includes("Solar")
+      if (tab1CameraFilter === "ptz") return s.tech?.label?.includes("PTZ")
+      if (tab1CameraFilter === "kit") return s.resolution?.tier === "kit"
+      if (tab1CameraFilter === "nvr") return s.resolution?.tier === "nvr"
+      return true
+    })
+  }, [products, searchTerm, tab1CameraFilter])
 
   const showToast = (msg: string) => {
     setToastMessage(msg)
@@ -673,6 +814,34 @@ export default function PreciosVendedorClient() {
                   </button>
                 ))}
               </div>
+
+              {/* Quick Resolution Pills when searching for cameras */}
+              {(searchTerm.toLowerCase().includes("camara") || searchTerm.toLowerCase() === "camaras") && (
+                <div className="pt-2.5 border-t border-white/[0.08] flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
+                  <span className="text-[10px] font-mono text-cyan-400 shrink-0 font-bold uppercase tracking-wider flex items-center gap-1">
+                    <Sparkles size={11} className="text-cyan-400" /> Resolución:
+                  </span>
+                  {CAMERA_FILTERS.map(f => {
+                    const isActive = tab1CameraFilter === f.id
+                    return (
+                      <button
+                        key={f.id}
+                        onClick={() => setTab1CameraFilter(f.id)}
+                        className={`shrink-0 px-2.5 py-1 rounded-md text-[11px] font-mono transition-all flex items-center gap-1 border ${
+                          isActive
+                            ? "bg-cyan-950 text-cyan-200 border-cyan-400/50 shadow-sm"
+                            : "bg-zinc-950/80 text-zinc-400 border-white/[0.06] hover:text-zinc-200"
+                        }`}
+                      >
+                        <span>{f.label}</span>
+                        <span className={`text-[9px] px-1 py-0.2 rounded ${isActive ? "bg-cyan-900/60 text-cyan-300 font-bold" : "text-zinc-500"}`}>
+                          {f.badge}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Product List */}
@@ -681,17 +850,17 @@ export default function PreciosVendedorClient() {
                 <div className="w-6 h-6 border-2 border-zinc-500 border-t-white rounded-full animate-spin mx-auto" />
                 <p className="text-zinc-500 text-xs font-mono">Consultando catálogo en vivo...</p>
               </div>
-            ) : products.length === 0 ? (
+            ) : filteredTab1Products.length === 0 ? (
               <div className="text-center py-20 bg-zinc-900/30 rounded-2xl border border-white/[0.06] p-8 space-y-2">
                 <Package size={32} className="text-zinc-600 mx-auto" />
                 <h3 className="text-sm font-semibold text-zinc-200">No se encontraron artículos con ese criterio</h3>
                 <p className="text-zinc-500 text-xs max-w-md mx-auto">
-                  Prueba buscando con palabras como &ldquo;Camara&rdquo;, &ldquo;iPhone&rdquo;, &ldquo;Laptop&rdquo;, &ldquo;Horno&rdquo; o contacta a Stefy para pedidos especiales.
+                  Prueba buscando con palabras como &ldquo;Camara&rdquo;, &ldquo;iPhone&rdquo;, &ldquo;Laptop&rdquo;, &ldquo;Horno&rdquo; o seleccionando otra resolución.
                 </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
-                {products.map((p, idx) => (
+                {filteredTab1Products.map((p, idx) => (
                   <ProductCard
                     key={p.id || idx}
                     product={p}
@@ -750,6 +919,42 @@ export default function PreciosVendedorClient() {
                   )
                 })}
               </div>
+
+              {/* Diferenciador Especial para Cámaras de Seguridad */}
+              {activeSubCat === "camaras" && (
+                <div className="pt-3 border-t border-white/[0.08] space-y-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <span className="text-[11px] font-mono flex items-center gap-1.5 font-bold uppercase tracking-wider text-cyan-400">
+                      <Sparkles size={12} className="text-cyan-400" />
+                      Diferenciador por Resolución & Tecnología:
+                    </span>
+                    <span className="text-[10px] font-mono text-zinc-400 bg-zinc-950 px-2.5 py-0.5 rounded-full border border-white/5">
+                      Mostrando {filteredCatProducts.length} de {catProducts.length} cámaras
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-1">
+                    {CAMERA_FILTERS.map(f => {
+                      const isActive = cameraFilter === f.id
+                      return (
+                        <button
+                          key={f.id}
+                          onClick={() => setCameraFilter(f.id)}
+                          className={`shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-mono font-medium transition-all flex items-center gap-1.5 border ${
+                            isActive
+                              ? "bg-cyan-950 text-cyan-200 border-cyan-400/50 shadow-md shadow-cyan-950/40"
+                              : "bg-zinc-950/70 text-zinc-400 border-white/[0.06] hover:text-zinc-200 hover:bg-zinc-900"
+                          }`}
+                        >
+                          <span>{f.label}</span>
+                          <span className={`text-[10px] px-1.5 py-0.2 rounded ${isActive ? "bg-cyan-900/60 text-cyan-300 font-bold" : "bg-zinc-900 text-zinc-500"}`}>
+                            {f.badge}
+                          </span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Listado de Productos de Categoría */}
@@ -758,17 +963,17 @@ export default function PreciosVendedorClient() {
                 <div className="w-6 h-6 border-2 border-zinc-500 border-t-white rounded-full animate-spin mx-auto" />
                 <p className="text-zinc-500 text-xs font-mono">Cargando categoría seleccionada...</p>
               </div>
-            ) : catProducts.length === 0 ? (
+            ) : filteredCatProducts.length === 0 ? (
               <div className="text-center py-20 bg-zinc-900/30 rounded-2xl border border-white/[0.06] p-8 space-y-2">
                 <Package size={32} className="text-zinc-600 mx-auto" />
-                <h3 className="text-sm font-semibold text-zinc-200">No se encontraron artículos en esta categoría</h3>
+                <h3 className="text-sm font-semibold text-zinc-200">No se encontraron artículos con este filtro</h3>
                 <p className="text-zinc-500 text-xs max-w-md mx-auto">
-                  Selecciona otra categoría o consulta a Coordinación Stefy.
+                  Prueba seleccionando &ldquo;Todas las Cámaras&rdquo; o elige otra categoría.
                 </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
-                {catProducts.map((p, idx) => (
+                {filteredCatProducts.map((p, idx) => (
                   <ProductCard
                     key={p.id || idx}
                     product={p}
