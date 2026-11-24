@@ -9,7 +9,8 @@ import {
   ChevronLeft, Hexagon, Star, X, Smartphone, Sparkles, Code, Bot,
   Search, ImageOff, Home, Building, Factory, Cpu, Gamepad2, Utensils, Laptop, Award, User, Settings, ChevronDown, Package, LogIn, Menu,
   Wrench, Clock, ShieldCheck, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle2, Briefcase, Loader2,
-  Youtube, Play, PhoneCall, MessageSquare, Tag, Flame, Percent, ArrowUpRight, BookOpen, Layers, Check, Copy, GraduationCap, Share2
+  Youtube, Play, PhoneCall, MessageSquare, Tag, Flame, Percent, ArrowUpRight, BookOpen, Layers, Check, Copy, GraduationCap, Share2,
+  MapPin, Phone, Users, ExternalLink, Globe
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -3640,26 +3641,407 @@ export default function PublicWebClient({
         })()}
 
         {activeTab === 'nosotros' && (
-          <motion.section key="nosotros" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="max-w-4xl mx-auto px-6 py-12">
-            <div className="flex items-center gap-3 mb-8">
-              <button onClick={() => setActiveTab(null)} className="p-2.5 rounded-2xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition-all shadow-sm">
-                <ChevronLeft size={18} />
-              </button>
-              <h2 className="text-3xl font-black uppercase tracking-tight text-slate-950 font-heading">Sobre Nosotros</h2>
+          <motion.section key="nosotros" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="max-w-7xl mx-auto px-4 sm:px-6 py-10 space-y-12">
+            {/* Header & Breadcrumb */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-slate-200 text-left">
+              <div className="space-y-3">
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <button onClick={() => setActiveTab(null)} className="p-2.5 rounded-2xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 hover:text-slate-950 transition-all shadow-sm cursor-pointer flex items-center gap-1.5 text-xs font-bold" title="Volver a Inicio">
+                    <ChevronLeft size={16} />
+                    <span>Inicio</span>
+                  </button>
+                  <span className="px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-mono font-bold text-[10px] uppercase tracking-widest flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-blue-600 animate-ping" />
+                    CORPORATIVO & LIDERAZGO // ATOMIC ECUADOR
+                  </span>
+                  <span className="hidden sm:inline-block text-[10px] font-mono text-slate-400">
+                    RUC: 1723948291001 • MATRIZ QUITO
+                  </span>
+                </div>
+
+                <div>
+                  <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight text-slate-950 font-heading leading-tight">
+                    The ATOMIC Story <span className="text-blue-600 font-mono text-2xl sm:text-4xl">#NOSOTROS</span>
+                  </h1>
+                  <p className="text-xs sm:text-sm text-slate-600 max-w-3xl mt-2 leading-relaxed font-sans">
+                    Ingeniería de vanguardia, distribución directa sin intermediarios, laboratorio técnico propio y desarrollo de software de alta disponibilidad para empresas y residencias en Ecuador.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <a
+                  href="https://wa.me/593969043453?text=Hola%20equipo%20directivo%20de%20ATOMIC,%20deseo%20conocer%20m%C3%A1s%20sobre%20su%20empresa%20y%20alianzas%20comerciales."
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-4 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-md cursor-pointer"
+                >
+                  <MessageSquare size={14} className="text-emerald-400" />
+                  <span>Contacto Directivo</span>
+                </a>
+              </div>
             </div>
-            <div className="space-y-6">
-              <p className="text-slate-700 text-sm leading-relaxed"><strong className="text-slate-950">ATOMIC INDUSTRIAS</strong> es una empresa ecuatoriana especializada en electrónica, tecnología y productos para el hogar. Ofrecemos los mejores precios con garantía 100% original, envíos seguros a todo Ecuador y asesoría técnica instantánea vía WhatsApp.</p>
-              <div className="grid sm:grid-cols-3 gap-4">
+
+            {/* Hero Vision Banner */}
+            <div className="relative rounded-3xl overflow-hidden bg-slate-950 text-white p-6 sm:p-10 border border-slate-800 shadow-2xl text-left">
+              <div className="absolute inset-0 opacity-20 pointer-events-none">
+                <SafeImage
+                  src="/images/wholesale-tech-hub-4k.jpg"
+                  alt="ATOMIC Wholesale Tech Hub"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/90 to-transparent pointer-events-none" />
+
+              <div className="relative z-10 max-w-3xl space-y-4">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-300 font-mono text-[10px] font-bold uppercase tracking-widest">
+                  <Sparkles size={12} className="text-amber-400" />
+                  <span>Nuestra Esencia & Manifiesto 2027</span>
+                </div>
+                <h2 className="text-2xl sm:text-4xl font-black font-heading tracking-tight leading-tight text-white">
+                  Democratizando la Tecnología más Avanzada del Mundo en Ecuador
+                </h2>
+                <p className="text-xs sm:text-base text-slate-300 leading-relaxed font-sans">
+                  Nacimos para romper el modelo tradicional de especulación e intermediación tecnológica. En <strong className="text-white">ATOMIC</strong> fusionamos importación directa de hardware original (Dell, Apple, Lenovo, Anker SOLIX, Dahua, Ditec), laboratorio técnico de homologación en Quito y desarrollo de software ERP multi-tenant propio con emisión de facturación SRI en 3 segundos.
+                </p>
+                <div className="pt-2 flex flex-wrap items-center gap-3 text-xs font-mono text-slate-400">
+                  <span className="flex items-center gap-1.5 text-blue-400">
+                    <CheckCircle2 size={14} /> Facturación 100% Legal SRI
+                  </span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1.5 text-emerald-400">
+                    <CheckCircle2 size={14} /> Garantía Local 1 Año
+                  </span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1.5 text-cyan-400">
+                    <CheckCircle2 size={14} /> Despacho 24h Servientrega
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Impact Metrics (4 Bento Cards) */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                { stat: '100%', title: 'Productos Originales', desc: 'Equipos nuevos sellados de fábrica con trazabilidad fiscal SRI y garantía oficial.' },
+                { stat: '24 Prov.', title: 'Cobertura Nacional', desc: 'Despacho el mismo día en Quito y envíos 24h asegurados a todo el territorio nacional.' },
+                { stat: '24/7', title: 'Soporte Consultivo', desc: 'Atención técnica real por ingenieros y especialistas vía WhatsApp CRM sin bots impersonales.' },
+                { stat: 'I+D', title: 'Laboratorio Propio', desc: 'Banco de pruebas y testeo térmico/funcional en hardware antes de comercialización.' },
+              ].map((m, idx) => (
+                <div key={idx} className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/90 shadow-sm text-left hover:shadow-md hover:border-blue-300 transition-all">
+                  <p className="text-3xl sm:text-4xl font-black text-slate-900 font-heading tracking-tight">{m.stat}</p>
+                  <p className="text-xs font-bold text-blue-600 uppercase tracking-wider font-heading mt-1 mb-1.5">{m.title}</p>
+                  <p className="text-[11px] text-slate-600 leading-relaxed font-sans">{m.desc}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Leadership & Executive Founders Section */}
+            <div className="space-y-6 text-left">
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 pb-3 border-b border-slate-200">
+                <div>
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-blue-600 block">
+                    EQUIPO DIRECTIVO & ESPECIALISTAS // LEADERSHIP
+                  </span>
+                  <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-slate-950 font-heading">
+                    El Liderazgo Detrás de ATOMIC
+                  </h2>
+                </div>
+                <p className="text-xs font-mono text-slate-500">
+                  Perfiles públicos, canales de verificación y contacto directo
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Santiago Guzmán */}
+                <div className="group rounded-3xl bg-slate-950 text-white p-6 sm:p-7 border border-slate-800 shadow-xl flex flex-col justify-between hover:border-blue-500/50 transition-all">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-500/20">
+                        SG
+                      </div>
+                      <span className="px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 text-[9px] font-mono font-bold uppercase tracking-wider flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                        DIRECCIÓN OPERATIVA
+                      </span>
+                    </div>
+
+                    <div>
+                      <h3 className="text-xl font-black font-heading text-white group-hover:text-blue-300 transition-colors">
+                        Santiago Guzmán
+                      </h3>
+                      <p className="text-xs font-mono text-cyan-400 uppercase tracking-wider mt-0.5">
+                        Fundador & Director Ejecutivo (CEO)
+                      </p>
+                    </div>
+
+                    <p className="text-xs text-slate-300 leading-relaxed font-sans">
+                      Lidera la visión estratégica y desarrollo del motor tecnológico de ATOMIC: arquitectura ERP multi-tenant de alta disponibilidad, integración de emisión electrónica SRI y la infraestructura de importación y distribución nacional de hardware.
+                    </p>
+                  </div>
+
+                  <div className="pt-5 mt-6 border-t border-slate-800/80 space-y-2">
+                    <Link
+                      href="/web/santiago-guzman"
+                      className="w-full py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs uppercase tracking-wider text-center transition-all flex items-center justify-center gap-1.5 shadow-md"
+                    >
+                      <span>Ver Perfil de Santiago</span>
+                      <ArrowRight size={13} />
+                    </Link>
+                    <div className="grid grid-cols-2 gap-2 text-[10px] font-mono">
+                      <a
+                        href="https://www.tiktok.com/@santiagoguzman216"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="py-2 px-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-colors flex items-center justify-center gap-1"
+                      >
+                        <span>TikTok @santiagoguzman216</span>
+                      </a>
+                      <a
+                        href="https://wa.me/593980319050?text=Hola%20Santiago,%20vi%20tu%20perfil%20en%20ATOMIC%20y%20deseo%20comunicarme%20contigo."
+                        target="_blank"
+                        rel="noreferrer"
+                        className="py-2 px-2.5 rounded-lg bg-emerald-950/50 hover:bg-emerald-900/60 border border-emerald-800/50 text-emerald-300 transition-colors flex items-center justify-center gap-1"
+                      >
+                        <Phone size={10} />
+                        <span>098 031 9050</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Ing. Juan Pablo Guzmán */}
+                <div className="group rounded-3xl bg-slate-950 text-white p-6 sm:p-7 border border-slate-800 shadow-xl flex flex-col justify-between hover:border-amber-500/50 transition-all">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-600 via-orange-600 to-yellow-500 flex items-center justify-center text-stone-950 font-black text-xl shadow-lg shadow-amber-500/20">
+                        JPG
+                      </div>
+                      <span className="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30 text-[9px] font-mono font-bold uppercase tracking-wider flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                        LABORATORIO I+D
+                      </span>
+                    </div>
+
+                    <div>
+                      <h3 className="text-xl font-black font-heading text-white group-hover:text-amber-300 transition-colors">
+                        Ing. Juan Pablo Guzmán
+                      </h3>
+                      <p className="text-xs font-mono text-amber-400 uppercase tracking-wider mt-0.5">
+                        Cofundador & Director de I+D
+                      </p>
+                    </div>
+
+                    <p className="text-xs text-slate-300 leading-relaxed font-sans">
+                      Responsable de la homologación técnica de producto, benchmarks de hardware y control de calidad bajo estrés. Creador de la serie '48 Leyes del Poder' y referente audiovisual de reviews técnicos y unboxing para el mercado ecuatoriano.
+                    </p>
+                  </div>
+
+                  <div className="pt-5 mt-6 border-t border-slate-800/80 space-y-2">
+                    <Link
+                      href="/web/juan-pablo-guzman"
+                      className="w-full py-2.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs uppercase tracking-wider text-center transition-all flex items-center justify-center gap-1.5 shadow-md"
+                    >
+                      <span>Ver Serie 48 Leyes & Bio</span>
+                      <ArrowRight size={13} />
+                    </Link>
+                    <div className="grid grid-cols-2 gap-2 text-[10px] font-mono">
+                      <a
+                        href="https://www.tiktok.com/@juanguzman35886"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="py-2 px-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-colors flex items-center justify-center gap-1"
+                      >
+                        <span>TikTok @juanguzman35886</span>
+                      </a>
+                      <a
+                        href="https://wa.me/593969043453?text=Hola%20Ing.%20Juan%20Pablo%20Guzm%C3%A1n,%20le%C3%AD%20sobre%20el%20laboratorio%20I%2BD%20y%20deseo%20asesor%C3%ADa."
+                        target="_blank"
+                        rel="noreferrer"
+                        className="py-2 px-2.5 rounded-lg bg-emerald-950/50 hover:bg-emerald-900/60 border border-emerald-800/50 text-emerald-300 transition-colors flex items-center justify-center gap-1"
+                      >
+                        <Phone size={10} />
+                        <span>096 904 3453</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Karen & Customer Success Lead */}
+                <div className="group rounded-3xl bg-white text-slate-900 p-6 sm:p-7 border border-slate-200/90 shadow-xl flex flex-col justify-between hover:border-emerald-500/50 transition-all">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="relative w-14 h-14 rounded-2xl overflow-hidden border-2 border-emerald-500 shadow-md">
+                        <SafeImage
+                          src="/images/karen_executive_avatar.jpg"
+                          alt="Karen Customer Success Lead"
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[9px] font-mono font-bold uppercase tracking-wider flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                        ASESORÍA 24/7 EN VIVO
+                      </span>
+                    </div>
+
+                    <div>
+                      <h3 className="text-xl font-black font-heading text-slate-950 group-hover:text-emerald-700 transition-colors">
+                        Karen & Mesa de Ayuda
+                      </h3>
+                      <p className="text-xs font-mono text-emerald-600 uppercase tracking-wider mt-0.5 font-bold">
+                        Customer Success & Atención Comercial
+                      </p>
+                    </div>
+
+                    <p className="text-xs text-slate-600 leading-relaxed font-sans">
+                      Lidera la atención inmediata y soporte post-venta personalizado. Emisión de cotizaciones corporativas al instante, validación de inventario en tiempo real y seguimiento de guías de despacho Servientrega a nivel nacional.
+                    </p>
+                  </div>
+
+                  <div className="pt-5 mt-6 border-t border-slate-100 space-y-2">
+                    <a
+                      href="https://wa.me/593969043453?text=Hola%20Karen,%20deseo%20asesor%C3%ADa%20personalizada%20y%20cotizaci%C3%B3n%20para%20un%20producto%20de%20ATOMIC."
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider text-center transition-all flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/20 cursor-pointer"
+                    >
+                      <MessageSquare size={14} />
+                      <span>Chatear con Karen (WhatsApp)</span>
+                    </a>
+                    <div className="py-2 px-2.5 rounded-lg bg-slate-50 border border-slate-100 text-slate-500 text-[10px] font-mono text-center">
+                      Respuesta promedio: &lt; 2 minutos
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Strategic Pillars (4 Bento Grid) */}
+            <div className="space-y-6 text-left">
+              <div>
+                <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-blue-600 block">
+                  FILOSOFÍA DE OPERACIONES // NUESTROS PILARES
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-slate-950 font-heading">
+                  ¿Por Qué las Empresas y Hogares Eligen ATOMIC?
+                </h2>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
-                  { stat: '100%', label: 'Productos Originales' },
-                  { stat: '24/7', label: 'Soporte Técnico' },
-                  { stat: 'EC', label: 'Cobertura Nacional' },
-                ].map(s => (
-                  <div key={s.stat} className="p-6 rounded-3xl bg-white border border-slate-200/90 text-center shadow-sm">
-                    <p className="text-4xl font-black text-slate-900 font-heading">{s.stat}</p>
-                    <p className="text-[11px] font-mono text-slate-500 uppercase tracking-widest mt-2">{s.label}</p>
+                  {
+                    icon: <Cpu className="text-blue-600" size={24} />,
+                    title: "01. Laboratorio I+D",
+                    desc: "No revendemos a ciegas: cada lote de computadoras, cerraduras o paneles es verificado y homologado en nuestro banco de pruebas físico antes de su venta."
+                  },
+                  {
+                    icon: <ShieldCheck className="text-emerald-600" size={24} />,
+                    title: "02. Respaldo SRI Legal",
+                    desc: "Facturación electrónica inmediata autorizada por el SRI en cada transacción, protegiendo tu deducibilidad tributaria y acreditando origen original."
+                  },
+                  {
+                    icon: <Truck className="text-indigo-600" size={24} />,
+                    title: "03. Despacho Rápido",
+                    desc: "Entregas el mismo día para Quito y valles, y despacho en menos de 24 horas a Guayaquil, Cuenca, Ambato, Manta y todo el país vía Servientrega asegurado."
+                  },
+                  {
+                    icon: <Wrench className="text-amber-600" size={24} />,
+                    title: "04. Instalación & Soporte",
+                    desc: "No te dejamos con una caja sin saber qué hacer: disponemos de personal técnico calificado para instalación de cerraduras, cámaras, cercos y cargadores EV."
+                  },
+                ].map((p, idx) => (
+                  <div key={idx} className="p-6 rounded-3xl bg-white border border-slate-200/90 shadow-sm space-y-3 hover:border-blue-400 hover:shadow-lg transition-all">
+                    <div className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center">
+                      {p.icon}
+                    </div>
+                    <h3 className="font-heading font-black text-base text-slate-950 uppercase">
+                      {p.title}
+                    </h3>
+                    <p className="text-xs text-slate-600 leading-relaxed font-sans">
+                      {p.desc}
+                    </p>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* Verticales de Negocio & Catálogos Activos */}
+            <div className="p-6 sm:p-8 rounded-3xl bg-slate-100 border border-slate-200/90 text-left space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h3 className="text-lg font-black uppercase text-slate-950 font-heading">
+                    Verticales Tecnológicas en Producción
+                  </h3>
+                  <p className="text-xs text-slate-600">
+                    Accede directamente a cada línea de producto certificada por el equipo de ingeniería
+                  </p>
+                </div>
+                <button
+                  onClick={() => setActiveTab('categorias')}
+                  className="px-4 py-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider transition-all self-start sm:self-auto cursor-pointer"
+                >
+                  Ver Catálogo Completo
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                {[
+                  { label: '💻 Laptops & PCs', link: '/web/laptops' },
+                  { label: '🔐 Cerraduras Smart', link: '/web/cerraduras-smart' },
+                  { label: '⚡ Anker Solix C300', link: '/web/generadores' },
+                  { label: '🔋 Wallbox Auto EV', link: '/web/cargadores-electricos' },
+                  { label: '📹 CCTV 4K & Cámaras', link: '/aurora-pro' },
+                  { label: '🤖 Software & Bots SRI', link: '/web/software' },
+                ].map((v, idx) => (
+                  <Link
+                    key={idx}
+                    href={v.link}
+                    className="p-3 rounded-2xl bg-white border border-slate-200 hover:border-blue-500 hover:bg-blue-50/30 text-center transition-all group shadow-xs"
+                  >
+                    <span className="text-xs font-bold text-slate-800 group-hover:text-blue-600 font-heading block">
+                      {v.label}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Matriz Comercial & Showroom Quito */}
+            <div className="rounded-3xl bg-white border border-slate-200/90 p-6 sm:p-8 shadow-xl text-left flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+              <div className="space-y-2 max-w-2xl">
+                <div className="flex items-center gap-2">
+                  <MapPin size={18} className="text-blue-600" />
+                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-blue-600">
+                    SHOWROOM & MATRIZ COMERCIAL EN QUITO
+                  </span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black font-heading text-slate-950">
+                  Av. Galo Plaza Lasso y El Labrador, Quito, Ecuador
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-sans">
+                  Coordina con nuestro equipo visitas para retiro inmediato de equipos, demostraciones en vivo de cerraduras y cámaras, o reuniones corporativas para distribución mayorista B2B.
+                </p>
+                <div className="pt-2 flex flex-wrap items-center gap-4 text-xs font-mono text-slate-500">
+                  <span>🕒 Lun-Vie: 08:30 - 18:30</span>
+                  <span>•</span>
+                  <span>🕒 Sáb: 09:00 - 15:00</span>
+                  <span>•</span>
+                  <span>📞 +593 96 904 3453</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto shrink-0">
+                <a
+                  href="https://wa.me/593969043453?text=Hola%20ATOMIC,%20deseo%20coordinar%20una%20visita%20al%20showroom%20o%20hacer%20un%20retiro%20en%20Quito."
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 cursor-pointer"
+                >
+                  <MessageSquare size={16} />
+                  <span>Coordinar Visita / Retiro</span>
+                </a>
               </div>
             </div>
           </motion.section>
