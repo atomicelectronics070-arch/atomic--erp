@@ -1140,7 +1140,7 @@ export default function PublicWebClient({
                         { name: "Cerraduras Smart + Instalación", href: "/web/cerraduras-smart", badge: "KITS" },
                         { name: "Mandos & Consolas Gaming", href: "/web/mandos", badge: "NUEVO" },
                         { name: "Encimeras & Hornos", href: "/web/cocinas", badge: "HOGAR" },
-                        { name: "Laptops & CPUs Intel/AMD", href: "/web/cpus", badge: "PRO" },
+                        { name: "Laptops & Computadoras Portátiles", href: "/web/laptops", badge: "PRO" },
                         { name: "Celulares, Tablets & Redes", href: "/web/phones", badge: "MÓVIL" },
                         { name: "Plantas de Bloques de Hormigón", href: "/web/blogs/guia-maquinas-de-bloques", badge: "INDUSTRIAL" },
                       ].map((item, idx) => (
@@ -1966,11 +1966,11 @@ export default function PublicWebClient({
             </Link>
 
             <Link
-              href="/web/cpus"
+              href="/web/laptops"
               className="px-5 py-3 rounded-full bg-white border border-slate-200 hover:border-purple-400 hover:bg-purple-50/40 text-xs font-bold text-slate-800 transition-all flex items-center gap-2 shadow-sm group"
             >
               <span className="font-heading uppercase tracking-wider text-[11px]">LAPTOPS & CPUS</span>
-              <span className="text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full border border-purple-200 font-mono font-bold">PROCESADORES</span>
+              <span className="text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full border border-purple-200 font-mono font-bold">PORTÁTILES & PCS</span>
             </Link>
 
             <Link

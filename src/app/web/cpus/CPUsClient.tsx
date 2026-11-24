@@ -255,6 +255,29 @@ export default function CPUsClient() {
             ✅ Margen ATOMIC +25% incluido
           </span>
         </div>
+
+        {/* BANNER DIRECTO AL CATÁLOGO DE LAPTOPS & NOTEBOOKS */}
+        <div className="mt-8 max-w-4xl mx-auto p-4 rounded-2xl bg-gradient-to-r from-blue-950/80 via-slate-900/90 to-purple-950/80 border border-blue-500/40 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-4 shadow-[0_0_30px_rgba(59,130,246,0.15)]">
+          <div className="flex items-center gap-3.5 text-left">
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-md shrink-0">
+              💻
+            </div>
+            <div>
+              <p className="text-sm font-black uppercase text-white font-mono tracking-wide">
+                ¿Buscas Laptops y Computadoras Portátiles?
+              </p>
+              <p className="text-xs text-slate-300">
+                Accede al showroom completo con más de 90 laptops Dell, HP, ASUS, Lenovo, MacBook y Workstations de TecnoMega e IDC Mayoristas.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/web/laptops"
+            className="shrink-0 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold font-mono text-xs uppercase tracking-wider transition-all shadow-lg shadow-blue-600/30 hover:scale-105"
+          >
+            Ver Catálogo de Laptops →
+          </Link>
+        </div>
       </section>
 
       {/* FILTERS */}

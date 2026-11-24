@@ -20,7 +20,7 @@ export const CATEGORIES = [
 
 export type CategoryType = (typeof CATEGORIES)[number];
 
-export const BRANDS = ["TODAS", "DELL", "HP", "ASUS", "LENOVO", "APPLE", "ACER", "MSI"] as const;
+export const BRANDS = ["TODAS", "DELL", "HP", "ASUS", "LENOVO", "APPLE", "ACER", "MSI", "GIGABYTE", "DYNABOOK"] as const;
 
 const WA_NUMBER = "593969043453";
 
@@ -223,14 +223,8 @@ const FEATURED_COMPUTERS: LaptopProduct[] = [
   }
 ];
 
-// Disqualifiers: Exclude phones, tablets, parts, cables, and unrelated electronics
+// Disqualifiers: Exclude parts, cables, and unrelated electronics
 const DISQUALIFY_KEYWORDS = [
-  // Phones / Celulares
-  "celular", "telefono", "teléfono", "smartphone", "iphone", "xiaomi", "redmi", "poco ",
-  "infinix", "tecno spark", "motorola", "galaxy a", "galaxy s", "galaxy z", "honor x",
-  "honor magic", "realme", "oppo", "zte ",
-  // Tablets / iPads
-  "tablet", "ipad", "kindle",
   // Parts & Repuestos
   "bateria para", "batería para", "pantalla laptop", "teclado para", "ventilador laptop",
   "cargador para", "bisagra", "flex de video", "ventilador hp", "ventilador toshiba",
@@ -248,21 +242,24 @@ const DISQUALIFY_KEYWORDS = [
   "headphones", "auricular", "sennheiser", "inversor solar", "pos system",
   // Non-computer electronics
   "monitor", "pantalla/3nstar", "camara", "cámara", "videoportero", "reloj", "smartwatch",
-  "audifono", "audífono", "calefactor", "impresora", "proyector", "balanza"
+  "audifono", "audífono", "calefactor", "impresora", "proyector", "balanza", "sifón", "flexómetro",
+  "caja fuerte", "pin de carga", "heatsink", "tarjeta rise"
 ];
 
 // Strict Computer Allowlist
 const ALLOWED_COMPUTER_KEYWORDS = [
-  "laptop", "notebook", "macbook", "thinkpad", "ideapad", "latitude", "inspiron",
+  "laptop", "notebook", "not.", "not. ", "macbook", "thinkpad", "ideapad", "latitude", "inspiron",
   "probook", "elitebook", "vivobook", "zenbook", "rog strix", "legion", "predator",
-  "nitro 5", "nitro v", "victus", "omen", "zbook", "precision 7", "precision 5", "precision 3",
+  "nitro 5", "nitro v", "victus", "omen", "zbook", "precision 7", "precision 5", "precision 3", "precision",
   "asus rog strix g", "asus tuf gaming f", "asus tuf gaming a",
   "computador de escritorio", "computadora de escritorio", "computador desktop",
   "cpu desktop", "cpu de escritorio", "desktop computer", "all-in-one", "all in one",
   "aio ", "aio-", "optiplex", "prodesk", "elitedesk", "thinkcentre", "imac",
   "blackelite torre", "silverelite torre", "blackluxe torre", "torre gamer", "pc gamer",
   "xtratech xt", "infinytek amd", "mini pc", "minipc", "mac mini", "msi cubi", "cubi 5",
-  "mac studio", "mac pro", "hp elite 805", "msi thin"
+  "mac studio", "mac pro", "hp elite 805", "msi thin", "dynabook", "proart", "thinkbook",
+  "aspire", "loq", "dell pro", "dell dc", "gigabyte gaming", "aero x16", "quasad",
+  "speedmind", "omnistudio", "proone", "cop. hp", "nuc 15"
 ];
 
 // Safe Array Parser for Damaged/JSON Stringified Image Fields
@@ -434,22 +431,21 @@ export default function LaptopsClient() {
         const res = await fetch("/api/web/products?pageSize=2000").then(r => r.json());
         const raw = res.products || [];
 
-        // Apply strict filter: ONLY Computers, CPUs, Mini PCs and Macs (ZERO phones / parts)
+        // Apply strict filter: ONLY Computers, CPUs, Mini PCs and Macs (ZERO parts)
         const filteredFromDb = raw.filter((p: any) => {
           const name = (p.name || "").toLowerCase();
-          const desc = (p.description || "").toLowerCase();
-          const cat = (p.category?.name || "").toLowerCase();
 
-          // Disqualify any phone, tablet, component or accessory
-          const isDisqualified = DISQUALIFY_KEYWORDS.some(k => name.includes(k) || cat.includes(k));
+          // Disqualify any parts, accessories or non-computer electronics
+          const isDisqualified = DISQUALIFY_KEYWORDS.some(k => name.includes(k));
           if (isDisqualified) return false;
 
-          // Must match an allowed computer keyword
-          const isComputer = ALLOWED_COMPUTER_KEYWORDS.some(k => name.includes(k));
+          // Must match an allowed computer keyword or laptop prefix
+          const isComputer = ALLOWED_COMPUTER_KEYWORDS.some(k => name.includes(k)) ||
+            name.startsWith("not.") || name.includes("not. ") || name.includes("laptop") || name.includes("notebook");
           if (!isComputer) return false;
 
           // Price sanity check for complete systems
-          if (Number(p.price || 0) < 100) return false;
+          if (Number(p.price || 0) < 80) return false;
 
           return true;
         });
@@ -501,11 +497,14 @@ export default function LaptopsClient() {
         nameLower.includes("omnistudio") ||
         nameLower.includes("proone")
       ) brand = "HP";
-      else if (nameLower.includes("asus") || nameLower.includes("rog") || nameLower.includes("zenbook") || nameLower.includes("vivobook")) brand = "ASUS";
-      else if (nameLower.includes("lenovo") || nameLower.includes("thinkpad") || nameLower.includes("ideapad") || nameLower.includes("thinkcentre")) brand = "LENOVO";
+      else if (nameLower.includes("asus") || nameLower.includes("rog") || nameLower.includes("zenbook") || nameLower.includes("vivobook") || nameLower.includes("proart")) brand = "ASUS";
+      else if (nameLower.includes("lenovo") || nameLower.includes("thinkpad") || nameLower.includes("ideapad") || nameLower.includes("thinkcentre") || nameLower.includes("thinkbook") || nameLower.includes("loq")) brand = "LENOVO";
       else if (nameLower.includes("apple") || nameLower.includes("macbook") || nameLower.includes("imac") || nameLower.includes("mac mini")) brand = "APPLE";
       else if (nameLower.includes("acer") || nameLower.includes("aspire") || nameLower.includes("nitro")) brand = "ACER";
       else if (nameLower.includes("msi") || nameLower.includes("cubi")) brand = "MSI";
+      else if (nameLower.includes("gigabyte") || nameLower.includes("aero")) brand = "GIGABYTE";
+      else if (nameLower.includes("dynabook") || nameLower.includes("satellite")) brand = "DYNABOOK";
+      else if (nameLower.includes("quasad")) brand = "QUASAD";
       else if (nameLower.includes("xtratech")) brand = "XTRATECH";
       else if (nameLower.includes("advance")) brand = "ADVANCE";
 
