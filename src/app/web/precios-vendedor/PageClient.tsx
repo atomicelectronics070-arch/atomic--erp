@@ -141,7 +141,7 @@ const SUB_CATEGORIES = [
   { id: "celulares", label: "Celulares & Tablets", categoryId: "cmr2n905o0001137wi0ufnmdm", search: "celular", count: "530+ Equipos", icon: Smartphone },
   { id: "laptops", label: "Laptops & Computación", categoryId: "cmrfunoy400031d1g55magimc", search: "laptop", count: "120+ Laptops", icon: Laptop },
   { id: "cocina", label: "Cocinas & Encimeras", categoryId: "cmqvwkr8i0009ejkxbduhupxu", search: "cocina", count: "130+ Equipos", icon: Home },
-  { id: "cerraduras", label: "Cerraduras Smart", categoryId: "cmoe77b3r000bwwr9nado4n9q", search: "cerradura", count: "100+ Cerraduras", icon: ShieldCheck },
+  { id: "cerraduras", label: "Cerraduras Smart", categoryId: "cmoe77b3r000bwwr9nado4n9q", search: "cerradura", count: "115+ Cerraduras", icon: ShieldCheck },
   { id: "energia", label: "UPS & Generadores", categoryId: "cmr2n9xoj0003znjlj8jongdt", search: "regulador", count: "270+ Sistemas", icon: Zap },
   { id: "repuestos", label: "Repuestos Laptop", categoryId: "cmoe778p40005wwr94hp2y92j", search: "bateria", count: "560+ Repuestos", icon: Wrench },
   { id: "audio", label: "Audio & Parlantes", categoryId: "cmrf5upb700018v6pi7eop1lb", search: "parlante", count: "240+ Equipos", icon: Sparkles },
@@ -408,6 +408,94 @@ function getLaptopSpecs(p: any) {
   return { brand, cpu, ram, storage, gpu }
 }
 
+// ─── FILTROS DIFERENCIADORES DE CERRADURAS SMART & ACCESOS ───
+const CERRADURA_FILTERS = [
+  { id: "all", label: "Todas las Cerraduras", badge: "Catálogo Completo" },
+  { id: "facial", label: "Facial 3D / Mirilla LCD", badge: "Máxima Seguridad", color: "purple" },
+  { id: "tuya", label: "Smart WiFi · Tuya / App", badge: "App Móvil", color: "sky" },
+  { id: "biometrica", label: "Biométricas Huella", badge: "Acceso Dactilar", color: "emerald" },
+  { id: "cerrojo", label: "Cerrojos Digitales Yale", badge: "Sobreponer / Embutir", color: "amber" },
+  { id: "magnetica", label: "Electroimán & Eléctricas", badge: "600lbs / 300lbs", color: "rose" },
+  { id: "vidrio", label: "Vidrio & Muebles", badge: "Especializadas", color: "indigo" },
+]
+
+function getCerraduraSpecs(p: any) {
+  const text = `${p?.name || ''} ${p?.sku || ''} ${p?.specs || ''} ${p?.description || ''}`.toUpperCase()
+  
+  // Check if it's a lock
+  const isLock = 
+    text.includes('CERRADURA') || 
+    text.includes('CERROJO') || 
+    text.includes('SMART LOCK') || 
+    text.includes('CHAPA') ||
+    text.includes('CILINDRO BIOMETRICO') ||
+    text.includes('CILINDRO BIOMÉTRICO') ||
+    text.includes('ELECTROMAGNETICA') ||
+    text.includes('ELECTROMAGNÉTICA') ||
+    text.includes('VOLTEX LOCK') ||
+    text.includes('PLASMA LOCK') ||
+    text.includes('QUANTUM LOCK') ||
+    text.includes('HYPERBOLT') ||
+    text.includes('IONSECURE') ||
+    text.includes('NOVA LOCK') ||
+    text.includes('DL04') ||
+    text.includes('DL03') ||
+    text.includes('DL05') ||
+    text.includes('TL400B') ||
+    text.includes('TL800') ||
+    text.includes('ML100') ||
+    text.includes('LH6000') ||
+    text.includes('YDM') ||
+    text.includes('YMF') ||
+    text.includes('YDF') ||
+    text.includes('YDR') ||
+    text.includes('YRD') ||
+    text.includes('YRL') ||
+    text.includes('YDL') ||
+    text.includes('YDD') ||
+    text.includes('YMC')
+
+  if (!isLock) return null
+
+  // 1. Lock Tier / Type
+  let type: { label: string; bg: string; text: string; border: string; tier: string } | null = null
+  if (text.includes('FACIAL') || text.includes('3D') || text.includes('MIRILLA') || text.includes('VIDEOCAMARA') || text.includes('CAMARA INTEGRADA') || text.includes('TL800') || text.includes('OS394FV') || text.includes('TYFA') || text.includes('VIDEO TIMBRE')) {
+    type = { label: 'Facial 3D & Mirilla LCD', bg: 'bg-purple-950/90', text: 'text-purple-300', border: 'border-purple-500/50', tier: 'facial' }
+  } else if (text.includes('TUYA') || text.includes('SMART LIFE') || text.includes('TTLOCK') || text.includes('WIFI') || text.includes('WI-FI') || text.includes('BLUETOOTH') || text.includes('BLE') || text.includes('GEEK') || text.includes('MAADOK') || text.includes('DL04') || text.includes('DL03') || text.includes('DL05') || text.includes('OS956') || text.includes('OS8810')) {
+    type = { label: 'Smart WiFi Tuya / App', bg: 'bg-sky-950/90', text: 'text-sky-300', border: 'border-sky-500/50', tier: 'tuya' }
+  } else if (text.includes('HUELLA') || text.includes('BIOMETRIC') || text.includes('BIOMÉTRIC') || text.includes('DACTILAR') || text.includes('YMF') || text.includes('YDF') || text.includes('TL400B') || text.includes('ML100')) {
+    type = { label: 'Biométrica con Huella', bg: 'bg-emerald-950/90', text: 'text-emerald-300', border: 'border-emerald-500/50', tier: 'biometrica' }
+  } else if (text.includes('VIDRIO') || text.includes('MUEBLE') || text.includes('CAJON') || text.includes('CAJÓN') || text.includes('CASILLERO') || text.includes('TEMPLADO')) {
+    type = { label: 'Vidrio / Muebles', bg: 'bg-indigo-950/90', text: 'text-indigo-300', border: 'border-indigo-500/50', tier: 'vidrio' }
+  } else if (text.includes('ELECTROMAGNETICA') || text.includes('ELECTROMAGNÉTICA') || text.includes('600LBS') || text.includes('300LBS') || text.includes('440LBS') || text.includes('SOBREPONER') || text.includes('LL-01') || text.includes('678') || text.includes('670') || text.includes('ELECTRICA') || text.includes('ELÉCTRICA')) {
+    type = { label: 'Electroimán / Eléctrica', bg: 'bg-rose-950/90', text: 'text-rose-300', border: 'border-rose-500/50', tier: 'magnetica' }
+  } else if (text.includes('CERROJO') || text.includes('YRD') || text.includes('YRL') || text.includes('YDL') || text.includes('YDD') || text.includes('PHILLIPS') || text.includes('PH240') || text.includes('POMO') || text.includes('YMC') || text.includes('LIA') || text.includes('YDM')) {
+    type = { label: 'Cerrojo Digital Teclado', bg: 'bg-amber-950/90', text: 'text-amber-300', border: 'border-amber-500/50', tier: 'cerrojo' }
+  } else {
+    type = { label: 'Cerradura Inteligente', bg: 'bg-zinc-800/90', text: 'text-zinc-200', border: 'border-white/20', tier: 'tuya' }
+  }
+
+  // 2. Aperturas
+  const aperturas: string[] = []
+  if (text.includes('FACIAL') || text.includes('ROSTRO') || text.includes('3D')) aperturas.push('Facial 3D')
+  if (text.includes('HUELLA') || text.includes('DACTILAR') || text.includes('BIOM')) aperturas.push('Huella Dactilar')
+  if (text.includes('WIFI') || text.includes('WI-FI') || text.includes('APP') || text.includes('TUYA') || text.includes('TTLOCK') || text.includes('CELULAR')) aperturas.push('App Móvil WiFi')
+  if (text.includes('BLUETOOTH') || text.includes('BLE')) aperturas.push('Bluetooth')
+  if (text.includes('CODIGO') || text.includes('CÓDIGO') || text.includes('PIN') || text.includes('TECLADO') || text.includes('CLAVE')) aperturas.push('Clave PIN')
+  if (text.includes('TARJETA') || text.includes('RFID') || text.includes('PROXIMIDAD') || text.includes('TAG')) aperturas.push('Tarjeta RFID')
+  if (text.includes('LLAVE') || text.includes('MANIJA') || text.includes('MECANICA')) aperturas.push('Llave Física')
+
+  // 3. Pistones / Seguridad
+  let pistones: string | null = null
+  if (text.includes('5 PISTONES') || text.includes('6068')) pistones = '5 Pistones Anti-Palanca'
+  else if (text.includes('4 PISTONES') || text.includes('4 PESTILLOS')) pistones = '4 Pestillos Blindados'
+  else if (text.includes('2 PISTONES') || text.includes('5050')) pistones = '2 Pistones de Seguridad'
+  else if (text.includes('600LBS') || text.includes('600 LBS')) pistones = 'Fuerza 600 LBS'
+  else if (text.includes('300LBS') || text.includes('300 LBS')) pistones = 'Fuerza 300 LBS'
+
+  return { type, aperturas, pistones }
+}
+
 interface ProductCardProps {
   product: any
   copiedId: string | null
@@ -421,6 +509,7 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
   const specs = getCameraSpecs(p)
   const iphoneSpecs = getIphoneSpecs(p)
   const laptopSpecs = getLaptopSpecs(p)
+  const lockSpecs = getCerraduraSpecs(p)
 
   const isInvalidLogo = (url: string) => {
     if (!url || typeof url !== 'string') return true
@@ -470,7 +559,7 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
           {p.category || "General"}
         </span>
 
-        {/* Resolution, iPhone Generation or Laptop Brand Badge (Top Right - Differentiator) */}
+        {/* Resolution, iPhone Generation, Laptop Brand or Cerradura Badge (Top Right - Differentiator) */}
         {specs.resolution ? (
           <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-md border text-[10px] font-mono font-bold shadow-md tracking-wide ${specs.resolution.bg} ${specs.resolution.text} ${specs.resolution.border}`}>
             {specs.resolution.label}
@@ -482,6 +571,10 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
         ) : laptopSpecs?.brand ? (
           <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-md border text-[10px] font-mono font-bold shadow-md tracking-wide ${laptopSpecs.brand.bg} ${laptopSpecs.brand.text} ${laptopSpecs.brand.border}`}>
             {laptopSpecs.brand.label}
+          </span>
+        ) : lockSpecs?.type ? (
+          <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-md border text-[10px] font-mono font-bold shadow-md tracking-wide ${lockSpecs.type.bg} ${lockSpecs.type.text} ${lockSpecs.type.border}`}>
+            {lockSpecs.type.label}
           </span>
         ) : null}
       </div>
@@ -566,6 +659,22 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
             {laptopSpecs.gpu && (
               <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono bg-rose-950/80 text-rose-300 border border-rose-500/30 font-bold flex items-center gap-1">
                 🎮 {laptopSpecs.gpu}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Differentiation Tags for Cerraduras (Aperturas, Pistones) */}
+        {lockSpecs && (
+          <div className="flex flex-wrap items-center gap-1 pt-0.5">
+            {lockSpecs.aperturas.slice(0, 3).map((ap, i) => (
+              <span key={i} className="px-1.5 py-0.5 rounded-md text-[9px] font-mono bg-zinc-800 text-zinc-300 border border-white/10 font-medium">
+                {ap === 'Facial 3D' ? '👤' : ap.includes('Huella') ? '👆' : ap.includes('App') ? '📱' : ap.includes('PIN') ? '🔢' : '🔑'} {ap}
+              </span>
+            ))}
+            {lockSpecs.pistones && (
+              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono bg-purple-950/80 text-purple-300 border border-purple-500/30 font-bold">
+                🛡️ {lockSpecs.pistones}
               </span>
             )}
           </div>
@@ -666,7 +775,11 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
                 laptopSpecs?.cpu ? `⚡ *Procesador:* ${laptopSpecs.cpu}` : '',
                 laptopSpecs?.ram ? `🚀 *Memoria RAM:* ${laptopSpecs.ram}` : '',
                 laptopSpecs?.storage ? `💾 *Almacenamiento:* ${laptopSpecs.storage}` : '',
-                laptopSpecs?.gpu ? `🎮 *Tarjeta Gráfica:* ${laptopSpecs.gpu}` : ''
+                laptopSpecs?.gpu ? `🎮 *Tarjeta Gráfica:* ${laptopSpecs.gpu}` : '',
+                lockSpecs?.type ? `🔐 *Tipo de Cerradura:* ${lockSpecs.type.label}` : '',
+                lockSpecs?.aperturas?.length ? `🔑 *Métodos de Apertura:* ${lockSpecs.aperturas.join(' · ')}` : '',
+                lockSpecs?.pistones ? `🛡️ *Seguridad Reforzada:* ${lockSpecs.pistones}` : '',
+                lockSpecs ? `📲 *Conectividad:* App Móvil (Tuya Smart / Smart Life / TTLock) con apertura remota y registro de accesos en tiempo real` : ''
               ].filter(Boolean).join('\n')
 
               const commercialCopy = `🔥 *${p.name.toUpperCase()}*
@@ -723,6 +836,8 @@ export default function PreciosVendedorClient() {
   const [tab1IphoneFilter, setTab1IphoneFilter] = useState("all")
   const [laptopFilter, setLaptopFilter] = useState("all")
   const [tab1LaptopFilter, setTab1LaptopFilter] = useState("all")
+  const [cerraduraFilter, setCerraduraFilter] = useState("all")
+  const [tab1CerraduraFilter, setTab1CerraduraFilter] = useState("all")
   const [catProducts, setCatProducts] = useState<any[]>([])
   const [loadingCatProducts, setLoadingCatProducts] = useState(false)
 
@@ -773,14 +888,22 @@ export default function PreciosVendedorClient() {
         return true
       })
     }
+    if (activeSubCat === "cerraduras" && cerraduraFilter !== "all") {
+      return catProducts.filter(p => {
+        const s = getCerraduraSpecs(p)
+        if (!s) return false
+        return s.type?.tier === cerraduraFilter
+      })
+    }
     return catProducts
-  }, [catProducts, activeSubCat, cameraFilter, iphoneFilter, laptopFilter])
+  }, [catProducts, activeSubCat, cameraFilter, iphoneFilter, laptopFilter, cerraduraFilter])
 
-  // Lista de productos filtrados en Tab 1 según resolución (cámaras), generación (iPhone) o gama (laptops)
+  // Lista de productos filtrados en Tab 1 según resolución (cámaras), generación (iPhone), gama (laptops) o cerraduras
   const filteredTab1Products = useMemo(() => {
     const isCamSearch = searchTerm.toLowerCase().includes("camara") || searchTerm.toLowerCase() === "camaras"
     const isIphoneSearch = searchTerm.toLowerCase().includes("iphone") || searchTerm.toLowerCase().includes("i phone") || searchTerm.toLowerCase().includes("apple")
     const isLaptopSearch = searchTerm.toLowerCase().includes("laptop") || searchTerm.toLowerCase().includes("notebook") || searchTerm.toLowerCase().includes("portatil") || searchTerm.toLowerCase().includes("portátil")
+    const isCerraduraSearch = searchTerm.toLowerCase().includes("cerradura") || searchTerm.toLowerCase().includes("cerrojo") || searchTerm.toLowerCase().includes("smart lock") || searchTerm.toLowerCase().includes("chapa")
 
     if (isCamSearch && tab1CameraFilter !== "all") {
       return products.filter(p => {
@@ -822,8 +945,16 @@ export default function PreciosVendedorClient() {
       })
     }
 
+    if (isCerraduraSearch && tab1CerraduraFilter !== "all") {
+      return products.filter(p => {
+        const s = getCerraduraSpecs(p)
+        if (!s) return false
+        return s.type?.tier === tab1CerraduraFilter
+      })
+    }
+
     return products
-  }, [products, searchTerm, tab1CameraFilter, tab1IphoneFilter, tab1LaptopFilter])
+  }, [products, searchTerm, tab1CameraFilter, tab1IphoneFilter, tab1LaptopFilter, tab1CerraduraFilter])
 
   const showToast = (msg: string) => {
     setToastMessage(msg)
@@ -1192,6 +1323,34 @@ export default function PreciosVendedorClient() {
                   })}
                 </div>
               )}
+
+              {/* Quick Cerradura Filter Pills when searching for cerradura */}
+              {(searchTerm.toLowerCase().includes("cerradura") || searchTerm.toLowerCase().includes("cerrojo") || searchTerm.toLowerCase().includes("smart lock") || searchTerm.toLowerCase().includes("chapa")) && (
+                <div className="pt-2.5 border-t border-white/[0.08] flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
+                  <span className="text-[10px] font-mono text-emerald-400 shrink-0 font-bold uppercase tracking-wider flex items-center gap-1">
+                    <ShieldCheck size={11} className="text-emerald-400" /> Línea Cerraduras:
+                  </span>
+                  {CERRADURA_FILTERS.map(f => {
+                    const isActive = tab1CerraduraFilter === f.id
+                    return (
+                      <button
+                        key={f.id}
+                        onClick={() => setTab1CerraduraFilter(f.id)}
+                        className={`shrink-0 px-2.5 py-1 rounded-md text-[11px] font-mono transition-all flex items-center gap-1 border ${
+                          isActive
+                            ? "bg-emerald-950 text-emerald-200 border-emerald-400/50 shadow-sm"
+                            : "bg-zinc-950/80 text-zinc-400 border-white/[0.06] hover:text-zinc-200"
+                        }`}
+                      >
+                        <span>{f.label}</span>
+                        <span className={`text-[9px] px-1 py-0.2 rounded ${isActive ? "bg-emerald-900/60 text-emerald-300 font-bold" : "text-zinc-500"}`}>
+                          {f.badge}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Product List */}
@@ -1369,6 +1528,42 @@ export default function PreciosVendedorClient() {
                         >
                           <span>{f.label}</span>
                           <span className={`text-[10px] px-1.5 py-0.2 rounded ${isActive ? "bg-blue-900/60 text-blue-300 font-bold" : "bg-zinc-900 text-zinc-500"}`}>
+                            {f.badge}
+                          </span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Diferenciador Especial para Cerraduras Smart & Accesos */}
+              {activeSubCat === "cerraduras" && (
+                <div className="pt-3 border-t border-white/[0.08] space-y-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <span className="text-[11px] font-mono flex items-center gap-1.5 font-bold uppercase tracking-wider text-emerald-400">
+                      <ShieldCheck size={12} className="text-emerald-400" />
+                      Diferenciador por Tecnología & Tipo de Acceso:
+                    </span>
+                    <span className="text-[10px] font-mono text-zinc-400 bg-zinc-950 px-2.5 py-0.5 rounded-full border border-white/5">
+                      Mostrando {filteredCatProducts.length} de {catProducts.length} cerraduras
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-1">
+                    {CERRADURA_FILTERS.map(f => {
+                      const isActive = cerraduraFilter === f.id
+                      return (
+                        <button
+                          key={f.id}
+                          onClick={() => setCerraduraFilter(f.id)}
+                          className={`shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-mono font-medium transition-all flex items-center gap-1.5 border ${
+                            isActive
+                              ? "bg-emerald-950 text-emerald-200 border-emerald-400/50 shadow-md shadow-emerald-950/40"
+                              : "bg-zinc-950/70 text-zinc-400 border-white/[0.06] hover:text-zinc-200 hover:bg-zinc-900"
+                          }`}
+                        >
+                          <span>{f.label}</span>
+                          <span className={`text-[10px] px-1.5 py-0.2 rounded ${isActive ? "bg-emerald-900/60 text-emerald-300 font-bold" : "bg-zinc-900 text-zinc-500"}`}>
                             {f.badge}
                           </span>
                         </button>

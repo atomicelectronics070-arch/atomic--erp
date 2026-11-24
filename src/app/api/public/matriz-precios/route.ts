@@ -21,6 +21,7 @@ export async function GET(req: NextRequest) {
 
     const where: any = {
       isDeleted: showDeleted ? true : false,
+      price: { gt: 0 },
       NOT: [
         { name: { contains: 'quiénes somos', mode: 'insensitive' } },
         { name: { contains: 'quienes somos', mode: 'insensitive' } },
@@ -130,6 +131,55 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    const isCerraduraCategoryOrSearch = 
+      categoryId === 'cmoe77b3r000bwwr9nado4n9q' || 
+      searchLower.includes('cerradura') || 
+      searchLower.includes('cerrojo') || 
+      searchLower.includes('smart lock') ||
+      searchLower.includes('chapa');
+
+    const wantsDoorphone = 
+      searchLower.includes('portero') || 
+      searchLower.includes('videoportero') || 
+      searchLower.includes('citofono') || 
+      searchLower.includes('citófono') || 
+      searchLower.includes('intercom') || 
+      searchLower.includes('timbre') || 
+      searchLower.includes('botonera') ||
+      searchLower.includes('frente de calle');
+
+    if (isCerraduraCategoryOrSearch && !wantsDoorphone) {
+      where.NOT.push(
+        { name: { contains: 'PORTERO', mode: 'insensitive' } },
+        { name: { contains: 'VIDEOPORTERO', mode: 'insensitive' } },
+        { name: { contains: 'CITOFONO', mode: 'insensitive' } },
+        { name: { contains: 'CITÓFONO', mode: 'insensitive' } },
+        { name: { contains: 'TIMBRE', mode: 'insensitive' } },
+        { name: { contains: 'BOTONERA', mode: 'insensitive' } },
+        { name: { contains: 'FRENTE DE CALLE', mode: 'insensitive' } },
+        { name: { contains: 'INTERCOM', mode: 'insensitive' } },
+        { name: { contains: 'RECOLECTOR', mode: 'insensitive' } },
+        { name: { contains: 'CARD READER', mode: 'insensitive' } },
+        { name: { contains: 'HUB USB', mode: 'insensitive' } },
+        { name: { contains: 'RATON', mode: 'insensitive' } },
+        { name: { contains: 'RATÓN', mode: 'insensitive' } },
+        { name: { contains: 'LOGITECH', mode: 'insensitive' } },
+        { name: { contains: 'DIAGNOSTICO', mode: 'insensitive' } },
+        { name: { contains: 'DIAGNÓSTICO', mode: 'insensitive' } },
+        { name: { contains: 'VENTILADOR', mode: 'insensitive' } },
+        { name: { contains: 'FUENTE PARA CONTROL', mode: 'insensitive' } },
+        { name: { contains: 'FUENTE DE PODER', mode: 'insensitive' } },
+        { name: { contains: 'SIERRA', mode: 'insensitive' } },
+        { name: { contains: 'TALADRO', mode: 'insensitive' } },
+        { name: { contains: 'ACEITE', mode: 'insensitive' } },
+        { name: { contains: 'FRUTA', mode: 'insensitive' } },
+        { name: { contains: 'MICROFONO', mode: 'insensitive' } },
+        { name: { contains: 'MICRÓFONO', mode: 'insensitive' } },
+        { name: { contains: 'MBO ASUS', mode: 'insensitive' } },
+        { name: { contains: 'CASE ASUS', mode: 'insensitive' } }
+      );
+    }
+
     if (search) {
       const stopWords = new Set(['de', 'del', 'la', 'el', 'en', 'para', 'con', 'un', 'una', 'y']);
       const tokens = search
@@ -163,6 +213,18 @@ export async function GET(req: NextRequest) {
           set.add('elitebook');
           set.add('zenbook');
         }
+        if (clean === 'cerradura') {
+          set.add('cerraduras');
+          set.add('cerrojo');
+          set.add('cerrojos');
+          set.add('smart lock');
+          set.add('chapa');
+        }
+        if (clean === 'cerrojo') {
+          set.add('cerrojos');
+          set.add('cerradura');
+          set.add('cerraduras');
+        }
         return Array.from(set);
       };
 
@@ -170,11 +232,15 @@ export async function GET(req: NextRequest) {
         where.AND = tokens.map((token) => {
           const variants = getVariants(token);
           const conditions: any[] = [];
+          const skipDescriptionKeywords = [
+            'portatil', 'portátil', 'portatiles',
+            'cerradura', 'cerraduras', 'cerrojo', 'cerrojos', 'chapa', 'chapas', 'smart lock'
+          ];
           for (const v of variants) {
             conditions.push({ name: { contains: v, mode: 'insensitive' } });
-            if (v !== 'portatil' && v !== 'portátil' && v !== 'portatiles') {
-              conditions.push({ sku: { contains: v, mode: 'insensitive' } });
-              conditions.push({ specs: { contains: v, mode: 'insensitive' } });
+            conditions.push({ sku: { contains: v, mode: 'insensitive' } });
+            conditions.push({ specs: { contains: v, mode: 'insensitive' } });
+            if (!skipDescriptionKeywords.includes(v.toLowerCase())) {
               conditions.push({ description: { contains: v, mode: 'insensitive' } });
             }
             conditions.push({ category: { name: { contains: v, mode: 'insensitive' } } });
