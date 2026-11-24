@@ -9,7 +9,7 @@ import {
     ShoppingBag, Menu, X, Calendar, Edit3, Mail, BrainCircuit,
     Bot, Globe, BarChart3, GraduationCap, Code2, User, Smartphone,
     Share2, Map, Layers, DollarSign, ShieldCheck, FileSpreadsheet,
-    Table, Bell, Lock, Hexagon, ChevronDown, Sparkles, Scan, Wrench, Shield, Cpu, Link2, Flame, CalendarCheck, KeyRound
+    Table, Bell, Lock, Hexagon, ChevronDown, Sparkles, Scan, Wrench, Shield, Cpu, Link2, Flame, CalendarCheck, KeyRound, Activity
 } from "lucide-react"
 import { useState, useEffect } from "react"
 import NotificationBell from "@/components/NotificationBell"

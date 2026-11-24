@@ -60,12 +60,18 @@ export async function POST(req: Request) {
             }
         })
 
+        const isBonus = concept.toLowerCase().includes("bonif") || 
+                        concept.toLowerCase().includes("bono") || 
+                        concept.toLowerCase().includes("rendimiento")
+
         // Notify the advisor
         await prisma.notification.create({
             data: {
                 userId: advisorId,
-                title: "Nuevo Ticket de Pago",
-                message: `Has recibido un ticket de pago por $${parsedAmount} (Concepto: ${concept}).`,
+                title: isBonus ? "🎁 Bonificación de Rendimiento Asignada" : "Nuevo Ticket de Pago",
+                message: isBonus 
+                    ? `Has recibido una Bonificación de Rendimiento por $${parsedAmount.toFixed(2)} (${concept}). Haz clic para revisar y aceptar tu bonificación.`
+                    : `Has recibido un ticket de pago por $${parsedAmount.toFixed(2)} (Concepto: ${concept}).`,
                 type: "TICKET",
                 relatedId: ticket.id
             }

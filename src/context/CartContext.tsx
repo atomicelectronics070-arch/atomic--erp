@@ -21,6 +21,7 @@ interface CartContextType {
     lastAction: string | null
     showBotPrompt: boolean
     setShowBotPrompt: (show: boolean) => void
+    markCartCheckout: (status?: "COTIZADO" | "COMPRADO", clientInfo?: { name?: string, email?: string, phone?: string }) => void
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
@@ -78,6 +79,53 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const totalItems = items.reduce((sum, item) => sum + item.quantity, 0)
     const totalPrice = items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
 
+    // Sincronización automática de telemetría de carritos (Detección de carritos casi comprados / abandonados)
+    useEffect(() => {
+        if (typeof window === "undefined") return
+        const vid = localStorage.getItem("atomic_vid") || "anon_" + Date.now()
+        
+        const timer = setTimeout(() => {
+            fetch("/api/telemetry/cart", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    visitorId: vid,
+                    items: items,
+                    totalAmount: totalPrice,
+                    itemsCount: totalItems,
+                    sourceUrl: window.location.pathname,
+                    status: items.length > 0 ? "ABANDONADO" : "EN_PROCESO",
+                    lastAction: lastAction || (items.length > 0 ? `Artículos en carrito (${totalItems})` : "Carrito vacío")
+                }),
+                keepalive: true
+            }).catch(() => {})
+        }, 1200)
+
+        return () => clearTimeout(timer)
+    }, [items, totalPrice, totalItems, lastAction])
+
+    const markCartCheckout = (status: "COTIZADO" | "COMPRADO" = "COTIZADO", clientInfo?: { name?: string, email?: string, phone?: string }) => {
+        if (typeof window === "undefined") return
+        const vid = localStorage.getItem("atomic_vid") || "anon_" + Date.now()
+        fetch("/api/telemetry/cart", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                visitorId: vid,
+                items: items,
+                totalAmount: totalPrice,
+                itemsCount: totalItems,
+                sourceUrl: window.location.pathname,
+                status,
+                userName: clientInfo?.name,
+                userEmail: clientInfo?.email,
+                userPhone: clientInfo?.phone,
+                lastAction: status === "COTIZADO" ? "Cotización solicitada" : "Compra concretada"
+            }),
+            keepalive: true
+        }).catch(() => {})
+    }
+
     return (
         <CartContext.Provider value={{
             items,
@@ -89,7 +137,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             totalPrice,
             lastAction,
             showBotPrompt,
-            setShowBotPrompt
+            setShowBotPrompt,
+            markCartCheckout
         }}>
             {children}
         </CartContext.Provider>
@@ -109,7 +158,8 @@ export function useCart() {
             totalPrice: 0,
             lastAction: null,
             showBotPrompt: false,
-            setShowBotPrompt: () => {}
+            setShowBotPrompt: () => {},
+            markCartCheckout: () => {}
         }
     }
     return context

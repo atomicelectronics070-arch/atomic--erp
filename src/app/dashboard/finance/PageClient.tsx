@@ -1,5 +1,6 @@
 "use client"
 
+import { Suspense } from "react"
 import { PieChart, ShieldCheck, TrendingUp, Sparkles, Building2 } from "lucide-react"
 import FinanceManager from "./FinanceManager"
 
@@ -36,7 +37,13 @@ export default function FinanceTrackerPage() {
 
             {/* Main Content Area */}
             <div className="max-w-[1440px] mx-auto px-4 sm:px-8 space-y-10">
-                <FinanceManager />
+                <Suspense fallback={
+                    <div className="flex items-center justify-center py-20 text-slate-500 font-bold text-sm">
+                        Cargando módulo de Finanzas & Tesorería...
+                    </div>
+                }>
+                    <FinanceManager />
+                </Suspense>
             </div>
         </div>
     )

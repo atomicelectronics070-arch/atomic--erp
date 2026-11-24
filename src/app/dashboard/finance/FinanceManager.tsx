@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useSession } from "next-auth/react"
+import { useSearchParams } from "next/navigation"
 import {
     Plus, Search, Edit3, Filter,
     DollarSign, Calendar, Users,
@@ -196,7 +197,16 @@ export default function FinanceManager() {
     const [loading, setLoading] = useState(true)
 
     // Navigation & Tabs
+    const searchParams = useSearchParams()
+    const ticketIdParam = searchParams.get("ticketId")
+    const tabParam = searchParams.get("tab")
     const [activeTab, setActiveTab] = useState<"TRANSACTIONS" | "DEBTS" | "PAYMENT_ASSIGNMENT" | "EXERCISE_BUDGET" | "TICKETS">("TRANSACTIONS")
+
+    useEffect(() => {
+        if (ticketIdParam || tabParam === "TICKETS") {
+            setActiveTab("TICKETS")
+        }
+    }, [ticketIdParam, tabParam])
 
     // Filters
     const [searchTerm, setSearchTerm] = useState("")
