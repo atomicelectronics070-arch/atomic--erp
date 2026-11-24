@@ -1,13 +1,16 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
+import { useCart } from "@/context/CartContext"
 import {
   ShieldCheck,
   CheckCircle2,
   Award,
   Zap,
+  ShoppingCart,
   Building2,
   Car,
   Clock,
@@ -139,7 +142,21 @@ const FAQS = [
 ]
 
 export default function BarrerasDitecClient() {
+  const { addToCart, totalItems } = useCart()
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [added, setAdded] = useState(false)
+
+  const handleAddToCart = () => {
+    addToCart({
+      id: "barrera-ditec-serie-2027",
+      name: "Barrera Vehicular Automática Dítec Serie 2027 (Motor 24V Continuo)",
+      price: 1928.90,
+      quantity: 1,
+      image: "/images/barreras/barrera-ditec-tecnologia-2027-precio.jpg"
+    })
+    setAdded(true)
+    setTimeout(() => setAdded(false), 2500)
+  }
 
   const whatsappBaseUrl = "https://wa.me/593969043453"
   const whatsappUrl = `${whatsappBaseUrl}?text=${encodeURIComponent(
@@ -148,19 +165,33 @@ export default function BarrerasDitecClient() {
 
   return (
     <div className="min-h-screen bg-[#070b12] text-slate-100 font-sans selection:bg-cyan-500 selection:text-white">
-      {/* Top Banner de Confianza */}
-      <div className="bg-gradient-to-r from-cyan-950 via-slate-900 to-cyan-950 border-b border-cyan-800/30 text-xs py-2 px-4 text-center text-cyan-200 flex items-center justify-center gap-4 flex-wrap">
-        <span className="flex items-center gap-1.5 font-medium">
-          <Award className="w-3.5 h-3.5 text-cyan-400" /> TECNOLOGÍA DÍTEC 2027 • INGENIERÍA EUROPEA
-        </span>
-        <span className="hidden sm:inline text-cyan-500">•</span>
-        <span className="flex items-center gap-1.5 font-medium">
-          <Gauge className="w-3.5 h-3.5 text-cyan-400" /> MOTOR 24V USO INTENSIVO (100% DUTY CYCLE)
-        </span>
-        <span className="hidden sm:inline text-cyan-500">•</span>
-        <span className="flex items-center gap-1.5 font-medium">
-          <Wrench className="w-3.5 h-3.5 text-cyan-400" /> INSTALACIÓN & VISITA TÉCNICA A NIVEL NACIONAL
-        </span>
+      {/* Top Banner de Confianza & Carrito */}
+      <div className="bg-gradient-to-r from-cyan-950 via-slate-900 to-cyan-950 border-b border-cyan-800/30 text-xs py-2 px-4 text-center text-cyan-200 flex items-center justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-4 flex-wrap mx-auto sm:mx-0">
+          <span className="flex items-center gap-1.5 font-medium">
+            <Award className="w-3.5 h-3.5 text-cyan-400" /> TECNOLOGÍA DÍTEC 2027 • INGENIERÍA EUROPEA
+          </span>
+          <span className="hidden sm:inline text-cyan-500">•</span>
+          <span className="flex items-center gap-1.5 font-medium">
+            <Gauge className="w-3.5 h-3.5 text-cyan-400" /> MOTOR 24V USO INTENSIVO (100% DUTY CYCLE)
+          </span>
+          <span className="hidden sm:inline text-cyan-500">•</span>
+          <span className="flex items-center gap-1.5 font-medium">
+            <Wrench className="w-3.5 h-3.5 text-cyan-400" /> INSTALACIÓN & VISITA TÉCNICA A NIVEL NACIONAL
+          </span>
+        </div>
+        <Link
+          href="/web/cart"
+          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/30 font-bold transition-colors mx-auto sm:mx-0"
+        >
+          <ShoppingCart className="w-3.5 h-3.5" />
+          <span>Proforma / Carrito</span>
+          {totalItems > 0 && (
+            <span className="px-1.5 py-0.2 rounded-full bg-cyan-400 text-black text-[10px] font-black">
+              {totalItems}
+            </span>
+          )}
+        </Link>
       </div>
 
       {/* Hero Section */}
@@ -201,14 +232,37 @@ export default function BarrerasDitecClient() {
                       Incluye mueble Dítec 2027, motor 24V, central inteligente, mástil y fotocélulas
                     </p>
                   </div>
-                  <a
-                    href={whatsappUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-8 py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-center shadow-lg shadow-emerald-600/30 transition-all flex items-center justify-center gap-2 text-base shrink-0"
-                  >
-                    <Smartphone className="w-5 h-5" /> Cotizar Proyecto
-                  </a>
+                  <div className="flex flex-col sm:flex-row gap-3 shrink-0">
+                    <button
+                      onClick={handleAddToCart}
+                      className={`px-6 py-4 rounded-xl font-bold text-center border transition-all flex items-center justify-center gap-2 text-sm shrink-0 ${
+                        added
+                          ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/50"
+                          : "bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border-cyan-500/30"
+                      }`}
+                    >
+                      {added ? (
+                        <>
+                          <Check className="w-5 h-5 text-cyan-400" />
+                          <span>¡Añadido a Proforma!</span>
+                        </>
+                      ) : (
+                        <>
+                          <ShoppingCart className="w-5 h-5" />
+                          <span>Añadir a Proforma</span>
+                        </>
+                      )}
+                    </button>
+
+                    <a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-8 py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-center shadow-lg shadow-emerald-600/30 transition-all flex items-center justify-center gap-2 text-base shrink-0"
+                    >
+                      <Smartphone className="w-5 h-5" /> Cotizar Proyecto
+                    </a>
+                  </div>
                 </div>
               </div>
 
@@ -410,14 +464,37 @@ export default function BarrerasDitecClient() {
           <p className="text-slate-300 text-sm sm:text-base mb-8">
             Nuestros ingenieros en automatización vehicular preparan tu proforma con memoria descriptiva, diagramas de conexionado y opciones de instalación en menos de 2 horas.
           </p>
-          <a
-            href={whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base shadow-xl shadow-emerald-600/30 transition-all"
-          >
-            <Smartphone className="w-5 h-5" /> Coordinar con un Ingeniero por WhatsApp
-          </a>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <button
+              onClick={handleAddToCart}
+              className={`px-8 py-4 rounded-xl font-bold text-base border transition-all flex items-center justify-center gap-2 ${
+                added
+                  ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/50"
+                  : "bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border-cyan-500/30"
+              }`}
+            >
+              {added ? (
+                <>
+                  <Check className="w-5 h-5 text-cyan-400" />
+                  <span>¡Añadido a Proforma!</span>
+                </>
+              ) : (
+                <>
+                  <ShoppingCart className="w-5 h-5" />
+                  <span>Añadir a Proforma PDF</span>
+                </>
+              )}
+            </button>
+
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base shadow-xl shadow-emerald-600/30 transition-all"
+            >
+              <Smartphone className="w-5 h-5" /> Coordinar con un Ingeniero por WhatsApp
+            </a>
+          </div>
           <p className="text-xs text-slate-500 mt-4">
             ATOMIC Electronics Ecuador • Automatización Industrial & Seguridad Perimetral
           </p>

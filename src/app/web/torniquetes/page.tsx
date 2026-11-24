@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic'
 
 export const metadata = {
   title: 'Torniquetes Peatonales & Control de Acceso | ATOMIC Security',
-  description: 'Catálogo especializado de torniquetes trípode, molinetes, puertas de vidrio flap barrier y control de acceso biométrico.',
+  description: 'Catálogo especializado de torniquetes trípode, molinetes, puertas de vidrio flap barrier y control de acceso biométrico en Ecuador.',
 }
 
 export default async function TorniquetesLandingPage() {
@@ -16,9 +16,10 @@ export default async function TorniquetesLandingPage() {
       OR: [
         { name: { contains: 'torniquete', mode: 'insensitive' } },
         { name: { contains: 'molinete', mode: 'insensitive' } },
-        { name: { contains: 'bracket', mode: 'insensitive' } },
-        { name: { contains: 'fotosensor', mode: 'insensitive' } },
-        { name: { contains: 'bobina', mode: 'insensitive' } }
+        { name: { contains: 'flap barrier', mode: 'insensitive' } },
+        { name: { contains: 'control de acceso', mode: 'insensitive' } },
+        { name: { contains: 'idface', mode: 'insensitive' } },
+        { name: { contains: 'idflex', mode: 'insensitive' } }
       ]
     },
     orderBy: { price: 'desc' }

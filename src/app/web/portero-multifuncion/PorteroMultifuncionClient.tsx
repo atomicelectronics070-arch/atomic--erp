@@ -1,8 +1,10 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
+import { useCart } from "@/context/CartContext"
 import {
   Shield,
   ShieldCheck,
@@ -12,6 +14,7 @@ import {
   CreditCard,
   KeyRound,
   Smartphone,
+  ShoppingCart,
   Wifi,
   DoorOpen,
   Users,
@@ -112,7 +115,21 @@ const FAQS = [
 ]
 
 export default function PorteroMultifuncionClient() {
+  const { addToCart, totalItems } = useCart()
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [added, setAdded] = useState(false)
+
+  const handleAddToCart = () => {
+    addToCart({
+      id: "portero-multifuncion-zkteco",
+      name: "Portero Multifunción ZKTeco con Reconocimiento Facial + Huella + App Zlink",
+      price: 198.99,
+      quantity: 1,
+      image: "/images/porteros/portero-zkteco-multifuncion-zkbio.jpg"
+    })
+    setAdded(true)
+    setTimeout(() => setAdded(false), 2500)
+  }
 
   const whatsappBaseUrl = "https://wa.me/593969043453"
   const whatsappUrl = `${whatsappBaseUrl}?text=${encodeURIComponent(
@@ -121,19 +138,33 @@ export default function PorteroMultifuncionClient() {
 
   return (
     <div className="min-h-screen bg-[#070b12] text-slate-100 font-sans selection:bg-cyan-500 selection:text-white">
-      {/* Top Banner de Confianza */}
-      <div className="bg-gradient-to-r from-blue-900/40 via-cyan-900/40 to-blue-900/40 border-b border-cyan-800/30 text-xs py-2 px-4 text-center text-cyan-200 flex items-center justify-center gap-4 flex-wrap">
-        <span className="flex items-center gap-1.5 font-medium">
-          <Award className="w-3.5 h-3.5 text-cyan-400" /> DISTRIBUIDOR AUTORIZADO ZKTECO ECUADOR
-        </span>
-        <span className="hidden sm:inline text-cyan-500">•</span>
-        <span className="flex items-center gap-1.5 font-medium">
-          <Sparkles className="w-3.5 h-3.5 text-cyan-400" /> INCLUYE APP ZKBIO ZLINK 100% GRATIS DE POR VIDA
-        </span>
-        <span className="hidden sm:inline text-cyan-500">•</span>
-        <span className="flex items-center gap-1.5 font-medium">
-          <Truck className="w-3.5 h-3.5 text-cyan-400" /> ENVÍO RÁPIDO A TODO EL PAÍS
-        </span>
+      {/* Top Banner de Confianza & Carrito */}
+      <div className="bg-gradient-to-r from-blue-900/40 via-cyan-900/40 to-blue-900/40 border-b border-cyan-800/30 text-xs py-2 px-4 text-center text-cyan-200 flex items-center justify-between gap-4 flex-wrap">
+        <div className="flex items-center gap-4 flex-wrap mx-auto sm:mx-0">
+          <span className="flex items-center gap-1.5 font-medium">
+            <Award className="w-3.5 h-3.5 text-cyan-400" /> DISTRIBUIDOR AUTORIZADO ZKTECO ECUADOR
+          </span>
+          <span className="hidden sm:inline text-cyan-500">•</span>
+          <span className="flex items-center gap-1.5 font-medium">
+            <Sparkles className="w-3.5 h-3.5 text-cyan-400" /> INCLUYE APP ZKBIO ZLINK 100% GRATIS DE POR VIDA
+          </span>
+          <span className="hidden sm:inline text-cyan-500">•</span>
+          <span className="flex items-center gap-1.5 font-medium">
+            <Truck className="w-3.5 h-3.5 text-cyan-400" /> ENVÍO RÁPIDO A TODO EL PAÍS
+          </span>
+        </div>
+        <Link
+          href="/web/cart"
+          className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 hover:bg-cyan-500/30 font-bold transition-colors mx-auto sm:mx-0"
+        >
+          <ShoppingCart className="w-3.5 h-3.5" />
+          <span>Proforma / Carrito</span>
+          {totalItems > 0 && (
+            <span className="px-1.5 py-0.2 rounded-full bg-cyan-400 text-black text-[10px] font-black">
+              {totalItems}
+            </span>
+          )}
+        </Link>
       </div>
 
       {/* Hero Section */}
@@ -174,14 +205,37 @@ export default function PorteroMultifuncionClient() {
                       Incluye equipo ZKTeco, soporte de pared, transformador y App ZKBio Zlink GRATIS
                     </p>
                   </div>
-                  <a
-                    href={whatsappUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-6 py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-center shadow-lg shadow-emerald-600/30 transition-all flex items-center justify-center gap-2 text-sm sm:text-base shrink-0"
-                  >
-                    <Smartphone className="w-5 h-5" /> Comprar por WhatsApp
-                  </a>
+                  <div className="flex flex-col sm:flex-row gap-3 shrink-0">
+                    <button
+                      onClick={handleAddToCart}
+                      className={`px-5 py-4 rounded-xl font-bold text-center border transition-all flex items-center justify-center gap-2 text-xs sm:text-sm shrink-0 ${
+                        added
+                          ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/50"
+                          : "bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border-cyan-500/30"
+                      }`}
+                    >
+                      {added ? (
+                        <>
+                          <Check className="w-4 h-4 text-cyan-400" />
+                          <span>¡Añadido!</span>
+                        </>
+                      ) : (
+                        <>
+                          <ShoppingCart className="w-4 h-4" />
+                          <span>Añadir a Proforma</span>
+                        </>
+                      )}
+                    </button>
+
+                    <a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-6 py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-center shadow-lg shadow-emerald-600/30 transition-all flex items-center justify-center gap-2 text-sm sm:text-base shrink-0"
+                    >
+                      <Smartphone className="w-5 h-5" /> Comprar por WhatsApp
+                    </a>
+                  </div>
                 </div>
               </div>
 
@@ -436,14 +490,37 @@ export default function PorteroMultifuncionClient() {
           <p className="text-slate-300 text-sm sm:text-base mb-8">
             Adquiere hoy tu Portero Multifunción ZKTeco por solo <strong className="text-white">$198.99 + IVA</strong> con entrega inmediata a domicilio o coordina la visita de un técnico instalador.
           </p>
-          <a
-            href={whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base shadow-xl shadow-emerald-600/30 transition-all"
-          >
-            <Smartphone className="w-5 h-5" /> Solicitar Asesoría por WhatsApp
-          </a>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <button
+              onClick={handleAddToCart}
+              className={`px-8 py-4 rounded-xl font-bold text-base border transition-all flex items-center justify-center gap-2 ${
+                added
+                  ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/50"
+                  : "bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border-cyan-500/30"
+              }`}
+            >
+              {added ? (
+                <>
+                  <Check className="w-5 h-5 text-cyan-400" />
+                  <span>¡Añadido a Proforma!</span>
+                </>
+              ) : (
+                <>
+                  <ShoppingCart className="w-5 h-5" />
+                  <span>Añadir a Proforma PDF</span>
+                </>
+              )}
+            </button>
+
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base shadow-xl shadow-emerald-600/30 transition-all"
+            >
+              <Smartphone className="w-5 h-5" /> Solicitar Asesoría por WhatsApp
+            </a>
+          </div>
           <p className="text-xs text-slate-500 mt-4">
             ATOMIC Electronics • Quito, Ecuador • Facturación electrónica con garantía directa
           </p>

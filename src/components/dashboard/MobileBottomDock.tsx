@@ -18,6 +18,7 @@ import RutaDelDiaWorkspace from "@/components/tools/RutaDelDiaWorkspace"
 import BajoComisionModal from "@/components/coordinacion/BajoComisionModal"
 import EquipoAsistenciasModal from "@/components/coordinacion/EquipoAsistenciasModal"
 import GestorCuentasModal from "@/components/coordinacion/GestorCuentasModal"
+import SystemCredentialsModal from "@/components/dashboard/SystemCredentialsModal"
 
 function MobileBottomDockInner() {
     const { data: session } = useSession()
@@ -26,6 +27,7 @@ function MobileBottomDockInner() {
     const userEmailUpper = String(session?.user?.email || "").toUpperCase()
     const isKevin = userNameUpper.includes("KEVIN") || userNameUpper.includes("KEVON") || userEmailUpper.includes("KEVIN") || userEmailUpper.includes("KEVON")
     const isAdministrative = userRole.includes("ADMIN") || userRole.includes("COORDINATOR") || userRole.includes("MANAGEMENT") || userRole.includes("SUPERVISOR") || isKevin || userRole.includes("CRM")
+    const isJuanPablo = userNameUpper.includes("JUAN") || userEmailUpper.includes("JUANGUZMAN") || userEmailUpper.includes("ATOMIC@INDUSTRIAS") || isAdministrative
 
     const pathname = usePathname()
     const searchParams = useSearchParams()
@@ -35,6 +37,7 @@ function MobileBottomDockInner() {
     const [showScannerModal, setShowScannerModal] = useState(false)
     const [showToolsModal, setShowToolsModal] = useState(false)
     const [showRutaModal, setShowRutaModal] = useState(false)
+    const [showCredentialsModal, setShowCredentialsModal] = useState(false)
     const [toolsInitialTab, setToolsInitialTab] = useState<any>("grid")
     const [showMoreMenu, setShowMoreMenu] = useState(false)
     const [showBajoComisionModal, setShowBajoComisionModal] = useState(false)
@@ -85,6 +88,7 @@ function MobileBottomDockInner() {
             <BajoComisionModal isOpen={showBajoComisionModal} onClose={() => setShowBajoComisionModal(false)} advisorName={session?.user?.name || "Asesor"} />
             <EquipoAsistenciasModal isOpen={showEquipoAsistenciasModal} onClose={() => setShowEquipoAsistenciasModal(false)} />
             <GestorCuentasModal isOpen={showGestorCuentasModal} onClose={() => setShowGestorCuentasModal(false)} />
+            <SystemCredentialsModal isOpen={showCredentialsModal} onClose={() => setShowCredentialsModal(false)} />
 
             {/* Quick Clock Floating Toast */}
             {quickClockToast && (
@@ -130,6 +134,38 @@ function MobileBottomDockInner() {
                         </div>
 
                         <div className="grid grid-cols-3 gap-2.5 text-center text-[10px] font-mono">
+                            {/* ── BOTÓN EXCLUSIVO JUAN PABLO: DIRECTORIO DE CORREOS Y CONTRASEÑAS CON EDICIÓN ── */}
+                            {isJuanPablo && (
+                                <button 
+                                    type="button"
+                                    onClick={() => {
+                                        setShowMoreMenu(false)
+                                        setShowCredentialsModal(true)
+                                    }}
+                                    className="col-span-3 p-3.5 rounded-2xl bg-gradient-to-r from-amber-500/25 via-yellow-600/30 to-amber-600/25 border-2 border-amber-400 hover:border-white text-white flex items-center justify-between gap-3 shadow-xl shadow-amber-950/60 transition-all active:scale-98 cursor-pointer group"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2.5 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-400 text-black shadow-md shrink-0">
+                                            <KeyRound size={22} className="stroke-[2.5]" />
+                                        </div>
+                                        <div className="text-left">
+                                            <div className="font-black text-xs uppercase tracking-wide flex items-center gap-2">
+                                                <span className="text-amber-200 group-hover:text-white">Credenciales & Contraseñas</span>
+                                                <span className="text-[9px] font-mono px-2 py-0.2 rounded-full bg-amber-400 text-black font-black uppercase shadow-sm">
+                                                    JUAN PABLO
+                                                </span>
+                                            </div>
+                                            <div className="text-[10px] text-amber-100/90 font-medium">
+                                                Ver correos, copiar claves y editar en tiempo real a todo el personal
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span className="text-[9px] font-mono px-3 py-1.5 rounded-xl bg-amber-400 text-black font-black uppercase shrink-0 shadow-md">
+                                        VER CLAVES
+                                    </span>
+                                </button>
+                            )}
+
                             {/* ── BOTÓN OFICIAL: ASISTENCIA RÁPIDA (UNIVERSAL PARA TODOS LOS PERFILES LOGUEADOS) ── */}
                             <button 
                                 type="button"
@@ -564,19 +600,19 @@ function MobileBottomDockInner() {
                             </span>
                         </Link>
 
-                        {/* Botón RUTAS (Exclusivo Perfiles Administrativos) */}
+                        {/* Botón SUPERVISIÓN & RUTAS (A la izquierda inmediata de Más) */}
                         {isAdministrative && (
                             <button
                                 type="button"
                                 onClick={() => setShowRutaModal(true)}
                                 className="flex flex-col items-center justify-center py-1 transition-all group active:scale-90 cursor-pointer"
-                                title="Rutas del Día (Supervisión e inspección interactiva de todas las cuadrillas)"
+                                title="Centro de Supervisión y Rutas de Cuadrillas"
                             >
                                 <div className="p-1.5 rounded-xl transition-colors bg-gradient-to-br from-amber-500/25 to-orange-500/25 text-amber-300 group-hover:text-amber-100 border border-amber-400/40 shadow-[0_0_12px_rgba(245,158,11,0.35)]">
-                                    <Target size={16} className="stroke-[2.2]" />
+                                    <Shield size={16} className="stroke-[2.2]" />
                                 </div>
                                 <span className="text-[8px] font-black tracking-tight mt-0.5 text-amber-300 group-hover:text-white truncate">
-                                    Rutas
+                                    Supervisión
                                 </span>
                             </button>
                         )}

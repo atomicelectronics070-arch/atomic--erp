@@ -31,6 +31,15 @@ export default async function GamingEcosystemPage() {
       },
       orderBy: { price: 'asc' }
     })
+    // Clean out non-gaming misclassified noise (security cameras, webcams, decoders)
+    const EXCLUDE_KEYWORDS = [
+      'camara', 'cámara', 'webcam', 'web-cam', 'facecam', 'conference', 'decoder',
+      'bateria para sony', 'batería para sony', 'estuche para laptop', 'estuche 15.6'
+    ]
+    dbProducts = dbProducts.filter((p: any) => {
+      const n = (p.name || '').toLowerCase()
+      return !EXCLUDE_KEYWORDS.some(kw => n.includes(kw))
+    })
   } catch (e) {
     console.warn('[GamingEcosystemPage] Error loading products:', e)
   }

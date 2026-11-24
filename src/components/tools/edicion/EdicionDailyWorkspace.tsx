@@ -10,6 +10,7 @@ import {
 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { SUICIDE_SQUAD_CATEGORIES } from "@/lib/data/suicideSquadCategories"
+import ListaPreciosProveedoresConfidencial from "@/components/shop/ListaPreciosProveedoresConfidencial"
 
 interface AssignedEmployee {
     id: string
@@ -65,7 +66,7 @@ export default function EdicionDailyWorkspace() {
     const today = new Date().toISOString().split("T")[0]
 
     // Tabs principales de Edición
-    const [edicionTab, setEdicionTab] = useState<"plan" | "asignaciones" | "banco" | "redes">("plan")
+    const [edicionTab, setEdicionTab] = useState<"plan" | "asignaciones" | "banco" | "redes" | "proveedores">("plan")
 
     // Timbrado
     const [clockInTime, setClockInTime] = useState<string | null>(null)
@@ -282,7 +283,8 @@ export default function EdicionDailyWorkspace() {
                     { id: "plan", label: "📋 Plan & Asistencia", icon: "🗓️" },
                     { id: "asignaciones", label: "👥 Equipo, Pastel Neón & Prompts", icon: "🎨" },
                     { id: "banco", label: "📁 Banco de Anuncios (SOFT & ATOMIC)", icon: "🗂️" },
-                    { id: "redes", label: "📲 Redes Sociales (Meta & TikTok)", icon: "🚀" }
+                    { id: "redes", label: "📲 Redes Sociales (Meta & TikTok)", icon: "🚀" },
+                    { id: "proveedores", label: "🏷️ Lista Precios & Proveedores (Confidencial)", icon: "🔒" }
                 ].map(tab => (
                     <button
                         key={tab.id}
@@ -978,6 +980,15 @@ export default function EdicionDailyWorkspace() {
                         </div>
 
                     </div>
+                </div>
+            )}
+
+            {/* ═══════════════════════════════════════════════════════════
+                PESTAÑA 5: LISTA DE PRECIOS CON LINKS A PROVEEDORES (CONFIDENCIAL)
+            ═══════════════════════════════════════════════════════════ */}
+            {edicionTab === "proveedores" && (
+                <div className="space-y-6 animate-in fade-in duration-300">
+                    <ListaPreciosProveedoresConfidencial />
                 </div>
             )}
 

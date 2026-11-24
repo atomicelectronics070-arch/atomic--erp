@@ -2,11 +2,21 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { ChevronLeft, MessageSquare, Search, Star, Shield, Zap, ArrowRight } from "lucide-react";
-
-// ─────────────────────────────────────────────────────────────────────────────
-// ATOMIC — Línea Apple: iPhone & Mac  (All-White Premium Theme)
-// ─────────────────────────────────────────────────────────────────────────────
+import {
+  Shield,
+  Search,
+  Star,
+  Zap,
+  ArrowRight,
+  MessageSquare,
+  Sparkles,
+  ChevronLeft,
+  Smartphone,
+  Laptop,
+  CheckCircle2,
+  Flame,
+  Award
+} from "lucide-react";
 
 interface AppleProduct {
   id: string;
@@ -14,141 +24,150 @@ interface AppleProduct {
   subtitle: string;
   specs: string;
   price: number;
+  compareAtPrice: number;
   priceNote?: string;
   image: string;
   category: "IPHONE" | "MAC";
-  storage?: string;
-  chip?: string;
-  display?: string;
+  chip: string;
+  display: string;
+  storage: string;
   colors?: string[];
   badge?: string;
+  inStock?: boolean;
 }
 
 const CATALOG: AppleProduct[] = [
-  // ─── iPhones ───────────────────────────────────────────────────────────────
-  {
-    id: "iphone-17-air-256-white",
-    name: "iPhone 17 Air",
-    subtitle: "256 GB · Cloud White",
-    specs: "Chip A18 Pro · Cámara 48MP · Pantalla 6.1\" Super Retina XDR · Face ID · USB-C",
-    price: 3838,
-    image: "/images/iphone/iphone-17-air-white.png",
-    category: "IPHONE",
-    chip: "Apple A18 Pro",
-    display: "6.1\" Super Retina XDR",
-    storage: "256 GB",
-    colors: ["Cloud White"],
-    badge: "NUEVO 2025",
-  },
-  {
-    id: "iphone-17-air-256-black",
-    name: "iPhone 17 Air",
-    subtitle: "256 GB · Space Black",
-    specs: "Chip A18 Pro · Cámara 48MP · Pantalla 6.1\" Super Retina XDR · Face ID · USB-C",
-    price: 3838,
-    image: "/images/iphone/iphone-16-pro-natural.png",
-    category: "IPHONE",
-    chip: "Apple A18 Pro",
-    display: "6.1\" Super Retina XDR",
-    storage: "256 GB",
-    colors: ["Space Black"],
-    badge: "NUEVO 2025",
-  },
+  // ─── iPhones & Celulares Top ──────────────────────────────────────────────
   {
     id: "iphone-16-128",
     name: "iPhone 16",
-    subtitle: "128 GB",
-    specs: "Chip A18 · Cámara 48MP con Control de Cámara · iOS 18 · Botón de Acción · USB-C 3.0",
-    price: 4021,
-    priceNote: "Precio con financiamiento local",
+    subtitle: "128 GB · Black & Teal",
+    specs: "Chip A18 · Botón de Control de Cámara · Cámara 48MP Fusión · Dynamic Island · USB-C",
+    price: 949.00,
+    compareAtPrice: 1099.00,
+    priceNote: "Precio especial efectivo / transferencia",
     image: "/images/iphone/iphone-16-black.png",
     category: "IPHONE",
     chip: "Apple A18",
     display: "6.1\" Super Retina XDR",
     storage: "128 GB",
-    badge: "EN STOCK",
+    badge: "🔥 MÁS VENDIDO",
+    inStock: true
   },
   {
     id: "iphone-16-pro-256",
     name: "iPhone 16 Pro",
     subtitle: "256 GB · Titanio Natural",
-    specs: "Chip A18 Pro · Sistema Pro de 4 cámaras · Titanio · Pantalla 6.3\" ProMotion 120Hz",
-    price: 4800,
+    specs: "Chip A18 Pro · Chasis Titanio Grado 5 · Cámara Teleobjetivo 5x · Pantalla 120Hz ProMotion",
+    price: 1289.00,
+    compareAtPrice: 1450.00,
+    priceNote: "Homologado 100% Ecuador (Claro/Movistar/CNT)",
     image: "/images/iphone/iphone-16-pro-natural.png",
     category: "IPHONE",
     chip: "Apple A18 Pro",
     display: "6.3\" ProMotion 120Hz",
     storage: "256 GB",
-    badge: "PRO",
+    badge: "⚡ TITANIO PRO",
+    inStock: true
   },
   {
     id: "iphone-16-pro-max-512",
     name: "iPhone 16 Pro Max",
     subtitle: "512 GB · Desert Titanium",
-    specs: "Chip A18 Pro · Batería 33 horas · Cámara Tetra-Prisma 5× · Pantalla 6.9\" ProMotion",
-    price: 5800,
+    specs: "Chip A18 Pro · Batería épica hasta 33h · Sensor Tetraprisma 5x · Pantalla inmersiva 6.9\"",
+    price: 1599.00,
+    compareAtPrice: 1790.00,
+    priceNote: "Garantía Oficial 1 Año Apple & ATOMIC",
     image: "/images/iphone/iphone-16-pro-max.png",
     category: "IPHONE",
     chip: "Apple A18 Pro",
-    display: "6.9\" Super Retina XDR 120Hz",
+    display: "6.9\" Super Retina XDR",
     storage: "512 GB",
-    badge: "MAX",
+    badge: "👑 TOPE DE GAMA",
+    inStock: true
+  },
+  {
+    id: "iphone-17-air-256-white",
+    name: "iPhone 17 Air (Ultra Slim)",
+    subtitle: "256 GB · Cloud White",
+    specs: "Diseño ultradelgado 5.5mm · Chip A19 Pro · Chasis Titanio/Aluminio · Pantalla ProMotion",
+    price: 1249.00,
+    compareAtPrice: 1420.00,
+    priceNote: "Reserva prioritaria con despacho garantizado",
+    image: "/images/iphone/iphone-17-air-white.png",
+    category: "IPHONE",
+    chip: "Apple A19 Bionic",
+    display: "6.6\" Super Retina XDR",
+    storage: "256 GB",
+    badge: "✨ PRE-RESERVA 2026",
+    inStock: true
   },
   {
     id: "samsung-galaxy-a17",
-    name: "Samsung Galaxy A17",
-    subtitle: "4GB RAM · 128GB",
-    specs: "Octa-Core · Cámara 50MP · Pantalla 6.5\" FHD+ · Batería 5000mAh · Android 14",
-    price: 3777,
-    priceNote: "Con precio de mercado nacional",
+    name: "Samsung Galaxy A16 / A17",
+    subtitle: "4GB RAM · 128GB Almacenamiento",
+    specs: "Pantalla 6.5\" Super AMOLED 90Hz · Cámara Triple 50MP · Batería 5000 mAh · 6 años de updates",
+    price: 175.00,
+    compareAtPrice: 215.00,
+    priceNote: "Excelente rendimiento / precio de entrada",
     image: "/images/iphone/samsung-a16.png",
     category: "IPHONE",
     chip: "Octa-Core 2.0GHz",
     display: "6.5\" FHD+ 90Hz",
     storage: "128 GB",
-    badge: "SAMSUNG",
+    badge: "🏷️ OFERTA CALLE",
+    inStock: true
   },
 
-  // ─── Mac ──────────────────────────────────────────────────────────────────
-  {
-    id: "macbook-pro-m3-36gb",
-    name: "MacBook Pro",
-    subtitle: "Chip M3 · 36GB · 512GB · 16.2\"",
-    specs: "Apple M3 Pro · 36GB RAM Unificada · 512GB SSD · Pantalla Liquid Retina XDR 16.2\" · macOS · Silver",
-    price: 4771,
-    image: "/images/iphone/macbook-pro-m3.png",
-    category: "MAC",
-    chip: "Apple M3 Pro",
-    display: "16.2\" Liquid Retina XDR",
-    storage: "512 GB SSD",
-    badge: "PRO",
-  },
+  // ─── MacBooks & Computación Pro ───────────────────────────────────────────
   {
     id: "macbook-air-m2-13",
-    name: "MacBook Air",
-    subtitle: "Chip M2 · 8GB · 256GB · 13\"",
-    specs: "Apple M2 · 8GB RAM Unificada · 256GB SSD · Pantalla Liquid Retina 13.6\" · macOS · Starlight",
-    price: 1799,
+    name: "MacBook Air M2 13.6\"",
+    subtitle: "Chip M2 · 8GB RAM · 256GB SSD · Starlight",
+    specs: "Pantalla Liquid Retina 13.6\" · Hasta 18h de batería · Teclado Magic Keyboard con Touch ID · MagSafe 3",
+    price: 1089.00,
+    compareAtPrice: 1250.00,
+    priceNote: "Ideal estudiantes universitarios y ejecutivos",
     image: "/images/iphone/macbook-air-m2.png",
     category: "MAC",
-    chip: "Apple M2",
+    chip: "Apple M2 (8 núcleos)",
     display: "13.6\" Liquid Retina",
     storage: "256 GB SSD",
-    badge: "BÁSICO",
+    badge: "⭐ SUPER PRECIO",
+    inStock: true
   },
   {
     id: "macbook-air-m3-15",
-    name: "MacBook Air 15\"",
-    subtitle: "Chip M3 · 8GB · 256GB · 15\"",
-    specs: "Apple M3 · 8GB RAM Unificada · 256GB SSD · Pantalla Liquid Retina 15.3\" · macOS · Midnight",
-    price: 2199,
+    name: "MacBook Air M3 15.3\"",
+    subtitle: "Chip M3 · 8GB RAM · 256GB SSD · Midnight",
+    specs: "Gran pantalla de 15.3\" · Motor neuronal para Apple Intelligence · Audio espacial de 6 parlantes",
+    price: 1389.00,
+    compareAtPrice: 1590.00,
+    priceNote: "Portabilidad con máxima área visual",
     image: "/images/iphone/macbook-air-m2.png",
     category: "MAC",
-    chip: "Apple M3",
+    chip: "Apple M3 (8C CPU / 10C GPU)",
     display: "15.3\" Liquid Retina",
     storage: "256 GB SSD",
-    badge: "AIR 15",
+    badge: "💻 M3 PANORÁMICO",
+    inStock: true
   },
+  {
+    id: "macbook-pro-m3-36gb",
+    name: "MacBook Pro M3 Pro 16.2\"",
+    subtitle: "Chip M3 Pro · 36GB RAM Unificada · 512GB SSD",
+    specs: "Pantalla Liquid Retina XDR 1000 nits · HDMI 8K · Ranura SDXC · Chasis Space Silver · Máxima potencia",
+    price: 2450.00,
+    compareAtPrice: 2850.00,
+    priceNote: "Estación de trabajo para ingenieros y creadores",
+    image: "/images/iphone/macbook-pro-m3.png",
+    category: "MAC",
+    chip: "Apple M3 Pro 12-Core",
+    display: "16.2\" Liquid Retina XDR",
+    storage: "512 GB SSD",
+    badge: "🚀 WORKSTATION",
+    inStock: true
+  }
 ];
 
 const WA_NUMBER = "593969043453";
@@ -159,191 +178,259 @@ export default function IphoneClient() {
 
   const filtered = useMemo(() => {
     return CATALOG.filter((p) => {
-      const matchSearch = !search || p.name.toLowerCase().includes(search.toLowerCase()) || p.specs.toLowerCase().includes(search.toLowerCase()) || p.subtitle.toLowerCase().includes(search.toLowerCase());
-      const matchCat = activeCategory === "TODOS" || p.category === activeCategory;
-      return matchSearch && matchCat;
+      const matchesCat = activeCategory === "TODOS" || p.category === activeCategory;
+      const q = search.toLowerCase().trim();
+      const matchesSearch =
+        !q ||
+        p.name.toLowerCase().includes(q) ||
+        p.subtitle.toLowerCase().includes(q) ||
+        p.specs.toLowerCase().includes(q) ||
+        p.chip.toLowerCase().includes(q) ||
+        p.storage.toLowerCase().includes(q);
+      return matchesCat && matchesSearch;
     });
   }, [search, activeCategory]);
 
-  const waLink = (name: string, sub: string) =>
-    `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(`Hola ATOMIC! Me interesa cotizar: ${name} ${sub}. ¿Precio y disponibilidad?`)}`;
+  const waLink = (product: AppleProduct) => {
+    const text = encodeURIComponent(
+      `Hola ATOMIC! Deseo información y comprar el *${product.name}* (${product.subtitle}).\n` +
+      `💵 *Precio Oferta:* $${product.price.toFixed(2)} USD (Antes: $${product.compareAtPrice.toFixed(2)})\n` +
+      `🛡️ *Garantía:* 1 Año Oficial Apple / ATOMIC Ecuador\n` +
+      `¿Tienen disponibilidad en stock para entrega o despacho inmediato a mi ciudad?`
+    );
+    return `https://wa.me/${WA_NUMBER}?text=${text}`;
+  };
 
   return (
-    <main className="min-h-screen bg-white text-gray-900" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif" }}>
+    <main className="min-h-screen bg-[#030712] text-slate-100 font-sans selection:bg-cyan-500/30 selection:text-white">
+      {/* Background Cyber Ambient Lights */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-[-10%] left-1/4 w-[600px] h-[600px] bg-cyan-600/10 rounded-full blur-[180px]" />
+        <div className="absolute top-1/3 right-[-5%] w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[180px]" />
+      </div>
 
-      {/* ── NAV ── */}
-      <nav className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-          <Link href="/web" className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 transition-colors">
-            <ChevronLeft size={16} />
-            ATOMIC Store
-          </Link>
-          <div className="text-center">
-            <span className="text-xs font-bold uppercase tracking-widest text-gray-400">Línea Apple</span>
+      {/* Top Bar Header */}
+      <nav className="relative z-20 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl sticky top-0 px-6 py-4 flex items-center justify-between">
+        <Link href="/web" className="flex items-center gap-3 group">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-slate-950 font-black shadow-[0_0_15px_rgba(6,182,212,0.4)]">
+            A
           </div>
+          <div>
+            <span className="font-heading font-black tracking-wider text-sm text-white group-hover:text-cyan-400 transition-colors">
+              ATOMIC <span className="text-cyan-400 font-mono text-xs">// APPLE & TECH</span>
+            </span>
+            <span className="block text-[9px] font-mono text-slate-400 uppercase tracking-widest">
+              Equipos 100% Homologados Ecuador
+            </span>
+          </div>
+        </Link>
+
+        <div className="flex items-center gap-4">
+          <Link
+            href="/web"
+            className="hidden sm:flex items-center gap-1.5 text-xs font-mono font-bold text-slate-400 hover:text-white transition-colors"
+          >
+            <ChevronLeft size={16} /> Volver al Ecosistema
+          </Link>
           <a
-            href={`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent("Hola ATOMIC! Quiero cotizar un iPhone o Mac.")}`}
+            href={`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent("Hola ATOMIC! Deseo consultar sobre la disponibilidad de iPhones y MacBooks oficiales.")}`}
             target="_blank"
             rel="noreferrer"
-            className="px-4 py-2 bg-black text-white text-xs font-bold rounded-full hover:bg-gray-800 transition-all"
+            className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs font-mono flex items-center gap-2 shadow-[0_0_20px_rgba(6,182,212,0.3)] transition-all"
           >
-            Cotizar
+            <MessageSquare size={14} /> Asesor WhatsApp
           </a>
         </div>
       </nav>
 
-      {/* ── HERO ── */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-gray-50 to-white border-b border-gray-100">
-        <div className="max-w-5xl mx-auto px-6 py-20 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gray-100 text-gray-500 text-xs font-bold uppercase tracking-widest mb-8">
-            <svg viewBox="0 0 814 1000" className="w-3 h-3 fill-current" xmlns="http://www.w3.org/2000/svg"><path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76.5 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 790.7 0 663 0 541.8c0-207.8 135.4-317.7 268.8-317.7 70.5 0 128.8 42.7 172.7 42.7 43.1 0 110.2-46.5 188.8-46.5 31 0 81.5 3.8 127.8 37.2zM514.2 118.4c-14.6 37.8-40.8 71.1-73.5 93.1s-61.1 30-96.8 30c-3.6 0-7.4-.1-11.3-.3-1-32.4 9.9-67.1 26.5-93.5 18.2-29.1 44.8-54.4 77.2-72.3s65.3-27.3 98.2-27.3c.8 0 1.7 0 2.5.1C541.6 81.5 528.8 80.6 514.2 118.4z"/></svg>
-            iPhone & Mac
-          </div>
-
-          <h1 className="text-6xl lg:text-8xl font-black tracking-tight text-black mb-4">
-            Línea
-            <span className="block text-gray-400">Apple</span>
-          </h1>
-          <p className="text-gray-500 text-lg max-w-2xl mx-auto mb-10 leading-relaxed">
-            iPhone 17 Air, iPhone 16 Pro, MacBook Pro M3 y toda la familia Mac. Con garantía local, factura y soporte ATOMIC.
-          </p>
-
-          <div className="flex flex-wrap items-center justify-center gap-6 text-xs font-bold text-gray-400 uppercase tracking-widest">
-            {[
-              { icon: <Shield size={13} />, text: "Garantía Verificada" },
-              { icon: <Star size={13} />, text: "Originales" },
-              { icon: <Zap size={13} />, text: "Entrega Rápida" },
-            ].map((item, i) => (
-              <span key={i} className="flex items-center gap-1.5">{item.icon} {item.text}</span>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── FILTER BAR ── */}
-      <section className="max-w-7xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-center gap-4">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={15} />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar modelo, almacenamiento..."
-            className="w-full bg-gray-50 border border-gray-200 rounded-full py-2.5 pl-10 pr-4 text-xs text-gray-700 placeholder-gray-400 focus:border-gray-400 focus:bg-white outline-none transition-all"
-          />
+      {/* Hero Header */}
+      <section className="relative z-10 max-w-7xl mx-auto px-6 pt-16 pb-12 text-center space-y-6">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-cyan-300 text-xs font-mono font-bold uppercase tracking-widest shadow-inner">
+          <Sparkles size={13} className="text-cyan-400 animate-pulse" />
+          <span>GARANTÍA OFICIAL ATOMIC • PRECIOS DIRECTOS DE IMPORTACIÓN</span>
         </div>
 
-        <div className="flex gap-2">
-          {(["TODOS", "IPHONE", "MAC"] as const).map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${
-                activeCategory === cat
-                  ? "bg-black text-white shadow-sm"
-                  : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-      </section>
+        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black uppercase tracking-tight text-white font-heading">
+          LÍNEA <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-indigo-400">APPLE & SMARTPHONES</span>
+        </h1>
 
-      {/* ── PRODUCT GRID ── */}
-      <section className="max-w-7xl mx-auto px-6 pb-20">
-        <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mb-8">
-          {filtered.length} modelo{filtered.length !== 1 ? "s" : ""}
+        <p className="text-slate-400 text-sm sm:text-base max-w-2xl mx-auto font-light leading-relaxed">
+          iPhone 16 Pro Max, iPhone 16, MacBook Air M2/M3 y toda la serie Apple con homologación directa ARCOTEL, factura oficial y 1 año de garantía por escrito.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filtered.map((p) => (
-            <div
-              key={p.id}
-              className="group bg-white border border-gray-100 rounded-3xl overflow-hidden hover:border-gray-200 hover:shadow-xl transition-all duration-300 flex flex-col"
-            >
-              {/* Image */}
-              <div className="relative bg-gray-50 flex items-center justify-center p-8 aspect-square overflow-hidden rounded-t-3xl">
-                <img
-                  src={p.image}
-                  alt={p.name}
-                  className="h-48 w-full object-contain group-hover:scale-105 transition-transform duration-500"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = `https://via.placeholder.com/400x400/F5F5F7/1D1D1F?text=${encodeURIComponent(p.name)}`;
-                  }}
-                />
-                {p.badge && (
-                  <div className="absolute top-4 right-4 px-2 py-0.5 bg-black text-white text-[9px] font-black uppercase rounded-full tracking-wider">
-                    {p.badge}
-                  </div>
-                )}
-              </div>
+        {/* Confidence highlights */}
+        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 pt-2 text-xs font-mono text-slate-300">
+          <span className="flex items-center gap-2 bg-slate-900/60 border border-slate-800 px-3 py-1.5 rounded-lg">
+            <Shield size={14} className="text-cyan-400" /> 1 Año Garantía
+          </span>
+          <span className="flex items-center gap-2 bg-slate-900/60 border border-slate-800 px-3 py-1.5 rounded-lg">
+            <CheckCircle2 size={14} className="text-emerald-400" /> Equipos Homologados
+          </span>
+          <span className="flex items-center gap-2 bg-slate-900/60 border border-slate-800 px-3 py-1.5 rounded-lg">
+            <Zap size={14} className="text-amber-400" /> Entrega Express 24h
+          </span>
+        </div>
+      </section>
 
-              {/* Content */}
-              <div className="p-5 flex flex-col flex-grow border-t border-gray-50">
-                <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-0.5">
-                  {p.category === "IPHONE" ? "iPhone / Celular" : "Mac"}
-                </div>
-                <h3 className="text-sm font-black text-gray-900 leading-snug">{p.name}</h3>
-                <p className="text-xs text-gray-500 mb-1">{p.subtitle}</p>
+      {/* Filter and Search Bento Bar */}
+      <section className="relative z-10 max-w-7xl mx-auto px-6 mb-10">
+        <div className="bg-slate-900/90 border border-slate-800 p-3 rounded-2xl backdrop-blur-xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+          {/* Category Tabs */}
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            {(["TODOS", "IPHONE", "MAC"] as const).map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`flex-1 sm:flex-initial px-5 py-2.5 rounded-xl text-xs font-mono font-bold tracking-wider transition-all flex items-center justify-center gap-2 ${
+                  activeCategory === cat
+                    ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 font-black shadow-[0_0_18px_rgba(6,182,212,0.4)] scale-105"
+                    : "text-slate-400 hover:text-white hover:bg-slate-800/80"
+                }`}
+              >
+                {cat === "IPHONE" && <Smartphone size={14} />}
+                {cat === "MAC" && <Laptop size={14} />}
+                {cat === "TODOS" && <Sparkles size={14} />}
+                <span>{cat === "TODOS" ? "TODOS LOS EQUIPOS" : cat === "IPHONE" ? "SMARTPHONES" : "MACBOOKS"}</span>
+              </button>
+            ))}
+          </div>
 
-                {/* Mini specs */}
-                <div className="flex flex-wrap gap-1.5 my-3">
-                  {[p.chip, p.display, p.storage].filter(Boolean).map((s, i) => (
-                    <span key={i} className="px-2 py-0.5 bg-gray-100 rounded-full text-[9px] font-bold text-gray-500">
-                      {s}
+          {/* Search Box */}
+          <div className="relative w-full sm:w-80">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" size={15} />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar modelo, chip, RAM, GB..."
+              className="w-full bg-slate-950/90 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-slate-500 font-mono focus:outline-none focus:border-cyan-500/80 focus:ring-1 focus:ring-cyan-500/50 transition-all"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Products Grid */}
+      <section className="relative z-10 max-w-7xl mx-auto px-6 pb-24">
+        <div className="flex items-center justify-between mb-6 pb-3 border-b border-slate-800/60 font-mono text-xs">
+          <span className="text-slate-400 font-bold uppercase tracking-wider">
+            Mostrando <strong className="text-cyan-400">{filtered.length}</strong> modelos disponibles
+          </span>
+          <span className="text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 rounded-full text-[10px] font-bold">
+            ✓ Stock Inmediato para Quito & Provincias
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filtered.map((p) => {
+            const discountPct = Math.round(((p.compareAtPrice - p.price) / p.compareAtPrice) * 100);
+            return (
+              <div
+                key={p.id}
+                className="group relative bg-slate-900/80 border border-slate-800/90 hover:border-cyan-500/50 rounded-3xl p-5 flex flex-col justify-between transition-all duration-300 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)] hover:-translate-y-1 backdrop-blur-sm"
+              >
+                {/* Card Top: Badges */}
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <span className="px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-300 text-[10px] font-mono font-bold border border-cyan-500/20">
+                      {p.badge || "ORIGINAL"}
                     </span>
-                  ))}
+                    {discountPct > 0 && (
+                      <span className="px-2 py-0.5 rounded-full bg-red-500/10 text-red-400 text-[10px] font-mono font-black border border-red-500/20">
+                        -{discountPct}% OFF
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Product Image Frame */}
+                  <div className="relative aspect-square w-full rounded-2xl bg-slate-950/80 border border-slate-800/60 p-6 flex items-center justify-center overflow-hidden mb-4 group-hover:border-slate-700 transition-colors">
+                    <img
+                      src={p.image}
+                      alt={p.name}
+                      className="w-full h-full object-contain group-hover:scale-108 transition-transform duration-500"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = `https://via.placeholder.com/400x400/0b1329/38bdf8?text=${encodeURIComponent(p.name)}`;
+                      }}
+                    />
+                  </div>
+
+                  {/* Title & Specs */}
+                  <span className="text-[10px] font-mono text-cyan-400 font-bold uppercase tracking-widest block mb-1">
+                    {p.category === "IPHONE" ? "Smartphone Homologado" : "Apple Silicon"}
+                  </span>
+                  <h3 className="text-base font-black text-white font-heading leading-tight group-hover:text-cyan-300 transition-colors">
+                    {p.name}
+                  </h3>
+                  <p className="text-xs text-slate-400 font-mono mt-0.5 mb-2">{p.subtitle}</p>
+
+                  {/* Feature chips */}
+                  <div className="flex flex-wrap gap-1.5 my-3">
+                    <span className="px-2 py-0.5 rounded-md bg-slate-800/80 text-slate-300 text-[9px] font-mono border border-slate-700/50">
+                      {p.chip}
+                    </span>
+                    <span className="px-2 py-0.5 rounded-md bg-slate-800/80 text-slate-300 text-[9px] font-mono border border-slate-700/50">
+                      {p.display}
+                    </span>
+                    <span className="px-2 py-0.5 rounded-md bg-slate-800/80 text-cyan-300 text-[9px] font-mono border border-cyan-500/30 font-bold">
+                      {p.storage}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="mt-auto">
-                  <div className="flex items-baseline gap-1 mb-1">
-                    <span className="text-2xl font-black text-gray-900">${p.price.toLocaleString("en-US")}</span>
-                    <span className="text-xs text-gray-400">USD</span>
+                {/* Card Bottom: Price and Buy Button */}
+                <div className="pt-4 border-t border-slate-800/80 mt-4 space-y-3">
+                  <div>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-2xl font-black font-mono text-white tracking-tight">
+                        ${p.price.toFixed(2)}
+                      </span>
+                      <span className="text-xs font-mono text-slate-500 line-through">
+                        ${p.compareAtPrice.toFixed(2)}
+                      </span>
+                      <span className="text-[10px] font-mono text-slate-400">USD</span>
+                    </div>
+                    {p.priceNote && (
+                      <p className="text-[9px] font-mono text-emerald-400/90 mt-0.5">
+                        ✓ {p.priceNote}
+                      </p>
+                    )}
                   </div>
-                  {p.priceNote && <p className="text-[9px] text-gray-400 mb-3">{p.priceNote}</p>}
 
                   <a
-                    href={waLink(p.name, p.subtitle)}
+                    href={waLink(p)}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center justify-center gap-2 w-full py-3 rounded-full bg-black hover:bg-gray-800 text-white text-xs font-black uppercase tracking-wider transition-all"
+                    className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs uppercase font-mono tracking-wider transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(6,182,212,0.25)] hover:shadow-[0_0_25px_rgba(6,182,212,0.45)] hover:scale-[1.02]"
                   >
-                    <MessageSquare size={13} />
-                    Cotizar ahora
+                    <MessageSquare size={14} />
+                    <span>Cotizar por WhatsApp</span>
                   </a>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {filtered.length === 0 && (
-          <div className="text-center py-24 text-gray-400">
-            <p className="font-bold text-lg mb-2">Sin resultados</p>
-            <p className="text-sm">Intenta otro término de búsqueda.</p>
+          <div className="text-center py-24 bg-slate-900/50 border border-slate-800 rounded-3xl p-8">
+            <p className="text-base font-bold text-slate-300 mb-2 font-mono">No se encontraron modelos con ese término</p>
+            <p className="text-xs text-slate-500 font-mono mb-4">Intenta buscando por modelo (ej: 16 Pro, M3, 256GB)</p>
+            <button
+              onClick={() => { setSearch(""); setActiveCategory("TODOS"); }}
+              className="px-6 py-2.5 rounded-xl bg-cyan-500 text-slate-950 font-bold text-xs font-mono"
+            >
+              Restablecer Filtros
+            </button>
           </div>
         )}
       </section>
 
-      {/* ── FOOTER CTA ── */}
-      <section className="bg-black text-white py-20 px-6">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-4xl font-black mb-4 tracking-tight">¿Quieres un modelo específico?</h2>
-          <p className="text-gray-400 text-sm mb-10 leading-relaxed">
-            Importamos directamente y tenemos acceso a toda la línea Apple. Consulta disponibilidad, colores y almacenamiento en tiempo real.
-          </p>
-          <a
-            href={`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent("Hola ATOMIC! Busco este iPhone o Mac en específico:")}`}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-3 px-10 py-4 bg-white text-black font-black text-sm uppercase tracking-wider rounded-full hover:bg-gray-100 transition-all"
-          >
-            <MessageSquare size={16} />
-            Hablar con un asesor
-            <ArrowRight size={14} />
-          </a>
-        </div>
-      </section>
+      {/* Footer Banner */}
+      <footer className="border-t border-slate-800/80 bg-slate-950 py-12 px-6 text-center text-xs font-mono text-slate-500 space-y-2">
+        <p className="text-slate-400 font-bold">
+          ATOMIC INDUSTRIES ECUADOR • DIVISIÓN DE TECNOLOGÍA & SMARTPHONES
+        </p>
+        <p>Todos los productos cuentan con garantía directa y soporte en Quito, Guayaquil, Cuenca y a nivel nacional.</p>
+      </footer>
     </main>
   );
 }

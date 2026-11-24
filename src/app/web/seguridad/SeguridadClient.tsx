@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useCart } from "@/context/CartContext";
 import {
   Shield, Wifi, Camera, Fingerprint, Monitor, ChevronLeft,
   MessageSquare, CheckCircle, ArrowRight, Phone, Lock, Radio,
-  Eye, Building2, Home, Zap
+  Eye, Building2, Home, Zap, ShoppingCart, Check
 } from "lucide-react";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -53,7 +54,7 @@ const PRODUCTS = [
     name: "Access Point TP-Link EAP225-Outdoor",
     subtitle: "AC1200 MU-MIMO Indoor/Outdoor",
     price: 103.64,
-    priceProvider: 79.72,
+    compareAtPrice: 139.99,
     badge: "REDES",
     badgeColor: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
     specs: ["AC1200 Mbps dual band", "2×2 MIMO", "Compatible PoE 802.3af", "IP65 resistente a la intemperie", "Omada Controller gratuito", "Portal cautivo integrado"],
@@ -66,7 +67,7 @@ const PRODUCTS = [
     name: "ZKTeco SenseFace 2A",
     subtitle: "Reloj Biométrico Facial + Huella + RFID",
     price: 125.40,
-    priceProvider: null,
+    compareAtPrice: 169.99,
     badge: "CONTROL ACCESO",
     badgeColor: "bg-blue-500/20 text-blue-300 border-blue-500/30",
     specs: ["Reconocimiento facial visible", "1,500 rostros / 3,000 huellas", "3,000 tarjetas RFID", "150,000 registros de eventos", "TCP/IP y USB Host", "ONVIF + ZKBio Access compatible"],
@@ -79,7 +80,7 @@ const PRODUCTS = [
     name: "Monitor ZKTeco ZK-VT07-B01-W",
     subtitle: "Video Portero IP 7\" WiFi Linux ONVIF",
     price: 117.14,
-    priceProvider: 90.11,
+    compareAtPrice: 155.00,
     badge: "VIDEO PORTERO",
     badgeColor: "bg-purple-500/20 text-purple-300 border-purple-500/30",
     specs: ["Pantalla táctil LCD 7\"", "4 canales simultáneos", "Protocolo SIP 2.0 + TCP/IP", "WiFi + Ethernet", "Apertura remota de puerta", "Micro TF hasta 128GB"],
@@ -124,7 +125,21 @@ const APPLICATIONS = [
 ];
 
 export default function SeguridadClient() {
+  const { addToCart, totalItems } = useCart();
   const [activeTab, setActiveTab] = useState<"productos" | "como-funciona" | "aplicaciones">("productos");
+  const [addedId, setAddedId] = useState<string | null>(null);
+
+  const handleAddToCart = (prod: typeof PRODUCTS[0]) => {
+    addToCart({
+      id: prod.id,
+      name: prod.name,
+      price: prod.price,
+      quantity: 1,
+      image: prod.image
+    });
+    setAddedId(prod.id);
+    setTimeout(() => setAddedId(null), 2500);
+  };
 
   return (
     <main className="min-h-screen bg-[#09090A] text-white" style={{ fontFamily: "'Instrument Sans', sans-serif" }}>
@@ -137,15 +152,29 @@ export default function SeguridadClient() {
             ATOMIC Store
           </Link>
           <span className="text-[10px] font-black uppercase tracking-widest text-neutral-500">Sistemas de Seguridad</span>
-          <a
-            href={waLink("Hola ATOMIC! Quiero información sobre sistemas de seguridad y control de acceso.")}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-1.5 px-4 py-2 bg-white text-black text-xs font-black rounded-full hover:bg-neutral-100 transition-all"
-          >
-            <MessageSquare size={12} />
-            Asesoría Gratis
-          </a>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/web/cart"
+              className="relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.06] border border-white/10 hover:border-white/20 text-xs font-bold text-neutral-300 transition-colors"
+            >
+              <ShoppingCart size={13} className="text-cyan-400" />
+              <span>Proforma / Carrito</span>
+              {totalItems > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full bg-cyan-400 text-black text-[10px] font-black">
+                  {totalItems}
+                </span>
+              )}
+            </Link>
+            <a
+              href={waLink("Hola ATOMIC! Quiero información sobre sistemas de seguridad y control de acceso.")}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 px-4 py-2 bg-white text-black text-xs font-black rounded-full hover:bg-neutral-100 transition-all"
+            >
+              <MessageSquare size={12} />
+              Asesoría Gratis
+            </a>
+          </div>
         </div>
       </nav>
 
@@ -332,21 +361,45 @@ export default function SeguridadClient() {
                   <div className="mt-auto">
                     <div className="flex items-baseline gap-1.5 mb-1">
                       <span className="text-2xl font-black text-white">${prod.price.toFixed(2)}</span>
-                      <span className="text-xs text-neutral-500">USD</span>
-                      {prod.priceProvider && (
-                        <span className="text-[10px] text-neutral-600 line-through ml-1">${prod.priceProvider}</span>
+                      <span className="text-xs text-neutral-400">USD</span>
+                      {prod.compareAtPrice && (
+                        <span className="text-xs text-neutral-500 line-through ml-1">${prod.compareAtPrice.toFixed(2)}</span>
                       )}
                     </div>
-                    <p className="text-[9px] text-neutral-600 mb-4">+ instalación disponible</p>
-                    <a
-                      href={waLink(prod.waMsg)}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center justify-center gap-2 w-full py-2.5 rounded-full bg-white hover:bg-neutral-100 text-black text-xs font-black uppercase tracking-wider transition-all"
-                    >
-                      <MessageSquare size={13} />
-                      Cotizar en WhatsApp
-                    </a>
+                    <p className="text-[10px] text-neutral-400 mb-4">+ instalación disponible en Ecuador</p>
+
+                    <div className="space-y-2">
+                      <button
+                        onClick={() => handleAddToCart(prod)}
+                        className={`w-full py-2.5 rounded-full text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 border ${
+                          addedId === prod.id
+                            ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/50"
+                            : "bg-white/[0.08] hover:bg-white/[0.15] text-white border-white/20"
+                        }`}
+                      >
+                        {addedId === prod.id ? (
+                          <>
+                            <Check size={14} className="text-emerald-400" />
+                            <span>¡Añadido a Proforma!</span>
+                          </>
+                        ) : (
+                          <>
+                            <ShoppingCart size={14} className="text-cyan-400" />
+                            <span>Añadir a Proforma</span>
+                          </>
+                        )}
+                      </button>
+
+                      <a
+                        href={waLink(prod.waMsg)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center justify-center gap-2 w-full py-2.5 rounded-full bg-white hover:bg-neutral-100 text-black text-xs font-black uppercase tracking-wider transition-all shadow-md"
+                      >
+                        <MessageSquare size={13} />
+                        Cotizar en WhatsApp
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>

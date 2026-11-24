@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from "react"
 import Link from "next/link"
+import { useCart } from "@/context/CartContext"
 import {
   Shield,
   Zap,
@@ -17,7 +18,8 @@ import {
   Cpu,
   Eye,
   Check,
-  Package
+  Package,
+  ShoppingCart
 } from "lucide-react"
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -666,11 +668,25 @@ export const BARRERAS_PRODUCTS: BarreraProduct[] = [
 // MAIN INTERACTIVE CLIENT COMPONENT
 // ═══════════════════════════════════════════════════════════════════════════
 export default function BarrerasVehicularesClient() {
+  const { addToCart, totalItems } = useCart()
   const [activeBrand, setActiveBrand] = useState<string>("todos")
   const [activeArmType, setActiveArmType] = useState<string>("todos")
   const [activeTraffic, setActiveTraffic] = useState<string>("todos")
   const [modalProduct, setModalProduct] = useState<BarreraProduct | null>(null)
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
+  const [addedId, setAddedId] = useState<string | null>(null)
+
+  const handleAddToCart = (product: BarreraProduct) => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: product.priceWithVat,
+      quantity: 1,
+      image: product.image
+    })
+    setAddedId(product.id)
+    setTimeout(() => setAddedId(null), 2500)
+  }
 
   // Filtered products list
   const filteredProducts = useMemo(() => {
@@ -696,7 +712,7 @@ export default function BarrerasVehicularesClient() {
       `💵 *Precio Oferta (+15% IVA):* $${product.priceWithVat.toFixed(2)} USD (Base: $${product.priceBaseWithoutVat.toFixed(2)} + IVA)\n\n` +
       `¿Me pueden brindar asesoría técnica y tiempo de entrega en Ecuador?`
     )
-    return `https://wa.me/593999008080?text=${text}`
+    return `https://wa.me/593969043453?text=${text}`
   }
 
   return (
@@ -730,7 +746,7 @@ export default function BarrerasVehicularesClient() {
             </Link>
           </div>
 
-          {/* Quick Links & WhatsApp CTA */}
+          {/* Quick Links, Cart & WhatsApp CTA */}
           <div className="flex items-center gap-3">
             <Link
               href="/web/cerraduras-smart"
@@ -739,13 +755,19 @@ export default function BarrerasVehicularesClient() {
               <span>🔒 Cerraduras Smart</span>
             </Link>
             <Link
-              href="/web/camaras-hogar"
-              className="hidden sm:inline-flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white font-mono px-3 py-1.5 rounded-xl bg-white/[0.03] border border-white/10 hover:border-white/20 transition-colors"
+              href="/web/cart"
+              className="relative inline-flex items-center gap-1.5 text-xs text-amber-400 hover:text-amber-300 font-mono px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 hover:border-amber-500/50 transition-colors"
             >
-              <span>📹 Cámaras 4K</span>
+              <ShoppingCart className="w-3.5 h-3.5" />
+              <span className="font-bold">Proforma / Carrito</span>
+              {totalItems > 0 && (
+                <span className="ml-1 px-1.5 py-0.2 rounded-full bg-amber-500 text-black text-[10px] font-black">
+                  {totalItems}
+                </span>
+              )}
             </Link>
             <a
-              href="https://wa.me/593999008080?text=Hola%20ATOMIC,%20deseo%20asesoria%20tecnica%20para%20instalacion%20de%20barreras%20vehiculares."
+              href="https://wa.me/593969043453?text=Hola%20ATOMIC,%20deseo%20asesoria%20tecnica%20para%20instalacion%20de%20barreras%20vehiculares."
               target="_blank"
               rel="noopener noreferrer"
               className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-black font-extrabold text-xs uppercase tracking-wider font-heading hover:brightness-110 shadow-lg shadow-emerald-500/20 flex items-center gap-2 transition-all"
@@ -828,7 +850,7 @@ export default function BarrerasVehicularesClient() {
                 <ArrowRight className="w-4 h-4" />
               </a>
               <a
-                href="https://wa.me/593999008080?text=Hola%20ATOMIC,%20deseo%20una%20cotizacion%20tecnica%20de%20barreras%20vehiculares%20para%20mi%20proyecto."
+                href="https://wa.me/593969043453?text=Hola%20ATOMIC,%20deseo%20una%20cotizacion%20tecnica%20de%20barreras%20vehiculares%20para%20mi%20proyecto."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white/[0.06] hover:bg-white/[0.1] text-white border border-white/20 font-bold text-sm uppercase tracking-widest font-heading transition-all flex items-center justify-center gap-2"
@@ -925,7 +947,7 @@ export default function BarrerasVehicularesClient() {
               </div>
               <div className="mt-6 sm:mt-0 shrink-0">
                 <a
-                  href="https://wa.me/593999008080?text=Hola%20ATOMIC,%20deseo%20informacion%20sobre%20accesorios%20y%20automatizacion%20de%20barreras%20(TAGs%20UHF,%20LPR,%20Radares)."
+                  href="https://wa.me/593969043453?text=Hola%20ATOMIC,%20deseo%20informacion%20sobre%20accesorios%20y%20automatizacion%20de%20barreras%20(TAGs%20UHF,%20LPR,%20Radares)."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-6 py-3 rounded-2xl bg-amber-500 text-black font-black text-xs uppercase tracking-widest font-heading hover:brightness-110 shadow-lg shadow-amber-500/20 inline-flex items-center gap-2"
@@ -1133,24 +1155,47 @@ export default function BarrerasVehicularesClient() {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="grid grid-cols-2 gap-2 pt-1">
-                      <button
-                        onClick={() => setModalProduct(product)}
-                        className="w-full py-2.5 px-3 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-white font-bold text-xs uppercase tracking-wider font-heading border border-white/10 flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
-                      >
-                        <Eye className="w-3.5 h-3.5" />
-                        <span>Ver Ficha</span>
-                      </button>
+                    <div className="space-y-2 pt-1">
+                      <div className="grid grid-cols-2 gap-2">
+                        <button
+                          onClick={() => setModalProduct(product)}
+                          className="w-full py-2.5 px-3 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] text-white font-bold text-xs uppercase tracking-wider font-heading border border-white/10 flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>Ver Ficha</span>
+                        </button>
 
-                      <a
-                        href={getWhatsAppUrl(product)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-black font-black text-xs uppercase tracking-wider font-heading hover:brightness-110 shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-1.5 transition-transform hover:scale-[1.02]"
+                        <a
+                          href={getWhatsAppUrl(product)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-black font-black text-xs uppercase tracking-wider font-heading hover:brightness-110 shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-1.5 transition-transform hover:scale-[1.02]"
+                        >
+                          <PhoneCall className="w-3.5 h-3.5" />
+                          <span>Cotizar</span>
+                        </a>
+                      </div>
+
+                      <button
+                        onClick={() => handleAddToCart(product)}
+                        className={`w-full py-2 px-3 rounded-xl text-xs font-mono font-bold flex items-center justify-center gap-2 border transition-all ${
+                          addedId === product.id
+                            ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/50"
+                            : "bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border-amber-500/30"
+                        }`}
                       >
-                        <PhoneCall className="w-3.5 h-3.5" />
-                        <span>Cotizar</span>
-                      </a>
+                        {addedId === product.id ? (
+                          <>
+                            <Check className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>¡Añadido a la Proforma!</span>
+                          </>
+                        ) : (
+                          <>
+                            <ShoppingCart className="w-3.5 h-3.5" />
+                            <span>Añadir a Proforma / Carrito</span>
+                          </>
+                        )}
+                      </button>
                     </div>
 
                   </div>
@@ -1270,8 +1315,8 @@ export default function BarrerasVehicularesClient() {
             <span>•</span>
             <Link href="/web/camaras-hogar" className="hover:text-white transition-colors">Cámaras 4K</Link>
             <span>•</span>
-            <a href="https://wa.me/593999008080" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:underline">
-              WhatsApp: +593 99 900 8080
+            <a href="https://wa.me/593969043453" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:underline">
+              WhatsApp: +593 96 904 3453
             </a>
           </div>
           <p className="text-[10px] text-neutral-600 font-mono">
@@ -1353,8 +1398,29 @@ export default function BarrerasVehicularesClient() {
               </div>
             </div>
 
-            {/* CTA Button */}
-            <div className="pt-2">
+            {/* CTA Buttons in Modal */}
+            <div className="pt-2 space-y-2">
+              <button
+                onClick={() => handleAddToCart(modalProduct)}
+                className={`w-full py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider font-heading flex items-center justify-center gap-2 border transition-all ${
+                  addedId === modalProduct.id
+                    ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/50"
+                    : "bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border-amber-500/40"
+                }`}
+              >
+                {addedId === modalProduct.id ? (
+                  <>
+                    <Check className="w-4 h-4 text-emerald-400" />
+                    <span>¡Añadido a la Proforma!</span>
+                  </>
+                ) : (
+                  <>
+                    <ShoppingCart className="w-4 h-4" />
+                    <span>Añadir al Carrito / Generar Proforma PDF</span>
+                  </>
+                )}
+              </button>
+
               <a
                 href={getWhatsAppUrl(modalProduct)}
                 target="_blank"

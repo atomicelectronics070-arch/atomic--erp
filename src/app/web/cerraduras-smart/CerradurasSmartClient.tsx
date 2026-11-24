@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
+import { useCart } from "@/context/CartContext"
 import {
   Shield,
   Key,
@@ -12,6 +13,7 @@ import {
   Eye,
   Camera,
   CheckCircle2,
+  ShoppingCart,
   MapPin,
   Users,
   Wrench,
@@ -1452,10 +1454,26 @@ const SMART_LOCK_KITS: SmartLockProduct[] = [
 ]
 
 export default function CerradurasSmartClient() {
+  const { addToCart, totalItems } = useCart()
   const [selectedProvinceId, setSelectedProvinceId] = useState<string>("quito")
   const [activeCategory, setActiveCategory] = useState<string>("todos")
   const [modalProduct, setModalProduct] = useState<SmartLockProduct | null>(null)
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null)
+  const [addedId, setAddedId] = useState<string | null>(null)
+
+  const handleAddToCart = (product: SmartLockProduct, withInstallation: boolean = false) => {
+    const installCost = withInstallation ? selectedProvince.cost : 0
+    const price = product.priceBase + installCost
+    addToCart({
+      id: withInstallation ? `${product.id}-instalado` : product.id,
+      name: withInstallation ? `${product.name} (Incluye Instalación en ${selectedProvince.name.split(' ')[0]})` : product.name,
+      price: price,
+      quantity: 1,
+      image: product.image
+    })
+    setAddedId(product.id)
+    setTimeout(() => setAddedId(null), 2500)
+  }
 
   // Current selected province object
   const selectedProvince = useMemo(() => {
@@ -1562,6 +1580,20 @@ export default function CerradurasSmartClient() {
                 ))}
               </select>
             </div>
+
+            {/* PROFORMA / CARRITO LINK */}
+            <Link
+              href="/web/cart"
+              className="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.06] border border-white/15 hover:border-white/30 text-white text-[11px] font-bold transition-all"
+            >
+              <ShoppingCart size={13} className="text-emerald-400" />
+              <span className="hidden sm:inline">Proforma</span>
+              {totalItems > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full bg-emerald-400 text-black text-[10px] font-black">
+                  {totalItems}
+                </span>
+              )}
+            </Link>
 
             {/* ASESORÍA WHATSAPP (GOLD THIN CONTOUR) */}
             <a
@@ -2046,26 +2078,49 @@ export default function CerradurasSmartClient() {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="grid grid-cols-2 gap-2.5 pt-1">
-                      {/* Open Details & Province Calculator Modal */}
-                      <button
-                        onClick={() => setModalProduct(product)}
-                        className="w-full py-2.5 px-3 rounded-2xl bg-white/[0.08] hover:bg-white/15 border border-white/15 hover:border-white/30 text-white text-xs font-bold font-heading uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                      >
-                        <Layers size={13} />
-                        <span>Más Opciones</span>
-                      </button>
+                    <div className="space-y-2 pt-1">
+                      <div className="grid grid-cols-2 gap-2.5">
+                        {/* Open Details & Province Calculator Modal */}
+                        <button
+                          onClick={() => setModalProduct(product)}
+                          className="w-full py-2.5 px-3 rounded-2xl bg-white/[0.08] hover:bg-white/15 border border-white/15 hover:border-white/30 text-white text-xs font-bold font-heading uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                        >
+                          <Layers size={13} />
+                          <span>Más Opciones</span>
+                        </button>
 
-                      {/* Direct WhatsApp Order */}
-                      <a
-                        href={getWhatsAppUrl(product, selectedProvince)}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="w-full py-2.5 px-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black font-black text-xs font-heading uppercase tracking-wider shadow-lg shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-1.5"
+                        {/* Direct WhatsApp Order */}
+                        <a
+                          href={getWhatsAppUrl(product, selectedProvince)}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="w-full py-2.5 px-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black font-black text-xs font-heading uppercase tracking-wider shadow-lg shadow-emerald-500/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-1.5"
+                        >
+                          <MessageCircle size={14} />
+                          <span>Pedir Kit</span>
+                        </a>
+                      </div>
+
+                      <button
+                        onClick={() => handleAddToCart(product, false)}
+                        className={`w-full py-2 px-3 rounded-2xl text-xs font-mono font-bold flex items-center justify-center gap-2 border transition-all ${
+                          addedId === product.id
+                            ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/50"
+                            : "bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 border-white/10"
+                        }`}
                       >
-                        <MessageCircle size={14} />
-                        <span>Pedir Kit</span>
-                      </a>
+                        {addedId === product.id ? (
+                          <>
+                            <Check size={13} className="text-emerald-400" />
+                            <span>¡Añadido a la Proforma!</span>
+                          </>
+                        ) : (
+                          <>
+                            <ShoppingCart size={13} className="text-emerald-400" />
+                            <span>Añadir Cerradura a Proforma</span>
+                          </>
+                        )}
+                      </button>
                     </div>
 
                   </div>
@@ -2209,8 +2264,29 @@ export default function CerradurasSmartClient() {
                   </div>
                 </div>
 
-                {/* Final Order CTA Button */}
-                <div className="pt-2">
+                {/* Final Order CTA Buttons */}
+                <div className="pt-2 space-y-2">
+                  <button
+                    onClick={() => handleAddToCart(modalProduct, true)}
+                    className={`w-full py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider font-heading flex items-center justify-center gap-2 border transition-all ${
+                      addedId === modalProduct.id
+                        ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/50"
+                        : "bg-white/[0.08] hover:bg-white/[0.15] text-white border-white/20"
+                    }`}
+                  >
+                    {addedId === modalProduct.id ? (
+                      <>
+                        <Check size={16} className="text-emerald-400" />
+                        <span>¡Kit Instalado Añadido a Proforma!</span>
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart size={16} className="text-emerald-400" />
+                        <span>Añadir Kit + Instalación a Proforma PDF</span>
+                      </>
+                    )}
+                  </button>
+
                   <a
                     href={getWhatsAppUrl(modalProduct, selectedProvince)}
                     target="_blank"

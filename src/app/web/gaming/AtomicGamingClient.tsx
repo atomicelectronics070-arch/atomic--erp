@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useMemo } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { 
@@ -9,7 +9,7 @@ import {
   Award, Zap, Check, HelpCircle, AlertCircle, Lock, 
   ExternalLink, ChevronRight, Play, Star, Disc, Layers,
   Flame, HeartHandshake, Eye, MapPin, Globe, Compass, Filter,
-  Navigation, CheckCheck, X
+  Navigation, CheckCheck, X, Search
 } from "lucide-react"
 import { useCart } from "@/context/CartContext"
 
@@ -21,6 +21,8 @@ interface DbProduct {
   sku?: string | null
   images?: string | null
   description?: string | null
+  stock?: number
+  provider?: string | null
 }
 
 interface SoldConsolePin {
@@ -36,7 +38,6 @@ interface SoldConsolePin {
   warrantyYears: number
   details: string
   image: string
-  // SVG Map Coordinates (percentage x: 0-100, y: 0-100)
   x: number
   y: number
   pinColor: string
@@ -48,6 +49,45 @@ export default function AtomicGamingClient({ initialProducts }: { initialProduct
   
   // Interactive Console Variant Selector
   const [selectedPs4Config, setSelectedPs4Config] = useState<number>(3)
+
+  // Live Catalog Filter & Search State
+  const [catalogFilter, setCatalogFilter] = useState<'all' | 'ps5' | 'ps4' | 'controls' | 'audio'>('all')
+  const [catalogSearch, setCatalogSearch] = useState('')
+
+  const getProductImage = (imagesStr?: string | null) => {
+    if (!imagesStr) return '/images/gaming/ps4-slim-1tb-god-of-war.jpg'
+    if (imagesStr.startsWith('[')) {
+      try {
+        const arr = JSON.parse(imagesStr)
+        if (Array.isArray(arr) && arr.length > 0) return arr[0]
+      } catch (e) {}
+    }
+    return imagesStr
+  }
+
+  const filteredCatalog = useMemo(() => {
+    return (initialProducts || []).filter(p => {
+      const text = `${p.name} ${p.description || ''} ${p.sku || ''}`.toLowerCase()
+      if (catalogSearch && !text.includes(catalogSearch.toLowerCase())) return false
+      if (catalogFilter === 'ps5') return text.includes('ps5') || text.includes('playstation 5')
+      if (catalogFilter === 'ps4') return text.includes('ps4') || text.includes('playstation 4')
+      if (catalogFilter === 'controls') return text.includes('mando') || text.includes('control') || text.includes('dualsense') || text.includes('dualshock') || text.includes('volante') || text.includes('joystick')
+      if (catalogFilter === 'audio') return text.includes('headset') || text.includes('audifono') || text.includes('audífono') || text.includes('turtle') || text.includes('teclado') || text.includes('monitor')
+      return true
+    })
+  }, [initialProducts, catalogSearch, catalogFilter])
+
+  const handleAddCustomToCart = (prod: DbProduct) => {
+    addToCart({
+      id: `gaming-${prod.id}`,
+      name: prod.name,
+      price: prod.price,
+      quantity: 1,
+      image: getProductImage(prod.images)
+    })
+    setAddedItem(prod.id)
+    setTimeout(() => setAddedItem(null), 2500)
+  }
 
   // Map Filter & Selected Pin State
   const [activeRegion, setActiveRegion] = useState<'all' | 'quito' | 'costa' | 'sierra' | 'internacional'>('all')
@@ -375,8 +415,9 @@ export default function AtomicGamingClient({ initialProducts }: { initialProduct
 
           {/* Direct Nav Links to Sections */}
           <div className="hidden lg:flex items-center gap-2 font-mono text-xs">
-            <a href="#seccion-disponibles" className="px-3 py-1.5 rounded-lg text-stone-300 hover:text-white hover:bg-blue-950/40 transition-colors">
-              Disponibles
+            <a href="#seccion-disponibles" className="px-3 py-1.5 rounded-lg bg-blue-900/40 border border-blue-500/40 text-blue-300 hover:text-white transition-colors flex items-center gap-1.5 shadow-sm">
+              <Gamepad2 size={13} className="text-yellow-400" />
+              <span>En Stock ({filteredCatalog.length})</span>
             </a>
             <a href="#mapa-consolas-vendidas" className="px-3 py-1.5 rounded-lg bg-blue-950/60 border border-blue-500/40 text-blue-300 hover:text-white transition-colors flex items-center gap-1.5">
               <MapPin size={13} className="text-red-400" />
@@ -680,6 +721,174 @@ export default function AtomicGamingClient({ initialProducts }: { initialProduct
           </div>
 
         </div>
+
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════════════════════
+          APARTADO: CATÁLOGO EN STOCK DE CONSOLAS, MANDOS & ACCESORIOS DISPONIBLES
+      ══════════════════════════════════════════════════════════════════════════════ */}
+      <section className="py-14 px-4 sm:px-8 max-w-7xl mx-auto border-t border-blue-950" id="seccion-disponibles">
+        
+        {/* Section Header */}
+        <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4 mb-8 pb-4 border-b border-blue-950">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-mono font-bold uppercase tracking-wider border border-blue-500/30 mb-2">
+              <Gamepad2 size={13} className="text-blue-400" />
+              <span>Inventario Certificado en Vivo ({filteredCatalog.length} disponibles)</span>
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-black text-white uppercase tracking-tight font-sans">
+              Consolas, Mandos & Accesorios en Stock
+            </h2>
+            <p className="text-stone-400 text-xs sm:text-sm mt-0.5">
+              Todos los equipos se entregan probados, con pasta térmica nueva, garantía de 2 años y despacho inmediato en Quito y a todo el Ecuador.
+            </p>
+          </div>
+
+          {/* Search Box */}
+          <div className="relative w-full md:w-72">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" size={14} />
+            <input
+              type="text"
+              value={catalogSearch}
+              onChange={(e) => setCatalogSearch(e.target.value)}
+              placeholder="Buscar PS5, PS4, DualSense, volante..."
+              className="w-full bg-[#081020] border border-blue-950 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 font-mono focus:outline-none focus:border-blue-500 transition-all"
+            />
+          </div>
+        </div>
+
+        {/* Filter Tabs */}
+        <div className="flex flex-wrap items-center gap-2 mb-8">
+          {[
+            { id: 'all', label: `TODOS (${initialProducts?.length || 0})` },
+            { id: 'ps5', label: 'PLAYSTATION 5' },
+            { id: 'ps4', label: 'PLAYSTATION 4' },
+            { id: 'controls', label: 'MANDOS & VOLANTES' },
+            { id: 'audio', label: 'AUDIO & ACCESORIOS' }
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setCatalogFilter(tab.id as any)}
+              className={`px-4 py-2 rounded-xl text-xs font-mono font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                catalogFilter === tab.id
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)]'
+                  : 'bg-[#091325] border border-slate-800 text-stone-400 hover:text-white hover:border-slate-700'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Live Catalog Grid */}
+        {filteredCatalog.length === 0 ? (
+          <div className="text-center py-16 bg-[#081020] rounded-3xl border border-slate-800 p-8 space-y-3">
+            <p className="text-stone-300 font-mono text-sm font-bold">No se encontraron productos con ese filtro de búsqueda.</p>
+            <button
+              type="button"
+              onClick={() => { setCatalogFilter('all'); setCatalogSearch(''); }}
+              className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-mono text-xs font-bold"
+            >
+              Ver Todo el Catálogo
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredCatalog.map((prod) => {
+              const imgUrl = getProductImage(prod.images);
+              const waBuyMsg = encodeURIComponent(
+                `Hola ATOMIC Gaming! Deseo comprar/consultar disponibilidad de:\n` +
+                `🎮 *Producto:* ${prod.name}\n` +
+                `💵 *Precio:* $${Number(prod.price).toFixed(2)} USD\n` +
+                `🛡️ *Garantía:* 2 Años Certificada ATOMIC\n` +
+                `¿Tienen entrega inmediata en mi ciudad?`
+              );
+              return (
+                <div
+                  key={prod.id}
+                  className="rounded-3xl bg-[#081020] border border-blue-950/80 hover:border-blue-500/50 p-5 flex flex-col justify-between transition-all duration-300 hover:shadow-[0_0_25px_rgba(37,99,235,0.15)] group hover:-translate-y-1"
+                >
+                  <div>
+                    {/* Top Badges */}
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                      <span className="text-[10px] font-mono text-blue-400 font-bold px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20">
+                        {prod.provider || "ATOMIC GAMING"}
+                      </span>
+                      <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full font-bold">
+                        ✓ 2 Años Garantía
+                      </span>
+                    </div>
+
+                    {/* Image */}
+                    <div className="relative aspect-video w-full rounded-2xl bg-black border border-slate-800/80 p-4 flex items-center justify-center overflow-hidden mb-4 group-hover:border-blue-900 transition-colors">
+                      <img
+                        src={imgUrl}
+                        alt={prod.name}
+                        className="w-full h-full object-contain group-hover:scale-108 transition-transform duration-500"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = '/images/gaming/ps4-slim-1tb-god-of-war.jpg';
+                        }}
+                      />
+                    </div>
+
+                    {/* Title & SKU */}
+                    <h3 className="font-heading font-black text-sm text-white uppercase leading-snug group-hover:text-blue-300 transition-colors line-clamp-2 mb-1">
+                      {prod.name}
+                    </h3>
+                    {prod.sku && (
+                      <span className="text-[9px] font-mono text-stone-500 block mb-2">
+                        SKU: {prod.sku}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Price & Actions */}
+                  <div className="pt-4 border-t border-blue-950/80 mt-4 space-y-3">
+                    <div className="flex items-baseline justify-between">
+                      <div>
+                        <span className="text-2xl font-black font-mono text-yellow-400">
+                          ${Number(prod.price).toFixed(2)}
+                        </span>
+                        <span className="text-[10px] font-mono text-stone-400 ml-1">USD</span>
+                      </div>
+                      {prod.compareAtPrice && prod.compareAtPrice > prod.price && (
+                        <span className="text-xs font-mono text-stone-500 line-through">
+                          ${Number(prod.compareAtPrice).toFixed(2)}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleAddCustomToCart(prod)}
+                        className={`py-2.5 px-2 rounded-xl text-[11px] font-mono font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                          addedItem === prod.id
+                            ? 'bg-emerald-500 text-stone-950'
+                            : 'bg-[#10203f] hover:bg-[#182f5c] text-white border border-blue-500/40'
+                        }`}
+                      >
+                        <ShoppingCart size={13} className="text-blue-400" />
+                        <span>{addedItem === prod.id ? "¡Listo!" : "Al Carrito"}</span>
+                      </button>
+
+                      <a
+                        href={`https://wa.me/${officialPhone}?text=${waBuyMsg}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="py-2.5 px-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:brightness-110 text-white text-[11px] font-mono font-bold uppercase flex items-center justify-center gap-1 shadow-md transition-all"
+                      >
+                        <Phone size={12} />
+                        <span>Comprar</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
       </section>
 

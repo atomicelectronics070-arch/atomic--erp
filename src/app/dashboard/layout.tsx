@@ -16,6 +16,7 @@ import NotificationBell from "@/components/NotificationBell"
 import PersonalBotBubble from "@/components/PersonalBotBubble"
 import ToolsModal from "@/components/tools/ToolsModal"
 import MobileBottomDock from "@/components/dashboard/MobileBottomDock"
+import SystemCredentialsModal from "@/components/dashboard/SystemCredentialsModal"
 import { motion, AnimatePresence } from "framer-motion"
 
 export default function DashboardLayout({
@@ -26,6 +27,7 @@ export default function DashboardLayout({
     const { data: session, status } = useSession()
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const [isToolsModalOpen, setIsToolsModalOpen] = useState(false)
+    const [showCredentialsModal, setShowCredentialsModal] = useState(false)
     const [toolsInitialTab, setToolsInitialTab] = useState<any>("grid")
     const [showConnectionsModal, setShowConnectionsModal] = useState(false)
     const [unreadCount, setUnreadCount] = useState(0)
@@ -43,6 +45,8 @@ export default function DashboardLayout({
     const isKevin = userNameUpper.includes("KEVIN") || userNameUpper.includes("KEVON") || userEmailUpper.includes("KEVIN") || userEmailUpper.includes("KEVON")
     const isAdministrative = rolesList.some((r: string) => ["ADMIN", "COORDINATOR", "MANAGEMENT", "SUPERVISOR"].includes(r)) || isKevin || role.toUpperCase().includes("COORDINATOR") || role.toUpperCase().includes("ADMIN")
     const canAccessCrm = isAdministrative || isKevin || role.toUpperCase().includes("CRM")
+    const isJuanPablo = userNameUpper.includes("JUAN") || userEmailUpper.includes("JUANGUZMAN") || userEmailUpper.includes("ATOMIC@INDUSTRIAS") || isAdministrative
+    const isStefyOrCris = userNameUpper.includes("STEFY") || userEmailUpper.includes("STEFY") || userNameUpper.includes("CRIS") || userEmailUpper.includes("CRIS") || isAdministrative
 
     const [showRoleStats, setShowRoleStats] = useState(false)
     const [userStats, setUserStats] = useState({
@@ -181,6 +185,12 @@ export default function DashboardLayout({
                 initialTab={toolsInitialTab}
             />
 
+            {/* Modal Maestro de Credenciales y Contraseñas (Directorio Juan Pablo) */}
+            <SystemCredentialsModal
+                isOpen={showCredentialsModal}
+                onClose={() => setShowCredentialsModal(false)}
+            />
+
             {/* ═══════════════════════════════════════════════════════════
                 AI GLASS FLOATING SIDEBAR (QUBE.AI / FIGMA STYLE)
             ═══════════════════════════════════════════════════════════ */}
@@ -250,6 +260,25 @@ export default function DashboardLayout({
                             <GlassNavItem href="/dashboard/coordinacion?tab=ASISTENCIAS" icon={<Calendar size={18} strokeWidth={1.8} />} label="Ajustar Asistencias" isActive={pathname.startsWith('/dashboard/coordinacion')} />
                             <GlassNavItem href="/dashboard/coordinacion" icon={<KeyRound size={18} strokeWidth={1.8} />} label="Gestor de Cuentas" isActive={pathname.startsWith('/dashboard/coordinacion')} />
                             <GlassNavItem href="/dashboard/supervision" icon={<Shield size={18} strokeWidth={1.8} />} label="Supervisión" isActive={pathname.startsWith('/dashboard/supervision')} />
+                            {isJuanPablo && (
+                                <button
+                                    type="button"
+                                    onClick={() => setShowCredentialsModal(true)}
+                                    className="w-full flex items-center justify-between px-3.5 py-2 rounded-[14px] bg-gradient-to-r from-amber-500/15 to-yellow-600/15 hover:from-amber-500/25 hover:to-yellow-600/25 border border-amber-500/30 text-amber-200 transition-all cursor-pointer group text-left my-0.5"
+                                    title="Directorio de Contraseñas y Correos (Exclusivo Juan Pablo)"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <KeyRound size={16} className="text-amber-400 group-hover:scale-110 transition-transform" />
+                                        <span className="text-[13px] font-bold text-amber-200 group-hover:text-white">Contraseñas Sistema</span>
+                                    </div>
+                                    <span className="px-1.5 py-0.2 rounded text-[8px] font-mono font-black bg-amber-400 text-black uppercase">
+                                        CLAVES
+                                    </span>
+                                </button>
+                            )}
+                            {isStefyOrCris && (
+                                <GlassNavItem href="/dashboard/lista-precios-proveedores" icon={<DollarSign size={18} strokeWidth={1.8} />} label="Precios & Proveedores 🔒" isActive={pathname.startsWith('/dashboard/lista-precios-proveedores')} />
+                            )}
                             <GlassNavItem href="/dashboard/whatsapp/crm" icon={<Smartphone size={18} strokeWidth={1.8} />} label="CRM WhatsApp" isActive={pathname.startsWith('/dashboard/whatsapp/crm')} />
                             <GlassNavItem href="/dashboard/whatsapp/leads" icon={<Users size={18} strokeWidth={1.8} />} label="Gestión Leads" isActive={pathname.startsWith('/dashboard/whatsapp/leads')} />
                             <GlassNavItem href="/dashboard/tecnicos" icon={<Wrench size={18} strokeWidth={1.8} />} label="Técnicos & Campo" isActive={pathname.startsWith('/dashboard/tecnicos')} />

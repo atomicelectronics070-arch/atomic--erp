@@ -6,8 +6,9 @@ import {
     Clock, Calendar, User, Tag, Plus, CheckCircle2, Copy, Download,
     Share2, ExternalLink, Sparkles, Filter, Search, ArrowRight,
     Check, AlertCircle, RefreshCw, Layers, ShieldCheck, Image as ImageIcon,
-    Laptop, Gamepad2, Shield, Zap, Home, Eye, X, Upload
+    Laptop, Gamepad2, Shield, Zap, Home, Eye, X, Upload, ShieldAlert, DollarSign
 } from "lucide-react"
+import ListaPreciosProveedoresConfidencial from "@/components/shop/ListaPreciosProveedoresConfidencial"
 
 // Types
 interface PostItem {
@@ -120,7 +121,7 @@ const INITIAL_POSTS: PostItem[] = [
 export default function BancoPublicacionesClient() {
     // State
     const [posts, setPosts] = useState<PostItem[]>(INITIAL_POSTS)
-    const [activeTab, setActiveTab] = useState<"stefy" | "asesor" | "google_fotos">("stefy")
+    const [activeTab, setActiveTab] = useState<"stefy" | "asesor" | "google_fotos" | "proveedores">("stefy")
     const [selectedAdvisor, setSelectedAdvisor] = useState<string>("Esteban Miranda")
     const [categoryFilter, setCategoryFilter] = useState<string>("TODAS")
     const [searchQuery, setSearchQuery] = useState<string>("")
@@ -343,6 +344,18 @@ export default function BancoPublicacionesClient() {
                     >
                         <ImageIcon size={14} />
                         <span>Banco General (Estilo Google Fotos)</span>
+                    </button>
+
+                    <button
+                        onClick={() => setActiveTab("proveedores")}
+                        className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 shrink-0 ${
+                            activeTab === "proveedores"
+                                ? "bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20"
+                                : "text-amber-400 hover:text-white hover:bg-slate-800/50"
+                        }`}
+                    >
+                        <ShieldAlert size={14} />
+                        <span>Lista Precios & Proveedores (Confidencial)</span>
                     </button>
 
                     <div className="ml-auto flex items-center gap-2">
@@ -726,6 +739,15 @@ export default function BancoPublicacionesClient() {
                                 </div>
                             ))}
                         </div>
+                    </section>
+                )}
+
+                {/* ════════════════════════════════════════════════════════════════════
+                    MODO 4: LISTA DE PRECIOS & ENLACES A PROVEEDORES (CONFIDENCIAL)
+                   ════════════════════════════════════════════════════════════════════ */}
+                {activeTab === "proveedores" && (
+                    <section className="animate-in fade-in duration-300">
+                        <ListaPreciosProveedoresConfidencial />
                     </section>
                 )}
             </main>
