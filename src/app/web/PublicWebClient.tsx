@@ -1540,16 +1540,6 @@ export default function PublicWebClient({
 
           {/* RIGHT: WHATSAPP, LOGIN & USER */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            {/* PORTAL VENDEDORES & LISTA DE PRECIOS */}
-            <Link
-              href="/web/precios-vendedor"
-              className="px-2.5 sm:px-3 py-1.5 rounded-full border border-orange-500/40 hover:border-orange-600 bg-orange-50 hover:bg-orange-100 text-orange-800 hover:text-orange-950 font-bold font-heading uppercase tracking-wider text-[10px] sm:text-[11px] shadow-sm transition-all flex items-center gap-1 shrink-0"
-              title="Portal de Vendedores & Lista de Precios"
-            >
-              <span className="text-orange-600">⚡</span>
-              <span className="hidden xl:inline">PRECIOS VENDEDOR</span>
-              <span className="xl:hidden">PRECIOS</span>
-            </Link>
 
             {/* WHATSAPP CON CONTORNO ELEGANTE */}
             <a
