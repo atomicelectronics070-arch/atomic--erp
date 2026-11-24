@@ -2,6 +2,7 @@
 
 
 import { useState, useEffect, useRef } from "react"
+import { useSession } from "next-auth/react"
 import { motion, AnimatePresence, useInView } from "framer-motion"
 import {
     Download, CheckCircle2, Sparkles, Phone, Wifi, Monitor,
@@ -83,6 +84,7 @@ export default function IntercomunicacionPage() {
     const [pdfLoading, setPdfLoading] = useState(false)
     const [activeSystem, setActiveSystem] = useState<number | null>(null)
     const [socialLinks, setSocialLinks] = useState<SocialLinks>({ instagram: "", facebook: "", youtube: "" })
+    const { data: session } = useSession()
 
     useEffect(() => {
         fetch("/api/web/landing-social")
@@ -537,11 +539,13 @@ export default function IntercomunicacionPage() {
             <footer className="relative z-10 border-t border-slate-900 py-10 px-6 text-center">
                 <div className="max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
                     <p className="text-[9px] font-bold text-slate-700 uppercase tracking-widest">© 2026 ATOMIC INDUSTRIES · DIVISIÓN SMART HOME · PORTERÍA ELECTRÓNICA & INTERCOMUNICACIÓN</p>
-                    <div className="flex gap-4 items-center">
-                        {socialLinks.instagram && <a href={socialLinks.instagram} target="_blank" rel="noreferrer" className="text-slate-600 hover:text-cyan-400 transition-colors"><Instagram size={16} /></a>}
-                        {socialLinks.facebook && <a href={socialLinks.facebook} target="_blank" rel="noreferrer" className="text-slate-600 hover:text-cyan-400 transition-colors"><Facebook size={16} /></a>}
-                        {socialLinks.youtube && <a href={socialLinks.youtube} target="_blank" rel="noreferrer" className="text-slate-600 hover:text-cyan-400 transition-colors"><Youtube size={16} /></a>}
-                    </div>
+                    {session?.user && (
+                        <div className="flex gap-4 items-center">
+                            {socialLinks.instagram && <a href={socialLinks.instagram} target="_blank" rel="noreferrer" className="text-slate-600 hover:text-cyan-400 transition-colors"><Instagram size={16} /></a>}
+                            {socialLinks.facebook && <a href={socialLinks.facebook} target="_blank" rel="noreferrer" className="text-slate-600 hover:text-cyan-400 transition-colors"><Facebook size={16} /></a>}
+                            {socialLinks.youtube && <a href={socialLinks.youtube} target="_blank" rel="noreferrer" className="text-slate-600 hover:text-cyan-400 transition-colors"><Youtube size={16} /></a>}
+                        </div>
+                    )}
                 </div>
             </footer>
         </div>

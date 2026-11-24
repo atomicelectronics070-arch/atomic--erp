@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import {
   MessageCircle,
   Phone,
@@ -57,6 +58,8 @@ export default function CategoryLandingClient({
 }: {
   category: SuicideSquadCategoryLanding;
 }) {
+  const { data: session } = useSession();
+  const isRegistered = Boolean(session?.user);
   const [copiedLink, setCopiedLink] = useState(false);
   const [addedItem, setAddedItem] = useState<string | null>(null);
   const [calcQty, setCalcQty] = useState(2);
@@ -891,61 +894,65 @@ export default function CategoryLandingClient({
           ))}
         </div>
 
-        {/* ── REDES SOCIALES OFICIALES ATOMIC ── */}
+        {/* ── REDES SOCIALES OFICIALES ATOMIC (SOLO REGISTRADOS) ── */}
         <div className="mt-10 pt-6 border-t border-slate-200">
           <p className="text-center text-xs font-black uppercase tracking-wider text-slate-700 mb-3">
-            Canales Oficiales & Demostraciones en Vivo
+            {isRegistered ? "Canales Oficiales & Demostraciones en Vivo" : "Canal Oficial de Contacto Directo"}
           </p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
+          <div className={isRegistered ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5" : "max-w-md mx-auto flex items-center justify-center gap-3"}>
             <a
               href="https://wa.me/593963226319?text=Hola%20ATOMIC%2C%20deseo%20asesoria"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 text-xs font-bold transition text-center"
+              className="flex-1 flex items-center justify-center gap-2 p-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 text-xs font-bold transition text-center"
             >
               <MessageCircle className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span className="truncate">WhatsApp Oficial</span>
+              <span className="truncate">WhatsApp Asesoría Inmediata</span>
             </a>
 
-            <a
-              href="https://www.tiktok.com/@santiagoguzman216?_r=1&_t=ZS-9AU9OLRgZkY"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 text-xs font-bold transition text-center"
-            >
-              <TikTokIcon className="w-4 h-4 shrink-0" />
-              <span className="truncate">Jefe Técnico TT</span>
-            </a>
+            {isRegistered && (
+              <>
+                <a
+                  href="https://www.tiktok.com/@santiagoguzman216?_r=1&_t=ZS-9AU9OLRgZkY"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-800 text-xs font-bold transition text-center"
+                >
+                  <TikTokIcon className="w-4 h-4 shrink-0" />
+                  <span className="truncate">Jefe Técnico TT</span>
+                </a>
 
-            <a
-              href="https://www.instagram.com/atomic_industries_26?cplk=bDczYW9xN2F6NXFs"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-pink-50 hover:bg-pink-100 border border-pink-200 text-pink-800 text-xs font-bold transition text-center"
-            >
-              <Instagram className="w-4 h-4 text-pink-600 shrink-0" />
-              <span className="truncate">Industrias IG</span>
-            </a>
+                <a
+                  href="https://www.instagram.com/atomic_industries_26?cplk=bDczYW9xN2F6NXFs"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-pink-50 hover:bg-pink-100 border border-pink-200 text-pink-800 text-xs font-bold transition text-center"
+                >
+                  <Instagram className="w-4 h-4 text-pink-600 shrink-0" />
+                  <span className="truncate">Industrias IG</span>
+                </a>
 
-            <a
-              href="https://youtube.com/@atomicmenquantum?si=jScgTmF2FBGTrObU"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-800 text-xs font-bold transition text-center"
-            >
-              <Youtube className="w-4 h-4 text-red-600 shrink-0" />
-              <span className="truncate">Capacitaciones YT</span>
-            </a>
+                <a
+                  href="https://youtube.com/@atomicmenquantum?si=jScgTmF2FBGTrObU"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-800 text-xs font-bold transition text-center"
+                >
+                  <Youtube className="w-4 h-4 text-red-600 shrink-0" />
+                  <span className="truncate">Capacitaciones YT</span>
+                </a>
 
-            <a
-              href="https://www.facebook.com/share/14uWsX16BQH/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-800 text-xs font-bold transition text-center"
-            >
-              <Facebook className="w-4 h-4 text-blue-600 shrink-0" />
-              <span className="truncate">Industrias FB</span>
-            </a>
+                <a
+                  href="https://www.facebook.com/share/14uWsX16BQH/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 p-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-800 text-xs font-bold transition text-center"
+                >
+                  <Facebook className="w-4 h-4 text-blue-600 shrink-0" />
+                  <span className="truncate">Industrias FB</span>
+                </a>
+              </>
+            )}
           </div>
         </div>
 

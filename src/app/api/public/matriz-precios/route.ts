@@ -28,6 +28,9 @@ export async function GET(req: NextRequest) {
         { name: { contains: 'politica de', mode: 'insensitive' } },
         { name: { contains: 'política de', mode: 'insensitive' } },
         { name: { contains: 'terminos y condiciones', mode: 'insensitive' } },
+        { name: { contains: 'PRODUCTOS\n', mode: 'insensitive' } },
+        { name: { contains: '\nPRODUCTOS', mode: 'insensitive' } },
+        { name: { contains: 'PRECIOS DE LOCURA', mode: 'insensitive' } },
       ],
     };
 
@@ -415,7 +418,10 @@ export async function GET(req: NextRequest) {
     const products = await prisma.product.findMany({
       where,
       select: selectFields,
-      orderBy: { name: 'asc' },
+      orderBy: [
+        { stock: 'desc' },
+        { name: 'asc' },
+      ],
       skip: (page - 1) * limit,
       take: limit,
     });

@@ -151,10 +151,8 @@ export default function Presence01() {
           ))}
         </ul>
 
-        {/* ═══════════ REDES SOCIALES OFICIALES ATOMIC (PERMANENTE EN HOME) ═══════════ */}
-        <div className="w-full mt-14">
-          <PermanentSocialBar variant="inline" />
-        </div>
+        {/* ═══════════ REDES SOCIALES OFICIALES ATOMIC (SOLO REGISTRADOS) ═══════════ */}
+        <PermanentSocialBar variant="inline" className="w-full mt-14" />
 
       </section>
 

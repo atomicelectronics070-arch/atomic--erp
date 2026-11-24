@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
 
 // ── 9 YOUTUBE COURSES WITH OFFICIAL SLIDE IMAGES ──
 const YOUTUBE_COURSES = [
@@ -131,6 +132,8 @@ const YOUTUBE_COURSES = [
 ];
 
 export default function Post4LandingPage() {
+  const { data: session } = useSession();
+  const isRegistered = Boolean(session?.user);
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -178,15 +181,24 @@ export default function Post4LandingPage() {
         </div>
 
         <div className="flex items-center gap-4">
-          <a 
-            href="https://instagram.com" 
-            target="_blank" 
-            rel="noreferrer"
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 hover:border-white/20 text-xs font-mono font-bold text-neutral-300 hover:text-white transition-all"
-          >
-            <Instagram size={14} className="text-pink-400" />
-            <span className="hidden sm:inline">Sígueme en Instagram</span>
-          </a>
+          {isRegistered ? (
+            <a 
+              href="https://instagram.com" 
+              target="_blank" 
+              rel="noreferrer"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 hover:border-white/20 text-xs font-mono font-bold text-neutral-300 hover:text-white transition-all"
+            >
+              <Instagram size={14} className="text-pink-400" />
+              <span className="hidden sm:inline">Sígueme en Instagram</span>
+            </a>
+          ) : (
+            <Link
+              href="/login"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 hover:border-white/20 text-xs font-mono font-bold text-neutral-300 hover:text-white transition-all"
+            >
+              <span>Acceso</span>
+            </Link>
+          )}
         </div>
       </nav>
 

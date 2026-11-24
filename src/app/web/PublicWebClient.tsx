@@ -3,7 +3,7 @@
 // Version: 3.0.0 — ATOMIC × Appit Theme Integration (Inter Tight + Instrument Sans, real Appit CSS tokens)
 import { useState, useRef, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { signIn } from "next-auth/react"
+import { signIn, useSession } from "next-auth/react"
 import {
   ShoppingBag, ChevronRight, ArrowRight, Shield, Zap, Truck,
   ChevronLeft, Hexagon, Star, X, Smartphone, Sparkles, Code, Bot,
@@ -1207,6 +1207,8 @@ export default function PublicWebClient({
   const searchContainerRef = useRef<HTMLDivElement>(null)
   const searchDebounce = useRef<ReturnType<typeof setTimeout> | null>(null)
   const router = useRouter()
+  const { data: session } = useSession()
+  const isRegistered = Boolean(session?.user || userRole)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
   const [activeUserModal, setActiveUserModal] = useState<string | null>(null)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
@@ -1439,10 +1441,39 @@ export default function PublicWebClient({
 
       {/* ═══════════ STICKY HORIZONTAL NAV TABS + ACCIONES + IN-PLACE DESPLEGABLE EN VIVO ═══════════ */}
       <nav className="sticky top-[29px] z-40 w-full bg-white/95 backdrop-blur-2xl border-b border-slate-200/90 shadow-[0_4px_25px_rgba(0,0,0,0.06)]">
-        <div className="max-w-7xl mx-auto px-4 flex items-center justify-between gap-3 py-2.5">
+        <div className="w-full max-w-7xl 2xl:max-w-[1600px] mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between gap-2 sm:gap-3 py-2">
 
-          {/* LEFT: 3-LINES HAMBURGER + TABS */}
-          <div className="flex items-center gap-1.5 lg:gap-2 xl:gap-2.5 overflow-x-auto scrollbar-hide no-scrollbar min-w-0 pr-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          {/* LEFT: BRAND LOGO + 3-LINES HAMBURGER + TABS */}
+          <div className="flex items-center gap-1.5 lg:gap-2.5 overflow-x-auto scrollbar-hide no-scrollbar min-w-0 pr-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            {/* BRAND ANCHOR: ATOMIC LOGO + TITLE */}
+            <Link
+              href="/web"
+              onClick={() => { setActiveTab(null); setIsMegaMenuOpen(false); }}
+              className="flex items-center gap-2 shrink-0 group mr-1 focus:outline-none"
+              title="ATOMIC — Tienda Oficial Ecuador"
+            >
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600/10 via-indigo-600/15 to-blue-500/10 border border-blue-500/30 flex items-center justify-center group-hover:border-blue-600 group-hover:scale-105 transition-all shadow-sm">
+                <svg width="20" height="20" viewBox="0 0 72 72" fill="none" className="drop-shadow-[0_0_8px_rgba(59,130,246,0.85)]">
+                  <circle cx="36" cy="36" r="8" fill="#2563eb" />
+                  <circle cx="36" cy="36" r="5" fill="#60a5fa" />
+                  <circle cx="36" cy="36" r="3" fill="#ffffff" />
+                  <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#3b82f6" strokeWidth="2.4" fill="none" />
+                  <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#60a5fa" strokeWidth="2.4" fill="none" transform="rotate(60 36 36)" />
+                  <ellipse cx="36" cy="36" rx="30" ry="10" stroke="#2563eb" strokeWidth="2.4" fill="none" transform="rotate(120 36 36)" />
+                </svg>
+              </div>
+              <div className="flex flex-col">
+                <span className="font-heading font-black text-sm lg:text-base tracking-wider text-slate-950 group-hover:text-blue-600 transition-colors leading-none">
+                  ATOMIC
+                </span>
+                <span className="text-[8px] font-mono tracking-widest text-slate-400 uppercase leading-tight font-semibold">
+                  STORE
+                </span>
+              </div>
+            </Link>
+
+            <div className="h-5 w-[1px] bg-slate-200 shrink-0 hidden sm:block mr-0.5" />
+
             {/* 3-LINES HAMBURGER ICON BUTTON */}
             <button
               onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
@@ -2562,18 +2593,31 @@ export default function PublicWebClient({
                     </p>
                   </div>
 
-                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-                    <span className="text-[10px] font-mono text-slate-400">Canal YouTube Oficial</span>
-                    <a
-                      href="https://www.youtube.com/@atomicindustrias"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-xs font-bold text-red-600 hover:text-red-700 flex items-center gap-1 font-heading"
-                    >
-                      <span>Ver Canal</span>
-                      <ArrowUpRight size={14} />
-                    </a>
-                  </div>
+                  {isRegistered ? (
+                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                      <span className="text-[10px] font-mono text-slate-400">Canal YouTube Oficial</span>
+                      <a
+                        href="https://www.youtube.com/@atomicindustrias"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-xs font-bold text-red-600 hover:text-red-700 flex items-center gap-1 font-heading"
+                      >
+                        <span>Ver Canal</span>
+                        <ArrowUpRight size={14} />
+                      </a>
+                    </div>
+                  ) : (
+                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                      <span className="text-[10px] font-mono text-slate-400">Ingeniería & Seguridad</span>
+                      <Link
+                        href="/web/barreras-antipanico/blog"
+                        className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 font-heading"
+                      >
+                        <span>Ver Ficha Técnica</span>
+                        <ArrowUpRight size={14} />
+                      </Link>
+                    </div>
+                  )}
                 </div>
 
                 {/* Trending / Lo Más Leído */}
@@ -3797,20 +3841,22 @@ export default function PublicWebClient({
                       <span>Ver Perfil de Santiago</span>
                       <ArrowRight size={13} />
                     </Link>
-                    <div className="grid grid-cols-2 gap-2 text-[10px] font-mono">
-                      <a
-                        href="https://www.tiktok.com/@santiagoguzman216"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="py-2 px-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-colors flex items-center justify-center gap-1"
-                      >
-                        <span>TikTok @santiagoguzman216</span>
-                      </a>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[10px] font-mono">
+                      {isRegistered && (
+                        <a
+                          href="https://www.tiktok.com/@santiagoguzman216"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="py-2 px-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-colors flex items-center justify-center gap-1"
+                        >
+                          <span>TikTok @santiagoguzman216</span>
+                        </a>
+                      )}
                       <a
                         href="https://wa.me/593980319050?text=Hola%20Santiago,%20vi%20tu%20perfil%20en%20ATOMIC%20y%20deseo%20comunicarme%20contigo."
                         target="_blank"
                         rel="noreferrer"
-                        className="py-2 px-2.5 rounded-lg bg-emerald-950/50 hover:bg-emerald-900/60 border border-emerald-800/50 text-emerald-300 transition-colors flex items-center justify-center gap-1"
+                        className={`py-2 px-2.5 rounded-lg bg-emerald-950/50 hover:bg-emerald-900/60 border border-emerald-800/50 text-emerald-300 transition-colors flex items-center justify-center gap-1 ${!isRegistered ? 'col-span-full' : ''}`}
                       >
                         <Phone size={10} />
                         <span>098 031 9050</span>
@@ -3854,20 +3900,22 @@ export default function PublicWebClient({
                       <span>Ver Serie 48 Leyes & Bio</span>
                       <ArrowRight size={13} />
                     </Link>
-                    <div className="grid grid-cols-2 gap-2 text-[10px] font-mono">
-                      <a
-                        href="https://www.tiktok.com/@juanguzman35886"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="py-2 px-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-colors flex items-center justify-center gap-1"
-                      >
-                        <span>TikTok @juanguzman35886</span>
-                      </a>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[10px] font-mono">
+                      {isRegistered && (
+                        <a
+                          href="https://www.tiktok.com/@juanguzman35886"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="py-2 px-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-colors flex items-center justify-center gap-1"
+                        >
+                          <span>TikTok @juanguzman35886</span>
+                        </a>
+                      )}
                       <a
                         href="https://wa.me/593969043453?text=Hola%20Ing.%20Juan%20Pablo%20Guzm%C3%A1n,%20le%C3%AD%20sobre%20el%20laboratorio%20I%2BD%20y%20deseo%20asesor%C3%ADa."
                         target="_blank"
                         rel="noreferrer"
-                        className="py-2 px-2.5 rounded-lg bg-emerald-950/50 hover:bg-emerald-900/60 border border-emerald-800/50 text-emerald-300 transition-colors flex items-center justify-center gap-1"
+                        className={`py-2 px-2.5 rounded-lg bg-emerald-950/50 hover:bg-emerald-900/60 border border-emerald-800/50 text-emerald-300 transition-colors flex items-center justify-center gap-1 ${!isRegistered ? 'col-span-full' : ''}`}
                       >
                         <Phone size={10} />
                         <span>096 904 3453</span>
@@ -4940,15 +4988,24 @@ export default function PublicWebClient({
                 No solo comercializamos tecnología; nuestro equipo técnico instala, calibra y entrega obras llave en mano en todo el Ecuador. Explora los registros en video de nuestras instalaciones reales:
               </p>
             </div>
-            <a
-              href="https://youtube.com/@atomicmenquantum?si=jScgTmF2FBGTrObU"
-              target="_blank"
-              rel="noreferrer"
-              className="px-5 py-2.5 rounded-full bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-md w-fit shrink-0 transition-all hover:scale-105"
-            >
-              <Youtube size={15} />
-              <span>Canal @atomicmenquantum</span>
-            </a>
+            {isRegistered ? (
+              <a
+                href="https://youtube.com/@atomicmenquantum?si=jScgTmF2FBGTrObU"
+                target="_blank"
+                rel="noreferrer"
+                className="px-5 py-2.5 rounded-full bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-md w-fit shrink-0 transition-all hover:scale-105"
+              >
+                <Youtube size={15} />
+                <span>Canal @atomicmenquantum</span>
+              </a>
+            ) : (
+              <Link
+                href="/login?callbackUrl=/web"
+                className="px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-md w-fit shrink-0 transition-all hover:scale-105"
+              >
+                <span>Acceso Comprador / Vendedor</span>
+              </Link>
+            )}
           </div>
 
           {/* 3 Featured Video Cards */}
@@ -4973,15 +5030,24 @@ export default function PublicWebClient({
                 </p>
               </div>
               <div className="pt-2 flex items-center gap-2">
-                <a
-                  href="https://youtube.com/@atomicmenquantum?si=jScgTmF2FBGTrObU"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex-1 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs border border-slate-200 text-center flex items-center justify-center gap-1.5 transition-all"
-                >
-                  <Youtube size={13} className="text-red-600" />
-                  <span>Ver Video</span>
-                </a>
+                {isRegistered ? (
+                  <a
+                    href="https://youtube.com/@atomicmenquantum?si=jScgTmF2FBGTrObU"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex-1 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs border border-slate-200 text-center flex items-center justify-center gap-1.5 transition-all"
+                  >
+                    <Youtube size={13} className="text-red-600" />
+                    <span>Ver Video</span>
+                  </a>
+                ) : (
+                  <Link
+                    href="/web/campanas"
+                    className="flex-1 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs border border-slate-200 text-center flex items-center justify-center gap-1.5 transition-all"
+                  >
+                    <span>Ficha Técnica</span>
+                  </Link>
+                )}
                 <Link
                   href="/web/campanas"
                   className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-blue-600 text-white font-bold text-xs transition-all"
@@ -5011,15 +5077,24 @@ export default function PublicWebClient({
                 </p>
               </div>
               <div className="pt-2 flex items-center gap-2">
-                <a
-                  href="https://youtube.com/@atomicmenquantum?si=jScgTmF2FBGTrObU"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex-1 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs border border-slate-200 text-center flex items-center justify-center gap-1.5 transition-all"
-                >
-                  <Youtube size={13} className="text-red-600" />
-                  <span>Ver Video</span>
-                </a>
+                {isRegistered ? (
+                  <a
+                    href="https://youtube.com/@atomicmenquantum?si=jScgTmF2FBGTrObU"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex-1 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs border border-slate-200 text-center flex items-center justify-center gap-1.5 transition-all"
+                  >
+                    <Youtube size={13} className="text-red-600" />
+                    <span>Ver Video</span>
+                  </a>
+                ) : (
+                  <Link
+                    href="/web/videoporteros"
+                    className="flex-1 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs border border-slate-200 text-center flex items-center justify-center gap-1.5 transition-all"
+                  >
+                    <span>Ficha Técnica</span>
+                  </Link>
+                )}
                 <Link
                   href="/web/videoporteros"
                   className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-blue-600 text-white font-bold text-xs transition-all"
@@ -5049,15 +5124,24 @@ export default function PublicWebClient({
                 </p>
               </div>
               <div className="pt-2 flex items-center gap-2">
-                <a
-                  href="https://youtube.com/@atomicmenquantum?si=jScgTmF2FBGTrObU"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex-1 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs border border-slate-200 text-center flex items-center justify-center gap-1.5 transition-all"
-                >
-                  <Youtube size={13} className="text-red-600" />
-                  <span>Ver Video</span>
-                </a>
+                {isRegistered ? (
+                  <a
+                    href="https://youtube.com/@atomicmenquantum?si=jScgTmF2FBGTrObU"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex-1 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs border border-slate-200 text-center flex items-center justify-center gap-1.5 transition-all"
+                  >
+                    <Youtube size={13} className="text-red-600" />
+                    <span>Ver Video</span>
+                  </a>
+                ) : (
+                  <Link
+                    href="/web/barreras-vehiculares"
+                    className="flex-1 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs border border-slate-200 text-center flex items-center justify-center gap-1.5 transition-all"
+                  >
+                    <span>Ficha Técnica</span>
+                  </Link>
+                )}
                 <Link
                   href="/web/barreras-vehiculares"
                   className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-blue-600 text-white font-bold text-xs transition-all"
@@ -5068,18 +5152,36 @@ export default function PublicWebClient({
             </div>
           </div>
 
-          {/* Embedded Official YouTube Player */}
-          <div className="rounded-2xl overflow-hidden border border-slate-200 bg-slate-950 shadow-inner p-2">
-            <div className="relative w-full aspect-video rounded-xl overflow-hidden">
-              <iframe
-                className="w-full h-full"
-                src="https://www.youtube.com/embed/_rI46cUolfQ"
-                title="ATOMIC Industrias Ecuador - Trabajos Realizados"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
+          {/* Embedded Official Video / Demo */}
+          {isRegistered ? (
+            <div className="rounded-2xl overflow-hidden border border-slate-200 bg-slate-950 shadow-inner p-2">
+              <div className="relative w-full aspect-video rounded-xl overflow-hidden">
+                <iframe
+                  className="w-full h-full"
+                  src="https://www.youtube.com/embed/_rI46cUolfQ"
+                  title="ATOMIC Industrias Ecuador - Trabajos Realizados"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="rounded-2xl overflow-hidden border border-slate-200 bg-slate-900 p-6 text-center text-white space-y-3">
+              <ShieldCheck className="w-10 h-10 text-cyan-400 mx-auto" />
+              <h4 className="font-bold text-lg">Catálogo Multimedia y Demos de Instalación</h4>
+              <p className="text-xs text-slate-400 max-w-lg mx-auto">
+                Registra tu cuenta como comprador mayorista o distribuidor comercial para acceder al archivo de videos de instalación, desarmes técnicos y capacitaciones en vivo.
+              </p>
+              <div className="pt-2 flex justify-center gap-3">
+                <Link href="/login" className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 font-bold text-xs text-white">
+                  Iniciar Sesión / Registrarse
+                </Link>
+                <a href="https://wa.me/593969043453" target="_blank" rel="noreferrer" className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold text-xs text-white">
+                  WhatsApp Técnico
+                </a>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ═══════════ NUEVO APARTADO: NEWSLETTER OFICIAL (INTELIGENCIA DE IMPORTACIÓN & TÉCNICA) ═══════════ */}

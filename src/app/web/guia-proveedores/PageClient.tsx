@@ -2,6 +2,7 @@
 
 
 import { useState, useEffect } from "react"
+import { useSession } from "next-auth/react"
 import { motion, AnimatePresence } from "framer-motion"
 import { 
     Download, CheckCircle2, BookOpen, 
@@ -16,6 +17,7 @@ interface SocialLinks {
 }
 
 export default function GuiaProveedoresPage() {
+    const { data: session } = useSession()
     // Form fields
     const [email, setEmail] = useState("")
     const [name, setName] = useState("")
@@ -877,11 +879,13 @@ export default function GuiaProveedoresPage() {
             {/* FOOTER */}
             <footer className="relative z-10 border-t border-slate-900 bg-slate-950 py-8 px-6 text-center text-xs font-mono text-slate-500 space-y-4">
                 <p>© 2026 ATOMIC B2B SOLUTIONS · DIRECCIÓN DE NEGOCIACIÓN ESTRATÉGICA</p>
-                <div className="flex justify-center gap-6">
-                    {socialLinks.instagram && <a href={socialLinks.instagram} target="_blank" rel="noreferrer" className="hover:text-amber-400 transition-colors"><Instagram size={18} /></a>}
-                    {socialLinks.facebook && <a href={socialLinks.facebook} target="_blank" rel="noreferrer" className="hover:text-amber-400 transition-colors"><Facebook size={18} /></a>}
-                    {socialLinks.youtube && <a href={socialLinks.youtube} target="_blank" rel="noreferrer" className="hover:text-amber-400 transition-colors"><Youtube size={18} /></a>}
-                </div>
+                {session?.user && (
+                    <div className="flex justify-center gap-6">
+                        {socialLinks.instagram && <a href={socialLinks.instagram} target="_blank" rel="noreferrer" className="hover:text-amber-400 transition-colors"><Instagram size={18} /></a>}
+                        {socialLinks.facebook && <a href={socialLinks.facebook} target="_blank" rel="noreferrer" className="hover:text-amber-400 transition-colors"><Facebook size={18} /></a>}
+                        {socialLinks.youtube && <a href={socialLinks.youtube} target="_blank" rel="noreferrer" className="hover:text-amber-400 transition-colors"><Youtube size={18} /></a>}
+                    </div>
+                )}
             </footer>
         </div>
     )

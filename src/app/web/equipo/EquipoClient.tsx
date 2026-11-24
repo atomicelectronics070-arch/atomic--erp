@@ -2,6 +2,7 @@
 
 import React, { useState } from "react"
 import Link from "next/link"
+import { useSession } from "next-auth/react"
 import { motion, AnimatePresence } from "framer-motion"
 import {
   ShieldCheck, ArrowUpRight, Copy, Phone,
@@ -11,6 +12,8 @@ import {
 } from "lucide-react"
 
 export default function EquipoClient() {
+  const { data: session } = useSession()
+  const isRegistered = Boolean(session?.user)
   const [toastMessage, setToastMessage] = useState<string | null>(null)
 
   const showToast = (msg: string) => {
@@ -179,16 +182,18 @@ export default function EquipoClient() {
                 <ArrowRight size={14} />
               </Link>
 
-              <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-                <a
-                  href="https://www.tiktok.com/@santiagoguzman216"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="py-2.5 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-white/10 text-zinc-300 hover:text-white transition-colors flex items-center justify-center gap-1.5"
-                >
-                  <Video size={13} className="text-cyan-400" />
-                  <span>TikTok @santiagoguzman216</span>
-                </a>
+              <div className={isRegistered ? "grid grid-cols-2 gap-2 text-xs font-mono" : "flex flex-col gap-2 text-xs font-mono"}>
+                {isRegistered && (
+                  <a
+                    href="https://www.tiktok.com/@santiagoguzman216"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="py-2.5 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-white/10 text-zinc-300 hover:text-white transition-colors flex items-center justify-center gap-1.5"
+                  >
+                    <Video size={13} className="text-cyan-400" />
+                    <span>TikTok @santiagoguzman216</span>
+                  </a>
+                )}
                 <a
                   href="https://wa.me/593980319050?text=Hola%20Santiago%2C%20le%C3%AD%20tu%20perfil%20en%20el%20equipo%20ATOMIC%20y%20deseo%20comunicarme%20contigo."
                   target="_blank"
@@ -275,16 +280,18 @@ export default function EquipoClient() {
                 <ArrowRight size={14} />
               </Link>
 
-              <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-                <a
-                  href="https://www.tiktok.com/@juanguzman35886"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="py-2.5 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-white/10 text-zinc-300 hover:text-white transition-colors flex items-center justify-center gap-1.5"
-                >
-                  <Video size={13} className="text-amber-400" />
-                  <span>TikTok @juanguzman35886</span>
-                </a>
+              <div className={isRegistered ? "grid grid-cols-2 gap-2 text-xs font-mono" : "flex flex-col gap-2 text-xs font-mono"}>
+                {isRegistered && (
+                  <a
+                    href="https://www.tiktok.com/@juanguzman35886"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="py-2.5 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-white/10 text-zinc-300 hover:text-white transition-colors flex items-center justify-center gap-1.5"
+                  >
+                    <Video size={13} className="text-amber-400" />
+                    <span>TikTok @juanguzman35886</span>
+                  </a>
+                )}
                 <a
                   href="https://wa.me/593989476556?text=Hola%20Director%20Juan%20Pablo%20Guzm%C3%A1n%2C%20deseo%20asesor%C3%ADa%20comercial%20o%20de%20laboratorio%20I%2BD."
                   target="_blank"

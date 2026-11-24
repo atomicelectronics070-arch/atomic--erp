@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { MessageCircle, Instagram, Facebook, Youtube, Share2, Sparkles, ChevronLeft, ChevronRight, ChevronUp, Check, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -110,6 +111,7 @@ export default function PermanentSocialBar({
   variant = "floating",
   className = ""
 }: PermanentSocialBarProps) {
+  const { data: session, status } = useSession();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -148,6 +150,13 @@ export default function PermanentSocialBar({
       }
     }
   };
+
+  // Redes sociales PRIVADAS:
+  // Solo accesibles para compradores o vendedores/personal registrados y autenticados.
+  // Completamente ocultas para público general e invitados no registrados.
+  if (status !== "authenticated" || !session?.user) {
+    return null;
+  }
 
   // 1. MODO FLOTANTE: Botón Desplegable elegante con Redes Sociales, Botón Compartir y Chat a WhatsApp
   if (variant === "floating") {

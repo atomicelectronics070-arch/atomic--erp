@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import {
   MessageCircle,
   Phone,
@@ -49,6 +50,8 @@ function TikTokIcon({ className = "w-5 h-5" }: { className?: string }) {
 }
 
 export default function BienvenidaClient() {
+  const { data: session } = useSession();
+  const isRegistered = Boolean(session?.user);
   const [activeTab, setActiveTab] = useState<"formulario" | "remate" | "catalogos" | "nosotros" | "referencias" | "youtube">("formulario");
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -346,85 +349,90 @@ ${mensaje ? `Comentarios: ${mensaje}` : "¿Me pueden ayudar con disponibilidad y
               </div>
             </a>
 
-            {/* 2. TikTok Jefe Técnico (ATOMIC ELECTRONICS) */}
-            <a
-              href="https://www.tiktok.com/@santiagoguzman216?_r=1&_t=ZS-9AU9OLRgZkY"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 p-3 rounded-2xl bg-slate-900/5 hover:bg-slate-900/10 border border-slate-300 text-slate-900 transition group shadow-sm hover:shadow"
-            >
-              <div className="w-10 h-10 rounded-xl bg-black text-white flex items-center justify-center shadow shrink-0 group-hover:scale-105 transition-transform">
-                <TikTokIcon className="w-5 h-5" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs font-black truncate">Jefe Técnico (Pruebas)</p>
-                <p className="text-[10px] text-slate-500 truncate font-mono">@santiagoguzman216 · Demos</p>
-              </div>
-            </a>
+            {/* Redes Sociales Oficiales: Solo visibles para usuarios registrados (compradores / vendedores) */}
+            {isRegistered ? (
+              <>
+                {/* 2. TikTok Jefe Técnico (ATOMIC ELECTRONICS) */}
+                <a
+                  href="https://www.tiktok.com/@santiagoguzman216?_r=1&_t=ZS-9AU9OLRgZkY"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-3 rounded-2xl bg-slate-900/5 hover:bg-slate-900/10 border border-slate-300 text-slate-900 transition group shadow-sm hover:shadow"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-black text-white flex items-center justify-center shadow shrink-0 group-hover:scale-105 transition-transform">
+                    <TikTokIcon className="w-5 h-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-black truncate">Jefe Técnico (Pruebas)</p>
+                    <p className="text-[10px] text-slate-500 truncate font-mono">@santiagoguzman216 · Demos</p>
+                  </div>
+                </a>
 
-            {/* 3. Instagram Industrias (LÍNEA DE PRODUCTOS) */}
-            <a
-              href="https://www.instagram.com/atomic_industries_26?cplk=bDczYW9xN2F6NXFs"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 p-3 rounded-2xl bg-gradient-to-r from-pink-500/10 to-purple-500/10 hover:from-pink-500/20 hover:to-purple-500/20 border border-pink-300 text-pink-700 transition group shadow-sm hover:shadow"
-            >
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-yellow-500 via-pink-600 to-purple-600 text-white flex items-center justify-center shadow shrink-0 group-hover:scale-105 transition-transform">
-                <Instagram size={20} />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs font-black truncate text-purple-950">Atomic Industrias</p>
-                <p className="text-[10px] text-pink-700 truncate font-mono">@atomic_industries_26</p>
-              </div>
-            </a>
+                {/* 3. Instagram Industrias (LÍNEA DE PRODUCTOS) */}
+                <a
+                  href="https://www.instagram.com/atomic_industries_26?cplk=bDczYW9xN2F6NXFs"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-3 rounded-2xl bg-gradient-to-r from-pink-500/10 to-purple-500/10 hover:from-pink-500/20 hover:to-purple-500/20 border border-pink-300 text-pink-700 transition group shadow-sm hover:shadow"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-yellow-500 via-pink-600 to-purple-600 text-white flex items-center justify-center shadow shrink-0 group-hover:scale-105 transition-transform">
+                    <Instagram size={20} />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-black truncate text-purple-950">Atomic Industrias</p>
+                    <p className="text-[10px] text-pink-700 truncate font-mono">@atomic_industries_26</p>
+                  </div>
+                </a>
 
-            {/* 4. YouTube Canal Comercial & Capacitaciones */}
-            <a
-              href="https://youtube.com/@atomicmenquantum?si=jScgTmF2FBGTrObU"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 p-3 rounded-2xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 transition group shadow-sm hover:shadow"
-            >
-              <div className="w-10 h-10 rounded-xl bg-[#FF0000] text-white flex items-center justify-center shadow shrink-0 group-hover:scale-105 transition-transform">
-                <Youtube size={20} />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs font-black truncate text-red-950">Canal Comercial & Demos</p>
-                <p className="text-[10px] text-red-600 truncate font-mono">@atomicmenquantum</p>
-              </div>
-            </a>
+                {/* 4. YouTube Canal Comercial & Capacitaciones */}
+                <a
+                  href="https://youtube.com/@atomicmenquantum?si=jScgTmF2FBGTrObU"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-3 rounded-2xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 transition group shadow-sm hover:shadow"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-[#FF0000] text-white flex items-center justify-center shadow shrink-0 group-hover:scale-105 transition-transform">
+                    <Youtube size={20} />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-black truncate text-red-950">Canal Comercial & Demos</p>
+                    <p className="text-[10px] text-red-600 truncate font-mono">@atomicmenquantum</p>
+                  </div>
+                </a>
 
-            {/* 5. Facebook Línea de Productos */}
-            <a
-              href="https://www.facebook.com/share/14uWsX16BQH/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 p-3 rounded-2xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 transition group shadow-sm hover:shadow"
-            >
-              <div className="w-10 h-10 rounded-xl bg-[#1877F2] text-white flex items-center justify-center shadow shrink-0 group-hover:scale-105 transition-transform">
-                <Facebook size={20} />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs font-black truncate text-blue-950">Atomic Industrias FB</p>
-                <p className="text-[10px] text-blue-600 truncate">Línea de Productos Oficial</p>
-              </div>
-            </a>
+                {/* 5. Facebook Línea de Productos */}
+                <a
+                  href="https://www.facebook.com/share/14uWsX16BQH/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-3 rounded-2xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 transition group shadow-sm hover:shadow"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-[#1877F2] text-white flex items-center justify-center shadow shrink-0 group-hover:scale-105 transition-transform">
+                    <Facebook size={20} />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-black truncate text-blue-950">Atomic Industrias FB</p>
+                    <p className="text-[10px] text-blue-600 truncate">Línea de Productos Oficial</p>
+                  </div>
+                </a>
 
-            {/* 6. TikTok Atomic Home (UNBOXING & REVIEWS) */}
-            <a
-              href="https://www.tiktok.com/@juanguzman35886?_r=1&_t=ZS-9AU9ov9ihow"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 p-3 rounded-2xl bg-slate-900/5 hover:bg-slate-900/10 border border-slate-300 text-slate-900 transition group shadow-sm hover:shadow"
-            >
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-slate-900 to-slate-800 text-white flex items-center justify-center shadow shrink-0 group-hover:scale-105 transition-transform">
-                <TikTokIcon className="w-5 h-5" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs font-black truncate">Atomic Home (Unboxing)</p>
-                <p className="text-[10px] text-slate-500 truncate font-mono">@juanguzman35886</p>
-              </div>
-            </a>
+                {/* 6. TikTok Atomic Home (UNBOXING & REVIEWS) */}
+                <a
+                  href="https://www.tiktok.com/@juanguzman35886?_r=1&_t=ZS-9AU9ov9ihow"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 p-3 rounded-2xl bg-slate-900/5 hover:bg-slate-900/10 border border-slate-300 text-slate-900 transition group shadow-sm hover:shadow"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-slate-900 to-slate-800 text-white flex items-center justify-center shadow shrink-0 group-hover:scale-105 transition-transform">
+                    <TikTokIcon className="w-5 h-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs font-black truncate">Atomic Home (Unboxing)</p>
+                    <p className="text-[10px] text-slate-500 truncate font-mono">@juanguzman35886</p>
+                  </div>
+                </a>
+              </>
+            ) : null}
 
             {/* 7. WhatsApp Ventas & Despachos Secundario */}
             <a
@@ -522,17 +530,19 @@ ${mensaje ? `Comentarios: ${mensaje}` : "¿Me pueden ayudar con disponibilidad y
             <span>Referencias</span>
           </button>
 
-          <button
-            onClick={() => setActiveTab("youtube")}
-            className={`flex items-center gap-2 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${
-              activeTab === "youtube"
-                ? "bg-[#026CDF] text-white shadow-md shadow-blue-500/20"
-                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-            }`}
-          >
-            <Youtube size={14} />
-            <span>YouTube & Demos</span>
-          </button>
+          {isRegistered && (
+            <button
+              onClick={() => setActiveTab("youtube")}
+              className={`flex items-center gap-2 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer ${
+                activeTab === "youtube"
+                  ? "bg-[#026CDF] text-white shadow-md shadow-blue-500/20"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+              }`}
+            >
+              <Youtube size={14} />
+              <span>YouTube & Demos</span>
+            </button>
+          )}
         </div>
 
         {/* ═══════════════════════════════════════════════════ */}
@@ -1163,9 +1173,9 @@ ${mensaje ? `Comentarios: ${mensaje}` : "¿Me pueden ayudar con disponibilidad y
         )}
 
         {/* ═══════════════════════════════════════════════════ */}
-        {/* PESTAÑA: YOUTUBE & DEMOSTRACIONES MULTIMEDIA */}
+        {/* PESTAÑA: YOUTUBE & DEMOSTRACIONES MULTIMEDIA (SOLO REGISTRADOS) */}
         {/* ═══════════════════════════════════════════════════ */}
-        {activeTab === "youtube" && (
+        {activeTab === "youtube" && isRegistered && (
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E2E8F0] shadow-md space-y-6 animate-in fade-in duration-300">
             <div className="flex items-center justify-between">
               <div>
