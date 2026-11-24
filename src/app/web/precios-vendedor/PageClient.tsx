@@ -1418,26 +1418,28 @@ export default function PreciosVendedorClient() {
           </div>
         </div>
 
-        {/* ── NAVIGATION SEGMENTED CONTROL BAR ── */}
-        <div className="border-t border-white/[0.04] bg-zinc-950 px-4 overflow-x-auto scrollbar-hide py-2">
-          <div className="w-full max-w-[1720px] mx-auto flex items-center gap-1">
-            {navigationTabs.map(tab => {
-              const isActive = activeTab === tab.id
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as TabType)}
-                  className={`shrink-0 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 flex items-center gap-2 border ${
-                    isActive
-                      ? "bg-zinc-800 text-white border-white/20 shadow-sm"
-                      : "bg-transparent text-zinc-400 border-transparent hover:text-zinc-200 hover:bg-white/[0.03]"
-                  }`}
-                >
-                  <tab.icon size={13} className={isActive ? "text-zinc-100" : "text-zinc-500"} />
-                  <span className="tracking-tight">{tab.label}</span>
-                </button>
-              )
-            })}
+        {/* ── NAVIGATION SEGMENTED CONTROL BAR (RECUADRO NARANJA CLARO) ── */}
+        <div className="border-t border-white/[0.06] bg-zinc-950/95 px-4 sm:px-6 lg:px-8 py-2.5">
+          <div className="w-full max-w-[1720px] mx-auto">
+            <div className="p-1 sm:p-1.5 rounded-xl sm:rounded-2xl bg-zinc-900/60 border border-orange-400/70 shadow-[0_0_15px_rgba(251,146,60,0.08)] flex items-center gap-1 sm:gap-1.5 overflow-x-auto scrollbar-hide backdrop-blur-md">
+              {navigationTabs.map(tab => {
+                const isActive = activeTab === tab.id
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as TabType)}
+                    className={`shrink-0 px-3 sm:px-3.5 py-1.5 rounded-lg sm:rounded-xl text-xs font-medium transition-all duration-150 flex items-center gap-2 border ${
+                      isActive
+                        ? "bg-orange-500/20 text-orange-200 border-orange-400/50 shadow-sm font-semibold"
+                        : "bg-transparent text-zinc-400 border-transparent hover:text-zinc-200 hover:bg-white/[0.04]"
+                    }`}
+                  >
+                    <tab.icon size={13} className={isActive ? "text-orange-400" : "text-zinc-500"} />
+                    <span className="tracking-tight">{tab.label}</span>
+                  </button>
+                )
+              })}
+            </div>
           </div>
         </div>
       </header>
