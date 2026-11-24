@@ -1267,7 +1267,7 @@ export default function PublicWebClient({
   const [ofertasFilter, setOfertasFilter] = useState<'todos' | 'blackfriday' | 'remate'>('todos')
   const [selectedAreaId, setSelectedAreaId] = useState<string | null>(null)
   const [newsletterFilter, setNewsletterFilter] = useState<'todos' | 'educacion' | 'tecnologia'>('todos')
-  const [blogFilter, setBlogFilter] = useState<'todos' | 'reviews' | 'soluciones' | 'recursos'>('todos')
+  const [blogFilter, setBlogFilter] = useState<string>('todos')
   const [copiedCtaId, setCopiedCtaId] = useState<string | null>(null)
 
   const copyCtaText = (id: string, text: string) => {
@@ -2376,33 +2376,47 @@ export default function PublicWebClient({
 
         {activeTab === 'blog' && (
           <motion.section key="blog" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-200">
-              <div className="flex items-center gap-3">
-                <button onClick={() => setActiveTab(null)} className="p-2.5 rounded-2xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 hover:text-slate-950 transition-all shadow-sm cursor-pointer" title="Volver a Inicio">
-                  <ChevronLeft size={18} />
-                </button>
-                <div>
-                  <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-blue-600 block">
-                    REVIEWS, OPINIONES & INVESTIGACIONES // #BLOG
+            {/* Editorial Masthead Bar */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-8 border-b border-slate-200">
+              <div className="space-y-3">
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <button onClick={() => setActiveTab(null)} className="p-2.5 rounded-2xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 hover:text-slate-950 transition-all shadow-sm cursor-pointer flex items-center gap-1.5 text-xs font-bold" title="Volver a Inicio">
+                    <ChevronLeft size={16} />
+                    <span>Inicio</span>
+                  </button>
+                  <span className="px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-mono font-bold text-[10px] uppercase tracking-widest flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-blue-600 animate-ping" />
+                    THE ATOMIC JOURNAL • EDICIÓN 2027
                   </span>
-                  <h2 className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-slate-950 font-heading">
-                    The ATOMIC Blog 📰
-                  </h2>
+                  <span className="hidden sm:inline-block text-[10px] font-mono text-slate-400">
+                    ISSN 2954-771X // PUBLICACIÓN CONTINUA
+                  </span>
+                </div>
+
+                <div>
+                  <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight text-slate-950 font-heading leading-tight">
+                    The ATOMIC Journal <span className="text-blue-600 font-mono text-2xl sm:text-4xl">#BLOG</span>
+                  </h1>
+                  <p className="text-xs sm:text-sm text-slate-600 max-w-2xl mt-1.5 leading-relaxed font-sans">
+                    Reviews rigurosos de hardware, ingeniería de software, investigación de soluciones y guías maestras de formación tecnológica para profesionales y empresas en Ecuador.
+                  </p>
                 </div>
               </div>
 
               {/* Subtabs Filter #BLOG */}
-              <div className="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 shrink-0 self-start md:self-auto shadow-inner overflow-x-auto scrollbar-hide">
+              <div className="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 shrink-0 self-start md:self-auto shadow-inner overflow-x-auto scrollbar-hide max-w-full">
                 {[
-                  { id: 'todos', label: '🔥 Todos los Artículos' },
-                  { id: 'reviews', label: '⭐ Reviews de Producto' },
-                  { id: 'soluciones', label: '🔬 Investigaciones & Soluciones' },
-                  { id: 'recursos', label: '🎓 Recursos & Guías' },
+                  { id: 'todos', label: '🔥 Todo el Journal' },
+                  { id: 'reviews', label: '💻 Hardware Reviews' },
+                  { id: 'soluciones', label: '🤖 Software & IA' },
+                  { id: 'seguridad', label: '📹 Seguridad & Domótica' },
+                  { id: 'energia', label: '⚡ Energía & EV' },
+                  { id: 'recursos', label: '🎓 Guías & Educación' },
                 ].map((f) => (
                   <button
                     key={f.id}
-                    onClick={() => setBlogFilter(f.id as any)}
-                    className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-bold font-heading transition-all cursor-pointer whitespace-nowrap ${
+                    onClick={() => setBlogFilter(f.id)}
+                    className={`px-3 py-2 sm:px-4 sm:py-2 rounded-xl text-xs font-bold font-heading transition-all cursor-pointer whitespace-nowrap ${
                       blogFilter === f.id
                         ? 'bg-slate-950 text-white shadow-md scale-102'
                         : 'text-slate-600 hover:text-slate-950 hover:bg-white'
@@ -2414,123 +2428,414 @@ export default function PublicWebClient({
               </div>
             </div>
 
-            {/* Official Embedded YouTube Video */}
-            <div className="mb-10 rounded-3xl overflow-hidden border border-slate-200/90 shadow-xl bg-white p-4">
-              <div className="flex items-center gap-2 mb-3 px-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse" />
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-red-600">Canal Oficial ATOMIC // YouTube & #BLOG</span>
-              </div>
-              <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-950 shadow-inner">
-                <iframe
-                  className="w-full h-full"
-                  src="https://www.youtube.com/embed/_rI46cUolfQ"
-                  title="ATOMIC Industrias Ecuador"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            </div>
-
-            {/* Articles Stream */}
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {[
-                {
-                  id: 'blog-recursos-mit',
-                  type: 'recursos',
-                  tag: '#BLOG // EDUCACIÓN DE ÉLITE',
-                  title: '🎓 Recursos Top Educativos: Cursos con MIT, Harvard & Stanford',
-                  desc: 'Rutas maestras de aprendizaje con certificación gratuita en Inteligencia Artificial, Programación, Finanzas y Liderazgo de las universidades #1 del mundo.',
-                  href: '/recursos',
-                  ctaText: '🎓 ¿Quieres estudiar en MIT, Harvard o Stanford 100% GRATIS? En ATOMIC preparamos la lista maestra de programas oficiales con acceso abierto en IA, programación y finanzas. 🚀 Mira la guía completa aquí: https://atomiccotizador.shop/recursos 📲 ¿Dudas o necesitas soporte para inscribirte? Escríbenos directo a nuestro WhatsApp: https://wa.me/593969043453 #BLOG #EducacionGratis #ATOMIC'
-                },
-                {
-                  id: 'blog-laptops-review',
-                  type: 'reviews',
-                  tag: '#BLOG // REVIEW DE PRODUCTO',
-                  title: '💻 Review & Benchmark: Laptops Gamers vs Ultrabooks Dell Latitude',
-                  desc: 'Evaluamos autonomía de batería, chasis de magnesio, temperaturas en renderizado 3D y rendimiento de CPUs Intel Core i7 para profesionales.',
-                  href: '/web/laptops-blog',
-                  ctaText: '💻 ¿Qué laptop elegir para desarrollo o ingeniería en 2026? Comparamos potencia gráfica vs durabilidad corporativa. 🚀 Lee el review completo aquí: https://atomiccotizador.shop/web/laptops-blog 📲 Cotiza tu equipo con garantía en WhatsApp: https://wa.me/593969043453 #BLOG #LaptopsEcuador #ATOMIC'
-                },
-                {
-                  id: 'blog-software-bots',
-                  type: 'soluciones',
-                  tag: '#BLOG // INVESTIGACIÓN DE SOLUCIONES',
-                  title: '🤖 Cómo un Bot de WhatsApp con Facturación SRI Multiplica Ventas',
-                  desc: 'Investigación empírica: Las empresas que responden en menos de 2 minutos y emiten facturas electrónicas en 3 segundos triplican su conversión comercial.',
-                  href: '/web/software',
-                  ctaText: '🤖 ¡Automatiza tus ventas y emite facturas SRI en 3 segundos! Descubre cómo los agentes inteligentes atienden WhatsApp 24/7. 🚀 Mira la investigación aquí: https://atomiccotizador.shop/web/software 📲 Agenda tu demo gratuita en WhatsApp: https://wa.me/593969043453 #BLOG #SoftwareSRI #Automatizacion'
-                },
-                {
-                  id: 'blog-doble-lente',
-                  type: 'reviews',
-                  tag: '#BLOG // REVIEW DE PRODUCTO',
-                  title: '📹 Review de Producto: Cámara Exterior Doble Lente (PIP) con 360°',
-                  desc: 'Prueba de campo bajo lluvia: Cómo la tecnología PIP elimina puntos ciegos en parques, residencias y negocios con luces disuasorias.',
-                  href: '/aurora-pro',
-                  ctaText: '📹 ¡Vigila tu hogar seguramente! Probamos la cámara exterior doble lente PIP con seguimiento 360° y luces disuasorias. 🚀 Conoce todos los detalles aquí: https://atomiccotizador.shop/aurora-pro 📲 Pídela desde $63.77 o con instalación en WhatsApp: https://wa.me/593969043453 #BLOG #SeguridadResidencial #ATOMIC'
-                },
-                {
-                  id: 'blog-prompts-mrbeast',
-                  type: 'recursos',
-                  tag: '#BLOG // RECURSOS & GUÍAS',
-                  title: '🎨 12 Prompts de IA para Fotografía Hiperrealista & VFX',
-                  desc: 'Fórmulas para miniaturas virales, retratos ejecutivos con iluminación de estudio y texturas cinematográficas con PDF oficial descargable.',
-                  href: '/prompts',
-                  ctaText: '🎨 Domina la fotografía con Inteligencia Artificial. 12 prompts hiperrealistas 8K con PDF oficial descargable. 🚀 Explora los prompts aquí: https://atomiccotizador.shop/prompts 📲 Soporte técnico vía WhatsApp: https://wa.me/593969043453 #BLOG #PromptsIA #ATOMIC'
-                },
-                {
-                  id: 'blog-cursos-youtube',
-                  type: 'recursos',
-                  tag: '#BLOG // RECURSOS & GUÍAS',
-                  title: '📺 9 Cursos Gratuitos de YouTube en Ventas, IA & Liderazgo',
-                  desc: 'Capacitación audiovisual de alto impacto para emprendedores, directores comerciales y desarrolladores sin costo de suscripción.',
-                  href: '/post-4',
-                  ctaText: '📺 Rutas de autoaprendizaje en video: Ventas de Alto Impacto, Liderazgo e Inteligencia Artificial 100% Gratis. 🚀 Mira los cursos aquí: https://atomiccotizador.shop/post-4 📲 Contacto oficial ATOMIC: https://wa.me/593969043453 #BLOG #CursosGratis #ATOMIC'
-                },
-              ].filter(post => blogFilter === 'todos' || post.type === blogFilter).map(post => (
-                <div key={post.id} className="p-6 rounded-3xl bg-white border border-slate-200/90 hover:border-blue-400/50 hover:shadow-xl transition-all flex flex-col justify-between group text-left">
-                  <div>
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full mb-3 inline-block">
-                      {post.tag}
+            {/* Featured Bento Hero Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-12">
+              {/* Cover Article (8 Cols) */}
+              <div className="lg:col-span-8 group relative rounded-3xl overflow-hidden bg-slate-950 border border-slate-800 shadow-2xl flex flex-col justify-between text-left transition-all">
+                <div className="relative h-72 sm:h-96 w-full overflow-hidden">
+                  <SafeImage
+                    src="/images/promociones/laptops-portada.jpg"
+                    alt="Review Laptops Gamers vs Ultrabooks Corporativos"
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-700 brightness-90 group-hover:brightness-100"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent" />
+                  <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2">
+                    <span className="px-3 py-1 rounded-full bg-blue-600/90 text-white font-mono font-bold text-[10px] uppercase tracking-wider backdrop-blur-md shadow-md flex items-center gap-1.5">
+                      <Flame size={12} className="text-amber-300" />
+                      HISTORIA DE PORTADA • EXCLUSIVO
                     </span>
-                    <h3 className="text-base font-bold text-slate-900 group-hover:text-blue-600 transition-colors mb-2 font-heading leading-snug">
-                      {post.title}
-                    </h3>
-                    <p className="text-xs text-slate-600 leading-relaxed mb-4">
-                      {post.desc}
-                    </p>
+                    <span className="px-3 py-1 rounded-full bg-slate-900/80 text-slate-200 font-mono text-[10px] uppercase tracking-wider backdrop-blur-md border border-white/10 flex items-center gap-1">
+                      <Clock size={11} />
+                      7 MIN DE LECTURA
+                    </span>
                   </div>
+                </div>
 
-                  <div className="pt-4 border-t border-slate-100 mt-auto space-y-2">
-                    <div className="grid grid-cols-2 gap-2">
-                      <Link href={post.href} className="py-2.5 px-3 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-[10px] uppercase tracking-wider text-center transition-colors flex items-center justify-center">
-                        Leer Artículo →
+                <div className="p-6 sm:p-8 relative z-10 -mt-16 bg-gradient-to-t from-slate-950 via-slate-950/95 to-transparent">
+                  <div className="flex items-center gap-2 text-blue-400 text-xs font-mono mb-2 uppercase tracking-widest">
+                    <span>#BLOG // HARDWARE REVIEW & BENCHMARK</span>
+                    <span>•</span>
+                    <span>Edición 2026-2027</span>
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white font-heading leading-tight mb-3 group-hover:text-blue-300 transition-colors">
+                    Review & Benchmark 2027: Laptops Gamers vs Estaciones Corporativas Dell & ThinkPad para Desarrollo e IA
+                  </h2>
+                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed mb-6 font-sans line-clamp-3">
+                    Sometemos a pruebas de estrés térmico, renderizado 3D y despliegue de contenedores Docker las laptops líderes del mercado en Ecuador. ¿Conviene una workstation con chasis de magnesio o una laptop gamer con GPU RTX? Desglosamos benchmarks reales, durabilidad y retorno de inversión.
+                  </p>
+
+                  <div className="pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold font-mono text-xs">
+                        AT
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-white font-heading">Ing. Juan Pablo Guzmán</p>
+                        <p className="text-[10px] font-mono text-slate-400">Laboratorio I+D de Hardware ATOMIC</p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Link
+                        href="/web/laptops-blog"
+                        className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-lg shadow-blue-600/30 cursor-pointer"
+                      >
+                        <span>Leer Artículo</span>
+                        <ArrowRight size={14} />
                       </Link>
                       <button
-                        onClick={() => copyCtaText(post.id, post.ctaText)}
-                        className={`py-2.5 px-3 rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition-all flex items-center justify-center gap-1 border cursor-pointer ${
-                          copiedCtaId === post.id
-                            ? 'bg-emerald-600 text-white border-emerald-600'
-                            : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200'
+                        onClick={() => copyCtaText('hero-laptop', '💻 ¿Qué laptop elegir para desarrollo o ingeniería en 2026-2027? Comparamos potencia gráfica vs durabilidad corporativa. 🚀 Lee el review completo aquí: https://atomiccotizador.shop/web/laptops-blog 📲 Cotiza tu equipo con garantía en WhatsApp: https://wa.me/593969043453 #BLOG #LaptopsEcuador #ATOMIC')}
+                        className={`px-3 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 border cursor-pointer ${
+                          copiedCtaId === 'hero-laptop'
+                            ? 'bg-emerald-600 text-white border-emerald-500'
+                            : 'bg-slate-800/80 hover:bg-slate-700 text-slate-200 border-slate-700'
                         }`}
                       >
-                        {copiedCtaId === post.id ? (
+                        {copiedCtaId === 'hero-laptop' ? (
                           <>
-                            <Check size={12} />
+                            <Check size={14} />
                             <span>¡Copiado!</span>
                           </>
                         ) : (
                           <>
-                            <Copy size={12} />
+                            <Copy size={14} />
                             <span>Copiar CTA</span>
                           </>
                         )}
                       </button>
+                      <a
+                        href="https://wa.me/593969043453?text=Hola%20ATOMIC,%20leí%20el%20review%20de%20laptops%20en%20el%20Blog%20y%20deseo%20asesoría%20para%20adquirir%20un%20equipo"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white transition-all shadow-md cursor-pointer"
+                        title="Consultar en WhatsApp"
+                      >
+                        <MessageSquare size={16} />
+                      </a>
                     </div>
                   </div>
                 </div>
-              ))}
+              </div>
+
+              {/* Side Bento Column (4 Cols) */}
+              <div className="lg:col-span-4 flex flex-col gap-6">
+                {/* ATOMIC Cinema Box */}
+                <div className="rounded-3xl bg-white border border-slate-200/90 shadow-xl p-5 flex flex-col justify-between text-left">
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse" />
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-red-600">
+                          ATOMIC CINEMA // SPOTLIGHT
+                        </span>
+                      </div>
+                      <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 font-mono text-[9px] font-bold">
+                        HD 1080P
+                      </span>
+                    </div>
+
+                    <div className="relative aspect-video rounded-2xl overflow-hidden bg-slate-950 shadow-inner mb-3 border border-slate-100">
+                      <iframe
+                        className="w-full h-full"
+                        src="https://www.youtube.com/embed/_rI46cUolfQ"
+                        title="ATOMIC Industrias Ecuador - Capacitación Técnica"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    </div>
+
+                    <h3 className="text-sm font-bold text-slate-900 font-heading leading-snug mb-1">
+                      Capacitación: Barreras Antipánico y Vías de Evacuación Segura
+                    </h3>
+                    <p className="text-xs text-slate-600 leading-relaxed mb-3">
+                      Normativa de seguridad contra siniestros, mecanismos de escape rápido y control de accesos corporativos.
+                    </p>
+                  </div>
+
+                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                    <span className="text-[10px] font-mono text-slate-400">Canal YouTube Oficial</span>
+                    <a
+                      href="https://www.youtube.com/@atomicindustrias"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs font-bold text-red-600 hover:text-red-700 flex items-center gap-1 font-heading"
+                    >
+                      <span>Ver Canal</span>
+                      <ArrowUpRight size={14} />
+                    </a>
+                  </div>
+                </div>
+
+                {/* Trending / Lo Más Leído */}
+                <div className="rounded-3xl bg-slate-950 text-white p-5 border border-slate-800 shadow-xl text-left flex flex-col justify-between flex-1">
+                  <div>
+                    <div className="flex items-center gap-2 mb-4 pb-2 border-b border-slate-800 text-blue-400 font-mono text-[10px] font-bold uppercase tracking-widest">
+                      <Flame size={13} className="text-amber-400" />
+                      <span>TRENDING // LO MÁS LEÍDO</span>
+                    </div>
+
+                    <div className="space-y-3.5">
+                      {[
+                        { num: '01', title: '12 Prompts de IA para Fotografía Hiperrealista & VFX', href: '/prompts', tag: 'IA & Creatividad' },
+                        { num: '02', title: 'Cómo un Bot de WhatsApp con Facturación SRI Triplica Ventas', href: '/web/software', tag: 'Software Empresarial' },
+                        { num: '03', title: 'Cámara Exterior Doble Lente PIP con Autotracking 360°', href: '/aurora-pro', tag: 'Seguridad Residencial' },
+                        { num: '04', title: 'Cursos Gratuitos con MIT, Harvard & Stanford', href: '/recursos', tag: 'Educación Élite' },
+                      ].map((item) => (
+                        <Link
+                          key={item.num}
+                          href={item.href}
+                          className="group flex items-start gap-3 hover:translate-x-1 transition-transform"
+                        >
+                          <span className="text-xl font-black font-mono text-blue-500/80 group-hover:text-blue-400 shrink-0">
+                            {item.num}
+                          </span>
+                          <div>
+                            <p className="text-xs font-bold text-slate-200 group-hover:text-white transition-colors leading-snug line-clamp-2">
+                              {item.title}
+                            </p>
+                            <span className="text-[9px] font-mono text-slate-400 uppercase tracking-wider block mt-0.5">
+                              {item.tag}
+                            </span>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="pt-3 mt-4 border-t border-slate-800 text-[10px] font-mono text-slate-400 text-center">
+                    Métricas verificadas • Atomic Analytics
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Articles Stream Grid */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-6 pb-3 border-b border-slate-200">
+                <div className="flex items-center gap-2">
+                  <BookOpen size={18} className="text-blue-600" />
+                  <h2 className="text-lg sm:text-xl font-black uppercase tracking-tight text-slate-900 font-heading">
+                    Artículos & Investigaciones Publicadas
+                  </h2>
+                </div>
+                <span className="text-xs font-mono text-slate-500">
+                  Mostrando publicaciones verificadas
+                </span>
+              </div>
+
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {[
+                  {
+                    id: 'blog-laptops-review',
+                    category: 'reviews',
+                    tag: '#BLOG // REVIEW DE PRODUCTO',
+                    readTime: '6 min',
+                    date: 'Noviembre 2026',
+                    author: 'Ing. Juan Pablo G.',
+                    image: '/images/promociones/laptops-portada.jpg',
+                    title: '💻 Review & Benchmark: Laptops Gamers vs Ultrabooks Dell Latitude',
+                    desc: 'Evaluamos autonomía de batería, chasis de magnesio, temperaturas en renderizado 3D y rendimiento de CPUs Intel Core i7 para profesionales y desarrolladores.',
+                    href: '/web/laptops-blog',
+                    ctaText: '💻 ¿Qué laptop elegir para desarrollo o ingeniería en 2026? Comparamos potencia gráfica vs durabilidad corporativa. 🚀 Lee el review completo aquí: https://atomiccotizador.shop/web/laptops-blog 📲 Cotiza tu equipo con garantía en WhatsApp: https://wa.me/593969043453 #BLOG #LaptopsEcuador #ATOMIC'
+                  },
+                  {
+                    id: 'blog-software-bots',
+                    category: 'soluciones',
+                    tag: '#BLOG // INVESTIGACIÓN DE SOFTWARE',
+                    readTime: '5 min',
+                    date: 'Noviembre 2026',
+                    author: 'Equipo Software I+D',
+                    image: '/images/software/automatizacion-bot-99.jpg',
+                    title: '🤖 Cómo un Bot de WhatsApp con Facturación SRI Multiplica Ventas',
+                    desc: 'Investigación empírica: Las empresas que responden en menos de 2 minutos y emiten facturas electrónicas en 3 segundos triplican su conversión comercial.',
+                    href: '/web/software',
+                    ctaText: '🤖 ¡Automatiza tus ventas y emite facturas SRI en 3 segundos! Descubre cómo los agentes inteligentes atienden WhatsApp 24/7. 🚀 Mira la investigación aquí: https://atomiccotizador.shop/web/software 📲 Agenda tu demo gratuita en WhatsApp: https://wa.me/593969043453 #BLOG #SoftwareSRI #Automatizacion'
+                  },
+                  {
+                    id: 'blog-doble-lente',
+                    category: 'seguridad',
+                    tag: '#BLOG // SEGURIDAD RESIDENCIAL',
+                    readTime: '4 min',
+                    date: 'Noviembre 2026',
+                    author: 'Seguridad Electrónica',
+                    image: '/images/hero-3d/slide-2.jpg',
+                    title: '📹 Review de Producto: Cámara Exterior Doble Lente (PIP) con Vigilancia 360°',
+                    desc: 'Prueba de campo bajo lluvia (IP66): Cómo la tecnología PIP elimina puntos ciegos en parques, residencias y negocios con luces disuasorias y autotracking.',
+                    href: '/aurora-pro',
+                    ctaText: '📹 ¡Vigila tu hogar seguramente! Probamos la cámara exterior doble lente PIP con seguimiento 360° y luces disuasorias. 🚀 Conoce todos los detalles aquí: https://atomiccotizador.shop/aurora-pro 📲 Pídela desde $63.77 o con instalación en WhatsApp: https://wa.me/593969043453 #BLOG #SeguridadResidencial #ATOMIC'
+                  },
+                  {
+                    id: 'blog-recursos-mit',
+                    category: 'recursos',
+                    tag: '#BLOG // EDUCACIÓN DE ÉLITE',
+                    readTime: '7 min',
+                    date: 'Noviembre 2026',
+                    author: 'Educación & Certificaciones',
+                    image: '/images/tech-command-center-4k.jpg',
+                    title: '🎓 Recursos Top Educativos: Cursos con MIT, Harvard & Stanford',
+                    desc: 'Rutas maestras de aprendizaje con certificación gratuita en Inteligencia Artificial, Programación, Finanzas y Liderazgo de las universidades #1 del mundo.',
+                    href: '/recursos',
+                    ctaText: '🎓 ¿Quieres estudiar en MIT, Harvard o Stanford 100% GRATIS? En ATOMIC preparamos la lista maestra de programas oficiales con acceso abierto en IA, programación y finanzas. 🚀 Mira la guía completa aquí: https://atomiccotizador.shop/recursos 📲 ¿Dudas o necesitas soporte para inscribirte? Escríbenos directo a nuestro WhatsApp: https://wa.me/593969043453 #BLOG #EducacionGratis #ATOMIC'
+                  },
+                  {
+                    id: 'blog-prompts-mrbeast',
+                    category: 'recursos',
+                    tag: '#BLOG // RECURSOS & GUÍAS',
+                    readTime: '5 min',
+                    date: 'Noviembre 2026',
+                    author: 'Laboratorio de Creatividad IA',
+                    image: '/images/atomic-studio/mega-pack-creador-contenido.jpg',
+                    title: '🎨 12 Prompts de IA para Fotografía Hiperrealista & VFX Publicitario',
+                    desc: 'Fórmulas maestras para miniaturas virales, retratos ejecutivos con iluminación de estudio y texturas cinematográficas con PDF oficial descargable.',
+                    href: '/prompts',
+                    ctaText: '🎨 Domina la fotografía con Inteligencia Artificial. 12 prompts hiperrealistas 8K con PDF oficial descargable. 🚀 Explora los prompts aquí: https://atomiccotizador.shop/prompts 📲 Soporte técnico vía WhatsApp: https://wa.me/593969043453 #BLOG #PromptsIA #ATOMIC'
+                  },
+                  {
+                    id: 'blog-anker-solix',
+                    category: 'energia',
+                    tag: '#BLOG // ENERGÍA & RESILIENCIA',
+                    readTime: '5 min',
+                    date: 'Noviembre 2026',
+                    author: 'Ingeniería Energética',
+                    image: '/images/anker-solix/anker-solix-c300-hero-hogar.jpg',
+                    title: '⚡ Review & Guía: Estaciones de Poder Anker Solix C300 ante Apagones',
+                    desc: 'Análisis de celdas LiFePO4 de 300W/600W pico: Cómo alimentar laptops de trabajo, routers de fibra óptica y sistemas de seguridad durante cortes prolongados.',
+                    href: '/web/generadores',
+                    ctaText: '⚡ ¿Preparado para los cortes de luz? Probamos la estación de energía Anker Solix C300 con carga ultra rápida y celdas LiFePO4. 🚀 Mira el análisis completo aquí: https://atomiccotizador.shop/web/generadores 📲 Cotiza la tuya con entrega inmediata en WhatsApp: https://wa.me/593969043453 #BLOG #AnkerSolix #EnergiaIninterrumpida'
+                  },
+                  {
+                    id: 'blog-cargadores-wallbox',
+                    category: 'energia',
+                    tag: '#BLOG // MOVILIDAD SOSTENIBLE',
+                    readTime: '6 min',
+                    date: 'Noviembre 2026',
+                    author: 'Movilidad Eléctrica',
+                    image: '/images/promociones/cargador-wallbox-mevo.jpg',
+                    title: '🔋 Guía Técnica de Instalación de Cargadores Wallbox Livoltek 7.3 kW',
+                    desc: 'Requerimientos 220V, protecciones diferenciales y balanceo dinámico de carga para residencias y tiempos de recarga para vehículos eléctricos en Ecuador.',
+                    href: '/web/cargadores-electricos',
+                    ctaText: '🔋 ¿Compraste un vehículo eléctrico en Ecuador? Te explicamos cómo instalar un cargador Wallbox Livoltek 7.3 kW con total seguridad. 🚀 Lee la guía aquí: https://atomiccotizador.shop/web/cargadores-electricos 📲 Cotiza cargador + instalación certificada: https://wa.me/593969043453 #BLOG #AutosElectricos #Wallbox'
+                  },
+                  {
+                    id: 'blog-cursos-youtube',
+                    category: 'recursos',
+                    tag: '#BLOG // CAPACITACIÓN GRATUITA',
+                    readTime: '4 min',
+                    date: 'Noviembre 2026',
+                    author: 'Academy ATOMIC',
+                    image: '/images/wholesale-tech-hub-4k.jpg',
+                    title: '📺 9 Cursos Gratuitos de YouTube en Ventas, IA & Liderazgo Estratégico',
+                    desc: 'Capacitación audiovisual de alto impacto para emprendedores, directores comerciales y desarrolladores sin costo de suscripción.',
+                    href: '/post-4',
+                    ctaText: '📺 Rutas de autoaprendizaje en video: Ventas de Alto Impacto, Liderazgo e Inteligencia Artificial 100% Gratis. 🚀 Mira los cursos aquí: https://atomiccotizador.shop/post-4 📲 Contacto oficial ATOMIC: https://wa.me/593969043453 #BLOG #CursosGratis #ATOMIC'
+                  },
+                ].filter(post => blogFilter === 'todos' || post.category === blogFilter).map(post => (
+                  <div
+                    key={post.id}
+                    className="group rounded-3xl bg-white border border-slate-200/90 hover:border-blue-400/50 hover:shadow-2xl transition-all duration-300 flex flex-col justify-between overflow-hidden text-left"
+                  >
+                    <div>
+                      {/* Card Cover Image with zoom */}
+                      <div className="relative h-48 w-full overflow-hidden bg-slate-100">
+                        <SafeImage
+                          src={post.image}
+                          alt={post.title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute top-3 left-3 flex items-center gap-1.5">
+                          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-white bg-slate-900/80 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/10 shadow-sm">
+                            {post.tag}
+                          </span>
+                        </div>
+                        <div className="absolute top-3 right-3">
+                          <span className="text-[10px] font-mono font-bold text-slate-800 bg-white/90 backdrop-blur-md px-2 py-0.5 rounded-md shadow-sm flex items-center gap-1">
+                            <Clock size={10} />
+                            {post.readTime}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Card Body */}
+                      <div className="p-5 sm:p-6">
+                        <div className="flex items-center gap-2 text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-2">
+                          <span>{post.date}</span>
+                          <span>•</span>
+                          <span>{post.author}</span>
+                        </div>
+                        <h3 className="text-base sm:text-lg font-black text-slate-900 group-hover:text-blue-600 transition-colors mb-2 font-heading leading-snug">
+                          {post.title}
+                        </h3>
+                        <p className="text-xs text-slate-600 leading-relaxed line-clamp-3">
+                          {post.desc}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Bottom Action Bar */}
+                    <div className="p-5 sm:p-6 pt-0 mt-auto">
+                      <div className="pt-4 border-t border-slate-100 space-y-2">
+                        <div className="grid grid-cols-2 gap-2">
+                          <Link
+                            href={post.href}
+                            className="py-2.5 px-3 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-[10px] uppercase tracking-wider text-center transition-colors flex items-center justify-center gap-1 group-hover:bg-blue-600 cursor-pointer"
+                          >
+                            <span>Leer Más</span>
+                            <ArrowRight size={12} />
+                          </Link>
+                          <button
+                            onClick={() => copyCtaText(post.id, post.ctaText)}
+                            className={`py-2.5 px-3 rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition-all flex items-center justify-center gap-1 border cursor-pointer ${
+                              copiedCtaId === post.id
+                                ? 'bg-emerald-600 text-white border-emerald-600'
+                                : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200'
+                            }`}
+                          >
+                            {copiedCtaId === post.id ? (
+                              <>
+                                <Check size={12} />
+                                <span>¡Copiado!</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy size={12} />
+                                <span>Copiar CTA</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Bottom Creator / Community Banner */}
+            <div className="mt-14 rounded-3xl bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border border-slate-800 p-6 sm:p-8 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl text-left">
+              <div className="space-y-2 max-w-2xl">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-blue-400 bg-blue-950/80 px-2.5 py-1 rounded-full border border-blue-800/50 inline-block">
+                  RED EDITORIAL // CREADORES & AFILIADOS #BLOG
+                </span>
+                <h3 className="text-xl sm:text-2xl font-black font-heading leading-tight">
+                  ¿Creas contenido de tecnología o gestionas canales de difusión?
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                  Utiliza el botón <strong className="text-slate-200">«Copiar CTA»</strong> en cada artículo para obtener el texto formateado con enlaces directos y trazabilidad para redes sociales (TikTok, LinkedIn, Instagram). Direcciona consultas a nuestro WhatsApp CRM con comisión de canal.
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 w-full md:w-auto">
+                <a
+                  href="https://wa.me/593969043453?text=Hola%20ATOMIC,%20deseo%20sumarme%20a%20la%20red%20de%20difusión%20y%20afiliados%20del%20Blog%20tecnológico"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30 cursor-pointer"
+                >
+                  <MessageSquare size={16} />
+                  <span>Contactar Red Editorial</span>
+                </a>
+              </div>
             </div>
           </motion.section>
         )}
