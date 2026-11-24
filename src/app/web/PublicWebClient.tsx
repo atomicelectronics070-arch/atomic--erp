@@ -8,7 +8,8 @@ import {
   ShoppingBag, ChevronRight, ArrowRight, Shield, Zap, Truck,
   ChevronLeft, Hexagon, Star, X, Smartphone, Sparkles, Code, Bot,
   Search, ImageOff, Home, Building, Factory, Cpu, Gamepad2, Utensils, Laptop, Award, User, Settings, ChevronDown, Package, LogIn, Menu,
-  Wrench, Clock, ShieldCheck, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle2, Briefcase, Loader2
+  Wrench, Clock, ShieldCheck, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle2, Briefcase, Loader2,
+  Youtube, Play, PhoneCall, MessageSquare
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -613,6 +614,7 @@ export default function PublicWebClient({
   const [activeTab, setActiveTab] = useState<string | null>(null)
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false)
   const [coverflowSection, setCoverflowSection] = useState<'ofertas' | 'promociones' | 'temporada' | 'combos' | 'instalacion' | 'servicios'>('ofertas')
+  const [catalogSubdivision, setCatalogSubdivision] = useState<string>("todos")
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -721,6 +723,31 @@ export default function PublicWebClient({
     return base
   }, [searchQuery, searchResults, dynamicProducts, initialProducts, activeMainCategoryId, activeSubcategoryId, metadata?.categories])
 
+  const CATALOG_SUBDIVISIONS = useMemo(() => [
+    { id: "todos", label: "Todos los Productos", icon: "🌐" },
+    { id: "monitores", label: "Monitores & Pantallas", icon: "🖥️", keywords: ["monitor", "pantalla", "fhd", "ips", "144hz", "165hz", "curvo", "asus", "lg", "gigabyte"] },
+    { id: "cerraduras", label: "Cerraduras Smart de Oferta", icon: "🔐", keywords: ["cerradura", "biometric", "facial", "manija", "pistones", "smart lock"] },
+    { id: "generadores", label: "Generadores & Energía", icon: "⚡", keywords: ["generador", "bateria", "solix", "regulador", "ups", "anker", "solar", "planta"] },
+    { id: "consolas", label: "Consolas & Gaming", icon: "🎮", keywords: ["ps5", "ps4", "playstation", "mando", "dualsense", "consola", "nintendo", "xbox", "gaming"] },
+    { id: "hogar", label: "Acabados Interior & Exterior (Hogar)", icon: "🍳", keywords: ["cocina", "horno", "campana", "encimera", "freidora", "induccion"] },
+    { id: "automatizacion", label: "Automatización & Accesos", icon: "🚧", keywords: ["torniquete", "barrera", "acceso", "ditec", "antipanico", "cerco"] },
+    { id: "camaras", label: "Cámaras & Videovigilancia", icon: "📷", keywords: ["camara", "cctv", "ezviz", "imou", "dvr", "nvr", "videoportero", "seguridad"] },
+    { id: "laptops", label: "Laptops & Computación", icon: "💻", keywords: ["laptop", "dell", "hp", "lenovo", "portatil", "computadora", "aio", "cpu"] },
+    { id: "repuestos", label: "Repuestos de Laptop", icon: "🔧", keywords: ["repuesto", "teclado", "bateria", "pantalla", "cargador", "flex"] }
+  ], [])
+
+  const displayedProducts = useMemo(() => {
+    if (catalogSubdivision === "todos") return filteredProducts
+    const sub = CATALOG_SUBDIVISIONS.find(s => s.id === catalogSubdivision)
+    if (!sub || !('keywords' in sub)) return filteredProducts
+    const keywords: string[] = (sub as any).keywords || []
+    return filteredProducts.filter((p: any) => {
+      const text = `${p.name || ''} ${p.description || ''} ${p.category?.name || ''}`.toLowerCase()
+      return keywords.some((kw: string) => text.includes(kw.toLowerCase()))
+    })
+  }, [filteredProducts, catalogSubdivision, CATALOG_SUBDIVISIONS])
+
+
   return (
     <div className="w-full bg-[#FAFAFC] min-h-screen text-slate-900 font-sans selection:bg-blue-600/20 selection:text-blue-900 overflow-x-hidden">
       
@@ -751,7 +778,7 @@ export default function PublicWebClient({
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between gap-3 py-2.5">
 
           {/* LEFT: 3-LINES HAMBURGER + TABS */}
-          <div className="flex items-center gap-2.5 overflow-x-auto scrollbar-hide">
+          <div className="flex items-center gap-2.5 overflow-x-auto scrollbar-hide no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {/* 3-LINES HAMBURGER ICON BUTTON */}
             <button
               onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
@@ -1952,160 +1979,171 @@ export default function PublicWebClient({
       {/* ═══════════ RELOCATED: FUTURISTIC PARALLAX BANNER (RIGHT AFTER OFERTAS, BEFORE CATEGORIAS) ═══════════ */}
       <FuturisticParallaxSection />
 
-      {/* ═══════════ CATEGORÍAS — FRONTENDJOE CARD STYLE ═══════════ */}
-      <section className="w-full max-w-7xl mx-auto px-6 pt-16 pb-12" id="categorias-seccion">
-        <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-xs font-bold text-blue-800 mb-4 shadow-sm">
-            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-            <span className="font-heading uppercase tracking-wider text-[11px]">Catálogo Principal de Especialización</span>
-          </div>
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight text-slate-950 font-heading mb-4">
-            CATEGORÍAS
-          </h2>
-          <p className="text-sm text-slate-600 leading-relaxed">
-            Explora nuestras 8 divisiones especializadas en tecnología residencial, electrónica de consumo, equipamiento para el hogar, maquinaria industrial y soluciones digitales.
-          </p>
-        </div>
+      {/* ═══════════ CATEGORÍAS — LARGE PRO CARDS WITH DEEP DARK SHADOW BACKDROP ═══════════ */}
+      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-16 scroll-mt-24 relative" id="categorias-seccion">
+        
+        {/* Deep ambient dark shadow backdrop behind the category zone */}
+        <div className="rounded-[40px] bg-gradient-to-b from-[#060813] via-[#090d1c] to-[#04060f] p-6 sm:p-12 border border-white/10 shadow-[0_25px_80px_rgba(0,0,0,0.8)] relative overflow-hidden">
+          
+          {/* Subtle background glow */}
+          <div className="absolute top-0 inset-x-0 h-96 bg-[radial-gradient(ellipse_at_top,_rgba(59,130,246,0.18),_transparent_70%)] pointer-events-none" />
 
-        {/* 8 CATEGORY CARDS GRID — EXACT FRONTENDJOE FLOATING OFFSET STYLE */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
-          {[
-            {
-              id: 'cat-residencial',
-              title: 'TECNOLOGÍA RESIDENCIAL',
-              subtitle: 'DOMÓTICA & SEGURIDAD SMART',
-              description: 'Cámaras IP con audio bidireccional, reconocimiento facial 3D, porteros inteligentes y control de accesos.',
-              image: '/images/categories/tecnologia-residencial.jpg',
-              badge: 'SEGURIDAD SMART',
-              query: 'camara',
-            },
-            {
-              id: 'cat-electronica',
-              title: 'ELECTRÓNICA',
-              subtitle: 'AUDIO, GADGETS & PERIFÉRICOS',
-              description: 'Equipos de audio de alta fidelidad, iluminación inteligente, periféricos para creadores y componentes electrónicos.',
-              image: '/images/categories/electronica.jpg',
-              badge: 'AUDIO & GADGETS',
-              query: 'electronica',
-            },
-            {
-              id: 'cat-hogar',
-              title: 'HOGAR',
-              subtitle: 'COCINA PREMIUM & CONFORT',
-              description: 'Encimeras a gas de alta eficiencia, hornos empotrables de acero inoxidable y electrodomésticos modernos para el hogar.',
-              image: '/images/categories/hogar.jpg',
-              badge: 'LÍNEA HOGAR',
-              query: 'cocina',
-            },
-            {
-              id: 'cat-industria',
-              title: 'INDUSTRIA',
-              subtitle: 'MAQUINARIA & PLANTAS DE BLOQUES',
-              description: 'Plantas automáticas de bloques de hormigón, mezcladoras de concreto reforzado y automatización pesada.',
-              image: '/images/categories/industria.jpg',
-              badge: 'INDUSTRIAL',
-              query: 'bloque',
-            },
-            {
-              id: 'cat-entretenimiento',
-              title: 'ENTRETENIMIENTO',
-              subtitle: 'GAMING, CONSOLAS & MANDOS',
-              description: 'Mandos DualSense inalámbricos para PS5, consolas Nintendo Switch, Xbox Series X|S y PlayStation Portal.',
-              image: '/images/categories/entretenimiento.jpg',
-              badge: 'GAMING',
-              query: 'mando',
-            },
-            {
-              id: 'cat-computacion',
-              title: 'COMPUTACIÓN',
-              subtitle: 'LAPTOPS, PCS & PROCESADORES',
-              description: 'Portátiles de alto rendimiento, estaciones de trabajo All-in-One Dell, CPUs Intel/AMD y almacenamiento ultrarrápido.',
-              image: '/images/categories/computacion.jpg',
-              badge: 'HARDWARE',
-              query: 'laptop',
-            },
-            {
-              id: 'cat-telefonia',
-              title: 'TELEFONÍA',
-              subtitle: 'SMARTPHONES, TABLETS & REDES',
-              description: 'Dispositivos móviles de última generación, tablets para productividad, accesorios de carga rápida y conectividad.',
-              image: '/images/categories/telefonia.jpg',
-              badge: 'MÓVIL',
-              query: 'telefono',
-            },
-            {
-              id: 'cat-software',
-              title: 'SOFTWARE & SERVICIOS',
-              subtitle: 'ERP, CRM & AUTOMATIZACIÓN IA',
-              description: 'Sistemas de gestión empresarial integral, cotizadores automáticos, asesoría tecnológica y desarrollo a medida.',
-              image: '/images/categories/software-servicios.jpg',
-              badge: 'CLOUD & IA',
-              query: 'software',
-            },
-          ].map((c) => (
-            <div
-              key={c.id}
-              className="relative flex flex-col sm:flex-row items-center bg-white border border-slate-200/90 rounded-3xl p-6 sm:p-7 shadow-[0_15px_35px_rgba(0,0,0,0.06)] hover:shadow-[0_20px_45px_rgba(59,130,246,0.12)] hover:border-blue-400/50 transition-all duration-300 group"
-            >
-              {/* Floating offset image */}
-              <div className="relative shrink-0 w-full sm:w-48 h-52 sm:h-56 -mt-8 sm:mt-0 sm:-ml-12 rounded-2xl overflow-hidden shadow-lg border border-slate-200/80 bg-slate-100">
-                <img
-                  src={c.image}
-                  alt={c.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-slate-950/80 backdrop-blur-md border border-white/20 text-[9px] font-mono font-bold text-white uppercase tracking-wider">
-                  {c.badge}
-                </div>
-              </div>
-
-              {/* Card content */}
-              <div className="flex flex-col pt-5 sm:pt-0 sm:pl-6 text-center sm:text-left flex-grow">
-                <h3 className="text-xl sm:text-2xl font-black text-slate-950 font-heading tracking-tight leading-tight group-hover:text-blue-600 transition-colors uppercase">
-                  {c.title}
-                </h3>
-                <p className="text-xs font-bold text-blue-600 mt-1 mb-2 font-heading uppercase tracking-wider">
-                  {c.subtitle}
-                </p>
-                <p className="text-xs text-slate-600 leading-relaxed mb-6 line-clamp-3">
-                  {c.description}
-                </p>
-
-                {/* Buttons styled like FrontendJoe */}
-                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 mt-auto">
-                  {c.id === 'cat-residencial' ? (
-                    <Link
-                      href="/web/cerraduras-smart"
-                      className="px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black font-heading transition-all shadow-md hover:scale-105 flex items-center gap-1.5"
-                    >
-                      <Wrench size={13} />
-                      <span>Kits + Instalación</span>
-                    </Link>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        setSearchQuery(c.query);
-                        document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' });
-                      }}
-                      className="px-5 py-2.5 rounded-full border border-slate-300 hover:border-blue-500 hover:bg-blue-50 text-slate-800 text-xs font-bold font-heading transition-all cursor-pointer"
-                    >
-                      Ver Catálogo
-                    </button>
-                  )}
-                  <a
-                    href={`https://wa.me/593969043453?text=${encodeURIComponent(`Hola ATOMIC! Deseo información y cotización sobre la categoría: ${c.title}`)}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black font-heading transition-all shadow-md hover:scale-105"
-                  >
-                    💬 WhatsApp
-                  </a>
-                </div>
-              </div>
+          {/* Section Header */}
+          <div className="text-center max-w-3xl mx-auto mb-14 relative z-10">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/15 border border-blue-400/30 text-xs font-bold text-blue-300 mb-4 shadow-inner">
+              <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+              <span className="font-heading uppercase tracking-wider text-[11px] font-mono">Divisiones Especializadas Oficiales</span>
             </div>
-          ))}
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight text-white font-heading mb-3">
+              CATEGORÍAS DE ESPECIALIZACIÓN
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl mx-auto">
+              Nuestras 8 divisiones principales en tecnología residencial, electrónica mayorista, línea de hogar, computación y automatización pesada con respaldo y garantía directa.
+            </p>
+          </div>
+
+          {/* 8 CATEGORY CARDS GRID — 2 COLUMNS, EXPANDED & PROMINENT */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 relative z-10">
+            {[
+              {
+                id: 'cat-residencial',
+                title: 'TECNOLOGÍA RESIDENCIAL',
+                subtitle: 'DOMÓTICA & SEGURIDAD SMART',
+                description: 'Cámaras IP con audio bidireccional, reconocimiento facial 3D, porteros inteligentes y cerraduras biométricas con control centralizado.',
+                image: '/images/categories/tecnologia-residencial.jpg',
+                badge: 'SEGURIDAD SMART',
+                query: 'camara',
+              },
+              {
+                id: 'cat-electronica',
+                title: 'ELECTRÓNICA & GADGETS',
+                subtitle: 'AUDIO, PERIFÉRICOS & COMPONENTES',
+                description: 'Equipos de audio de alta fidelidad, iluminación inteligente, periféricos para creadores y componentes electrónicos al por mayor.',
+                image: '/images/categories/electronica.jpg',
+                badge: 'AUDIO & GADGETS',
+                query: 'electronica',
+              },
+              {
+                id: 'cat-hogar',
+                title: 'LÍNEA HOGAR & COCINA',
+                subtitle: 'COCINA PREMIUM & CONFORT',
+                description: 'Encimeras a gas y de inducción, hornos empotrables de acero inoxidable y campanas extractoras con filtros de carbón activado.',
+                image: '/images/categories/hogar.jpg',
+                badge: 'LÍNEA HOGAR',
+                query: 'cocina',
+              },
+              {
+                id: 'cat-industria',
+                title: 'INDUSTRIA & CONCRETO',
+                subtitle: 'MAQUINARIA & PLANTAS DE BLOQUES',
+                description: 'Plantas automáticas de bloques de hormigón, mezcladoras de concreto reforzado y sistemas de automatización industrial.',
+                image: '/images/categories/industria.jpg',
+                badge: 'INDUSTRIAL',
+                query: 'bloque',
+              },
+              {
+                id: 'cat-entretenimiento',
+                title: 'GAMING & ENTRETENIMIENTO',
+                subtitle: 'CONSOLAS, MANDOS & ACCESORIOS',
+                description: 'Mandos DualSense inalámbricos para PS5, consolas PlayStation 4, PlayStation Portal, Nintendo Switch y accesorios gamer.',
+                image: '/images/categories/entretenimiento.jpg',
+                badge: 'GAMING OFICIAL',
+                query: 'mando',
+              },
+              {
+                id: 'cat-computacion',
+                title: 'COMPUTACIÓN & LAPTOPS',
+                subtitle: 'LAPTOPS, PCS & PROCESADORES',
+                description: 'Portátiles corporativas y gamer, estaciones de trabajo All-in-One Dell, CPUs de alto rendimiento y almacenamiento SSD ultrarrápido.',
+                image: '/images/categories/computacion.jpg',
+                badge: 'HARDWARE PRO',
+                query: 'laptop',
+              },
+              {
+                id: 'cat-telefonia',
+                title: 'TELEFONÍA & MÓVILES',
+                subtitle: 'SMARTPHONES, TABLETS & REDES',
+                description: 'Dispositivos móviles de última generación, tablets para productividad, accesorios de carga rápida y conectividad garantizada.',
+                image: '/images/categories/telefonia.jpg',
+                badge: 'MÓVIL & CONECTIVIDAD',
+                query: 'telefono',
+              },
+              {
+                id: 'cat-software',
+                title: 'SOFTWARE & AUTOMATIZACIÓN',
+                subtitle: 'ERP, CRM & DESARROLLO A MEDIDA',
+                description: 'Sistemas de facturación electrónica SRI, cotizadores automáticos, plataformas ERP para empresas e integración hardware-software.',
+                image: '/images/categories/software-servicios.jpg',
+                badge: 'SOFTWARE & CLOUD',
+                query: 'software',
+              },
+            ].map((c) => (
+              <div
+                key={c.id}
+                className="relative flex flex-col sm:flex-row items-center bg-white border border-slate-200/90 hover:border-blue-400 rounded-3xl p-7 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.35)] hover:shadow-[0_25px_65px_rgba(59,130,246,0.3)] transition-all duration-300 group"
+              >
+                {/* Large Floating offset image */}
+                <div className="relative shrink-0 w-full sm:w-56 h-56 sm:h-60 -mt-8 sm:mt-0 sm:-ml-12 rounded-2xl overflow-hidden shadow-2xl border border-slate-300 bg-slate-100">
+                  <img
+                    src={c.image}
+                    alt={c.title}
+                    className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
+                  />
+                  <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-slate-950/85 backdrop-blur-md border border-white/20 text-[10px] font-mono font-bold text-white uppercase tracking-wider shadow">
+                    {c.badge}
+                  </div>
+                </div>
+
+                {/* Expanded Card content */}
+                <div className="flex flex-col pt-6 sm:pt-0 sm:pl-7 text-center sm:text-left flex-grow">
+                  <h3 className="text-xl sm:text-2xl font-black text-slate-950 font-heading tracking-tight leading-tight group-hover:text-blue-600 transition-colors uppercase">
+                    {c.title}
+                  </h3>
+                  <p className="text-xs font-bold text-blue-600 mt-1 mb-2 font-mono tracking-wider uppercase">
+                    {c.subtitle}
+                  </p>
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-6 line-clamp-3">
+                    {c.description}
+                  </p>
+
+                  {/* Actions */}
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 mt-auto">
+                    {c.id === 'cat-residencial' ? (
+                      <Link
+                        href="/web/cerraduras-smart"
+                        className="px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-black font-heading transition-all shadow-md hover:scale-105 flex items-center gap-1.5"
+                      >
+                        <Wrench size={13} />
+                        <span>Kits + Instalación</span>
+                      </Link>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          setSearchQuery(c.query);
+                          document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                        className="px-5 py-2.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold font-heading transition-all shadow-md hover:scale-105 cursor-pointer"
+                      >
+                        Ver Catálogo
+                      </button>
+                    )}
+                    <a
+                      href={`https://wa.me/593969043453?text=${encodeURIComponent(`Hola ATOMIC! Deseo información y cotización sobre la categoría: ${c.title}`)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black font-heading transition-all shadow-md hover:scale-105"
+                    >
+                      💬 WhatsApp
+                    </a>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
         </div>
       </section>
+
 
       {/* ═══════════ MAIN FEATURED PROMO BANNERS (APPIT BENTO STYLE) ═══════════ */}
       {!searchQuery && !activeMainCategoryId && (
@@ -2166,23 +2204,46 @@ export default function PublicWebClient({
       <section className="w-full max-w-7xl mx-auto px-6 py-8 scroll-mt-32" id="productos">
         
         {/* SECTION TITLE & FILTER RESULTS COUNTER */}
-        <div className="flex items-center justify-between mb-8 pb-4 border-b border-slate-200">
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-slate-950 font-heading">
-              Catálogo General de Productos
-            </h2>
-            <p className="text-slate-500 text-xs font-mono mt-1">
-              {filteredProducts.length} productos disponibles
-            </p>
+        <div className="flex flex-col gap-4 mb-6 pb-4 border-b border-slate-200">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-slate-950 font-heading">
+                Catálogo General de Productos
+              </h2>
+              <p className="text-slate-500 text-xs font-mono mt-0.5">
+                {displayedProducts.length} productos disponibles en esta sección
+              </p>
+            </div>
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="text-xs text-slate-700 hover:text-slate-950 font-bold uppercase tracking-wider flex items-center gap-1 bg-slate-100 hover:bg-slate-200 border border-slate-200 px-3 py-1.5 rounded-full cursor-pointer w-fit"
+              >
+                <span>✕ Limpiar Búsqueda</span>
+              </button>
+            )}
           </div>
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery("")}
-              className="text-xs text-slate-700 hover:text-slate-950 font-bold uppercase tracking-wider flex items-center gap-1 bg-slate-100 hover:bg-slate-200 border border-slate-200 px-3 py-1.5 rounded-full cursor-pointer"
-            >
-              <span>✕ Limpiar Búsqueda</span>
-            </button>
-          )}
+
+          {/* SUBDIVISION PILLS BAR (DESAGRUPACIÓN DE CATÁLOGO) */}
+          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide no-scrollbar py-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            {CATALOG_SUBDIVISIONS.map(sub => {
+              const isSelected = catalogSubdivision === sub.id
+              return (
+                <button
+                  key={sub.id}
+                  onClick={() => setCatalogSubdivision(sub.id)}
+                  className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold font-heading transition-all flex items-center gap-1.5 border cursor-pointer ${
+                    isSelected
+                      ? "bg-slate-950 text-white border-slate-950 shadow-md scale-102"
+                      : "bg-white hover:bg-slate-100 text-slate-700 border-slate-200/90 hover:text-slate-950"
+                  }`}
+                >
+                  <span>{sub.icon}</span>
+                  <span>{sub.label}</span>
+                </button>
+              )
+            })}
+          </div>
         </div>
 
         {/* LOADING & GRID RENDER */}
@@ -2191,19 +2252,19 @@ export default function PublicWebClient({
             <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mb-4" />
             <p className="text-slate-500 text-xs font-mono uppercase tracking-widest">Cargando catálogo...</p>
           </div>
-        ) : filteredProducts.length === 0 ? (
+        ) : displayedProducts.length === 0 ? (
           <div className="py-20 text-center border border-dashed border-slate-300 rounded-3xl p-8 bg-white shadow-sm">
             <p className="text-slate-500 text-xs font-mono uppercase tracking-widest mb-4">No se encontraron productos con esos criterios</p>
             <button
-              onClick={() => { setSearchQuery(""); setActiveMainCategoryId(null); setActiveSubcategoryId(null); }}
-              className="px-6 py-3 bg-slate-950 text-white font-bold text-xs uppercase tracking-wider rounded-full hover:bg-blue-600 transition-colors shadow-sm"
+              onClick={() => { setSearchQuery(""); setActiveMainCategoryId(null); setActiveSubcategoryId(null); setCatalogSubdivision("todos"); }}
+              className="px-6 py-3 bg-slate-950 text-white font-bold text-xs uppercase tracking-wider rounded-full hover:bg-blue-600 transition-colors shadow-sm cursor-pointer"
             >
               Ver Todo el Catálogo
             </button>
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-            {filteredProducts.slice(0, 80).map((p: any) => {
+            {displayedProducts.slice(0, 80).map((p: any) => {
               const imgs = safeParseArray(p.images);
               const img = imgs[0] || '';
               const price = calculateDiscountedPrice(p.price, userRole);
@@ -2270,7 +2331,7 @@ export default function PublicWebClient({
           </div>
         </div>
 
-        {/* Banner 2: Botonera Antigolpes & Videoportero */}
+        {/* Banner 2: Botonera Antigolpes & Videoportero (IMAGEN REAL DEL KIT LCD 10") */}
         <div className="rounded-3xl bg-gradient-to-r from-blue-50/80 via-cyan-50/60 to-white border border-cyan-200/90 p-8 sm:p-12 flex flex-col lg:flex-row items-center justify-between gap-8 shadow-md relative overflow-hidden group">
           <div className="space-y-4 max-w-2xl relative z-10">
             <span className="px-3.5 py-1 rounded-full bg-cyan-100 text-cyan-800 text-xs font-black uppercase tracking-wider border border-cyan-300">
@@ -2280,9 +2341,9 @@ export default function PublicWebClient({
               Kit Videoportero LCD 10" con Botonera Antigolpes Metálica & Antivandálica
             </h3>
             <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
-              Máxima durabilidad y seguridad perimetral para conjuntos, residencias y empresas. Visión nocturna, apertura remota y audio bidireccional sin fallas.
+              Máxima durabilidad y seguridad perimetral para conjuntos, residencias y empresas. Visión nocturna, apertura remota desde smartphone y botonera metálica de alta resistencia.
             </p>
-            <div className="pt-2">
+            <div className="pt-2 flex flex-wrap items-center gap-3">
               <Link
                 href="/web/videoporteros"
                 className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-black text-sm hover:brightness-105 shadow-md transition-all"
@@ -2290,10 +2351,18 @@ export default function PublicWebClient({
                 <span>Ver Videoporteros & Precios</span>
                 <ArrowRight size={16} />
               </Link>
+              <a
+                href={`https://wa.me/593969043453?text=${encodeURIComponent("Hola ATOMIC! Deseo cotizar el Kit Videoportero LCD 10 con Botonera Antivandálica.")}`}
+                target="_blank"
+                rel="noreferrer"
+                className="px-5 py-3.5 rounded-xl bg-white hover:bg-cyan-50 text-slate-800 font-bold text-xs border border-cyan-200 shadow-sm transition-all"
+              >
+                Cotizar por WhatsApp
+              </a>
             </div>
           </div>
-          <div className="relative z-10 shrink-0 w-full lg:w-72 aspect-video sm:aspect-square rounded-2xl bg-white border border-cyan-200 overflow-hidden flex items-center justify-center p-4 shadow-sm">
-            <SafeImage src="/images/videoporteros/videoportero-diel-10.jpg" alt="Kit Videoportero DIEL 10" className="object-contain w-full h-full group-hover:scale-105 transition-transform" />
+          <div className="relative z-10 shrink-0 w-full lg:w-80 aspect-square rounded-2xl bg-white border border-cyan-200 overflow-hidden flex items-center justify-center p-3 shadow-md">
+            <SafeImage src="/images/videoporteros/videoportero-lcd10-kit.jpg" alt="Kit Videoportero LCD 10 con Botonera Antivandálica" className="object-contain w-full h-full group-hover:scale-105 transition-transform" />
           </div>
         </div>
 
@@ -2324,30 +2393,351 @@ export default function PublicWebClient({
           </div>
         </div>
 
-        {/* Banner 4: Ver más sobre nosotros */}
-        <div className="rounded-3xl bg-gradient-to-r from-emerald-50/80 via-teal-50/60 to-white border border-emerald-200/90 p-8 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-6 shadow-md">
-          <div className="space-y-2 text-center md:text-left">
-            <h4 className="text-2xl font-black text-slate-950 font-heading">¿Quieres conocer más sobre el Ecosistema Atomic?</h4>
-            <p className="text-xs text-slate-700 max-w-xl">
-              Somos importadores directos, integradores de tecnología e ingenieros en software desde Quito. Oficinas presenciales en El Labrador y despachos a todo el país.
-            </p>
+        {/* ═══════════ NUEVO APARTADO: NUESTRO BLOG & TRABAJOS EN ACCIÓN (YOUTUBE) ═══════════ */}
+        <div className="rounded-[36px] bg-white border border-slate-200/90 p-8 sm:p-12 shadow-xl space-y-8" id="blog-seccion">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-6">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-red-50 border border-red-200 text-red-700 text-xs font-mono font-bold uppercase tracking-wider mb-2">
+                <Youtube size={14} className="text-red-600" />
+                <span>Casos de Éxito & Trabajos Realizados</span>
+              </div>
+              <h3 className="text-2xl sm:text-4xl font-black text-slate-950 font-heading uppercase tracking-tight">
+                Nuestro Blog & Ingeniería en Acción
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-2xl leading-relaxed">
+                No solo comercializamos tecnología; nuestro equipo técnico instala, calibra y entrega obras llave en mano en todo el Ecuador. Explora los registros en video de nuestras instalaciones reales:
+              </p>
+            </div>
+            <a
+              href="https://youtube.com/@atomicmenquantum?si=jScgTmF2FBGTrObU"
+              target="_blank"
+              rel="noreferrer"
+              className="px-5 py-2.5 rounded-full bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-md w-fit shrink-0 transition-all hover:scale-105"
+            >
+              <Youtube size={15} />
+              <span>Canal @atomicmenquantum</span>
+            </a>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <Link
-              href="/web/tienda-en-linea"
-              className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black text-xs hover:brightness-105 shadow-md transition-all flex items-center gap-2"
-            >
-              <span>Ver Más Sobre Nosotros</span>
-              <ArrowRight size={14} />
-            </Link>
-            <Link
-              href="/web/contrataciones"
-              className="px-6 py-3.5 rounded-xl bg-white hover:bg-emerald-50 text-slate-800 font-bold text-xs border border-emerald-200 shadow-sm transition-all"
-            >
-              Trabaja con Nosotros
-            </Link>
+
+          {/* 3 Featured Video Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Card 1: Campana Extractora */}
+            <div className="rounded-2xl bg-slate-50 border border-slate-200/80 p-5 space-y-4 hover:border-blue-400 hover:shadow-lg transition-all flex flex-col justify-between group">
+              <div className="space-y-3">
+                <div className="relative aspect-video rounded-xl bg-slate-900 overflow-hidden flex items-center justify-center">
+                  <img src="/images/categories/hogar.jpg" alt="Instalación de Campanas Extractoras" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-full bg-red-600 text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                      <Play size={20} className="ml-1" />
+                    </div>
+                  </div>
+                  <span className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/80 text-[10px] font-mono text-white">Línea Hogar</span>
+                </div>
+                <h4 className="text-base font-bold text-slate-950 font-heading group-hover:text-blue-600 transition-colors">
+                  Instalación de Campanas Extractoras de Alta Eficiencia
+                </h4>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Montaje de ductería, extracción silenciosa de humos y filtros de carbón activado en cocinas residenciales e industriales en Quito.
+                </p>
+              </div>
+              <div className="pt-2 flex items-center gap-2">
+                <a
+                  href="https://youtube.com/@atomicmenquantum?si=jScgTmF2FBGTrObU"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex-1 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs border border-slate-200 text-center flex items-center justify-center gap-1.5 transition-all"
+                >
+                  <Youtube size={13} className="text-red-600" />
+                  <span>Ver Video</span>
+                </a>
+                <Link
+                  href="/web/campanas"
+                  className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-blue-600 text-white font-bold text-xs transition-all"
+                >
+                  Campanas
+                </Link>
+              </div>
+            </div>
+
+            {/* Card 2: Videoporteros */}
+            <div className="rounded-2xl bg-slate-50 border border-slate-200/80 p-5 space-y-4 hover:border-blue-400 hover:shadow-lg transition-all flex flex-col justify-between group">
+              <div className="space-y-3">
+                <div className="relative aspect-video rounded-xl bg-slate-900 overflow-hidden flex items-center justify-center">
+                  <img src="/images/videoporteros/videoportero-lcd10-kit.jpg" alt="Instalación de Videoporteros" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-full bg-red-600 text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                      <Play size={20} className="ml-1" />
+                    </div>
+                  </div>
+                  <span className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/80 text-[10px] font-mono text-white">Seguridad Smart</span>
+                </div>
+                <h4 className="text-base font-bold text-slate-950 font-heading group-hover:text-blue-600 transition-colors">
+                  Sistemas de Videoportero LCD & Citofonía IP
+                </h4>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Puesta en marcha de pantallas LCD de 10 pulgadas, botoneras metálicas antivandálicas y apertura remota desde app móvil en condominios.
+                </p>
+              </div>
+              <div className="pt-2 flex items-center gap-2">
+                <a
+                  href="https://youtube.com/@atomicmenquantum?si=jScgTmF2FBGTrObU"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex-1 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs border border-slate-200 text-center flex items-center justify-center gap-1.5 transition-all"
+                >
+                  <Youtube size={13} className="text-red-600" />
+                  <span>Ver Video</span>
+                </a>
+                <Link
+                  href="/web/videoporteros"
+                  className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-blue-600 text-white font-bold text-xs transition-all"
+                >
+                  Porteros
+                </Link>
+              </div>
+            </div>
+
+            {/* Card 3: Barreras y Antipánico */}
+            <div className="rounded-2xl bg-slate-50 border border-slate-200/80 p-5 space-y-4 hover:border-blue-400 hover:shadow-lg transition-all flex flex-col justify-between group">
+              <div className="space-y-3">
+                <div className="relative aspect-video rounded-xl bg-slate-900 overflow-hidden flex items-center justify-center">
+                  <img src="/images/categories/tecnologia-residencial.jpg" alt="Barreras Vehiculares y Antipánico" className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-full bg-red-600 text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                      <Play size={20} className="ml-1" />
+                    </div>
+                  </div>
+                  <span className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/80 text-[10px] font-mono text-white">Accesos & Tráfico</span>
+                </div>
+                <h4 className="text-base font-bold text-slate-950 font-heading group-hover:text-blue-600 transition-colors">
+                  Barreras Vehiculares Automáticas & Sistemas Antipánico
+                </h4>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Integración de barreras automáticas brushless para alto tráfico, lectores vehiculares RFID de largo alcance y barras antipánico de seguridad.
+                </p>
+              </div>
+              <div className="pt-2 flex items-center gap-2">
+                <a
+                  href="https://youtube.com/@atomicmenquantum?si=jScgTmF2FBGTrObU"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex-1 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs border border-slate-200 text-center flex items-center justify-center gap-1.5 transition-all"
+                >
+                  <Youtube size={13} className="text-red-600" />
+                  <span>Ver Video</span>
+                </a>
+                <Link
+                  href="/web/barreras-vehiculares"
+                  className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-blue-600 text-white font-bold text-xs transition-all"
+                >
+                  Barreras
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Embedded Official YouTube Player */}
+          <div className="rounded-2xl overflow-hidden border border-slate-200 bg-slate-950 shadow-inner p-2">
+            <div className="relative w-full aspect-video rounded-xl overflow-hidden">
+              <iframe
+                className="w-full h-full"
+                src="https://www.youtube.com/embed/_rI46cUolfQ"
+                title="ATOMIC Industrias Ecuador - Trabajos Realizados"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
           </div>
         </div>
+
+        {/* ═══════════ NUEVO APARTADO: NEWSLETTER OFICIAL (INTELIGENCIA DE IMPORTACIÓN & TÉCNICA) ═══════════ */}
+        <div className="rounded-[36px] bg-gradient-to-br from-slate-900 via-slate-950 to-blue-950 text-white p-8 sm:p-12 border border-blue-500/30 shadow-2xl relative overflow-hidden" id="newsletter-seccion">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none" />
+          
+          <div className="relative z-10 max-w-4xl space-y-6">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-500/20 border border-blue-400/40 text-blue-300 text-xs font-mono font-bold uppercase tracking-wider">
+              <Mail size={13} />
+              <span>The ATOMIC Gazette • Boletín Técnico Semanal</span>
+            </div>
+
+            <h3 className="text-2xl sm:text-4xl lg:text-5xl font-black font-heading leading-tight uppercase">
+              Inteligencia de Importación & Especialización Técnica
+            </h3>
+
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-3xl">
+              Semanalmente subimos noticias y análisis de alto valor estratégico para saber <strong>qué productos importar, vender y distribuir en Ecuador</strong> con altos márgenes de ganancia, así como guías paso a paso para <strong>especializarte como técnico certificado</strong> en instalación de cerraduras smart, CCTV y citofonía.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+              <div className="p-4 rounded-2xl bg-white/[0.05] border border-white/10 space-y-1">
+                <span className="text-emerald-400 font-mono text-xs font-bold block">01 / TENDENCIAS</span>
+                <h5 className="font-bold text-sm text-white">Artículos Más Rentables</h5>
+                <p className="text-[11px] text-slate-400 leading-relaxed">Conoce qué tecnología china y repuestos tienen mayor rotación inmediata.</p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-white/[0.05] border border-white/10 space-y-1">
+                <span className="text-blue-400 font-mono text-xs font-bold block">02 / CAPACITACIÓN</span>
+                <h5 className="font-bold text-sm text-white">Especialízate como Técnico</h5>
+                <p className="text-[11px] text-slate-400 leading-relaxed">Diagramas de conexión, configuración de apps móviles y resolución de fallas.</p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-white/[0.05] border border-white/10 space-y-1">
+                <span className="text-amber-400 font-mono text-xs font-bold block">03 / COMUNIDAD VIP</span>
+                <h5 className="font-bold text-sm text-white">Alertas de Contenedor</h5>
+                <p className="text-[11px] text-slate-400 leading-relaxed">Entérate de la llegada de lotes antes de que salgan a la venta pública.</p>
+              </div>
+            </div>
+
+            <div className="pt-3 flex flex-wrap items-center gap-3">
+              <a
+                href="https://wa.me/593989476556?text=Deseo%20suscribirme%20al%20bolet%C3%ADn%20semanal%20de%20importaci%C3%B3n%20y%20gu%C3%ADas%20t%C3%A9cnicas%20ATOMIC."
+                target="_blank"
+                rel="noreferrer"
+                className="px-6 py-3.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-emerald-500/25 flex items-center gap-2"
+              >
+                <MessageSquare size={14} />
+                <span>Unirme al Canal VIP de WhatsApp</span>
+              </a>
+              <Link
+                href="/web/precios-vendedor"
+                className="px-6 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider border border-white/15 transition-all"
+              >
+                Ver Matriz de Precios Mayorista
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* ═══════════ NUEVO BANNER: LÍNEAS DE DISTRIBUCIÓN & PRECIOS MAYORISTAS (4K IMAGE BACKDROP) ═══════════ */}
+        <div className="rounded-[36px] border border-white/10 overflow-hidden shadow-2xl relative">
+          {/* 4K Tech Hub Background Image */}
+          <div className="absolute inset-0 z-0">
+            <img
+              src="/images/wholesale-tech-hub-4k.jpg"
+              alt="Centro Mayorista de Distribución ATOMIC"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/90 to-blue-950/80 backdrop-blur-[2px]" />
+          </div>
+
+          <div className="relative z-10 p-8 sm:p-14 space-y-6 text-white max-w-5xl">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-mono font-bold uppercase tracking-wider">
+              <Package size={13} />
+              <span>Importación Directa & Precios Mayoristas Únicos</span>
+            </div>
+
+            <h3 className="text-3xl sm:text-5xl font-black font-heading leading-tight uppercase tracking-tight">
+              Líneas de Distribución para Negocios, Técnicos & Emprendedores
+            </h3>
+
+            <p className="text-xs sm:text-base text-slate-300 leading-relaxed max-w-3xl">
+              Ponemos a tu disposición precios de mayorista directo para que inicies o escales tu negocio hoy mismo. Accede a descuentos de distribuidor <strong>a partir de solo 6 unidades surtidas</strong> con entrega express y garantía legal en todo el Ecuador.
+            </p>
+
+            {/* 4 Wholesale Categories Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+              <div className="p-5 rounded-2xl bg-black/60 border border-white/10 space-y-2 backdrop-blur-md">
+                <span className="text-cyan-400 font-mono text-xs font-bold block">CIRCUITOS & MÓDULOS</span>
+                <h5 className="font-bold text-sm text-white">Tarjetas Electrónicas</h5>
+                <p className="text-xs text-slate-400 leading-relaxed">Fuentes conmutadas, módulos de control, relés y placas base a precio de fábrica.</p>
+                <span className="text-[10px] font-mono text-cyan-300 block pt-1 font-bold">Desde 6 unidades</span>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-black/60 border border-white/10 space-y-2 backdrop-blur-md">
+                <span className="text-blue-400 font-mono text-xs font-bold block">TALLERES DE LAPTOP</span>
+                <h5 className="font-bold text-sm text-white">Repuestos de Computación</h5>
+                <p className="text-xs text-slate-400 leading-relaxed">Baterías de litio, pantallas LED slim, teclados para todas las marcas, cargadores tipo C y flex.</p>
+                <span className="text-[10px] font-mono text-blue-300 block pt-1 font-bold">Lotes para talleres</span>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-black/60 border border-white/10 space-y-2 backdrop-blur-md">
+                <span className="text-amber-400 font-mono text-xs font-bold block">ALTA ROTACIÓN</span>
+                <h5 className="font-bold text-sm text-white">Tecnología China Económica</h5>
+                <p className="text-xs text-slate-400 leading-relaxed">Gadgets inteligentes, luces solares, cerraduras y accesorios de hogar para venta rápida.</p>
+                <span className="text-[10px] font-mono text-amber-300 block pt-1 font-bold">Margen 30% a 45%</span>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-black/60 border border-white/10 space-y-2 backdrop-blur-md">
+                <span className="text-emerald-400 font-mono text-xs font-bold block">RESPALDO & GUÍA</span>
+                <h5 className="font-bold text-sm text-white">Capacitación Continua</h5>
+                <p className="text-xs text-slate-400 leading-relaxed">Asesoría personalizada y acompañamiento técnico directo por formar parte de nuestro equipo.</p>
+                <span className="text-[10px] font-mono text-emerald-300 block pt-1 font-bold">100% Asesoría Gratuita</span>
+              </div>
+            </div>
+
+            <div className="pt-4 flex flex-wrap items-center gap-3">
+              <a
+                href="https://wa.me/593989476556?text=Saludos%20Direcci%C3%B3n%20Comercial%20ATOMIC%2C%20solicito%20la%20lista%20de%20precios%20mayoristas%20(desde%206%20unidades)%20para%20distribuir."
+                target="_blank"
+                rel="noreferrer"
+                className="px-7 py-4 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:brightness-105 text-slate-950 font-black text-xs uppercase tracking-wider transition-all shadow-xl shadow-amber-500/30 flex items-center gap-2"
+              >
+                <span>Solicitar Lista Mayorista en WhatsApp</span>
+                <ArrowRight size={15} />
+              </a>
+              <Link
+                href="/web/precios-vendedor"
+                className="px-6 py-4 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider border border-white/20 transition-all"
+              >
+                Ver Matriz de Comisiones
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* ═══════════ NUEVO BANNER DE CIERRE: CUÉNTANOS TU PROYECTO (DISEÑO PRO EJECUTIVO) ═══════════ */}
+        <div className="rounded-[40px] bg-gradient-to-br from-[#070b16] via-[#0d162d] to-[#050812] border-2 border-blue-500/40 p-8 sm:p-14 shadow-2xl relative overflow-hidden text-white space-y-6">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/15 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-600/15 rounded-full blur-[100px] pointer-events-none" />
+
+          <div className="relative z-10 max-w-4xl space-y-5">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/20 border border-blue-400/40 text-blue-300 text-xs font-mono font-bold uppercase tracking-widest">
+              <Sparkles size={14} className="text-blue-400" />
+              <span>CONSULTORÍA & DESARROLLO INTEGRAL ATOMIC</span>
+            </div>
+
+            <h3 className="text-3xl sm:text-5xl font-black font-heading uppercase tracking-tight leading-tight">
+              ¿Tienes un Proyecto en Tecnología, Negocio o Software? Cuéntanoslo.
+            </h3>
+
+            <div className="space-y-4 text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
+              <p>
+                Ya sea que busques una comunidad activa donde compartir y enriquecer tus ideas, requieras asesoría especializada de ingeniería para implementar una infraestructura compleja, o simplemente desees realizar una compra garantizada para ti, tu negocio o tu emprendimiento: escríbenos con total confianza.
+              </p>
+              <p className="bg-white/[0.04] p-4 rounded-2xl border border-white/10 text-slate-200">
+                ⚡ En <strong>ATOMIC Electronics / AB Ingenieros</strong> integramos las mejores soluciones tecnológicas del mercado: <strong>desarrollo de software a medida</strong>, despliegue de <strong>sistemas de hardware corporativo</strong>, <strong>seguridad electrónica perimetral</strong> y <strong>control de accesos</strong>, con vinculación directa a aplicativos de <strong>gestión monetaria, control de tickets y plataformas ERP en la nube</strong>.
+              </p>
+            </div>
+
+            <div className="pt-4 flex flex-wrap items-center gap-3">
+              <a
+                href="https://wa.me/593989476556?text=Saludos%20Director%20Juan%20Guzm%C3%A1n%2C%20tengo%20un%20proyecto%20tecnol%C3%B3gico%20%2F%20requerimiento%20para%20mi%20negocio%20y%20deseo%20asesor%C3%ADa."
+                target="_blank"
+                rel="noreferrer"
+                className="px-8 py-4 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:brightness-110 text-white font-black text-xs uppercase tracking-wider transition-all shadow-xl shadow-blue-600/30 flex items-center gap-2 hover:scale-102"
+              >
+                <MessageSquare size={16} />
+                <span>Hablar con Dirección General (WhatsApp)</span>
+              </a>
+
+              <a
+                href="tel:+593989476556"
+                className="px-6 py-4 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider border border-white/15 transition-all flex items-center gap-2"
+              >
+                <PhoneCall size={14} />
+                <span>Llamada Directa</span>
+              </a>
+
+              <Link
+                href="/web/software"
+                className="px-6 py-4 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider border border-white/15 transition-all"
+              >
+                Ver Portafolio de Software
+              </Link>
+            </div>
+          </div>
+        </div>
+
 
       </section>
 

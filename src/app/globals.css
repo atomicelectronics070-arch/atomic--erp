@@ -1,70 +1,25 @@
 /* Atomic × Appit Dark Design System — v9.0 */
 @import "tailwindcss";
 
-/* ── Viewport & Scale Control: Desktop vs Mobile ── */
-@media (min-width: 1024px) {
-  html {
-    zoom: 0.75;
-    height: 100%;
-    width: 100%;
-  }
-  .h-screen {
-    height: 133.333vh !important;
-  }
-  .min-h-screen {
-    min-height: 133.333vh !important;
-  }
-  .w-screen {
-    width: 133.333vw !important;
-  }
-  .min-w-screen {
-    min-width: 133.333vw !important;
-  }
+/* ── Global Scale Reduction ── */
+html {
+  zoom: 0.75;
+  height: 100%;
+  width: 100%;
 }
 
-/* ── Mobile / Tablet Viewport Protection (Elimina Desplazamiento y Corte a la Derecha) ── */
-@media (max-width: 1023px) {
-  html {
-    zoom: 1 !important;
-    height: 100%;
-    width: 100% !important;
-    max-width: 100vw !important;
-    overflow-x: hidden !important;
-    -webkit-text-size-adjust: 100%;
-  }
-  body {
-    width: 100% !important;
-    max-width: 100vw !important;
-    overflow-x: hidden !important;
-    position: relative !important;
-    -webkit-overflow-scrolling: touch;
-  }
-  .h-screen {
-    height: 100vh !important;
-    height: 100dvh !important;
-  }
-  .min-h-screen {
-    min-height: 100vh !important;
-    min-height: 100dvh !important;
-  }
-  .w-screen {
-    width: 100% !important;
-    max-width: 100vw !important;
-  }
-  .min-w-screen {
-    min-width: 100% !important;
-    max-width: 100vw !important;
-  }
+/* Compensate viewport-relative utility classes for the 0.75 zoom */
+.h-screen {
+  height: 133.333vh !important;
 }
-
-html, body {
-  overflow-x: hidden !important;
-  max-width: 100% !important;
-  box-sizing: border-box;
+.min-h-screen {
+  min-height: 133.333vh !important;
 }
-
-*, *::before, *::after {
-  box-sizing: border-box;
+.w-screen {
+  width: 133.333vw !important;
+}
+.min-w-screen {
+  min-width: 133.333vw !important;
 }
 
 /* ── Appit Font Imports ── */
@@ -145,18 +100,17 @@ html, body {
 
 html:not([data-theme]),
 html[data-theme=""],
-html[data-theme="cyber-neon"],
 html[data-theme="ticketmaster-white"],
 html[data-theme="blanco-tomate"] {
-  --theme-primary: #06B6D4;
+  --theme-primary: #026CDF;
   --theme-secondary: #0F172A;
-  --theme-accent: #6366F1;
-  --theme-glow: rgba(6, 182, 212, 0.45);
-  --theme-border: rgba(6, 182, 212, 0.35);
-  --theme-bg-subtle: rgba(6, 182, 212, 0.08);
-  --theme-bg-ambient: radial-gradient(ellipse at top right, rgba(6, 182, 212, 0.22), #070a14 70%);
-  --theme-sidebar-bg: rgba(9, 13, 30, 0.75);
-  --theme-button-gradient: linear-gradient(135deg, #0891b2, #4f46e5);
+  --theme-accent: #06B6D4;
+  --theme-glow: rgba(2, 108, 223, 0.25);
+  --theme-border: #E2E8F0;
+  --theme-bg-subtle: #F8FAFC;
+  --theme-bg-ambient: #FFFFFF;
+  --theme-sidebar-bg: #FFFFFF;
+  --theme-button-gradient: linear-gradient(135deg, #026cdf, #0891b2);
 }
 
 html[data-theme="cyber-neon"] {
@@ -170,7 +124,43 @@ html[data-theme="cyber-neon"] {
   --theme-button-gradient: linear-gradient(135deg, #0891b2, #4f46e5);
 }
 
-/* Theme overrides cleaned for universal cyber-neon design */
+/* ── TICKETMASTER-WHITE: Fix text contrast on white sidebar & main content ── */
+html[data-theme="ticketmaster-white"] aside,
+html[data-theme="blanco-tomate"] aside {
+  color: #0F172A !important;
+}
+html[data-theme="ticketmaster-white"] aside a,
+html[data-theme="blanco-tomate"] aside a,
+html:not([data-theme]) aside a,
+html[data-theme=""] aside a {
+  color: #334155 !important;
+}
+html[data-theme="ticketmaster-white"] aside a[aria-current="page"],
+html[data-theme="blanco-tomate"] aside a[aria-current="page"],
+html:not([data-theme]) aside a[aria-current="page"],
+html[data-theme=""] aside a[aria-current="page"] {
+  color: #EA580C !important;
+  background: rgba(234, 88, 12, 0.08) !important;
+}
+html[data-theme="ticketmaster-white"] aside a:hover,
+html[data-theme="blanco-tomate"] aside a:hover {
+  color: #0F172A !important;
+  background: rgba(234, 88, 12, 0.06) !important;
+}
+html[data-theme="ticketmaster-white"] header,
+html[data-theme="blanco-tomate"] header,
+html:not([data-theme]) header,
+html[data-theme=""] header {
+  color: #0F172A !important;
+}
+html[data-theme="ticketmaster-white"] header span,
+html[data-theme="ticketmaster-white"] header a,
+html[data-theme="ticketmaster-white"] header button,
+html[data-theme="blanco-tomate"] header span,
+html[data-theme="blanco-tomate"] header a,
+html[data-theme="blanco-tomate"] header button {
+  color: inherit;
+}
 
 /* ══════════════════════════════════════════════════════════════ */
 /* 🎨 ATOMIC ECOSISTEMA: SISTEMA DE 5 TEMAS DINÁMICOS GLOBALES   */
@@ -407,3 +397,16 @@ h1, h2, h3, h4, h5, h6 {
 .appit-glow {
   background: radial-gradient(circle at center, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
 }
+
+/* ── Universal Scrollbar Hide Utility ── */
+.scrollbar-hide::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+.scrollbar-hide,
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
