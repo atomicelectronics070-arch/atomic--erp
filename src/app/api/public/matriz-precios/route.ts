@@ -180,6 +180,30 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    const isGeneradorSearch = 
+      searchLower.includes('generador') || 
+      searchLower.includes('planta electrica') || 
+      searchLower.includes('planta eléctrica');
+
+    const wantsPlugs = 
+      searchLower.includes('enchufe') || 
+      searchLower.includes('nema') || 
+      searchLower.includes('clavija') || 
+      searchLower.includes('adaptador') || 
+      searchLower.includes('conector');
+
+    if (isGeneradorSearch && !wantsPlugs) {
+      where.NOT.push(
+        { name: { contains: 'ENCHUFE', mode: 'insensitive' } },
+        { name: { contains: 'NEMA', mode: 'insensitive' } },
+        { name: { contains: 'CLAVIJA', mode: 'insensitive' } },
+        { name: { contains: 'GENERADOR DE TONOS', mode: 'insensitive' } },
+        { name: { contains: 'LAN TESTER', mode: 'insensitive' } },
+        { name: { contains: 'NETWORK TESTER', mode: 'insensitive' } },
+        { name: { contains: 'HEATSINK', mode: 'insensitive' } }
+      );
+    }
+
     if (search) {
       const stopWords = new Set(['de', 'del', 'la', 'el', 'en', 'para', 'con', 'un', 'una', 'y']);
       const tokens = search
@@ -225,6 +249,11 @@ export async function GET(req: NextRequest) {
           set.add('cerradura');
           set.add('cerraduras');
         }
+        if (clean === 'generador') {
+          set.add('generadores');
+          set.add('planta');
+          set.add('plantas');
+        }
         return Array.from(set);
       };
 
@@ -234,7 +263,8 @@ export async function GET(req: NextRequest) {
           const conditions: any[] = [];
           const skipDescriptionKeywords = [
             'portatil', 'portátil', 'portatiles',
-            'cerradura', 'cerraduras', 'cerrojo', 'cerrojos', 'chapa', 'chapas', 'smart lock'
+            'cerradura', 'cerraduras', 'cerrojo', 'cerrojos', 'chapa', 'chapas', 'smart lock',
+            'generador', 'generadores'
           ];
           for (const v of variants) {
             conditions.push({ name: { contains: v, mode: 'insensitive' } });

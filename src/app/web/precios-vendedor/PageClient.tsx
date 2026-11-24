@@ -142,7 +142,8 @@ const SUB_CATEGORIES = [
   { id: "laptops", label: "Laptops & Computación", categoryId: "cmrfunoy400031d1g55magimc", search: "laptop", count: "120+ Laptops", icon: Laptop },
   { id: "cocina", label: "Cocinas & Encimeras", categoryId: "cmqvwkr8i0009ejkxbduhupxu", search: "cocina", count: "130+ Equipos", icon: Home },
   { id: "cerraduras", label: "Cerraduras Smart", categoryId: "cmoe77b3r000bwwr9nado4n9q", search: "cerradura", count: "115+ Cerraduras", icon: ShieldCheck },
-  { id: "energia", label: "UPS & Generadores", categoryId: "cmr2n9xoj0003znjlj8jongdt", search: "regulador", count: "270+ Sistemas", icon: Zap },
+  { id: "energia", label: "Generadores & Plantas", categoryId: "cmr2n9xoj0003znjlj8jongdt", search: "generador", count: "40+ Plantas", icon: Zap },
+  { id: "enchufes-generador", label: "Enchufes de Generador", categoryId: "cmr2n9xoj0003znjlj8jongdt", search: "enchufe nema", count: "NEMA L5/L6", icon: Zap },
   { id: "repuestos", label: "Repuestos Laptop", categoryId: "cmoe778p40005wwr94hp2y92j", search: "bateria", count: "560+ Repuestos", icon: Wrench },
   { id: "audio", label: "Audio & Parlantes", categoryId: "cmrf5upb700018v6pi7eop1lb", search: "parlante", count: "240+ Equipos", icon: Sparkles },
   { id: "domotica", label: "Domótica & IoT", categoryId: "cmqvwkvfb000gejkx2kpt69zq", search: "wifi", count: "110+ Dispositivos", icon: Layers },
@@ -496,6 +497,89 @@ function getCerraduraSpecs(p: any) {
   return { type, aperturas, pistones }
 }
 
+// ─── FILTROS DIFERENCIADORES DE GENERADORES & ENCHUFES DE GENERADOR ───
+const GENERADOR_FILTERS = [
+  { id: "all", label: "Todo Generación", badge: "Catálogo Completo" },
+  { id: "plantas-gas", label: "Plantas a Gasolina / Gas", badge: "950W - 7000W", color: "amber" },
+  { id: "plantas-diesel", label: "Plantas Diésel & Cummins", badge: "7kW - 220kW", color: "rose" },
+  { id: "inverter", label: "Inverter Silenciosos", badge: "Onda Pura", color: "emerald" },
+  { id: "solares", label: "Estaciones Solares LiFePO4", badge: "Anker / EcoFlow", color: "sky" },
+  { id: "enchufes", label: "🔌 Enchufes de Generador", badge: "NEMA L5/L6 Twist-Lock", color: "violet" },
+  { id: "ats", label: "Tableros ATS & Inversores", badge: "Transferencia Automática", color: "cyan" },
+]
+
+function getGeneradorSpecs(p: any) {
+  const text = `${p?.name || ''} ${p?.sku || ''} ${p?.specs || ''} ${p?.description || ''}`.toUpperCase()
+
+  const isGenOrPlug = 
+    text.includes('GENERADOR') || 
+    text.includes('PLANTA ELECTRICA') || 
+    text.includes('PLANTA ELÉCTRICA') || 
+    text.includes('ESTACION DE ENERGIA') || 
+    text.includes('ESTACIÓN DE ENERGÍA') || 
+    text.includes('ECOFLOW') || 
+    text.includes('SOLIX') || 
+    text.includes('ENCHUFE') || 
+    text.includes('NEMA L5-30') || 
+    text.includes('NEMA L6-30') || 
+    text.includes('NEMA L6-20') || 
+    text.includes('NEMA L5-20') || 
+    text.includes('TT-30') || 
+    text.includes('ATS') || 
+    text.includes('INVERSOR')
+
+  if (!isGenOrPlug) return null
+
+  // 1. Tier / Subtype
+  let type: { label: string; bg: string; text: string; border: string; tier: string } | null = null
+
+  if (text.includes('ENCHUFE') || text.includes('CLAVIJA') || text.includes('L5-30') || text.includes('L6-30') || text.includes('L6-20') || text.includes('TT-30') || (text.includes('NEMA') && text.includes('ADAPTADOR'))) {
+    type = { label: 'Enchufe Grado Generador NEMA', bg: 'bg-violet-950/90', text: 'text-violet-300', border: 'border-violet-500/50', tier: 'enchufes' }
+  } else if (text.includes('INVERTER') || text.includes('SILENCIOSO 3500W')) {
+    type = { label: 'Inverter Silencioso Onda Pura', bg: 'bg-emerald-950/90', text: 'text-emerald-300', border: 'border-emerald-500/50', tier: 'inverter' }
+  } else if (text.includes('DIESEL') || text.includes('DIÉSEL') || text.includes('CUMMINS')) {
+    type = { label: 'Planta Industrial Diésel', bg: 'bg-rose-950/90', text: 'text-rose-300', border: 'border-rose-500/50', tier: 'plantas-diesel' }
+  } else if (text.includes('GASOLINA') || text.includes('FORD') || text.includes('FIRMAN') || text.includes('PULSAR') || (text.includes('GENERADOR') && text.includes('W'))) {
+    type = { label: 'Generador Gasolina / Gas', bg: 'bg-amber-950/90', text: 'text-amber-300', border: 'border-amber-500/50', tier: 'plantas-gas' }
+  } else if (text.includes('ESTACION') || text.includes('ESTACIÓN') || text.includes('SOLAR') || text.includes('ECOFLOW') || text.includes('SOLIX') || text.includes('LIFEPO4')) {
+    type = { label: 'Estación de Energía Solar', bg: 'bg-sky-950/90', text: 'text-sky-300', border: 'border-sky-500/50', tier: 'solares' }
+  } else if (text.includes('ATS') || text.includes('INVERSOR')) {
+    type = { label: 'ATS Transferencia / Inversor', bg: 'bg-cyan-950/90', text: 'text-cyan-300', border: 'border-cyan-500/50', tier: 'ats' }
+  } else {
+    type = { label: 'Generador Eléctrico', bg: 'bg-zinc-800/90', text: 'text-zinc-200', border: 'border-white/20', tier: 'plantas-gas' }
+  }
+
+  // 2. Power specs
+  let power: string | null = null
+  if (text.includes('220,000 W') || text.includes('220KW')) power = '220 kW Industrial'
+  else if (text.includes('138,000 W') || text.includes('138KW')) power = '138 kW Industrial'
+  else if (text.includes('75,000 W') || text.includes('75KW')) power = '75 kW Industrial'
+  else if (text.includes('33,000 W') || text.includes('33KW')) power = '33 kW'
+  else if (text.includes('11000 W') || text.includes('11KW') || text.includes('11000W')) power = '11.000W / 11 kW'
+  else if (text.includes('9500W') || text.includes('9500 W')) power = '9.500W'
+  else if (text.includes('8000W') || text.includes('8000 W')) power = '8.000W'
+  else if (text.includes('7000 W') || text.includes('7000W')) power = '7.000W'
+  else if (text.includes('6580W')) power = '6.580W'
+  else if (text.includes('6000 W') || text.includes('6000W')) power = '6.000W'
+  else if (text.includes('3500 W') || text.includes('3500W')) power = '3.500W'
+  else if (text.includes('3050')) power = '3.050W'
+  else if (text.includes('2500 W') || text.includes('2500W')) power = '2.500W'
+  else if (text.includes('2200 W') || text.includes('2200W')) power = '2.200W'
+  else if (text.includes('1200W') || text.includes('1200 W')) power = '1.200W'
+  else if (text.includes('950 W') || text.includes('950W')) power = '950W'
+  else if (text.includes('30A')) power = '30 Amperios (30A)'
+  else if (text.includes('20A')) power = '20 Amperios (20A)'
+  else if (text.includes('200 AMP')) power = '200 AMP'
+
+  // 3. Voltage / Standard
+  let voltage: string | null = null
+  if (text.includes('250V')) voltage = '250V'
+  else if (text.includes('120V') || text.includes('110V')) voltage = '110V - 120V'
+  else if (text.includes('120-240V') || text.includes('220V')) voltage = '110V / 220V Dual'
+
+  return { type, power, voltage }
+}
+
 interface ProductCardProps {
   product: any
   copiedId: string | null
@@ -510,6 +594,7 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
   const iphoneSpecs = getIphoneSpecs(p)
   const laptopSpecs = getLaptopSpecs(p)
   const lockSpecs = getCerraduraSpecs(p)
+  const genSpecs = getGeneradorSpecs(p)
 
   const isInvalidLogo = (url: string) => {
     if (!url || typeof url !== 'string') return true
@@ -559,7 +644,7 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
           {p.category || "General"}
         </span>
 
-        {/* Resolution, iPhone Generation, Laptop Brand or Cerradura Badge (Top Right - Differentiator) */}
+        {/* Resolution, iPhone Generation, Laptop Brand, Cerradura or Generador Badge (Top Right - Differentiator) */}
         {specs.resolution ? (
           <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-md border text-[10px] font-mono font-bold shadow-md tracking-wide ${specs.resolution.bg} ${specs.resolution.text} ${specs.resolution.border}`}>
             {specs.resolution.label}
@@ -575,6 +660,10 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
         ) : lockSpecs?.type ? (
           <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-md border text-[10px] font-mono font-bold shadow-md tracking-wide ${lockSpecs.type.bg} ${lockSpecs.type.text} ${lockSpecs.type.border}`}>
             {lockSpecs.type.label}
+          </span>
+        ) : genSpecs?.type ? (
+          <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-md border text-[10px] font-mono font-bold shadow-md tracking-wide ${genSpecs.type.bg} ${genSpecs.type.text} ${genSpecs.type.border}`}>
+            {genSpecs.type.label}
           </span>
         ) : null}
       </div>
@@ -679,6 +768,27 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
             )}
           </div>
         )}
+
+        {/* Differentiation Tags for Generadores & Enchufes */}
+        {genSpecs && (
+          <div className="flex flex-wrap items-center gap-1 pt-0.5">
+            {genSpecs.power && (
+              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono bg-amber-950/80 text-amber-300 border border-amber-500/30 font-bold flex items-center gap-1">
+                ⚡ {genSpecs.power}
+              </span>
+            )}
+            {genSpecs.voltage && (
+              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono bg-zinc-800 text-zinc-300 border border-white/10 font-medium">
+                🔌 {genSpecs.voltage}
+              </span>
+            )}
+            {genSpecs.type.tier === 'enchufes' && (
+              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono bg-violet-950/80 text-violet-300 border border-violet-500/30 font-bold">
+                🔒 Twist-Lock
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Pricing Breakdown */}
@@ -779,7 +889,13 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
                 lockSpecs?.type ? `🔐 *Tipo de Cerradura:* ${lockSpecs.type.label}` : '',
                 lockSpecs?.aperturas?.length ? `🔑 *Métodos de Apertura:* ${lockSpecs.aperturas.join(' · ')}` : '',
                 lockSpecs?.pistones ? `🛡️ *Seguridad Reforzada:* ${lockSpecs.pistones}` : '',
-                lockSpecs ? `📲 *Conectividad:* App Móvil (Tuya Smart / Smart Life / TTLock) con apertura remota y registro de accesos en tiempo real` : ''
+                lockSpecs ? `📲 *Conectividad:* App Móvil (Tuya Smart / Smart Life / TTLock) con apertura remota y registro de accesos en tiempo real` : '',
+                genSpecs?.type?.tier === 'enchufes' ? `🔌 *Accesorio Especial:* Conector / Enchufe Grado Generador NEMA (Twist-Lock)` : '',
+                genSpecs?.type?.tier === 'enchufes' && genSpecs?.power ? `⚡ *Capacidad Eléctrica:* ${genSpecs.power} (${genSpecs.voltage || '110V / 250V'})` : '',
+                genSpecs?.type?.tier === 'enchufes' ? `🔒 *Seguridad:* Cierre giratorio industrial contra tirones y sobrecargas en apagones` : '',
+                genSpecs && genSpecs.type.tier !== 'enchufes' ? `⚡ *Tipo de Planta:* ${genSpecs.type.label}` : '',
+                genSpecs && genSpecs.type.tier !== 'enchufes' && genSpecs.power ? `🔋 *Potencia de Salida:* ${genSpecs.power}` : '',
+                genSpecs && genSpecs.type.tier !== 'enchufes' ? `🛠️ *Respaldo:* Suministro eléctrico continuo para apagones y cortes de energía` : ''
               ].filter(Boolean).join('\n')
 
               const commercialCopy = `🔥 *${p.name.toUpperCase()}*
@@ -838,6 +954,8 @@ export default function PreciosVendedorClient() {
   const [tab1LaptopFilter, setTab1LaptopFilter] = useState("all")
   const [cerraduraFilter, setCerraduraFilter] = useState("all")
   const [tab1CerraduraFilter, setTab1CerraduraFilter] = useState("all")
+  const [generadorFilter, setGeneradorFilter] = useState("all")
+  const [tab1GeneradorFilter, setTab1GeneradorFilter] = useState("all")
   const [catProducts, setCatProducts] = useState<any[]>([])
   const [loadingCatProducts, setLoadingCatProducts] = useState(false)
 
@@ -846,7 +964,7 @@ export default function PreciosVendedorClient() {
   const [loadingProducts, setLoadingProducts] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
 
-  const quickFilters = ["Camara", "iPhone", "Laptop", "Cerradura", "Cocina", "Horno", "Generador", "Bateria"]
+  const quickFilters = ["Camara", "iPhone", "Laptop", "Cerradura", "Generador", "Enchufes Generador", "Cocina", "Horno", "Bateria"]
 
   // Lista de productos filtrados en Tab 2 según resolución de cámara, generación de iPhone o gama de laptop
   const filteredCatProducts = useMemo(() => {
@@ -895,8 +1013,22 @@ export default function PreciosVendedorClient() {
         return s.type?.tier === cerraduraFilter
       })
     }
+    if (activeSubCat === "enchufes-generador") {
+      return catProducts.filter(p => {
+        const s = getGeneradorSpecs(p)
+        if (generadorFilter !== "all") return s?.type?.tier === generadorFilter
+        return s?.type?.tier === "enchufes"
+      })
+    }
+    if (activeSubCat === "energia") {
+      return catProducts.filter(p => {
+        const s = getGeneradorSpecs(p)
+        if (generadorFilter !== "all") return s?.type?.tier === generadorFilter
+        return s?.type?.tier !== "enchufes"
+      })
+    }
     return catProducts
-  }, [catProducts, activeSubCat, cameraFilter, iphoneFilter, laptopFilter, cerraduraFilter])
+  }, [catProducts, activeSubCat, cameraFilter, iphoneFilter, laptopFilter, cerraduraFilter, generadorFilter])
 
   // Lista de productos filtrados en Tab 1 según resolución (cámaras), generación (iPhone), gama (laptops) o cerraduras
   const filteredTab1Products = useMemo(() => {
@@ -904,6 +1036,7 @@ export default function PreciosVendedorClient() {
     const isIphoneSearch = searchTerm.toLowerCase().includes("iphone") || searchTerm.toLowerCase().includes("i phone") || searchTerm.toLowerCase().includes("apple")
     const isLaptopSearch = searchTerm.toLowerCase().includes("laptop") || searchTerm.toLowerCase().includes("notebook") || searchTerm.toLowerCase().includes("portatil") || searchTerm.toLowerCase().includes("portátil")
     const isCerraduraSearch = searchTerm.toLowerCase().includes("cerradura") || searchTerm.toLowerCase().includes("cerrojo") || searchTerm.toLowerCase().includes("smart lock") || searchTerm.toLowerCase().includes("chapa")
+    const isGenSearch = searchTerm.toLowerCase().includes("generador") || searchTerm.toLowerCase().includes("planta") || searchTerm.toLowerCase().includes("enchufe") || searchTerm.toLowerCase().includes("nema")
 
     if (isCamSearch && tab1CameraFilter !== "all") {
       return products.filter(p => {
@@ -953,8 +1086,16 @@ export default function PreciosVendedorClient() {
       })
     }
 
+    if (isGenSearch && tab1GeneradorFilter !== "all") {
+      return products.filter(p => {
+        const s = getGeneradorSpecs(p)
+        if (!s) return false
+        return s.type?.tier === tab1GeneradorFilter
+      })
+    }
+
     return products
-  }, [products, searchTerm, tab1CameraFilter, tab1IphoneFilter, tab1LaptopFilter, tab1CerraduraFilter])
+  }, [products, searchTerm, tab1CameraFilter, tab1IphoneFilter, tab1LaptopFilter, tab1CerraduraFilter, tab1GeneradorFilter])
 
   const showToast = (msg: string) => {
     setToastMessage(msg)
@@ -1351,6 +1492,34 @@ export default function PreciosVendedorClient() {
                   })}
                 </div>
               )}
+
+              {/* Quick Generadores & Enchufes Filter Pills when searching for generador / enchufe / nema */}
+              {(searchTerm.toLowerCase().includes("generador") || searchTerm.toLowerCase().includes("planta") || searchTerm.toLowerCase().includes("enchufe") || searchTerm.toLowerCase().includes("nema")) && (
+                <div className="pt-2.5 border-t border-white/[0.08] flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
+                  <span className="text-[10px] font-mono text-amber-400 shrink-0 font-bold uppercase tracking-wider flex items-center gap-1">
+                    <Zap size={11} className="text-amber-400" /> Línea Generación:
+                  </span>
+                  {GENERADOR_FILTERS.map(f => {
+                    const isActive = tab1GeneradorFilter === f.id
+                    return (
+                      <button
+                        key={f.id}
+                        onClick={() => setTab1GeneradorFilter(f.id)}
+                        className={`shrink-0 px-2.5 py-1 rounded-md text-[11px] font-mono transition-all flex items-center gap-1 border ${
+                          isActive
+                            ? "bg-amber-950 text-amber-200 border-amber-400/50 shadow-sm"
+                            : "bg-zinc-950/80 text-zinc-400 border-white/[0.06] hover:text-zinc-200"
+                        }`}
+                      >
+                        <span>{f.label}</span>
+                        <span className={`text-[9px] px-1 py-0.2 rounded ${isActive ? "bg-amber-900/60 text-amber-300 font-bold" : "text-zinc-500"}`}>
+                          {f.badge}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Product List */}
@@ -1394,14 +1563,14 @@ export default function PreciosVendedorClient() {
                     Estructura por Líneas de Negocio · Catálogo Completo
                   </span>
                   <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 rounded-full font-semibold">
-                    10 Especialidades
+                    11 Especialidades
                   </span>
                 </div>
                 <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-white tracking-tight">
                   Líneas de Negocio & Filtro por Especialidad Técnica
                 </h2>
                 <p className="text-zinc-300 text-xs sm:text-sm leading-relaxed">
-                  Explora las 10 líneas maestras de tecnología y equipamiento de ATOMIC Ecuador. Al igual que en la matriz central, dispones de herramientas de venta inmediata en cada producto: copiado de link web, copiado de título, generación de copy comercial en versión PVP y acceso directo al artículo en la web pública.
+                  Explora las 11 líneas maestras de tecnología y equipamiento de ATOMIC Ecuador. Al igual que en la matriz central, dispones de herramientas de venta inmediata en cada producto: copiado de link web, copiado de título, generación de copy comercial en versión PVP y acceso directo al artículo en la web pública.
                 </p>
               </div>
 
@@ -1569,6 +1738,63 @@ export default function PreciosVendedorClient() {
                         </button>
                       )
                     })}
+                  </div>
+                </div>
+              )}
+
+              {/* Diferenciador Especial para Generadores & Plantas */}
+              {activeSubCat === "energia" && (
+                <div className="pt-3 border-t border-white/[0.08] space-y-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <span className="text-[11px] font-mono flex items-center gap-1.5 font-bold uppercase tracking-wider text-amber-400">
+                      <Zap size={12} className="text-amber-400" />
+                      Diferenciador por Combustible & Tipo de Planta:
+                    </span>
+                    <span className="text-[10px] font-mono text-zinc-400 bg-zinc-950 px-2.5 py-0.5 rounded-full border border-white/5">
+                      Mostrando {filteredCatProducts.length} de {catProducts.length} plantas
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-1">
+                    {GENERADOR_FILTERS.filter(f => f.id !== "enchufes").map(f => {
+                      const isActive = generadorFilter === f.id
+                      return (
+                        <button
+                          key={f.id}
+                          onClick={() => setGeneradorFilter(f.id)}
+                          className={`shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-mono font-medium transition-all flex items-center gap-1.5 border ${
+                            isActive
+                              ? "bg-amber-950 text-amber-200 border-amber-400/50 shadow-md shadow-amber-950/40"
+                              : "bg-zinc-950/70 text-zinc-400 border-white/[0.06] hover:text-zinc-200 hover:bg-zinc-900"
+                          }`}
+                        >
+                          <span>{f.label}</span>
+                          <span className={`text-[10px] px-1.5 py-0.2 rounded ${isActive ? "bg-amber-900/60 text-amber-300 font-bold" : "bg-zinc-900 text-zinc-500"}`}>
+                            {f.badge}
+                          </span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Diferenciador Especial para Enchufes de Generador */}
+              {activeSubCat === "enchufes-generador" && (
+                <div className="pt-3 border-t border-white/[0.08] space-y-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <span className="text-[11px] font-mono flex items-center gap-1.5 font-bold uppercase tracking-wider text-violet-400">
+                      <Zap size={12} className="text-violet-400" />
+                      Conectores & Clavijas NEMA para Generador (Twist-Lock):
+                    </span>
+                    <span className="text-[10px] font-mono text-zinc-400 bg-zinc-950 px-2.5 py-0.5 rounded-full border border-white/5">
+                      Mostrando {filteredCatProducts.length} conectores y adaptadores
+                    </span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-violet-950/30 border border-violet-500/20 text-xs text-violet-200 flex items-center gap-2">
+                    <span className="text-base">💡</span>
+                    <span>
+                      <strong>Estándar NEMA Twist-Lock:</strong> Conectores de seguridad con giro de bloqueo para plantas eléctricas de 20A y 30A (120V / 250V), ideales para tableros de transferencia y extensiones de uso rudo en apagones.
+                    </span>
                   </div>
                 </div>
               )}
