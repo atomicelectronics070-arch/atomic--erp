@@ -30,6 +30,25 @@ export async function GET(req: NextRequest) {
       ],
     };
 
+    const isCameraCategoryOrSearch = 
+      categoryId === 'cmr1ljg860003enspbm1m5tic' || 
+      search.toLowerCase().includes('camara') || 
+      search.toLowerCase().includes('cámara');
+
+    if (isCameraCategoryOrSearch) {
+      where.NOT.push(
+        { name: { contains: 'CASE CORSAIR', mode: 'insensitive' } },
+        { name: { contains: 'PATCH CORD', mode: 'insensitive' } },
+        { name: { contains: 'CABLE DE RED', mode: 'insensitive' } },
+        { name: { contains: 'BRACKET MOUNTING', mode: 'insensitive' } },
+        { name: { contains: 'CINTA LED', mode: 'insensitive' } },
+        { name: { contains: 'Botonera', mode: 'insensitive' } },
+        { name: { contains: 'CABLE BNC', mode: 'insensitive' } },
+        { name: { contains: 'CARD READER', mode: 'insensitive' } },
+        { name: { contains: 'Soporte Para Monitor', mode: 'insensitive' } }
+      );
+    }
+
     if (search) {
       const stopWords = new Set(['de', 'del', 'la', 'el', 'en', 'para', 'con', 'un', 'una', 'y']);
       const tokens = search

@@ -137,16 +137,16 @@ const ALL_MESSAGES: Record<string, string[]> = {
 
 // ─── SUB-CATEGORÍAS DE CATÁLOGO ───
 const SUB_CATEGORIES = [
-  { id: "camaras", label: "Cámaras de Seguridad", search: "camara", count: "405+ Items", icon: Shield },
-  { id: "celulares", label: "Celulares & Tablets", search: "celular", count: "650+ Items", icon: Smartphone },
-  { id: "laptops", label: "Laptops & Computación", search: "laptop", count: "185+ Items", icon: Laptop },
-  { id: "cocina", label: "Cocinas & Encimeras", search: "cocina", count: "120+ Items", icon: Home },
-  { id: "cerraduras", label: "Cerraduras Smart", search: "cerradura", count: "103+ Items", icon: ShieldCheck },
-  { id: "energia", label: "UPS & Generadores", search: "regulador", count: "270+ Items", icon: Zap },
-  { id: "repuestos", label: "Repuestos Laptop", search: "bateria", count: "185+ Items", icon: Wrench },
-  { id: "audio", label: "Audio & Parlantes", search: "parlante", count: "250+ Items", icon: Sparkles },
-  { id: "domotica", label: "Domótica & IoT", search: "wifi", count: "110+ Items", icon: Layers },
-  { id: "alarmas", label: "Alarmas & Sensores", search: "alarma", count: "70+ Items", icon: AlertTriangle }
+  { id: "camaras", label: "Cámaras de Seguridad", categoryId: "cmr1ljg860003enspbm1m5tic", search: "camara", count: "360+ Cámaras", icon: Shield },
+  { id: "celulares", label: "Celulares & Tablets", categoryId: "cmr2n905o0001137wi0ufnmdm", search: "celular", count: "530+ Equipos", icon: Smartphone },
+  { id: "laptops", label: "Laptops & Computación", categoryId: "cmrfunoy400031d1g55magimc", search: "laptop", count: "185+ Portátiles", icon: Laptop },
+  { id: "cocina", label: "Cocinas & Encimeras", categoryId: "cmqvwkr8i0009ejkxbduhupxu", search: "cocina", count: "130+ Equipos", icon: Home },
+  { id: "cerraduras", label: "Cerraduras Smart", categoryId: "cmoe77b3r000bwwr9nado4n9q", search: "cerradura", count: "100+ Cerraduras", icon: ShieldCheck },
+  { id: "energia", label: "UPS & Generadores", categoryId: "cmr2n9xoj0003znjlj8jongdt", search: "regulador", count: "270+ Sistemas", icon: Zap },
+  { id: "repuestos", label: "Repuestos Laptop", categoryId: "cmoe778p40005wwr94hp2y92j", search: "bateria", count: "560+ Repuestos", icon: Wrench },
+  { id: "audio", label: "Audio & Parlantes", categoryId: "cmrf5upb700018v6pi7eop1lb", search: "parlante", count: "240+ Equipos", icon: Sparkles },
+  { id: "domotica", label: "Domótica & IoT", categoryId: "cmqvwkvfb000gejkx2kpt69zq", search: "wifi", count: "110+ Dispositivos", icon: Layers },
+  { id: "alarmas", label: "Alarmas & Sensores", categoryId: "cmoe7767m0000wwr9qj6erbvo", search: "alarma", count: "70+ Sensores", icon: AlertTriangle }
 ]
 
 // ─── LANDINGS WEB OFICIALES ───
@@ -442,8 +442,10 @@ export default function PreciosVendedorClient() {
       setLoadingCatProducts(true)
       try {
         const subCat = SUB_CATEGORIES.find(s => s.id === activeSubCat)
-        const term = subCat?.search || "camara"
-        const res = await fetch(`/api/public/matriz-precios?search=${encodeURIComponent(term)}&limit=90`)
+        const url = (subCat as any)?.categoryId
+          ? `/api/public/matriz-precios?categoryId=${(subCat as any).categoryId}&limit=120`
+          : `/api/public/matriz-precios?search=${encodeURIComponent(subCat?.search || 'camara')}&limit=120`
+        const res = await fetch(url)
         if (res.ok) {
           const data = await res.json()
           setCatProducts(data.products || [])
