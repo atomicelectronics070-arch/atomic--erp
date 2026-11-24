@@ -540,6 +540,119 @@ const fuzzyMatch = (query: string, target: string): boolean => {
   })
 }
 
+function getCategoryTargetHref(name: string, slug?: string): string {
+  const n = (name || '').toLowerCase()
+  const s = (slug || '').toLowerCase()
+
+  if (/m[aá]rmol|ranurado|remodelaci|pvc/i.test(n) || /marmol|ranurado|wpc|remodelacion/i.test(s)) return '/web/paneles-ranurados'
+  if (/celular|samsung|galaxy|iphone|tel[eé]fono|smartphone|tablet|ipad/i.test(n) || /celular|telefonia|tablet/i.test(s)) return '/web/phones'
+  if (/computaci|laptop|port[aá]til|cpu|servidor/i.test(n) || /laptop|computacion|cpu/i.test(s)) return '/web/laptops'
+  if (/cocina|encimera|horno|campana|freidora/i.test(n) || /cocina|encimera|horno/i.test(s)) return '/web/cocinas'
+  if (/mando|consola|playstation|ps5|ps4|gaming|nintendo|dualsense/i.test(n) || /mando|consola|gaming/i.test(s)) return '/web/mandos'
+  if (/cerradura|chapa|biometric|smart\s*lock/i.test(n) || /cerradura/i.test(s)) return '/web/cerraduras-smart'
+  if (/c[aá]mara|cctv|vigilancia|ezviz|imou/i.test(n) || /camara|seguridad/i.test(s)) return '/web/camaras-hogar'
+  if (/barrera|vehicular/i.test(n) || /barrera/i.test(s)) return '/web/barreras-vehiculares'
+  if (/torniquete|peatonal/i.test(n) || /torniquete/i.test(s)) return '/web/torniquetes'
+  if (/movilidad|cargador|wallbox|scooter|bicicleta/i.test(n) || /cargador|movilidad/i.test(s)) return '/web/cargadores-electricos'
+  if (/generador|energ[ií]a|bater[ií]a|solix|planta/i.test(n) || /generador|energia/i.test(s)) return '/web/generadores'
+  if (/paneles?\s*solar|luminaria/i.test(n) || /solar|iluminacion/i.test(s)) return '/web/luminarias-solares'
+  if (/disco|almacenamiento|adata|hd710|ssd/i.test(n) || /disco|almacenamiento/i.test(s)) return '/web/disco-duro-adata'
+  if (/1hora|banco.*carga|powerbank/i.test(n) || /1hora|banco-de-carga/i.test(s)) return '/web/1hora'
+  if (/calefactor|calentador/i.test(n) || /calefactor/i.test(s)) return '/web/calefactores'
+  if (/cable|utp|bobina/i.test(n) || /cable/i.test(s)) return '/web/cables'
+  if (/porter|intercomunic|videoportero/i.test(n) || /porter|intercomunicacion/i.test(s)) return '/web/videoporteros'
+  if (/automatizaci|dom[oó]tica/i.test(n) || /automatizacion|domotica/i.test(s)) return '/web/automatizacion'
+  if (/studio|creaci[oó]n.*contenido|contenido/i.test(n) || /creacion-contenido/i.test(s)) return '/web/creacion-contenido'
+  if (/industrial|bloque|hormig[oó]n|maquinaria/i.test(n) || /industrial|maquinas/i.test(s)) return '/web/blogs/guia-maquinas-de-bloques'
+  if (/carros?\s*industrial/i.test(n) || /carros/i.test(s)) return '/web/carros-industriales'
+  if (/monitor|pantalla/i.test(n) || /monitor|pantalla/i.test(s)) return '/web/monitores'
+  if (/tienda\s*en\s*l[ií]nea/i.test(n) || /tienda-en-linea/i.test(s)) return '/web/tienda-en-linea'
+  if (/software|desarrollo\s*web|erp|sistemas|logistics/i.test(n) || /software|web/i.test(s)) return '/web/software'
+  if (/dise[ñn]o|branding/i.test(n) || /diseno/i.test(s)) return '/web/software-portfolio'
+  if (/ambiente/i.test(n)) return '/web/paneles-ranurados'
+  if (/hogar/i.test(n)) return '/web/cocinas'
+  if (/residencial/i.test(n)) return '/web/cerraduras-smart'
+  if (/accesorio/i.test(n)) return '/web/precios-vendedor'
+
+  return '/web/products'
+}
+
+function getCategoryShortcut(q: string): { name: string; subtitle: string; href: string; icon: string } | null {
+  const qClean = q.toLowerCase().trim()
+  if (!qClean) return null
+
+  if (/m[aá]rmol|ranurado|remodelaci|pvc/i.test(qClean)) {
+    return { name: "Acabados Tipo Mármol & WPC", subtitle: "Planchas PVC desde $27.00 • Paneles WPC $9.09", href: "/web/paneles-ranurados", icon: "🏛️" }
+  }
+  if (/celular|telefono|smartphone|iphone|samsung|galaxy/i.test(qClean)) {
+    return { name: "Celulares & Smartphones", subtitle: "Samsung Galaxy, iPhone, Redmi Note, Honor y más", href: "/web/phones", icon: "📱" }
+  }
+  if (/tablet|ipad|kids/i.test(qClean)) {
+    return { name: "Tablets & iPads Oficiales", subtitle: "Amazon Fire Kids, Galaxy Tab, iPad y Surface", href: "/web/phones", icon: "📲" }
+  }
+  if (/laptop|computad|port[aá]til|cpu|servidor/i.test(qClean)) {
+    return { name: "Laptops & Computación Portátil", subtitle: "Dell, HP, Lenovo, ThinkPad, Asus y CPUs", href: "/web/laptops", icon: "💻" }
+  }
+  if (/cocina|encimera|horno|campana|freidora/i.test(qClean)) {
+    return { name: "Cocinas, Encimeras & Hornos", subtitle: "Línea empotrable a gas, inducción y hornos", href: "/web/cocinas", icon: "🍳" }
+  }
+  if (/mando|consola|playstation|ps5|ps4|gaming|dualsense/i.test(qClean)) {
+    return { name: "Mandos & Consolas Gaming", subtitle: "DualSense PS5, mandos Xbox, Nintendo y PS4", href: "/web/mandos", icon: "🎮" }
+  }
+  if (/cerradura|chapa|biometric|smart\s*lock/i.test(qClean)) {
+    return { name: "Cerraduras Smart Biométricas", subtitle: "Kits de cerraduras inteligentes con instalación", href: "/web/cerraduras-smart", icon: "🔐" }
+  }
+  if (/c[aá]mara|cctv|vigilancia|ezviz|imou/i.test(qClean)) {
+    return { name: "Cámaras de Seguridad 4K", subtitle: "Ezviz, Imou, Hikvision con 2 años de garantía", href: "/web/camaras-hogar", icon: "📷" }
+  }
+  if (/barrera|vehicular/i.test(qClean)) {
+    return { name: "Barreras Vehiculares Automáticas", subtitle: "Ditec y sistemas de control de acceso vehicular", href: "/web/barreras-vehiculares", icon: "🚧" }
+  }
+  if (/torniquete|peatonal/i.test(qClean)) {
+    return { name: "Torniquetes & Control Peatonal", subtitle: "Sistemas bidireccionales de acceso con torniquete", href: "/web/torniquetes", icon: "🚶" }
+  }
+  if (/cargador|wallbox|scooter|movilidad/i.test(qClean)) {
+    return { name: "Movilidad Eléctrica & Cargadores EV", subtitle: "Wallbox para autos eléctricos y scooters", href: "/web/cargadores-electricos", icon: "⚡" }
+  }
+  if (/generador|energ[ií]a|bater[ií]a|solix|planta/i.test(qClean)) {
+    return { name: "Generadores Eléctricos & Solix", subtitle: "Estaciones de energía Anker Solix y generadores", href: "/web/generadores", icon: "🔋" }
+  }
+  if (/paneles?\s*solar|luminaria/i.test(qClean)) {
+    return { name: "Energía Solar & Luminarias", subtitle: "Luminarias solares suburbanas y paneles", href: "/web/luminarias-solares", icon: "☀️" }
+  }
+  if (/disco|almacenamiento|adata|hd710|ssd/i.test(qClean)) {
+    return { name: "Discos Duros Antigolpes Adata", subtitle: "Adata HD710 Pro 1TB, 2TB, 4TB uso rudo", href: "/web/disco-duro-adata", icon: "💾" }
+  }
+  if (/1hora|banco.*carga|powerbank/i.test(qClean)) {
+    return { name: "Bancos de Carga 1Hora Oficial", subtitle: "Powerbanks de 10.000mAh y 20.000mAh", href: "/web/1hora", icon: "🔌" }
+  }
+  if (/calefactor|calentador/i.test(qClean)) {
+    return { name: "Calefactores de Ambiente", subtitle: "Calefactores eléctricos cerámicos de torre", href: "/web/calefactores", icon: "🔥" }
+  }
+  if (/cable|utp|bobina/i.test(qClean)) {
+    return { name: "Cables UTP & Redes", subtitle: "Bobinas Cat 6, conectores y cableado", href: "/web/cables", icon: "🌐" }
+  }
+  if (/porter|intercomunic|videoportero/i.test(qClean)) {
+    return { name: "Videoporteros & Intercomunicación", subtitle: "Monitores touch y frentes de calle IP", href: "/web/videoporteros", icon: "📞" }
+  }
+  if (/automatizaci|dom[oó]tica/i.test(qClean)) {
+    return { name: "Automatización & Domótica", subtitle: "Sistemas inteligentes para hogar y oficinas", href: "/web/automatizacion", icon: "🏡" }
+  }
+  if (/studio|contenido/i.test(qClean)) {
+    return { name: "ATOMIC Studio & Creación", subtitle: "Equipos y producción audiovisual para creadores", href: "/web/creacion-contenido", icon: "🎬" }
+  }
+  if (/industrial|bloque|hormig[oó]n|maquinaria/i.test(qClean)) {
+    return { name: "Plantas de Bloques de Concreto", subtitle: "Maquinaria industrial y automatización", href: "/web/blogs/guia-maquinas-de-bloques", icon: "🏗️" }
+  }
+  if (/monitor|pantalla/i.test(qClean)) {
+    return { name: "Monitores & Pantallas Gaming", subtitle: "Monitores 144Hz, 165Hz, IPS y curvos", href: "/web/monitores", icon: "🖥️" }
+  }
+  if (/software|desarrollo/i.test(qClean)) {
+    return { name: "Software ERP & Facturación SRI", subtitle: "Plataformas ERP y sistemas comerciales", href: "/web/software", icon: "💻" }
+  }
+  return null
+}
+
 export default function PublicWebClient({ 
   initialProducts = [], 
   metadata = { categories: [], collections: [] }, 
@@ -1384,57 +1497,22 @@ export default function PublicWebClient({
               <h2 className="text-3xl font-black uppercase tracking-tight text-slate-950 font-heading">Categorías</h2>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-              {(metadata?.categories?.filter(c => !c.parentId && c.isVisible !== false) || []).map((cat: any) => {
-                const isMarble = /m[aá]rmol|ranurado|remodelaci/i.test(cat.name)
-                const isLaptops = /laptop|computaci/i.test(cat.name)
-                const isPhones = /celular|tablet/i.test(cat.name)
-                const isCocinas = /cocina|encimera|horno/i.test(cat.name)
-                const isCerraduras = /cerradura/i.test(cat.name)
-                const isMandos = /mando|consola/i.test(cat.name)
-                const isBarreras = /barrera/i.test(cat.name)
-                const isCargadores = /movilidad|cargador/i.test(cat.name)
-                const isTorniquetes = /torniquete/i.test(cat.name)
-
-                let targetHref: string | null = null
-                if (isMarble) targetHref = "/web/paneles-ranurados"
-                else if (isLaptops) targetHref = "/web/laptops"
-                else if (isPhones) targetHref = "/web/phones"
-                else if (isCocinas) targetHref = "/web/cocinas"
-                else if (isCerraduras) targetHref = "/web/cerraduras-smart"
-                else if (isMandos) targetHref = "/web/mandos"
-                else if (isBarreras) targetHref = "/web/barreras-vehiculares"
-                else if (isCargadores) targetHref = "/web/cargadores-electricos"
-                else if (isTorniquetes) targetHref = "/web/torniquetes"
-
-                if (targetHref) {
-                  return (
-                    <Link
-                      key={cat.id}
-                      href={targetHref}
-                      className="p-6 rounded-3xl bg-white border border-slate-200/90 hover:border-blue-400/50 hover:bg-blue-50/20 text-left transition-all group shadow-sm hover:shadow-xl block"
-                    >
-                      <p className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors font-heading">{cat.name}</p>
-                      <p className="text-[10px] font-mono text-blue-600 mt-2 uppercase tracking-widest font-bold flex items-center gap-1">
-                        <span>Ver productos</span>
-                        <span>→</span>
-                      </p>
-                    </Link>
-                  )
-                }
-
+              {(metadata?.categories?.filter(c => !c.parentId && c.isVisible !== false && !c.name.toLowerCase().includes('s55') && !c.name.toLowerCase().includes('soft3')) || []).map((cat: any) => {
+                const targetHref = getCategoryTargetHref(cat.name, cat.slug)
                 return (
-                  <button
+                  <Link
                     key={cat.id}
-                    onClick={() => {
-                      setActiveMainCategoryId(cat.id);
-                      setActiveTab(null);
-                      document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' });
-                    }}
-                    className="p-6 rounded-3xl bg-white border border-slate-200/90 hover:border-blue-400/50 hover:bg-blue-50/20 text-left transition-all group shadow-sm hover:shadow-xl"
+                    href={targetHref}
+                    className="p-6 rounded-3xl bg-white border border-slate-200/90 hover:border-blue-500 hover:bg-blue-50/20 text-left transition-all group shadow-sm hover:shadow-xl block"
                   >
-                    <p className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors font-heading">{cat.name}</p>
-                    <p className="text-[10px] font-mono text-slate-500 mt-2 uppercase tracking-widest">Ver productos →</p>
-                  </button>
+                    <p className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors font-heading uppercase leading-snug">
+                      {cat.name}
+                    </p>
+                    <p className="text-[10px] font-mono text-blue-600 mt-2.5 uppercase tracking-widest font-bold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                      <span>Ver catálogo</span>
+                      <span>→</span>
+                    </p>
+                  </Link>
                 )
               })}
             </div>
@@ -1788,9 +1866,9 @@ export default function PublicWebClient({
                   if (e.key === 'Enter') {
                     e.preventDefault();
                     setShowLiveDropdown(false);
-                    const qLower = searchQuery.toLowerCase().trim();
-                    if (/m[aá]rmol|paneles\s*ranurados|planchas?\s*pvc|acabados\s*tipo\s*m[aá]rmol/i.test(qLower)) {
-                      window.location.href = '/web/paneles-ranurados';
+                    const shortcut = getCategoryShortcut(searchQuery);
+                    if (shortcut) {
+                      window.location.href = shortcut.href;
                       return;
                     }
                     document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' });
@@ -1844,27 +1922,31 @@ export default function PublicWebClient({
 
                   {/* Matches List */}
                   <div className="max-h-[360px] overflow-y-auto divide-y divide-slate-100 p-2 space-y-1">
-                    {/m[aá]rmol|acabado|paneles?\s*(?:wpc|ranurado)|planchas?\s*pvc/i.test(searchQuery) && (
-                      <Link
-                        href="/web/paneles-ranurados"
-                        className="flex items-center justify-between p-3 rounded-2xl bg-gradient-to-r from-amber-500/15 via-yellow-500/10 to-transparent border border-amber-500/30 hover:border-amber-500 hover:bg-amber-500/20 transition-all group/marble mb-2"
-                      >
-                        <div className="flex items-center gap-3">
-                          <span className="text-xl">🏛️</span>
-                          <div>
-                            <p className="text-xs font-black uppercase text-amber-950 font-heading group-hover/marble:text-amber-800">
-                              Viñeta Oficial: Acabados Tipo Mármol & Paneles WPC
-                            </p>
-                            <p className="text-[10px] text-amber-800 font-mono">
-                              Planchas PVC desde $27.00 • Paneles WPC $9.09 • Retiro Carapungo
-                            </p>
+                    {(() => {
+                      const shortcut = getCategoryShortcut(searchQuery);
+                      if (!shortcut) return null;
+                      return (
+                        <Link
+                          href={shortcut.href}
+                          className="flex items-center justify-between p-3 rounded-2xl bg-gradient-to-r from-blue-500/15 via-indigo-500/10 to-transparent border border-blue-400/30 hover:border-blue-500 hover:bg-blue-500/20 transition-all group/sc mb-2"
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="text-xl">{shortcut.icon}</span>
+                            <div>
+                              <p className="text-xs font-black uppercase text-slate-950 font-heading group-hover/sc:text-blue-700">
+                                Viñeta Oficial: {shortcut.name}
+                              </p>
+                              <p className="text-[10px] text-slate-600 font-mono">
+                                {shortcut.subtitle}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                        <span className="text-xs font-black text-amber-700 font-mono px-2.5 py-1 rounded-full bg-amber-200/60 border border-amber-300 shrink-0">
-                          Abrir Showroom →
-                        </span>
-                      </Link>
-                    )}
+                          <span className="text-xs font-black text-blue-700 font-mono px-2.5 py-1 rounded-full bg-blue-100 border border-blue-300 shrink-0">
+                            Abrir Showroom →
+                          </span>
+                        </Link>
+                      );
+                    })()}
                     {liveMatches.length === 0 ? (
                       <div className="py-8 text-center text-xs font-mono text-slate-500">
                         {isSearching ? 'Buscando en tiempo real...' : 'No se encontraron productos coincidentes.'}
