@@ -2,6 +2,8 @@ import React from "react"
 import { Metadata } from "next"
 import ListaPreciosProveedoresConfidencial from "@/components/shop/ListaPreciosProveedoresConfidencial"
 
+export const dynamic = "force-dynamic"
+
 export const metadata: Metadata = {
     title: "Lista de Precios con Links a Proveedores (Confidencial) | ATOMIC ERP",
     description: "Catálogo confidencial de proveedores, costos mayoristas y extracción de fotos y descripciones para Stefy y Cristina."

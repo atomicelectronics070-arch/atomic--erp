@@ -4,6 +4,8 @@ import ListaPreciosProveedoresConfidencial from "@/components/shop/ListaPreciosP
 import Link from "next/link"
 import { ArrowLeft, Sparkles, ShieldCheck } from "lucide-react"
 
+export const dynamic = "force-dynamic"
+
 export const metadata: Metadata = {
     title: "Lista de Precios & Proveedores Confidencial | ATOMIC",
     description: "Catálogo confidencial de proveedores, costos mayoristas y extracción de fotos y descripciones para Stefy y Cristina."
