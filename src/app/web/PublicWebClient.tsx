@@ -9,7 +9,7 @@ import {
   ChevronLeft, Hexagon, Star, X, Smartphone, Sparkles, Code, Bot,
   Search, ImageOff, Home, Building, Factory, Cpu, Gamepad2, Utensils, Laptop, Award, User, Settings, ChevronDown, Package, LogIn, Menu,
   Wrench, Clock, ShieldCheck, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle2, Briefcase, Loader2,
-  Youtube, Play, PhoneCall, MessageSquare, Tag, Flame, Percent, ArrowUpRight, BookOpen, Layers, Check
+  Youtube, Play, PhoneCall, MessageSquare, Tag, Flame, Percent, ArrowUpRight, BookOpen, Layers, Check, Copy, GraduationCap, Share2
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -1266,6 +1266,17 @@ export default function PublicWebClient({
   const [catalogSubdivision, setCatalogSubdivision] = useState<string>("todos")
   const [ofertasFilter, setOfertasFilter] = useState<'todos' | 'blackfriday' | 'remate'>('todos')
   const [selectedAreaId, setSelectedAreaId] = useState<string | null>(null)
+  const [newsletterFilter, setNewsletterFilter] = useState<'todos' | 'educacion' | 'tecnologia'>('todos')
+  const [blogFilter, setBlogFilter] = useState<'todos' | 'reviews' | 'soluciones' | 'recursos'>('todos')
+  const [copiedCtaId, setCopiedCtaId] = useState<string | null>(null)
+
+  const copyCtaText = (id: string, text: string) => {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(text)
+      setCopiedCtaId(id)
+      setTimeout(() => setCopiedCtaId(null), 2500)
+    }
+  }
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -2364,19 +2375,50 @@ export default function PublicWebClient({
         )}
 
         {activeTab === 'blog' && (
-          <motion.section key="blog" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="max-w-7xl mx-auto px-6 py-12">
-            <div className="flex items-center gap-3 mb-8">
-              <button onClick={() => setActiveTab(null)} className="p-2.5 rounded-2xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition-all shadow-sm">
-                <ChevronLeft size={18} />
-              </button>
-              <h2 className="text-3xl font-black uppercase tracking-tight text-slate-950 font-heading">Blog & Contenido Multimedia</h2>
+          <motion.section key="blog" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-200">
+              <div className="flex items-center gap-3">
+                <button onClick={() => setActiveTab(null)} className="p-2.5 rounded-2xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 hover:text-slate-950 transition-all shadow-sm cursor-pointer" title="Volver a Inicio">
+                  <ChevronLeft size={18} />
+                </button>
+                <div>
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-blue-600 block">
+                    REVIEWS, OPINIONES & INVESTIGACIONES // #BLOG
+                  </span>
+                  <h2 className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-slate-950 font-heading">
+                    The ATOMIC Blog 📰
+                  </h2>
+                </div>
+              </div>
+
+              {/* Subtabs Filter #BLOG */}
+              <div className="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 shrink-0 self-start md:self-auto shadow-inner overflow-x-auto scrollbar-hide">
+                {[
+                  { id: 'todos', label: '🔥 Todos los Artículos' },
+                  { id: 'reviews', label: '⭐ Reviews de Producto' },
+                  { id: 'soluciones', label: '🔬 Investigaciones & Soluciones' },
+                  { id: 'recursos', label: '🎓 Recursos & Guías' },
+                ].map((f) => (
+                  <button
+                    key={f.id}
+                    onClick={() => setBlogFilter(f.id as any)}
+                    className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-bold font-heading transition-all cursor-pointer whitespace-nowrap ${
+                      blogFilter === f.id
+                        ? 'bg-slate-950 text-white shadow-md scale-102'
+                        : 'text-slate-600 hover:text-slate-950 hover:bg-white'
+                    }`}
+                  >
+                    <span>{f.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Official Embedded YouTube Video */}
             <div className="mb-10 rounded-3xl overflow-hidden border border-slate-200/90 shadow-xl bg-white p-4">
               <div className="flex items-center gap-2 mb-3 px-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse" />
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-red-600">Canal Oficial ATOMIC // YouTube</span>
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-red-600">Canal Oficial ATOMIC // YouTube & #BLOG</span>
               </div>
               <div className="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-950 shadow-inner">
                 <iframe
@@ -2389,71 +2431,501 @@ export default function PublicWebClient({
               </div>
             </div>
 
-            <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3">
+            {/* Articles Stream */}
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {[
-                { title: 'Guía Maestra: Prompts IA Fotografía (MrBeast)', href: '/prompts', desc: '12 prompts hiperrealistas 8K, retratos ejecutivos, VFX y PDF oficial descargable con botones para copiar.' },
-                { title: '🔥 Mega Catálogo de Laptops', href: '/web/blogs/cmrzaruyu000130xwb1qkupx2', desc: 'Encuentra tu equipo ideal: laptops gamers, ultrabooks corporativas y estaciones de trabajo.' },
-                { title: 'Post #3: Recursos de Aprendizaje', href: '/recursos', desc: 'Cursos gratuitos con certificación de MIT, Stanford y Harvard.' },
-                { title: 'Post #4: 9 Cursos de YouTube Gratuitos', href: '/post-4', desc: 'Ventas de Alto Impacto, Inteligencia Artificial y Liderazgo.' },
-                { title: 'Showroom & Catálogo de Laptops', href: '/web/laptops-blog', desc: 'Especificaciones técnicas detalladas, stock físico y comparativa de rendimiento.' },
-              ].map(post => (
-                <Link key={post.href} href={post.href} className="p-6 rounded-3xl bg-white border border-slate-200/90 hover:border-blue-400/50 hover:bg-blue-50/20 transition-all group block shadow-sm hover:shadow-xl">
-                  <h3 className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors mb-2 font-heading">{post.title}</h3>
-                  <p className="text-xs text-slate-600">{post.desc}</p>
-                  <span className="mt-4 inline-block text-[10px] font-mono text-blue-600 uppercase font-black">Leer Artículo →</span>
-                </Link>
+                {
+                  id: 'blog-recursos-mit',
+                  type: 'recursos',
+                  tag: '#BLOG // EDUCACIÓN DE ÉLITE',
+                  title: '🎓 Recursos Top Educativos: Cursos con MIT, Harvard & Stanford',
+                  desc: 'Rutas maestras de aprendizaje con certificación gratuita en Inteligencia Artificial, Programación, Finanzas y Liderazgo de las universidades #1 del mundo.',
+                  href: '/recursos',
+                  ctaText: '🎓 ¿Quieres estudiar en MIT, Harvard o Stanford 100% GRATIS? En ATOMIC preparamos la lista maestra de programas oficiales con acceso abierto en IA, programación y finanzas. 🚀 Mira la guía completa aquí: https://atomiccotizador.shop/recursos 📲 ¿Dudas o necesitas soporte para inscribirte? Escríbenos directo a nuestro WhatsApp: https://wa.me/593969043453 #BLOG #EducacionGratis #ATOMIC'
+                },
+                {
+                  id: 'blog-laptops-review',
+                  type: 'reviews',
+                  tag: '#BLOG // REVIEW DE PRODUCTO',
+                  title: '💻 Review & Benchmark: Laptops Gamers vs Ultrabooks Dell Latitude',
+                  desc: 'Evaluamos autonomía de batería, chasis de magnesio, temperaturas en renderizado 3D y rendimiento de CPUs Intel Core i7 para profesionales.',
+                  href: '/web/laptops-blog',
+                  ctaText: '💻 ¿Qué laptop elegir para desarrollo o ingeniería en 2026? Comparamos potencia gráfica vs durabilidad corporativa. 🚀 Lee el review completo aquí: https://atomiccotizador.shop/web/laptops-blog 📲 Cotiza tu equipo con garantía en WhatsApp: https://wa.me/593969043453 #BLOG #LaptopsEcuador #ATOMIC'
+                },
+                {
+                  id: 'blog-software-bots',
+                  type: 'soluciones',
+                  tag: '#BLOG // INVESTIGACIÓN DE SOLUCIONES',
+                  title: '🤖 Cómo un Bot de WhatsApp con Facturación SRI Multiplica Ventas',
+                  desc: 'Investigación empírica: Las empresas que responden en menos de 2 minutos y emiten facturas electrónicas en 3 segundos triplican su conversión comercial.',
+                  href: '/web/software',
+                  ctaText: '🤖 ¡Automatiza tus ventas y emite facturas SRI en 3 segundos! Descubre cómo los agentes inteligentes atienden WhatsApp 24/7. 🚀 Mira la investigación aquí: https://atomiccotizador.shop/web/software 📲 Agenda tu demo gratuita en WhatsApp: https://wa.me/593969043453 #BLOG #SoftwareSRI #Automatizacion'
+                },
+                {
+                  id: 'blog-doble-lente',
+                  type: 'reviews',
+                  tag: '#BLOG // REVIEW DE PRODUCTO',
+                  title: '📹 Review de Producto: Cámara Exterior Doble Lente (PIP) con 360°',
+                  desc: 'Prueba de campo bajo lluvia: Cómo la tecnología PIP elimina puntos ciegos en parques, residencias y negocios con luces disuasorias.',
+                  href: '/aurora-pro',
+                  ctaText: '📹 ¡Vigila tu hogar seguramente! Probamos la cámara exterior doble lente PIP con seguimiento 360° y luces disuasorias. 🚀 Conoce todos los detalles aquí: https://atomiccotizador.shop/aurora-pro 📲 Pídela desde $63.77 o con instalación en WhatsApp: https://wa.me/593969043453 #BLOG #SeguridadResidencial #ATOMIC'
+                },
+                {
+                  id: 'blog-prompts-mrbeast',
+                  type: 'recursos',
+                  tag: '#BLOG // RECURSOS & GUÍAS',
+                  title: '🎨 12 Prompts de IA para Fotografía Hiperrealista & VFX',
+                  desc: 'Fórmulas para miniaturas virales, retratos ejecutivos con iluminación de estudio y texturas cinematográficas con PDF oficial descargable.',
+                  href: '/prompts',
+                  ctaText: '🎨 Domina la fotografía con Inteligencia Artificial. 12 prompts hiperrealistas 8K con PDF oficial descargable. 🚀 Explora los prompts aquí: https://atomiccotizador.shop/prompts 📲 Soporte técnico vía WhatsApp: https://wa.me/593969043453 #BLOG #PromptsIA #ATOMIC'
+                },
+                {
+                  id: 'blog-cursos-youtube',
+                  type: 'recursos',
+                  tag: '#BLOG // RECURSOS & GUÍAS',
+                  title: '📺 9 Cursos Gratuitos de YouTube en Ventas, IA & Liderazgo',
+                  desc: 'Capacitación audiovisual de alto impacto para emprendedores, directores comerciales y desarrolladores sin costo de suscripción.',
+                  href: '/post-4',
+                  ctaText: '📺 Rutas de autoaprendizaje en video: Ventas de Alto Impacto, Liderazgo e Inteligencia Artificial 100% Gratis. 🚀 Mira los cursos aquí: https://atomiccotizador.shop/post-4 📲 Contacto oficial ATOMIC: https://wa.me/593969043453 #BLOG #CursosGratis #ATOMIC'
+                },
+              ].filter(post => blogFilter === 'todos' || post.type === blogFilter).map(post => (
+                <div key={post.id} className="p-6 rounded-3xl bg-white border border-slate-200/90 hover:border-blue-400/50 hover:shadow-xl transition-all flex flex-col justify-between group text-left">
+                  <div>
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full mb-3 inline-block">
+                      {post.tag}
+                    </span>
+                    <h3 className="text-base font-bold text-slate-900 group-hover:text-blue-600 transition-colors mb-2 font-heading leading-snug">
+                      {post.title}
+                    </h3>
+                    <p className="text-xs text-slate-600 leading-relaxed mb-4">
+                      {post.desc}
+                    </p>
+                  </div>
+
+                  <div className="pt-4 border-t border-slate-100 mt-auto space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
+                      <Link href={post.href} className="py-2.5 px-3 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-[10px] uppercase tracking-wider text-center transition-colors flex items-center justify-center">
+                        Leer Artículo →
+                      </Link>
+                      <button
+                        onClick={() => copyCtaText(post.id, post.ctaText)}
+                        className={`py-2.5 px-3 rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition-all flex items-center justify-center gap-1 border cursor-pointer ${
+                          copiedCtaId === post.id
+                            ? 'bg-emerald-600 text-white border-emerald-600'
+                            : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200'
+                        }`}
+                      >
+                        {copiedCtaId === post.id ? (
+                          <>
+                            <Check size={12} />
+                            <span>¡Copiado!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy size={12} />
+                            <span>Copiar CTA</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           </motion.section>
         )}
 
         {activeTab === 'newsletter' && (
-          <motion.section key="newsletter" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="max-w-4xl mx-auto px-6 py-12">
-            <div className="flex items-center gap-3 mb-8 justify-center">
-              <button onClick={() => setActiveTab(null)} className="p-2.5 rounded-2xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition-all shadow-sm">
-                <ChevronLeft size={18} />
-              </button>
-              <h2 className="text-3xl font-black uppercase tracking-tight text-slate-950 font-heading">The ATOMIC Gazette ✉️</h2>
+          <motion.section key="newsletter" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+            {/* Header & Filter Selector */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-200">
+              <div className="flex items-center gap-3">
+                <button onClick={() => setActiveTab(null)} className="p-2.5 rounded-2xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 hover:text-slate-950 transition-all shadow-sm cursor-pointer" title="Volver a Inicio">
+                  <ChevronLeft size={18} />
+                </button>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-600 animate-ping" />
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-emerald-600">
+                      THE ATOMIC GAZETTE // #NEWSLETTER OFICIAL
+                    </span>
+                  </div>
+                  <h2 className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-slate-950 font-heading">
+                    Edición Semanal & CTAs para Redes Sociales ✉️
+                  </h2>
+                </div>
+              </div>
+
+              {/* Subtabs Filter #NEWSLETTER */}
+              <div className="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 shrink-0 self-start md:self-auto shadow-inner">
+                {[
+                  { id: 'todos', label: '🔥 Todo el #NEWSLETTER' },
+                  { id: 'educacion', label: '🎓 Educación' },
+                  { id: 'tecnologia', label: '⚡ Actualidad Tecnológica & Software' },
+                ].map((f) => (
+                  <button
+                    key={f.id}
+                    onClick={() => setNewsletterFilter(f.id as any)}
+                    className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-bold font-heading transition-all cursor-pointer whitespace-nowrap ${
+                      newsletterFilter === f.id
+                        ? 'bg-slate-950 text-white shadow-md scale-102'
+                        : 'text-slate-600 hover:text-slate-950 hover:bg-white'
+                    }`}
+                  >
+                    <span>{f.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {/* Virtual Newspaper Gazette Layout */}
-            <div className="bg-white border-2 border-slate-900 rounded-3xl p-8 sm:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.08)] relative overflow-hidden">
-              <div className="border-b-2 border-slate-900 pb-4 mb-6 text-center">
-                <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-slate-500">EDICIÓN DIGITAL ECUADOR • AÑO 2026</p>
-                <h3 className="text-3xl sm:text-5xl font-black font-heading tracking-tight text-slate-950 uppercase mt-1">
-                  LA GACETA TECNOLÓGICA
-                </h3>
-                <div className="flex items-center justify-between border-t border-b border-slate-300 py-1.5 mt-3 text-[10px] font-mono text-slate-700">
-                  <span>QUITO - GUAYAQUIL - CUENCA</span>
-                  <span>SUSCRIPCIÓN GRATUITA SEMANAL</span>
-                  <span>TECNOLOGÍA & DOMÓTICA</span>
-                </div>
-              </div>
+            {/* Newsletter Gazette Stream */}
+            <div className="space-y-10">
 
-              <div className="grid sm:grid-cols-2 gap-6 mb-8 text-left">
-                <div className="border-r border-slate-200 pr-4">
-                  <span className="text-[9px] font-mono font-black uppercase text-blue-600 bg-blue-50 px-2 py-0.5 rounded">TITULAR PRINCIPAL</span>
-                  <h4 className="text-lg font-black text-slate-900 mt-2 mb-1.5 font-heading uppercase">
-                    La Revolución de la Inteligencia Artificial en Negocios Ecuatorianos
-                  </h4>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    Bots inteligentes atienden WhatsApp las 24 horas, emiten facturas electrónicas SRI en 3 segundos y coordinan citas automáticamente para pymes y empresas en todo el país.
-                  </p>
-                </div>
+              {/* ── SECCIÓN 1: EDUCACIÓN (CON RECURSOS TOP EDUCATIVOS) ── */}
+              {(newsletterFilter === 'todos' || newsletterFilter === 'educacion') && (
                 <div>
-                  <span className="text-[9px] font-mono font-black uppercase text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">TENDENCIAS 2026</span>
-                  <h4 className="text-lg font-black text-slate-900 mt-2 mb-1.5 font-heading uppercase">
-                    Seguridad Perimetral Sin Cables con Garantía Extendida
-                  </h4>
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    Sistemas biométricos SenseFace A y cámaras solares 4K eliminan el cableado tradicional, ofreciendo hasta 2 años de garantía directa y soporte en línea.
-                  </p>
-                </div>
-              </div>
+                  <div className="flex items-center gap-2 mb-6">
+                    <GraduationCap className="text-blue-600" size={20} />
+                    <h3 className="text-xl sm:text-2xl font-black font-heading uppercase text-slate-950">
+                      Sección Educación Continua // #NEWSLETTER
+                    </h3>
+                  </div>
 
-              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 text-center">
+                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {/* Item 1: Recursos Top Educativos */}
+                    <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-7 shadow-sm hover:border-blue-500/40 hover:shadow-xl transition-all flex flex-col justify-between text-left">
+                      <div>
+                        <div className="flex items-center justify-between gap-2 mb-3">
+                          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full">
+                            #NEWSLETTER // EDUCACIÓN
+                          </span>
+                          <span className="text-xs">🎓 100% GRATIS</span>
+                        </div>
+                        <h4 className="text-lg font-black text-slate-900 font-heading mb-2 leading-snug">
+                          Cursos Gratuitos de MIT, Stanford y Harvard con Certificación
+                        </h4>
+                        <p className="text-xs text-slate-600 leading-relaxed mb-4">
+                          Acceso oficial a programas de élite mundial en Inteligencia Artificial, Ciencia de la Computación, Python, Finanzas y Liderazgo sin costo de matrícula para Ecuador.
+                        </p>
+                      </div>
+
+                      <div className="pt-4 border-t border-slate-100 mt-auto space-y-3">
+                        {/* CTA Box for Social Media */}
+                        <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[11px] text-slate-700 font-mono leading-relaxed">
+                          <p className="line-clamp-3">
+                            🎓 ¿Quieres estudiar en MIT, Harvard o Stanford 100% GRATIS? En ATOMIC preparamos la lista maestra de programas oficiales con acceso abierto en IA, programación y finanzas. 🚀 Mira la guía completa aquí: https://atomiccotizador.shop/recursos 📲 ¿Dudas o necesitas soporte para inscribirte? Escríbenos directo a nuestro WhatsApp: https://wa.me/593969043453 #NEWSLETTER #EducacionGratis #ATOMIC
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <Link href="/recursos" className="py-2.5 px-3 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-[10px] uppercase tracking-wider text-center transition-colors flex items-center justify-center">
+                            Ver Cursos →
+                          </Link>
+                          <button
+                            onClick={() => copyCtaText('nl-mit', '🎓 ¿Quieres estudiar en MIT, Harvard o Stanford 100% GRATIS? En ATOMIC preparamos la lista maestra de programas oficiales con acceso abierto en IA, programación y finanzas. 🚀 Mira la guía completa aquí: https://atomiccotizador.shop/recursos 📲 ¿Dudas o necesitas soporte para inscribirte? Escríbenos directo a nuestro WhatsApp: https://wa.me/593969043453 #NEWSLETTER #EducacionGratis #ATOMIC')}
+                            className={`py-2.5 px-3 rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition-all flex items-center justify-center gap-1 border cursor-pointer ${
+                              copiedCtaId === 'nl-mit'
+                                ? 'bg-emerald-600 text-white border-emerald-600'
+                                : 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200'
+                            }`}
+                          >
+                            {copiedCtaId === 'nl-mit' ? (
+                              <>
+                                <Check size={12} />
+                                <span>¡Copiado!</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy size={12} />
+                                <span>Copiar CTA</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Item 2: 9 Cursos YouTube */}
+                    <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-7 shadow-sm hover:border-blue-500/40 hover:shadow-xl transition-all flex flex-col justify-between text-left">
+                      <div>
+                        <div className="flex items-center justify-between gap-2 mb-3">
+                          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full">
+                            #NEWSLETTER // EDUCACIÓN
+                          </span>
+                          <span className="text-xs">📺 VIDEO MASTER</span>
+                        </div>
+                        <h4 className="text-lg font-black text-slate-900 font-heading mb-2 leading-snug">
+                          9 Cursos Gratuitos de YouTube: Ventas de Alto Impacto & Liderazgo
+                        </h4>
+                        <p className="text-xs text-slate-600 leading-relaxed mb-4">
+                          Aprende prospección digital, negociación comercial y herramientas de IA aplicada organizadas en rutas de video listas para ejecutar hoy.
+                        </p>
+                      </div>
+
+                      <div className="pt-4 border-t border-slate-100 mt-auto space-y-3">
+                        <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[11px] text-slate-700 font-mono leading-relaxed">
+                          <p className="line-clamp-3">
+                            📺 Rutas de autoaprendizaje en video: Ventas de Alto Impacto, Liderazgo e Inteligencia Artificial 100% Gratis. 🚀 Mira los cursos aquí: https://atomiccotizador.shop/post-4 📲 Contacto oficial ATOMIC: https://wa.me/593969043453 #NEWSLETTER #CursosGratis #ATOMIC
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <Link href="/post-4" className="py-2.5 px-3 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-[10px] uppercase tracking-wider text-center transition-colors flex items-center justify-center">
+                            Ver Rutas →
+                          </Link>
+                          <button
+                            onClick={() => copyCtaText('nl-yt', '📺 Rutas de autoaprendizaje en video: Ventas de Alto Impacto, Liderazgo e Inteligencia Artificial 100% Gratis. 🚀 Mira los cursos aquí: https://atomiccotizador.shop/post-4 📲 Contacto oficial ATOMIC: https://wa.me/593969043453 #NEWSLETTER #CursosGratis #ATOMIC')}
+                            className={`py-2.5 px-3 rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition-all flex items-center justify-center gap-1 border cursor-pointer ${
+                              copiedCtaId === 'nl-yt'
+                                ? 'bg-emerald-600 text-white border-emerald-600'
+                                : 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200'
+                            }`}
+                          >
+                            {copiedCtaId === 'nl-yt' ? (
+                              <>
+                                <Check size={12} />
+                                <span>¡Copiado!</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy size={12} />
+                                <span>Copiar CTA</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Item 3: Prompts IA */}
+                    <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-7 shadow-sm hover:border-blue-500/40 hover:shadow-xl transition-all flex flex-col justify-between text-left">
+                      <div>
+                        <div className="flex items-center justify-between gap-2 mb-3">
+                          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full">
+                            #NEWSLETTER // EDUCACIÓN & IA
+                          </span>
+                          <span className="text-xs">🎨 PROMPTS 8K</span>
+                        </div>
+                        <h4 className="text-lg font-black text-slate-900 font-heading mb-2 leading-snug">
+                          Guía Maestra: 12 Prompts IA para Fotografía Hiperrealista
+                        </h4>
+                        <p className="text-xs text-slate-600 leading-relaxed mb-4">
+                          Copia fórmulas avanzadas de iluminación, texturas y ángulos cinematográficos estilo MrBeast con PDF oficial descargable.
+                        </p>
+                      </div>
+
+                      <div className="pt-4 border-t border-slate-100 mt-auto space-y-3">
+                        <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[11px] text-slate-700 font-mono leading-relaxed">
+                          <p className="line-clamp-3">
+                            🎨 Domina la fotografía con Inteligencia Artificial. 12 prompts hiperrealistas 8K con PDF oficial descargable. 🚀 Explora los prompts aquí: https://atomiccotizador.shop/prompts 📲 Soporte técnico vía WhatsApp: https://wa.me/593969043453 #NEWSLETTER #PromptsIA #ATOMIC
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <Link href="/prompts" className="py-2.5 px-3 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-[10px] uppercase tracking-wider text-center transition-colors flex items-center justify-center">
+                            Ver Prompts →
+                          </Link>
+                          <button
+                            onClick={() => copyCtaText('nl-prompts', '🎨 Domina la fotografía con Inteligencia Artificial. 12 prompts hiperrealistas 8K con PDF oficial descargable. 🚀 Explora los prompts aquí: https://atomiccotizador.shop/prompts 📲 Soporte técnico vía WhatsApp: https://wa.me/593969043453 #NEWSLETTER #PromptsIA #ATOMIC')}
+                            className={`py-2.5 px-3 rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition-all flex items-center justify-center gap-1 border cursor-pointer ${
+                              copiedCtaId === 'nl-prompts'
+                                ? 'bg-emerald-600 text-white border-emerald-600'
+                                : 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200'
+                            }`}
+                          >
+                            {copiedCtaId === 'nl-prompts' ? (
+                              <>
+                                <Check size={12} />
+                                <span>¡Copiado!</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy size={12} />
+                                <span>Copiar CTA</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ── SECCIÓN 2: ACTUALIDAD TECNOLÓGICA & SOFTWARE ── */}
+              {(newsletterFilter === 'todos' || newsletterFilter === 'tecnologia') && (
+                <div>
+                  <div className="flex items-center gap-2 mb-6">
+                    <Zap className="text-emerald-600" size={20} />
+                    <h3 className="text-xl sm:text-2xl font-black font-heading uppercase text-slate-950">
+                      Sección Actualidad Tecnológica & Software // #NEWSLETTER
+                    </h3>
+                  </div>
+
+                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {/* Item 4: Bots de WhatsApp & Software SRI */}
+                    <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-7 shadow-sm hover:border-emerald-500/40 hover:shadow-xl transition-all flex flex-col justify-between text-left">
+                      <div>
+                        <div className="flex items-center justify-between gap-2 mb-3">
+                          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full">
+                            #NEWSLETTER // SOFTWARE & IA
+                          </span>
+                          <span className="text-xs">🤖 SRI 2026</span>
+                        </div>
+                        <h4 className="text-lg font-black text-slate-900 font-heading mb-2 leading-snug">
+                          Bots Inteligentes de WhatsApp con Facturación Electrónica SRI
+                        </h4>
+                        <p className="text-xs text-slate-600 leading-relaxed mb-4">
+                          Agentes conversacionales que atienden 24/7, verifican stock en ERP y emiten comprobantes autorizados por el SRI en menos de 3 segundos.
+                        </p>
+                      </div>
+
+                      <div className="pt-4 border-t border-slate-100 mt-auto space-y-3">
+                        <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[11px] text-slate-700 font-mono leading-relaxed">
+                          <p className="line-clamp-3">
+                            ⚡ ¡Deja de perder clientes por tardar en responder! Nuestro Bot de Inteligencia Artificial para WhatsApp atiende consultas 24/7, cotiza y emite facturas electrónicas SRI en 3 segundos. 🚀 Mira la solución completa aquí: https://atomiccotizador.shop/web/software 📲 Agenda tu demo personalizada hoy en nuestro WhatsApp CRM: https://wa.me/593969043453 #NEWSLETTER #Automatizacion #SoftwareSRI #ATOMIC
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <Link href="/web/software" className="py-2.5 px-3 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-[10px] uppercase tracking-wider text-center transition-colors flex items-center justify-center">
+                            Ver Software →
+                          </Link>
+                          <button
+                            onClick={() => copyCtaText('nl-software', '⚡ ¡Deja de perder clientes por tardar en responder! Nuestro Bot de Inteligencia Artificial para WhatsApp atiende consultas 24/7, cotiza y emite facturas electrónicas SRI en 3 segundos. 🚀 Mira la solución completa aquí: https://atomiccotizador.shop/web/software 📲 Agenda tu demo personalizada hoy en nuestro WhatsApp CRM: https://wa.me/593969043453 #NEWSLETTER #Automatizacion #SoftwareSRI #ATOMIC')}
+                            className={`py-2.5 px-3 rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition-all flex items-center justify-center gap-1 border cursor-pointer ${
+                              copiedCtaId === 'nl-software'
+                                ? 'bg-emerald-600 text-white border-emerald-600'
+                                : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-200'
+                            }`}
+                          >
+                            {copiedCtaId === 'nl-software' ? (
+                              <>
+                                <Check size={12} />
+                                <span>¡Copiado!</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy size={12} />
+                                <span>Copiar CTA</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Item 5: Cámara Doble Lente PIP */}
+                    <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-7 shadow-sm hover:border-cyan-500/40 hover:shadow-xl transition-all flex flex-col justify-between text-left">
+                      <div>
+                        <div className="flex items-center justify-between gap-2 mb-3">
+                          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-700 bg-cyan-50 px-2.5 py-1 rounded-full">
+                            #NEWSLETTER // DOMÓTICA RESIDENCIAL
+                          </span>
+                          <span className="text-xs">📹 DOBLE LENTE PIP</span>
+                        </div>
+                        <h4 className="text-lg font-black text-slate-900 font-heading mb-2 leading-snug">
+                          Cámara Exterior Doble Lente PIP con Visión Nocturna Full-Color
+                        </h4>
+                        <p className="text-xs text-slate-600 leading-relaxed mb-4">
+                          Vigila tu hogar seguramente: 2 cámaras en 1 con monitoreo de parques, residencias y negocios. Resistente al agua IP66 desde $63.77 c/u.
+                        </p>
+                      </div>
+
+                      <div className="pt-4 border-t border-slate-100 mt-auto space-y-3">
+                        <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[11px] text-slate-700 font-mono leading-relaxed">
+                          <p className="line-clamp-3">
+                            📹 ¡Vigila tu hogar seguramente! Cámara exterior Doble Lente PIP con visión nocturna a todo color, sirena disuasoria y resistencia al agua IP66. 🚀 Ver detalles y promoción: https://atomiccotizador.shop/aurora-pro 📲 Cotiza con instalación profesional en WhatsApp: https://wa.me/593969043453 #NEWSLETTER #SeguridadResidencial #ATOMIC
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <Link href="/aurora-pro" className="py-2.5 px-3 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-[10px] uppercase tracking-wider text-center transition-colors flex items-center justify-center">
+                            Ver Cámara →
+                          </Link>
+                          <button
+                            onClick={() => copyCtaText('nl-cam', '📹 ¡Vigila tu hogar seguramente! Cámara exterior Doble Lente PIP con visión nocturna a todo color, sirena disuasoria y resistencia al agua IP66. 🚀 Ver detalles y promoción: https://atomiccotizador.shop/aurora-pro 📲 Cotiza con instalación profesional en WhatsApp: https://wa.me/593969043453 #NEWSLETTER #SeguridadResidencial #ATOMIC')}
+                            className={`py-2.5 px-3 rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition-all flex items-center justify-center gap-1 border cursor-pointer ${
+                              copiedCtaId === 'nl-cam'
+                                ? 'bg-emerald-600 text-white border-emerald-600'
+                                : 'bg-cyan-50 hover:bg-cyan-100 text-cyan-800 border-cyan-200'
+                            }`}
+                          >
+                            {copiedCtaId === 'nl-cam' ? (
+                              <>
+                                <Check size={12} />
+                                <span>¡Copiado!</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy size={12} />
+                                <span>Copiar CTA</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Item 6: Generadores & Respaldo */}
+                    <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-7 shadow-sm hover:border-amber-500/40 hover:shadow-xl transition-all flex flex-col justify-between text-left">
+                      <div>
+                        <div className="flex items-center justify-between gap-2 mb-3">
+                          <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full">
+                            #NEWSLETTER // ENERGÍA
+                          </span>
+                          <span className="text-xs">⚡ ANTE APAGONES</span>
+                        </div>
+                        <h4 className="text-lg font-black text-slate-900 font-heading mb-2 leading-snug">
+                          Generadores Inverter & Estaciones LiFePO4 para Respaldo Eléctrico
+                        </h4>
+                        <p className="text-xs text-slate-600 leading-relaxed mb-4">
+                          Soluciones silenciosas de onda senoidal pura para que tu hogar y routers nunca se apaguen durante cortes de energía programados.
+                        </p>
+                      </div>
+
+                      <div className="pt-4 border-t border-slate-100 mt-auto space-y-3">
+                        <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-[11px] text-slate-700 font-mono leading-relaxed">
+                          <p className="line-clamp-3">
+                            ⚡ ¿Sin luz en casa o tu oficina? Protege tus equipos con generadores inverter y estaciones portátiles de energía Anker Solix. 🚀 Catálogo de energía disponible: https://atomiccotizador.shop/web/generadores 📲 Cotiza con despacho inmediato en WhatsApp: https://wa.me/593969043453 #NEWSLETTER #EnergiaEcuador #ATOMIC
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <Link href="/web/generadores" className="py-2.5 px-3 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-[10px] uppercase tracking-wider text-center transition-colors flex items-center justify-center">
+                            Ver Generadores →
+                          </Link>
+                          <button
+                            onClick={() => copyCtaText('nl-gen', '⚡ ¿Sin luz en casa o tu oficina? Protege tus equipos con generadores inverter y estaciones portátiles de energía Anker Solix. 🚀 Catálogo de energía disponible: https://atomiccotizador.shop/web/generadores 📲 Cotiza con despacho inmediato en WhatsApp: https://wa.me/593969043453 #NEWSLETTER #EnergiaEcuador #ATOMIC')}
+                            className={`py-2.5 px-3 rounded-xl font-bold text-[10px] uppercase tracking-wider text-center transition-all flex items-center justify-center gap-1 border cursor-pointer ${
+                              copiedCtaId === 'nl-gen'
+                                ? 'bg-emerald-600 text-white border-emerald-600'
+                                : 'bg-amber-50 hover:bg-amber-100 text-amber-800 border-amber-200'
+                            }`}
+                          >
+                            {copiedCtaId === 'nl-gen' ? (
+                              <>
+                                <Check size={12} />
+                                <span>¡Copiado!</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy size={12} />
+                                <span>Copiar CTA</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Suscripción Semanal */}
+              <div className="bg-slate-50 border border-slate-200 rounded-3xl p-6 sm:p-8 text-center max-w-2xl mx-auto shadow-inner">
                 <p className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2 font-heading">
-                  Suscríbete para recibir lanzamientos, cupones de descuento y novedades
+                  Recibe la Gaceta #NEWSLETTER y nuevos lanzamientos cada semana
                 </p>
                 <div className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
                   <input
@@ -2462,13 +2934,14 @@ export default function PublicWebClient({
                     className="flex-1 bg-white border border-slate-300 rounded-xl px-4 py-3 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600"
                   />
                   <button
-                    onClick={() => alert('¡Gracias por suscribirte a la Gaceta Tecnológica ATOMIC!')}
+                    onClick={() => alert('¡Gracias por suscribirte a la Gaceta #NEWSLETTER de ATOMIC!')}
                     className="px-6 py-3 bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md cursor-pointer"
                   >
                     Suscribirme
                   </button>
                 </div>
               </div>
+
             </div>
           </motion.section>
         )}
@@ -2485,10 +2958,10 @@ export default function PublicWebClient({
               {[
                 { name: 'ZKTeco SenseFace 2A', href: '/senseface-2a', desc: 'Lectora Facial Biometría Visible Light 2A, Huella & RFID', icon: '🔐' },
                 { name: 'EZVIZ H6c 2K / 4MP', href: '/h6c', desc: 'Cámara Panorámica 360° Wi-Fi con Detección IA', icon: '📹' },
-                { name: 'IMOU Aurora Pro', href: '/aurora-pro', desc: 'Cámara Exterior Full-Color con Audio Bidireccional', icon: '📹' },
-                { name: 'Recursos Top Educativos', href: '/recursos', desc: 'MIT, Harvard, Stanford y más — 100% Gratis', icon: '🎓' },
+                { name: 'Cámara Doble Lente PIP', href: '/aurora-pro', desc: 'Vigila tu hogar seguramente: Doble lente 360°, Full Color y resistencia al agua', icon: '📹' },
+                { name: 'Cargadores Wallbox EV', href: '/web/cargadores-electricos', desc: 'Cargador Livoltek Mevo 7.3kW Tipo 2 para Autos Eléctricos', icon: '⚡' },
               ].map(l => (
-                <Link key={l.href} href={l.href} className="p-6 rounded-3xl bg-white border border-slate-200/90 hover:border-blue-400/50 hover:bg-blue-50/20 transition-all group block shadow-sm hover:shadow-xl">
+                <Link key={l.href} href={l.href} className="p-6 rounded-3xl bg-white border border-slate-200/90 hover:border-blue-400/50 hover:bg-blue-50/20 transition-all group block shadow-sm hover:shadow-xl text-left">
                   <div className="text-3xl mb-3">{l.icon}</div>
                   <h3 className="text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors mb-1 font-heading">{l.name}</h3>
                   <p className="text-xs text-slate-600">{l.desc}</p>
