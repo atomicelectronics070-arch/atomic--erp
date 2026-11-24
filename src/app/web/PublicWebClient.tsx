@@ -9,7 +9,7 @@ import {
   ChevronLeft, Hexagon, Star, X, Smartphone, Sparkles, Code, Bot,
   Search, ImageOff, Home, Building, Factory, Cpu, Gamepad2, Utensils, Laptop, Award, User, Settings, ChevronDown, Package, LogIn, Menu,
   Wrench, Clock, ShieldCheck, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle2, Briefcase, Loader2,
-  Youtube, Play, PhoneCall, MessageSquare
+  Youtube, Play, PhoneCall, MessageSquare, Tag, Flame, Percent, ArrowUpRight, BookOpen, Layers, Check
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -653,6 +653,542 @@ function getCategoryShortcut(q: string): { name: string; subtitle: string; href:
   return null
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   CAMPAMENTOS & CAMPAÑAS ESPECIALES: BLACK FRIDAY & REMATE DE FIN DE AÑO
+   ═══════════════════════════════════════════════════════════════════ */
+const BLACK_FRIDAY_DATA = {
+  badge: "EDICIÓN ESPECIAL BLACK FRIDAY 2026",
+  headline: "BLACK FRIDAY TECNOLÓGICO: EL EVENTO DE DESCUENTOS DEL AÑO",
+  subheadline: "Rebajas directas de fábrica en gaming, computación, domótica y seguridad perimetral. Envíos gratis a todo el Ecuador con garantía oficial directa.",
+  blogIntro: {
+    title: "¿Cómo aprovechar al máximo el Black Friday en ATOMIC?",
+    date: "Temporada Black Friday 2026 • Almacenes Centrales Ecuador",
+    summary: "Durante el Black Friday, los stocks de alta demanda vuelan en minutos. Para que asegures tu equipamiento sin contratiempos, hemos activado el sistema de congelamiento de precio por WhatsApp con atención técnica personalizada en tiempo real.",
+    tips: [
+      { num: "01", title: "Reserva Inmediata con Asesor", text: "Haz clic en 'Cotizar por WhatsApp' para congelar la tarifa Black Friday antes de que se agote el cupo de importación asignado." },
+      { num: "02", title: "Envíos Sin Recargo Nacional", text: "Despachamos sin costo extra a Quito, Guayaquil, Cuenca, Ambato, Manta, Loja y todas las provincias del Ecuador." },
+      { num: "03", title: "Garantía Oficial 100% Legal", text: "Todos los equipos se entregan con factura autorizada por el SRI, número de serie registrado y soporte técnico posventa." }
+    ]
+  },
+  products: [
+    {
+      id: "bf-ps5",
+      name: "Consola PlayStation 5 Slim Digital + 2 Mandos DualSense",
+      badge: "30% OFF • BLACK FRIDAY",
+      discountPct: "-23%",
+      originalPrice: "$699.00",
+      promoPrice: "$539.00",
+      img: "/images/consolas/ps4-slim-reacondicionada.jpg",
+      specs: ["Almacenamiento SSD 1TB Ultra Rápido", "Incluye 2 Mandos Inalámbricos DualSense", "Trazado de Rayos 4K HDR hasta 120 fps", "Tempest 3D AudioTech"],
+      showroomHref: "/web/mandos",
+      waMessage: "Hola ATOMIC! Deseo comprar en oferta Black Friday la PlayStation 5 Slim Digital ($539.00). ¿Tienen stock para envío?"
+    },
+    {
+      id: "bf-dell-laptop",
+      name: "Laptop Dell Latitude Corporativa Core i7 / 16GB / 512GB SSD",
+      badge: "33% OFF • BLACK FRIDAY",
+      discountPct: "-33%",
+      originalPrice: "$749.00",
+      promoPrice: "$499.00",
+      img: "/images/laptops/dell-latitude.png",
+      specs: ["Procesador Intel Core i7 8va Gen", "16 GB Memoria RAM DDR4", "Disco de Estado Sólido 512 GB SSD NVMe", "Pantalla 14\" Full HD Antirreflejo"],
+      showroomHref: "/web/laptops",
+      waMessage: "Hola ATOMIC! Me interesa la Laptop Dell Latitude Core i7 de $499 en Black Friday. ¿Incluye cargador y garantía?"
+    },
+    {
+      id: "bf-ezviz-cam",
+      name: "Cámara Panorámica Wi-Fi EZVIZ H6c 2K IA 360° Interior",
+      badge: "37% OFF • BLACK FRIDAY",
+      discountPct: "-37%",
+      originalPrice: "$59.00",
+      promoPrice: "$36.90",
+      img: "/images/camaras/camara-ezviz-h6c-3mp-basica-44.jpg",
+      specs: ["Resolución 2K (4 Megapíxeles) nítida", "Rotación 360° Pan & Tilt motorizada", "Seguimiento Inteligente de Personas", "Audio Bidireccional & Visión Nocturna"],
+      showroomHref: "/web/camaras-hogar",
+      waMessage: "Hola ATOMIC! Deseo pedir la Cámara EZVIZ H6c 2K a $36.90 de Black Friday. ¿Cómo coordino la entrega?"
+    },
+    {
+      id: "bf-lock-senseface",
+      name: "Cerradura Smart Biometría Facial SenseFace Pro 3D",
+      badge: "32% OFF • BLACK FRIDAY",
+      discountPct: "-32%",
+      originalPrice: "$220.00",
+      promoPrice: "$149.00",
+      img: "/images/cerraduras/bp-quantum-lock.png",
+      specs: ["Reconocimiento Facial 3D infrarrojo", "Lector de Huella Dactilar Óptico", "Apertura por Tarjeta RFID, Clave y App Tuya", "Cuerpo de aleación de aluminio reforzado"],
+      showroomHref: "/web/cerraduras-smart",
+      waMessage: "Hola ATOMIC! Quiero adquirir la Cerradura Smart Facial a $149 en promo Black Friday. ¿Tienen servicio de instalación?"
+    },
+    {
+      id: "bf-monitor-gamer",
+      name: "Monitor Gamer Fast IPS 24\" FHD 165Hz 1ms Ultra Slim",
+      badge: "31% OFF • BLACK FRIDAY",
+      discountPct: "-31%",
+      originalPrice: "$189.00",
+      promoPrice: "$129.00",
+      img: "/images/monitores/monitor-lg-ultragear-24g411b.jpg",
+      specs: ["Tasa de Refresco 165Hz & 1ms MPRT", "Panel Fast IPS con colores 99% sRGB", "Compatibilidad AMD FreeSync & G-Sync", "Entradas HDMI 2.0 y DisplayPort 1.4"],
+      showroomHref: "/web/monitores",
+      waMessage: "Hola ATOMIC! Deseo comprar el Monitor Gamer 165Hz de Black Friday ($129.00). ¿Hacen envíos a provincia?"
+    },
+    {
+      id: "bf-powerbank-1hora",
+      name: "Banco de Carga Powerbank 1Hora 20.000mAh 22.5W Carga Rápida",
+      badge: "35% OFF • BLACK FRIDAY",
+      discountPct: "-35%",
+      originalPrice: "$35.00",
+      promoPrice: "$22.50",
+      img: "/images/1hora/banco-20000-negro-gar159n.jpg",
+      specs: ["Capacidad masiva 20.000 mAh real", "Carga rápida USB-C PD 22.5W bidireccional", "Pantalla LED con indicador de batería", "Carga simultánea de hasta 3 dispositivos"],
+      showroomHref: "/web/1hora",
+      waMessage: "Hola ATOMIC! Deseo pedir la Powerbank 1Hora 20.000mAh de Black Friday ($22.50). ¿Qué colores tienen?"
+    }
+  ]
+}
+
+const REMATE_STOCK_DATA = {
+  badge: "LIQUIDACIÓN DE BODEGA & FIN DE AÑO 2026",
+  headline: "GRAN REMATE DE STOCK DE FIN DE AÑO: RENOVACIÓN TOTAL",
+  subheadline: "Liquidamos excedentes de bodega, lotes de remodelación arquitectónica, generadores ante apagones y equipos de acceso al costo de importador.",
+  blogIntro: {
+    title: "Gran Venta de Bodega: ¿Por qué comprar en la liquidación de fin de año?",
+    date: "Cierre de Inventario Anual • Despachos desde Bodega Central",
+    summary: "Previo a la llegada de los nuevos contenedores 2026, liberamos espacio físico en nuestros almacenes centrales de Quito. Es el momento estratégico para que constructores, electricistas, remodeladores y dueños de casa adquieran productos de primera línea con ahorros de hasta el 40%.",
+    reasons: [
+      { tag: "REMODELACIÓN RÁPIDA", title: "Planchas Mármol PVC & WPC al Costo", desc: "Lotes cerrados de acabados decorativos listos para retirar o entregar sin demoras." },
+      { tag: "RESPALDO ELÉCTRICO", title: "Generadores e Inversores en Stock", desc: "Equipos probados en banco de carga, listos para proteger tu hogar o negocio." },
+      { tag: "EQUIPAMIENTO DE COCINA", title: "Combos de Inducción con Envío Bonificado", desc: "Renueva tu cocina con encimeras vitrocerámicas de máxima eficiencia." }
+    ]
+  },
+  products: [
+    {
+      id: "remate-marmol-calacatta",
+      name: "Planchas PVC Tipo Mármol UV Calacatta Gold 2.44m x 1.22m",
+      badge: "REMATE FIN DE AÑO • AL COSTO",
+      discountPct: "-29%",
+      originalPrice: "$38.00",
+      promoPrice: "$27.00",
+      savings: "Ahorras $11.00 por plancha",
+      img: "/images/paneles-wpc/plancha-pvc-marmol-calacatta-sala.jpg",
+      specs: ["Medida estándar 2.44m x 1.22m (3.0mm espesor)", "Capa protectora UV con brillo espejo mármol", "100% impermeable, ignífugo e inmune a hongos", "Instalación limpia con pegamento de poliuretano"],
+      showroomHref: "/web/paneles-ranurados",
+      waMessage: "Hola ATOMIC! Deseo cotizar planchas de mármol PVC Calacatta Gold a $27.00 de liquidación de fin de año. ¿Cuántas unidades tienen?"
+    },
+    {
+      id: "remate-panel-wpc",
+      name: "Panel Ranurado WPC Teca Nórdica / Nogal 2.90m x 16cm",
+      badge: "REMATE FIN DE AÑO • AL COSTO",
+      discountPct: "-30%",
+      originalPrice: "$18.50",
+      promoPrice: "$12.90",
+      savings: "Ahorras $5.60 por listón",
+      img: "/images/paneles-wpc/panel-wpc-bicolor-madera.jpg",
+      specs: ["Longitud de 2.90m para cubrir pared sin uniones", "Acabado madera tridimensional de lujo", "Machihembrado perfecto con grapas invisibles", "Apto para interiores y zonas semiexteriores"],
+      showroomHref: "/web/paneles-ranurados",
+      waMessage: "Hola ATOMIC! Me interesa el panel ranurado WPC en remate a $12.90. Necesito cubrir 15 metros cuadrados."
+    },
+    {
+      id: "remate-generador-2500w",
+      name: "Generador Eléctrico Inverter 2500W Ultra Silencioso",
+      badge: "LIQUIDACIÓN • ANTE APAGONES",
+      discountPct: "-27%",
+      originalPrice: "$580.00",
+      promoPrice: "$420.00",
+      savings: "Ahorras $160.00",
+      img: "/images/anker-solix/anker-solix-c300-hero-hogar.jpg",
+      specs: ["Salida de onda senoidal pura para equipos delicados", "Nivel de ruido menor a 58 dB en modo ECO", "Autonomía de hasta 8 horas con estanque lleno", "Arranque fácil con sensor de bajo nivel de aceite"],
+      showroomHref: "/web/generadores",
+      waMessage: "Hola ATOMIC! Deseo comprar el generador inverter en remate de stock ($420.00). ¿Tienen entrega inmediata en Quito/Guayaquil?"
+    },
+    {
+      id: "remate-cocina-induccion",
+      name: "Encimera de Inducción 4 Hornillas Touch Vidrio Templado",
+      badge: "REMATE FIN DE AÑO • AL COSTO",
+      discountPct: "-30%",
+      originalPrice: "$340.00",
+      promoPrice: "$239.00",
+      savings: "Ahorras $101.00",
+      img: "/images/categories/hogar.jpg",
+      specs: ["4 Zonas de cocción independientes de alta velocidad", "Vidrio vitrocerámico alemán resistente a impactos", "Panel touch deslizante con bloqueo de seguridad infantil", "Consumo eficiente clasificación energética A+++"],
+      showroomHref: "/web/cocinas",
+      waMessage: "Hola ATOMIC! Deseo pedir la cocina de inducción 4 hornillas a $239.00 de liquidación de fin de año."
+    },
+    {
+      id: "remate-torniquete-peatonal",
+      name: "Torniquete Peatonal Bidireccional Acero Inox 304",
+      badge: "LIQUIDACIÓN DE BODEGA",
+      discountPct: "-22%",
+      originalPrice: "$1,150.00",
+      promoPrice: "$890.00",
+      savings: "Ahorras $260.00",
+      img: "/images/categories/tecnologia-residencial.jpg",
+      specs: ["Chasis en Acero Inoxidable AISI 304 de 1.5mm", "Mecanismo electromecánico de giro suave bidireccional", "Compatible con lectores faciales, huella y tarjetas RFID", "Brazos antipánico con caída automática ante incendios"],
+      showroomHref: "/web/torniquetes",
+      waMessage: "Hola ATOMIC! Me interesa el torniquete peatonal inox en liquidación a $890. ¿Incluye placa controladora?"
+    },
+    {
+      id: "remate-luminaria-solar",
+      name: "Luminaria Solar Suburbana LED 300W Todo en Uno",
+      badge: "REMATE FIN DE AÑO • AL COSTO",
+      discountPct: "-36%",
+      originalPrice: "$75.00",
+      promoPrice: "$48.00",
+      savings: "Ahorras $27.00",
+      img: "/images/categories/industria.jpg",
+      specs: ["Panel solar monocristalino integrado de alta eficiencia", "Batería de fosfato de hierro y litio (LiFePO4) duradera", "Sensor de movimiento radar y encendido automático nocturno", "Cuerpo impermeable IP65 con control remoto incluido"],
+      showroomHref: "/web/luminarias-solares",
+      waMessage: "Hola ATOMIC! Quisiera pedir 4 luminarias solares de 300W a $48.00 en liquidación de stock."
+    }
+  ]
+}
+
+const SPECIALIZED_AREAS = [
+  {
+    id: "seguridad",
+    name: "Seguridad & Control de Acceso",
+    shortName: "Seguridad & Accesos",
+    icon: "🔐",
+    tagline: "Control biométrico, cerraduras inteligentes, torniquetes y videovigilancia IP con inteligencia artificial.",
+    heroImg: "/images/categories/tecnologia-residencial.jpg",
+    showroomHref: "/web/cerraduras-smart",
+    showroomLabel: "Ver Showroom de Cerraduras Smart",
+    intro: {
+      headline: "Protección Perimetral y Control Biométrico de Grado Corporativo",
+      description: "Nuestra división de seguridad integra tecnología de última generación para residencias, urbanizaciones y empresas. Desde cerraduras digitales con reconocimiento facial 3D hasta barreras vehiculares automáticas y cámaras con visión nocturna en color 24/7.",
+      pillars: [
+        { title: "Cero Falsos Positivos", desc: "Algoritmos ZKTeco & EZVIZ con verificación biométrica en menos de 0.3 segundos." },
+        { title: "Autonomía & Respaldo", desc: "Baterías de litio recargables y alimentación de emergencia USB-C ante cortes de luz." },
+        { title: "Garantía & Repuestos", desc: "Stock físico de repuestos, pestillos, tarjetas RFID y soporte técnico en Ecuador." }
+      ]
+    },
+    blogHighlights: [
+      {
+        title: "Cerraduras Smart: ¿Adiós a las llaves físicas en 2026?",
+        summary: "Descubre cómo las cerraduras biométricas con conexión Wi-Fi permiten generar claves temporales para Airbnb, registrar entradas de empleados y abrir desde tu smartphone.",
+        tag: "TENDENCIA DOMÓTICA",
+        readTime: "3 min lectura",
+        featuredProduct: {
+          name: "Cerradura Smart Biometría Facial & Huella SenseFace Pro",
+          specs: "Reconocimiento Facial 3D • Lector Huella Óptico • Apertura App Tuya/SmartLife • Timbre con Cámara HD",
+          price: "$149.00",
+          regularPrice: "$220.00",
+          img: "/images/cerraduras/bp-quantum-lock.png",
+          href: "/web/cerraduras-smart"
+        }
+      },
+      {
+        title: "Vigilancia Perimetral con IA: Detección Humana sin Suscripciones",
+        summary: "Las cámaras EZVIZ e IMOU con inteligencia artificial clasifican humanos y vehículos eliminando falsas alarmas por viento o mascotas, almacenando todo en MicroSD o NVR local.",
+        tag: "ANÁLISIS TÉCNICO",
+        readTime: "4 min lectura",
+        featuredProduct: {
+          name: "Cámara Wi-Fi Panorámica EZVIZ H6c 2K IA 360°",
+          specs: "Resolución 2K (4MP) • Cobertura 360° Motorizada • Visión Nocturna IR 10m • Audio 2 Vías",
+          price: "$36.90",
+          regularPrice: "$59.00",
+          img: "/images/camaras/camara-ezviz-h6c-3mp-basica-44.jpg",
+          href: "/web/camaras-hogar"
+        }
+      }
+    ],
+    catalogKeywords: ["cerradura", "biometric", "facial", "camara", "ezviz", "imou", "dvr", "torniquete", "barrera", "acceso", "cerco", "videoportero"]
+  },
+  {
+    id: "marmol",
+    name: "Acabados Tipo Mármol & WPC",
+    shortName: "Acabados & Mármol",
+    icon: "🏛️",
+    tagline: "Planchas de PVC imitación mármol UV y paneles ranurados WPC para remodelación residencial y comercial de lujo.",
+    heroImg: "/images/paneles-wpc/plancha-pvc-marmol-calacatta-sala.jpg",
+    showroomHref: "/web/paneles-ranurados",
+    showroomLabel: "Ver Showroom de Planchas & Paneles",
+    intro: {
+      headline: "Elegancia Arquitectónica sin Obras Pesadas ni Altos Costos",
+      description: "Transforma paredes, salas de juntas, baños y fachadas con planchas de mármol sintético de alto brillo UV y listones acústicos de WPC. Instalación limpia en seco con pegamento de poliuretano, 100% resistentes a la humedad y hongos.",
+      pillars: [
+        { title: "Acabado Espejo UV", desc: "Capa protectora ultravioleta resistente al rayado, calor y decoloración por luz solar." },
+        { title: "Resistente al Agua 100%", desc: "Ideal para baños, cocinas y zonas húmedas donde el mármol natural se mancha." },
+        { title: "Ahorro de Hasta 70%", desc: "Mismo impacto visual de una losa de mármol italiano con una fracción del costo y peso." }
+      ]
+    },
+    blogHighlights: [
+      {
+        title: "Guía de Remodelación: Mármol PVC vs Mármol Natural",
+        summary: "Comparativa técnica: Peso estructural de 18kg vs 150kg, nulo mantenimiento de sellado y cortes precisos con cuchilla o sierra sin generar polvo tóxico.",
+        tag: "GUÍA PRÁCTICA",
+        readTime: "4 min lectura",
+        featuredProduct: {
+          name: "Plancha PVC Mármol UV Calacatta Gold 2.44m x 1.22m",
+          specs: "Espesor 3.0mm • Recubrimiento UV Alto Brillo • Ignífugo Clase B1 • Fácil Corte",
+          price: "$27.00",
+          regularPrice: "$38.00",
+          img: "/images/paneles-wpc/plancha-pvc-marmol-calacatta-sala.jpg",
+          href: "/web/paneles-ranurados"
+        }
+      },
+      {
+        title: "Paneles Ranurados WPC: Aislamiento Térmico y Acústico en Paredes",
+        summary: "La madera plástica compuesta (WPC) no se pudre, no absorbe humedad y entrega un relieve tridimensional moderno ideal para cabeceras y fondos de TV.",
+        tag: "DECORACIÓN INTERIOR",
+        readTime: "3 min lectura",
+        featuredProduct: {
+          name: "Panel Ranurado WPC Teca Nórdica / Nogal 2.90m",
+          specs: "Largo 2.90m • Ancho 16cm • Resina Termoplástica con Polvo de Madera • Ensamble Machihembrado",
+          price: "$12.90",
+          regularPrice: "$18.50",
+          img: "/images/paneles-wpc/panel-wpc-bicolor-madera.jpg",
+          href: "/web/paneles-ranurados"
+        }
+      }
+    ],
+    catalogKeywords: ["marmol", "mármol", "pvc", "wpc", "ranurado", "calacatta", "marquina", "panel", "moldura", "perfil"]
+  },
+  {
+    id: "computacion",
+    name: "Computación & Laptops Corporativas",
+    shortName: "Laptops & PCs",
+    icon: "💻",
+    tagline: "Laptops empresariales, estaciones de trabajo, componentes originales y PCs All-in-One con garantía certificada.",
+    heroImg: "/images/promociones/laptops-portada.jpg",
+    showroomHref: "/web/laptops",
+    showroomLabel: "Ver Showroom de Laptops & PCs",
+    intro: {
+      headline: "Potencia, Durabilidad y Rendimiento Certificado para Profesionales",
+      description: "Equipamiento de cómputo para ingeniería, arquitectura, programación y empresas. Contamos con líneas líderes Dell Latitude, HP ProBook/EliteBook, Lenovo ThinkPad y estaciones de trabajo de alto rendimiento.",
+      pillars: [
+        { title: "Pruebas de Estrés 100%", desc: "Cada laptop pasa chequeo de 24 puntos: batería, memoria, SSD NVMe y temperaturas." },
+        { title: "Windows Pro Original", desc: "Sistemas operativos legales activados con licencia digital permanente." },
+        { title: "Garantía de Almacén", desc: "Respaldado por nuestro laboratorio técnico de repuestos y soporte." }
+      ]
+    },
+    blogHighlights: [
+      {
+        title: "Dell Latitude vs HP EliteBook: ¿Cuál elegir para trabajo remoto?",
+        summary: "Evaluamos chasis de aleación de magnesio, autonomía de batería de hasta 9 horas, pantallas antirreflejo y facilidad de ampliación de memoria RAM.",
+        tag: "BENCHMARK ATOMIC",
+        readTime: "5 min lectura",
+        featuredProduct: {
+          name: "Laptop Dell Latitude 7490 Core i7 / 16GB / 512GB SSD",
+          specs: "Intel Core i7 8th Gen • 16GB RAM DDR4 • 512GB SSD NVMe • Pantalla 14\" FHD IPS",
+          price: "$499.00",
+          regularPrice: "$749.00",
+          img: "/images/laptops/dell-latitude.png",
+          href: "/web/laptops"
+        }
+      },
+      {
+        title: "La Importancia del Disco Duro Antigolpes en Terreno",
+        summary: "Por qué los ingenieros civiles y fotógrafos en Ecuador eligen la serie Adata HD710 Pro con certificación militar MIL-STD-810G e IP68 contra agua y polvo.",
+        tag: "PROTECCIÓN DE DATOS",
+        readTime: "3 min lectura",
+        featuredProduct: {
+          name: "Disco Duro Externo Adata HD710 Pro 2TB Uso Rudo",
+          specs: "Capacidad 2TB • Resistencia al Agua IP68 • Sensor Antigolpes G-Shock • Cable Integrado",
+          price: "$78.00",
+          regularPrice: "$105.00",
+          img: "/images/adata-hd710/adata-hd710-2tb-negro.jpg",
+          href: "/web/disco-duro-adata"
+        }
+      }
+    ],
+    catalogKeywords: ["laptop", "dell", "hp", "lenovo", "portatil", "computadora", "core", "ryzen", "disco", "adata", "repuesto", "teclado", "bateria"]
+  },
+  {
+    id: "energia",
+    name: "Energía, Generadores & Movilidad Eléctrica",
+    shortName: "Energía & Generadores",
+    icon: "⚡",
+    tagline: "Generadores inverter silenciados, estaciones de energía Anker Solix, cargadores de autos eléctricos y luminarias solares.",
+    heroImg: "/images/promociones/cargador-wallbox-mevo.jpg",
+    showroomHref: "/web/generadores",
+    showroomLabel: "Ver Showroom de Generadores & Energía",
+    intro: {
+      headline: "Seguridad Energética sin Interrupciones Ante Apagones",
+      description: "Soluciones de energía continua para hogares, clínicas, comercios y proyectos de movilidad eléctrica. Desde generadores a gasolina inverter con onda senoidal pura hasta cargadores Wallbox tipo 2 para vehículos eléctricos.",
+      pillars: [
+        { title: "Onda Senoidal Pura", desc: "Corriente ultraestable que protege laptops, servidores y electrodomésticos delicados." },
+        { title: "Bajo Consumo & Ruido", desc: "Modo Eco inteligente que regula las RPM ahorrando hasta un 40% de combustible." },
+        { title: "Movilidad Eléctrica EV", desc: "Wallbox de 7.3 kW y 22 kW compatibles con BYD, Tesla, Kia, Hyundai y Chevrolet." }
+      ]
+    },
+    blogHighlights: [
+      {
+        title: "¿Cómo calcular la potencia necesaria para tu casa ante apagones?",
+        summary: "Aprende a sumar la carga de refrigeradora, routers Wi-Fi, iluminación LED y computadoras para elegir el generador o estación Anker adecuada.",
+        tag: "GUÍA ENERGÉTICA",
+        readTime: "4 min lectura",
+        featuredProduct: {
+          name: "Estación de Energía Portátil Anker Solix C300 LiFePO4",
+          specs: "Capacidad 288Wh • Salida AC 300W (Surge 600W) • Baterías LiFePO4 3000 Ciclos • Carga en 50 min",
+          price: "$289.00",
+          regularPrice: "$375.00",
+          img: "/images/anker-solix/anker-solix-c300-hero-hogar.jpg",
+          href: "/web/generadores"
+        }
+      },
+      {
+        title: "Cargadores Wallbox de 7.3kW: Carga Inteligente en Casa",
+        summary: "Reduce el tiempo de recarga de tu vehículo eléctrico de 16 horas a menos de 5 horas con gestión dinámica de carga por app móvil.",
+        tag: "MOVILIDAD SOSTENIBLE",
+        readTime: "3 min lectura",
+        featuredProduct: {
+          name: "Cargador de Auto Eléctrico Wallbox Livoltek Mevo 7.3kW",
+          specs: "Conector Tipo 2 Mennekes • Potencia 32A / 220V • Wi-Fi & Bluetooth con App • Protección IP65",
+          price: "$480.00",
+          regularPrice: "$650.00",
+          img: "/images/promociones/cargador-wallbox-mevo.jpg",
+          href: "/web/cargadores-electricos"
+        }
+      }
+    ],
+    catalogKeywords: ["generador", "bateria", "solix", "anker", "wallbox", "cargador", "solar", "luminaria", "inverter", "planta"]
+  },
+  {
+    id: "hogar",
+    name: "Hogar, Confort & Cocina Moderna",
+    shortName: "Cocina & Hogar",
+    icon: "🍳",
+    tagline: "Encimeras de inducción, hornos empotrables, campanas extractoras, freidoras de aire y climatización.",
+    heroImg: "/images/categories/hogar.jpg",
+    showroomHref: "/web/cocinas",
+    showroomLabel: "Ver Showroom de Cocinas & Hornos",
+    intro: {
+      headline: "Diseño Contemporáneo y Eficiencia Térmica para tu Cocina",
+      description: "Equipos de cocina diseñados para maximizar el espacio, reducir el consumo eléctrico y ofrecer una estética minimalista. Tecnología de inducción magnética de calentamiento veloz con sistemas de seguridad para niños.",
+      pillars: [
+        { title: "Vidrio Cerámico de Alta Resistencia", desc: "Superficies vitrocerámicas alemanas resistentes a choques térmicos y rayones." },
+        { title: "Seguridad Total", desc: "Bloqueo de panel, apagado automático al retirar la olla y sensor de sobrecalentamiento." },
+        { title: "Eficiencia A+++", desc: "90% de energía transferida directamente al recipiente vs 40% en cocinas a gas." }
+      ]
+    },
+    blogHighlights: [
+      {
+        title: "Cocina de Inducción vs Cocina a Gas: ¿Cuánto se ahorra realmente?",
+        summary: "Análisis con tarifas eléctricas de Ecuador: Menor tiempo de ebullición, cocción uniforme y ambiente libre de humo y calor residual en el hogar.",
+        tag: "EFICIENCIA ENERGÉTICA",
+        readTime: "4 min lectura",
+        featuredProduct: {
+          name: "Encimera de Inducción 4 Zonas Touch Vidrio Templado",
+          specs: "4 Focos de Alta Potencia • Panel Touch Deslizante • Temporizador Digital • Función Boost",
+          price: "$239.00",
+          regularPrice: "$340.00",
+          img: "/images/categories/hogar.jpg",
+          href: "/web/cocinas"
+        }
+      }
+    ],
+    catalogKeywords: ["cocina", "horno", "campana", "encimera", "induccion", "freidora", "calefactor"]
+  },
+  {
+    id: "gaming",
+    name: "Gaming, Consolas & Simulación",
+    shortName: "Gaming & Consolas",
+    icon: "🎮",
+    tagline: "Consolas PlayStation 5, mandos inalámbricos DualSense, Nintendo Switch, monitores gamers 165Hz y periféricos.",
+    heroImg: "/images/categories/entretenimiento.jpg",
+    showroomHref: "/web/mandos",
+    showroomLabel: "Ver Showroom de Mandos & Consolas",
+    intro: {
+      headline: "Inmersión Total con Tiempos de Respuesta Ultrarrápidos",
+      description: "El catálogo gaming de ATOMIC ofrece consolas oficiales con garantía, mandos inalámbricos con gatillos adaptativos y monitores Fast IPS de hasta 165Hz para una ventaja competitiva en eSports y simulación.",
+      pillars: [
+        { title: "Gatillos Adaptativos & Háptica", desc: "Siente cada disparo, frenada y textura en tus manos con la tecnología DualSense." },
+        { title: "Monitores 1ms & 165Hz", desc: "Cero ghosting con compatibilidad AMD FreeSync y G-Sync para fluidez absoluta." },
+        { title: "Stock 100% Original", desc: "Mandos y accesorios genuinos con sellos de fábrica y códigos verificables." }
+      ]
+    },
+    blogHighlights: [
+      {
+        title: "DualSense en PC: Configuración para Haptics y Gatillos Adaptativos",
+        summary: "Descubre cómo sacarle el 100% al mando de PS5 en Steam y emuladores en Windows con respuesta háptica completa.",
+        tag: "TUTORIAL GAMING",
+        readTime: "3 min lectura",
+        featuredProduct: {
+          name: "Mando Inalámbrico DualSense Midnight Black / Cosmic Red",
+          specs: "Conexión Bluetooth & USB-C • Batería Recargable Integrada • Micrófono & Jack 3.5mm • Sensor Movimiento",
+          price: "$69.00",
+          regularPrice: "$95.00",
+          img: "/images/consolas/control-wireless-gaming.jpg",
+          href: "/web/mandos"
+        }
+      }
+    ],
+    catalogKeywords: ["ps5", "ps4", "playstation", "mando", "dualsense", "consola", "nintendo", "xbox", "gaming", "monitor", "144hz", "165hz"]
+  },
+  {
+    id: "automatizacion",
+    name: "Automatización, IA & Software",
+    shortName: "Automatización & IA",
+    icon: "🤖",
+    tagline: "Agentes inteligentes para WhatsApp, facturación electrónica SRI en 3 segundos, ERP en la nube y domótica.",
+    heroImg: "/images/software/automatizacion-bot-99.jpg",
+    showroomHref: "/web/software",
+    showroomLabel: "Ver Soluciones de Software & IA",
+    intro: {
+      headline: "Operaciones Comerciales Autónomas y Sin Fricción 24/7",
+      description: "Nuestros sistemas de IA y software empresarial eliminan el trabajo repetitivo: atención inmediata de clientes por WhatsApp, cotizaciones automáticas, sincronización de inventario multialmacén y emisión de comprobantes autorizados por el SRI.",
+      pillars: [
+        { title: "Atención Ininterrumpida 24/7", desc: "El bot responde consultas, envía fichas técnicas y cierra pedidos a cualquier hora." },
+        { title: "Facturación SRI Automática", desc: "Emisión de facturas electrónicas firmadas digitalmente y enviadas por correo al instante." },
+        { title: "Panel Web Centralizado", desc: "Visualiza métricas de ventas, cobros y stock en tiempo real desde cualquier dispositivo." }
+      ]
+    },
+    blogHighlights: [
+      {
+        title: "¿Cómo un Bot de WhatsApp Triplica las Ventas de un Negocio?",
+        summary: "Estudio de caso: Las empresas que responden en menos de 2 minutos convierten 4 veces más que las que tardan 1 hora. La IA no duerme ni olvida un seguimiento.",
+        tag: "CASO DE ÉXITO",
+        readTime: "4 min lectura",
+        featuredProduct: {
+          name: "Licencia Anual Bot de Ventas WhatsApp + Facturación SRI",
+          specs: "Integración WhatsApp Web • Conexión Base de Datos ERP • Firma Electrónica SRI • Panel Analítica",
+          price: "$199.00/año",
+          regularPrice: "$350.00",
+          img: "/images/software/automatizacion-bot-99.jpg",
+          href: "/web/software"
+        }
+      }
+    ],
+    catalogKeywords: ["software", "erp", "bot", "automatizacion", "facturacion", "sri", "licencia"]
+  },
+  {
+    id: "industrial",
+    name: "Maquinaria Industrial & Producción",
+    shortName: "Maquinaria Industrial",
+    icon: "🏗️",
+    tagline: "Plantas automáticas de bloques de concreto, mezcladoras de alta capacidad, moldes intercambiables y silos.",
+    heroImg: "/images/categories/industria.jpg",
+    showroomHref: "/web/blogs/guia-maquinas-de-bloques",
+    showroomLabel: "Ver Guía de Plantas de Bloques",
+    intro: {
+      headline: "Ingeniería Mecánica y Alta Productividad en Construcción",
+      description: "Equipos industriales pesados para la fabricación automatizada de bloques de hormigón, adoquines peatonales y bovedillas con dosificación precisa y sistemas hidráulicos de alta vibración.",
+      pillars: [
+        { title: "Producción Continua", desc: "Capacidad de hasta 10,000 bloques por jornada con sistemas de desmolde automático." },
+        { title: "Moldes Intercambiables", desc: "Cambio rápido de moldes para bloques de 10, 15 y 20cm, adoquines tipo holandés o cruz." },
+        { title: "Asistencia Técnica en Planta", desc: "Puesta en marcha, calibración y capacitación del personal operador en el sitio de obra." }
+      ]
+    },
+    blogHighlights: [
+      {
+        title: "Guía de Inversión: Retorno en Plantas Automáticas de Bloques",
+        summary: "Cálculo de costo por metro cúbico de hormigón, consumo de cemento y árido, y amortización de maquinaria en proyectos de vivienda social.",
+        tag: "ESTUDIO FINANCIERO",
+        readTime: "6 min lectura",
+        featuredProduct: {
+          name: "Planta Automática de Bloques de Hormigón Serie Industrial",
+          specs: "Central Hidráulica 16MPa • Mesa Vibratoria Sincronizada • PLC Táctil Siemens • Tolva de Carga",
+          price: "Cotización Inmediata",
+          regularPrice: "Disponibilidad Directa",
+          img: "/images/categories/industria.jpg",
+          href: "/web/blogs/guia-maquinas-de-bloques"
+        }
+      }
+    ],
+    catalogKeywords: ["bloque", "maquina", "planta", "hormigon", "industrial", "mezcladora"]
+  }
+]
+
 export default function PublicWebClient({ 
   initialProducts = [], 
   metadata = { categories: [], collections: [] }, 
@@ -728,6 +1264,8 @@ export default function PublicWebClient({
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false)
   const [coverflowSection, setCoverflowSection] = useState<'ofertas' | 'promociones' | 'temporada' | 'combos' | 'instalacion' | 'servicios'>('ofertas')
   const [catalogSubdivision, setCatalogSubdivision] = useState<string>("todos")
+  const [ofertasFilter, setOfertasFilter] = useState<'todos' | 'blackfriday' | 'remate'>('todos')
+  const [selectedAreaId, setSelectedAreaId] = useState<string | null>(null)
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -1520,15 +2058,308 @@ export default function PublicWebClient({
         )}
 
         {activeTab === 'ofertas' && (
-          <motion.section key="ofertas" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="max-w-7xl mx-auto px-6 py-12">
-            <div className="flex items-center gap-3 mb-8">
-              <button onClick={() => setActiveTab(null)} className="p-2.5 rounded-2xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition-all shadow-sm">
-                <ChevronLeft size={18} />
-              </button>
-              <h2 className="text-3xl font-black uppercase tracking-tight text-slate-950 font-heading">Ofertas Especiales</h2>
+          <motion.section key="ofertas" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+            {/* Header & Campaign Selector */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-200">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setActiveTab(null)}
+                  className="p-2.5 rounded-2xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 hover:text-slate-950 transition-all shadow-sm cursor-pointer"
+                  title="Volver a Inicio"
+                >
+                  <ChevronLeft size={18} />
+                </button>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-red-600 animate-ping" />
+                    <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-red-600">
+                      CAMPAÑAS DE TEMPORADA // ATOMIC ECUADOR
+                    </span>
+                  </div>
+                  <h2 className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-slate-950 font-heading">
+                    Black Friday & Remate de Stock Fin de Año
+                  </h2>
+                </div>
+              </div>
+
+              {/* Subtabs Filter */}
+              <div className="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border border-slate-200 shrink-0 self-start md:self-auto shadow-inner">
+                {[
+                  { id: 'todos', label: '🔥 Todas las Ofertas' },
+                  { id: 'blackfriday', label: '⚡ Black Friday Tech' },
+                  { id: 'remate', label: '📦 Remate Fin de Año' },
+                ].map((f) => (
+                  <button
+                    key={f.id}
+                    onClick={() => setOfertasFilter(f.id as any)}
+                    className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs font-bold font-heading transition-all cursor-pointer ${
+                      ofertasFilter === f.id
+                        ? 'bg-slate-950 text-white shadow-md scale-102'
+                        : 'text-slate-600 hover:text-slate-950 hover:bg-white'
+                    }`}
+                  >
+                    <span>{f.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
-            <p className="text-slate-600 text-sm mb-6">Descuentos exclusivos en tecnología, electrónica y hogar. <strong className="text-slate-900">¡Por tiempo limitado con garantía de fábrica!</strong></p>
-            <button onClick={() => { setSearchQuery('oferta'); setActiveTab(null); document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' }); }} className="px-8 py-4 rounded-full bg-slate-950 text-white font-bold uppercase tracking-wider text-xs transition-all hover:bg-slate-800 shadow-xl">Ver Todas las Ofertas</button>
+
+            {/* 1. SECCIÓN BLACK FRIDAY ATOMIC */}
+            {(ofertasFilter === 'todos' || ofertasFilter === 'blackfriday') && (
+              <div className="mb-14">
+                {/* Hero Banner Black Friday */}
+                <div className="relative rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 text-white p-6 sm:p-10 border border-blue-500/20 shadow-2xl overflow-hidden mb-8">
+                  <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none" />
+                  <div className="absolute bottom-0 left-0 w-80 h-80 bg-red-600/10 rounded-full blur-3xl pointer-events-none" />
+
+                  <div className="relative z-10 max-w-3xl">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/15 border border-blue-400/30 text-blue-400 text-[10px] font-mono font-bold tracking-widest uppercase mb-4">
+                      <Sparkles size={12} className="animate-pulse" />
+                      <span>{BLACK_FRIDAY_DATA.badge}</span>
+                    </div>
+                    <h3 className="text-2xl sm:text-4xl lg:text-5xl font-black font-heading tracking-tight uppercase leading-tight mb-4">
+                      {BLACK_FRIDAY_DATA.headline}
+                    </h3>
+                    <p className="text-slate-300 text-sm sm:text-base leading-relaxed mb-6">
+                      {BLACK_FRIDAY_DATA.subheadline}
+                    </p>
+
+                    {/* Blog Tips / Guía Rápida */}
+                    <div className="grid sm:grid-cols-3 gap-3 pt-4 border-t border-white/10 text-xs">
+                      {BLACK_FRIDAY_DATA.blogIntro.tips.map((tip) => (
+                        <div key={tip.num} className="bg-white/5 backdrop-blur-md rounded-2xl p-3 border border-white/10">
+                          <span className="text-[10px] font-mono font-black text-blue-400 block mb-1">Paso {tip.num}</span>
+                          <p className="font-bold text-white text-[11px] mb-1">{tip.title}</p>
+                          <p className="text-slate-400 text-[10px] leading-relaxed">{tip.text}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Editorial Blog Card Black Friday */}
+                <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 mb-8 shadow-sm">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                    <div>
+                      <span className="text-[10px] font-mono uppercase font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full">
+                        EDITORIAL // GUÍA DE COMPRAS BLACK FRIDAY
+                      </span>
+                      <h4 className="text-lg sm:text-xl font-black text-slate-900 mt-2 font-heading">
+                        {BLACK_FRIDAY_DATA.blogIntro.title}
+                      </h4>
+                      <p className="text-xs text-slate-500 mt-1 font-mono">
+                        {BLACK_FRIDAY_DATA.blogIntro.date}
+                      </p>
+                    </div>
+                    <a
+                      href="https://wa.me/593969043453?text=Hola%20ATOMIC!%20Deseo%20congelar%20precio%20promocional%20de%20Black%20Friday"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 self-start md:self-auto cursor-pointer"
+                    >
+                      <span>💬 Congelar Tarifa por WhatsApp</span>
+                    </a>
+                  </div>
+                  <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                    {BLACK_FRIDAY_DATA.blogIntro.summary}
+                  </p>
+                </div>
+
+                {/* Products Grid Black Friday */}
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {BLACK_FRIDAY_DATA.products.map((p) => (
+                    <div
+                      key={p.id}
+                      className="group flex flex-col bg-white border border-slate-200/90 rounded-3xl overflow-hidden hover:border-blue-500/50 hover:shadow-xl transition-all duration-300"
+                    >
+                      <div className="relative aspect-[4/3] bg-slate-50 flex items-center justify-center p-4 border-b border-slate-100">
+                        <SafeImage src={p.img} alt={p.name} fill className="p-3 group-hover:scale-105 transition-transform duration-300" />
+                        <div className="absolute top-3 left-3 bg-red-600 text-white font-black text-[10px] px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md">
+                          {p.badge}
+                        </div>
+                        <div className="absolute top-3 right-3 bg-slate-950 text-white font-black text-xs px-2.5 py-1 rounded-full font-mono shadow-md">
+                          {p.discountPct}
+                        </div>
+                      </div>
+
+                      <div className="p-5 flex flex-col flex-1">
+                        <h5 className="font-heading font-black text-sm text-slate-900 group-hover:text-blue-600 transition-colors leading-snug mb-3">
+                          {p.name}
+                        </h5>
+
+                        <ul className="space-y-1.5 mb-4 text-[11px] text-slate-600 flex-1">
+                          {p.specs.map((spec, i) => (
+                            <li key={i} className="flex items-start gap-1.5">
+                              <span className="text-emerald-500 font-bold shrink-0">✓</span>
+                              <span className="line-clamp-1">{spec}</span>
+                            </li>
+                          ))}
+                        </ul>
+
+                        <div className="pt-3 border-t border-slate-100 flex items-baseline justify-between mb-4">
+                          <div>
+                            <span className="text-[10px] font-mono text-slate-400 line-through mr-2">
+                              {p.originalPrice}
+                            </span>
+                            <span className="text-lg font-black text-slate-950 font-heading">
+                              {p.promoPrice}
+                            </span>
+                          </div>
+                          <span className="text-[10px] font-mono text-emerald-600 font-bold uppercase">
+                            Envío Gratis
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2 mt-auto">
+                          <Link
+                            href={p.showroomHref}
+                            className="py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[10px] uppercase tracking-wider text-center transition-colors flex items-center justify-center"
+                          >
+                            Ver Showroom
+                          </Link>
+                          <a
+                            href={`https://wa.me/593969043453?text=${encodeURIComponent(p.waMessage)}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] uppercase tracking-wider text-center transition-colors flex items-center justify-center shadow-sm cursor-pointer"
+                          >
+                            Comprar WA
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 2. SECCIÓN REMATE DE STOCK DE FIN DE AÑO */}
+            {(ofertasFilter === 'todos' || ofertasFilter === 'remate') && (
+              <div>
+                {/* Hero Banner Remate Fin de Año */}
+                <div className="relative rounded-3xl bg-gradient-to-br from-amber-950 via-slate-900 to-amber-900 text-white p-6 sm:p-10 border border-amber-500/20 shadow-2xl overflow-hidden mb-8">
+                  <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
+                  <div className="absolute bottom-0 left-0 w-80 h-80 bg-orange-600/10 rounded-full blur-3xl pointer-events-none" />
+
+                  <div className="relative z-10 max-w-3xl">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 text-[10px] font-mono font-bold tracking-widest uppercase mb-4">
+                      <Package size={12} className="animate-pulse" />
+                      <span>{REMATE_STOCK_DATA.badge}</span>
+                    </div>
+                    <h3 className="text-2xl sm:text-4xl lg:text-5xl font-black font-heading tracking-tight uppercase leading-tight mb-4">
+                      {REMATE_STOCK_DATA.headline}
+                    </h3>
+                    <p className="text-slate-300 text-sm sm:text-base leading-relaxed mb-6">
+                      {REMATE_STOCK_DATA.subheadline}
+                    </p>
+
+                    <div className="grid sm:grid-cols-3 gap-3 pt-4 border-t border-white/10 text-xs">
+                      {REMATE_STOCK_DATA.blogIntro.reasons.map((r, i) => (
+                        <div key={i} className="bg-white/5 backdrop-blur-md rounded-2xl p-3 border border-white/10">
+                          <span className="text-[10px] font-mono font-black text-amber-400 block mb-1">{r.tag}</span>
+                          <p className="font-bold text-white text-[11px] mb-1">{r.title}</p>
+                          <p className="text-slate-400 text-[10px] leading-relaxed">{r.desc}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Editorial Blog Card Remate Fin de Año */}
+                <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 mb-8 shadow-sm">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                    <div>
+                      <span className="text-[10px] font-mono uppercase font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full">
+                        EDITORIAL // LIQUIDACIÓN DE BODEGA & COSTOS
+                      </span>
+                      <h4 className="text-lg sm:text-xl font-black text-slate-900 mt-2 font-heading">
+                        {REMATE_STOCK_DATA.blogIntro.title}
+                      </h4>
+                      <p className="text-xs text-slate-500 mt-1 font-mono">
+                        {REMATE_STOCK_DATA.blogIntro.date}
+                      </p>
+                    </div>
+                    <a
+                      href="https://wa.me/593969043453?text=Hola%20ATOMIC!%20Quisiera%20cotizar%20un%20lote%20mayorista%20de%20remate%20de%20fin%20de%20año"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="px-5 py-2.5 rounded-full bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 self-start md:self-auto cursor-pointer"
+                    >
+                      <span>📦 Cotizar Lote Mayorista por WA</span>
+                    </a>
+                  </div>
+                  <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                    {REMATE_STOCK_DATA.blogIntro.summary}
+                  </p>
+                </div>
+
+                {/* Products Grid Remate Fin de Año */}
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {REMATE_STOCK_DATA.products.map((p) => (
+                    <div
+                      key={p.id}
+                      className="group flex flex-col bg-white border border-slate-200/90 rounded-3xl overflow-hidden hover:border-amber-500/50 hover:shadow-xl transition-all duration-300"
+                    >
+                      <div className="relative aspect-[4/3] bg-slate-50 flex items-center justify-center p-4 border-b border-slate-100">
+                        <SafeImage src={p.img} alt={p.name} fill className="p-3 group-hover:scale-105 transition-transform duration-300" />
+                        <div className="absolute top-3 left-3 bg-amber-600 text-white font-black text-[10px] px-2.5 py-1 rounded-full uppercase tracking-wider shadow-md">
+                          {p.badge}
+                        </div>
+                        <div className="absolute top-3 right-3 bg-slate-950 text-white font-black text-xs px-2.5 py-1 rounded-full font-mono shadow-md">
+                          {p.discountPct}
+                        </div>
+                      </div>
+
+                      <div className="p-5 flex flex-col flex-1">
+                        <h5 className="font-heading font-black text-sm text-slate-900 group-hover:text-amber-700 transition-colors leading-snug mb-3">
+                          {p.name}
+                        </h5>
+
+                        <ul className="space-y-1.5 mb-4 text-[11px] text-slate-600 flex-1">
+                          {p.specs.map((spec, i) => (
+                            <li key={i} className="flex items-start gap-1.5">
+                              <span className="text-amber-600 font-bold shrink-0">✓</span>
+                              <span className="line-clamp-1">{spec}</span>
+                            </li>
+                          ))}
+                        </ul>
+
+                        <div className="pt-3 border-t border-slate-100 flex items-baseline justify-between mb-4">
+                          <div>
+                            <span className="text-[10px] font-mono text-slate-400 line-through mr-2">
+                              {p.originalPrice}
+                            </span>
+                            <span className="text-lg font-black text-slate-950 font-heading">
+                              {p.promoPrice}
+                            </span>
+                          </div>
+                          <span className="text-[10px] font-mono text-amber-700 font-bold">
+                            {p.savings}
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2 mt-auto">
+                          <Link
+                            href={p.showroomHref}
+                            className="py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[10px] uppercase tracking-wider text-center transition-colors flex items-center justify-center"
+                          >
+                            Ver Showroom
+                          </Link>
+                          <a
+                            href={`https://wa.me/593969043453?text=${encodeURIComponent(p.waMessage)}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="py-2.5 px-3 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-[10px] uppercase tracking-wider text-center transition-colors flex items-center justify-center shadow-sm cursor-pointer"
+                          >
+                            Comprar WA
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </motion.section>
         )}
 
@@ -1668,38 +2499,367 @@ export default function PublicWebClient({
           </motion.section>
         )}
 
-        {activeTab === 'especializacion' && (
-          <motion.section key="especializacion" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="max-w-7xl mx-auto px-6 py-12">
-            <div className="flex items-center gap-3 mb-8">
-              <button onClick={() => setActiveTab(null)} className="p-2.5 rounded-2xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition-all shadow-sm">
-                <ChevronLeft size={18} />
-              </button>
-              <h2 className="text-3xl font-black uppercase tracking-tight text-slate-950 font-heading">Áreas de Especialización 🎓</h2>
-            </div>
-            <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-4">
-              {[
-                { area: '🔐 Seguridad & Control de Acceso', img: '/images/categories/tecnologia-residencial.jpg', desc: 'Biométricos, porteros eléctricos, CCTV y vigilancia IP.' },
-                { area: '📺 Electrónica de Consumo', img: '/images/categories/electronica.jpg', desc: 'Equipos de audio, gaming, periféricos y accesorios.' },
-                { area: '🏠 Hogar & Confort', img: '/images/categories/hogar.jpg', desc: 'Encimeras a gas, hornos empotrables y domótica.' },
-                { area: '💻 Computación & Laptops', img: '/images/categories/computacion.jpg', desc: 'Portátiles, PCs de escritorio, componentes y servidores.' },
-                { area: '⚡ Energía & Movilidad Eléctrica', img: '/images/promociones/cargador-wallbox-mevo.jpg', desc: 'Cargadores de autos eléctricos Wallbox y paneles solares.' },
-                { area: '🤖 Tecnología IA & Robótica', img: '/images/software/automatizacion-bot-99.jpg', desc: 'Automatización inteligente, bots WhatsApp 24/7 y ERP.' },
-                { area: '🏗️ Maquinaria Industrial', img: '/images/categories/industria.jpg', desc: 'Plantas automáticas de bloques de hormigón y mezcladoras.' },
-                { area: '🎮 Mandos & Consolas Gaming', img: '/images/categories/entretenimiento.jpg', desc: 'Mandos DualSense, Nintendo Switch y PlayStation Portal.' },
-              ].map(a => (
-                <div key={a.area} className="group rounded-3xl bg-white border border-slate-200/90 overflow-hidden shadow-sm hover:shadow-2xl hover:border-blue-400/50 transition-all">
-                  <div className="h-40 w-full overflow-hidden bg-slate-100 relative">
-                    <img src={a.img} alt={a.area} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        {activeTab === 'especializacion' && (() => {
+          const currentArea = selectedAreaId ? SPECIALIZED_AREAS.find(a => a.id === selectedAreaId) : null
+
+          return (
+            <motion.section key="especializacion" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+              {!currentArea ? (
+                /* ─── VISTA 1: SELECTOR DE TODAS LAS ÁREAS ─── */
+                <div>
+                  <div className="flex items-center gap-3 mb-8 pb-4 border-b border-slate-200">
+                    <button
+                      onClick={() => setActiveTab(null)}
+                      className="p-2.5 rounded-2xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 hover:text-slate-950 transition-all shadow-sm cursor-pointer"
+                      title="Volver a Inicio"
+                    >
+                      <ChevronLeft size={18} />
+                    </button>
+                    <div>
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-blue-600 block">
+                        CAMPUS TECNOLÓGICO // 8 DIVISIONES ESPECIALIZADAS
+                      </span>
+                      <h2 className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-slate-950 font-heading">
+                        Áreas de Especialización 🎓
+                      </h2>
+                    </div>
                   </div>
-                  <div className="p-5">
-                    <h3 className="text-sm font-bold text-slate-900 mb-2 font-heading group-hover:text-blue-600 transition-colors">{a.area}</h3>
-                    <p className="text-xs text-slate-600 leading-relaxed">{a.desc}</p>
+
+                  <p className="text-slate-600 text-sm mb-8 max-w-3xl leading-relaxed">
+                    Selecciona cualquiera de nuestras divisiones para ver su <strong>página de introducción técnica</strong>, la selección editorial de <strong>productos tipo blog</strong> y el <strong>catálogo sobrio y profesional</strong> con disponibilidad inmediata en bodega.
+                  </p>
+
+                  <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                    {SPECIALIZED_AREAS.map((a) => (
+                      <div
+                        key={a.id}
+                        onClick={() => setSelectedAreaId(a.id)}
+                        className="group flex flex-col rounded-3xl bg-white border border-slate-200/90 overflow-hidden shadow-sm hover:shadow-2xl hover:border-blue-500/50 transition-all duration-300 cursor-pointer text-left"
+                      >
+                        <div className="h-44 w-full overflow-hidden bg-slate-100 relative">
+                          <img
+                            src={a.heroImg}
+                            alt={a.name}
+                            className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
+                          <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold font-mono text-slate-900 shadow-md flex items-center gap-1.5">
+                            <span>{a.icon}</span>
+                            <span>{a.shortName}</span>
+                          </div>
+                        </div>
+
+                        <div className="p-5 flex flex-col flex-1">
+                          <h3 className="text-base font-black text-slate-900 mb-2 font-heading group-hover:text-blue-600 transition-colors leading-snug">
+                            {a.name}
+                          </h3>
+                          <p className="text-xs text-slate-600 leading-relaxed mb-4 flex-1">
+                            {a.tagline}
+                          </p>
+
+                          <div className="pt-3 border-t border-slate-100 mt-auto flex items-center justify-between text-blue-600 text-xs font-bold font-heading group-hover:translate-x-1 transition-transform">
+                            <span>Explorar Área & Soluciones</span>
+                            <span>→</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              ))}
-            </div>
-          </motion.section>
-        )}
+              ) : (
+                /* ─── VISTA 2: PÁGINA INTRO + BLOG + CATÁLOGO SOBRIO Y PROFESIONAL ─── */
+                <div>
+                  {/* Top Header Bar with Back & Area Switcher */}
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-4 border-b border-slate-200">
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => setSelectedAreaId(null)}
+                        className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-800 font-bold text-xs font-mono uppercase tracking-wider transition-all shadow-sm cursor-pointer"
+                      >
+                        <ChevronLeft size={16} />
+                        <span>Volver a Todas las Áreas</span>
+                      </button>
+                    </div>
+
+                    {/* Area Switcher Pills */}
+                    <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide no-scrollbar py-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                      {SPECIALIZED_AREAS.map((a) => (
+                        <button
+                          key={a.id}
+                          onClick={() => setSelectedAreaId(a.id)}
+                          className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-bold font-heading transition-all cursor-pointer flex items-center gap-1 border ${
+                            selectedAreaId === a.id
+                              ? 'bg-slate-950 text-white border-slate-950 shadow-md scale-102'
+                              : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                          }`}
+                        >
+                          <span>{a.icon}</span>
+                          <span className="hidden sm:inline">{a.shortName}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* ════ 1. HERO & INTRO DE LA CATEGORÍA ════ */}
+                  <div className="relative rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 text-white p-6 sm:p-10 border border-slate-800 shadow-2xl overflow-hidden mb-12">
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
+
+                    <div className="relative z-10 max-w-4xl">
+                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-[10px] font-mono font-bold tracking-widest uppercase mb-4">
+                        <span>{currentArea.icon}</span>
+                        <span>DIVISIÓN OFICIAL // {currentArea.name.toUpperCase()}</span>
+                      </div>
+
+                      <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black font-heading tracking-tight uppercase leading-tight mb-4 text-white">
+                        {currentArea.intro.headline}
+                      </h2>
+
+                      <p className="text-slate-300 text-sm sm:text-base leading-relaxed mb-8">
+                        {currentArea.intro.description}
+                      </p>
+
+                      {/* 3 Technical Pillars */}
+                      <div className="grid sm:grid-cols-3 gap-4 pt-6 border-t border-white/15">
+                        {currentArea.intro.pillars.map((pil, idx) => (
+                          <div key={idx} className="bg-white/5 backdrop-blur-md rounded-2xl p-4 border border-white/10">
+                            <span className="text-[10px] font-mono font-black text-blue-400 block mb-1">
+                              PILAR 0{idx + 1}
+                            </span>
+                            <h4 className="font-bold text-white text-xs sm:text-sm mb-1 font-heading">
+                              {pil.title}
+                            </h4>
+                            <p className="text-slate-400 text-xs leading-relaxed">
+                              {pil.desc}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Showroom CTA */}
+                      <div className="mt-8 flex flex-wrap items-center gap-3">
+                        <Link
+                          href={currentArea.showroomHref}
+                          className="px-6 py-3 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg flex items-center gap-2"
+                        >
+                          <span>{currentArea.showroomLabel}</span>
+                          <span>→</span>
+                        </Link>
+                        <a
+                          href={`https://wa.me/593969043453?text=${encodeURIComponent(`Hola ATOMIC! Deseo asesoría técnica sobre la división de ${currentArea.name}.`)}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider transition-all border border-white/20 flex items-center gap-2 cursor-pointer"
+                        >
+                          <span>💬 Asesoría Técnica Especializada</span>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ════ 2. SELECCIÓN DE PRODUCTOS TIPO BLOG (EDITORIAL SHOWCASE) ════ */}
+                  <div className="mb-14">
+                    <div className="flex items-center justify-between mb-6">
+                      <div>
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-blue-600 block">
+                          EDITORIAL SHOWCASE // {currentArea.shortName.toUpperCase()}
+                        </span>
+                        <h3 className="text-xl sm:text-3xl font-black uppercase tracking-tight text-slate-950 font-heading">
+                          Selección de Productos Destacados (Blog)
+                        </h3>
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-8">
+                      {currentArea.blogHighlights.map((post, idx) => (
+                        <div
+                          key={idx}
+                          className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-sm flex flex-col justify-between hover:border-slate-300 transition-colors"
+                        >
+                          <div>
+                            <div className="flex items-center justify-between gap-2 mb-3">
+                              <span className="text-[10px] font-mono uppercase font-black text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full">
+                                {post.tag}
+                              </span>
+                              <span className="text-[10px] font-mono text-slate-400">
+                                ⏱️ {post.readTime}
+                              </span>
+                            </div>
+
+                            <h4 className="text-lg sm:text-xl font-black text-slate-900 mb-2 font-heading leading-snug">
+                              {post.title}
+                            </h4>
+
+                            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-6">
+                              {post.summary}
+                            </p>
+                          </div>
+
+                          {/* Embedded Featured Product Box */}
+                          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-4 mt-auto">
+                            <div className="relative w-24 h-24 bg-white rounded-xl overflow-hidden shrink-0 border border-slate-200 p-2 flex items-center justify-center">
+                              <SafeImage src={post.featuredProduct.img} alt={post.featuredProduct.name} fill className="p-1 object-contain" />
+                            </div>
+
+                            <div className="flex-1 min-w-0 text-center sm:text-left">
+                              <p className="font-heading font-black text-xs sm:text-sm text-slate-900 truncate">
+                                {post.featuredProduct.name}
+                              </p>
+                              <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-2">
+                                {post.featuredProduct.specs}
+                              </p>
+                              <div className="flex items-baseline gap-2 mt-2 justify-center sm:justify-start">
+                                <span className="text-base font-black text-slate-950 font-heading">
+                                  {post.featuredProduct.price}
+                                </span>
+                                {post.featuredProduct.regularPrice && (
+                                  <span className="text-[10px] font-mono text-slate-400 line-through">
+                                    {post.featuredProduct.regularPrice}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="flex flex-col gap-1.5 shrink-0 w-full sm:w-auto">
+                              <Link
+                                href={post.featuredProduct.href}
+                                className="px-3.5 py-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-[10px] uppercase tracking-wider text-center transition-colors"
+                              >
+                                Ver Showroom
+                              </Link>
+                              <a
+                                href={`https://wa.me/593969043453?text=${encodeURIComponent(`Hola ATOMIC! Deseo cotizar el producto del blog: ${post.featuredProduct.name}`)}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] uppercase tracking-wider text-center transition-colors shadow-sm cursor-pointer"
+                              >
+                                Cotizar WA
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* ════ 3. CATÁLOGO DE PRODUCTOS DE FORMA SOBRIA Y PROFESIONAL ════ */}
+                  <div>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-4 border-b border-slate-200">
+                      <div>
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-slate-500 block">
+                          STOCK DISPONIBLE // BODEGA CENTRAL ECUADOR
+                        </span>
+                        <h3 className="text-xl sm:text-3xl font-black uppercase tracking-tight text-slate-950 font-heading">
+                          Catálogo de Productos {currentArea.name}
+                        </h3>
+                        <p className="text-xs text-slate-500 mt-1 font-mono">
+                          Equipos con garantía 100% oficial, factura autorizada por el SRI y soporte directo.
+                        </p>
+                      </div>
+
+                      <Link
+                        href={currentArea.showroomHref}
+                        className="px-5 py-2.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold text-xs uppercase tracking-wider transition-colors border border-slate-200 shrink-0 self-start sm:self-auto"
+                      >
+                        Ver Showroom Completo →
+                      </Link>
+                    </div>
+
+                    {/* SOBER & PROFESSIONAL PRODUCT GRID */}
+                    {(() => {
+                      const matched = (initialProducts || []).filter((p: any) => {
+                        const text = `${p.name || ''} ${p.description || ''} ${p.category?.name || ''}`.toLowerCase()
+                        return currentArea.catalogKeywords.some((kw: string) => text.includes(kw.toLowerCase()))
+                      })
+
+                      const productsToShow = matched.length > 0 ? matched.slice(0, 16) : []
+
+                      if (productsToShow.length === 0) {
+                        return (
+                          <div className="p-10 rounded-3xl bg-white border border-dashed border-slate-300 text-center space-y-4">
+                            <p className="text-slate-600 text-sm">
+                              Los productos de <strong>{currentArea.name}</strong> se encuentran disponibles en nuestro showroom dedicado con fichas técnicas y cotizador interactivo.
+                            </p>
+                            <Link
+                              href={currentArea.showroomHref}
+                              className="inline-block px-6 py-3 rounded-full bg-slate-950 text-white font-bold text-xs uppercase tracking-wider hover:bg-slate-800 transition-all shadow-md"
+                            >
+                              Ingresar al Showroom de {currentArea.shortName} →
+                            </Link>
+                          </div>
+                        )
+                      }
+
+                      return (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+                          {productsToShow.map((p: any) => {
+                            const imgs = safeParseArray(p.images)
+                            const img = imgs[0] || ''
+                            const price = calculateDiscountedPrice(p.price, userRole)
+                            const categoryName = p.category?.name || currentArea.shortName
+
+                            return (
+                              <div
+                                key={p.id}
+                                className="group flex flex-col bg-white border border-slate-200/90 rounded-3xl overflow-hidden hover:border-slate-400 hover:shadow-xl transition-all duration-300 text-left"
+                              >
+                                <Link
+                                  href={`/web/product/${p.id}`}
+                                  className="relative aspect-square bg-slate-50 p-4 flex items-center justify-center overflow-hidden border-b border-slate-100"
+                                >
+                                  <SafeImage src={img} alt={p.name} fill className="p-3 group-hover:scale-105 transition-transform duration-300" />
+                                  <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-md text-slate-800 font-mono text-[9px] font-bold px-2 py-0.5 rounded-full border border-slate-200">
+                                    EN BODEGA
+                                  </div>
+                                  <div className="absolute top-3 right-3 bg-slate-950 text-white font-black text-xs px-2.5 py-1 rounded-full shadow-md font-heading">
+                                    ${price.toFixed(2)}
+                                  </div>
+                                </Link>
+
+                                <div className="p-4 flex flex-col flex-1 gap-2">
+                                  <span className="text-[10px] font-mono text-slate-400 uppercase truncate">
+                                    {categoryName}
+                                  </span>
+
+                                  <Link
+                                    href={`/web/product/${p.id}`}
+                                    className="text-xs font-bold text-slate-900 leading-snug line-clamp-2 group-hover:text-blue-600 transition-colors font-heading"
+                                  >
+                                    {p.name}
+                                  </Link>
+
+                                  <p className="text-[10px] font-mono text-emerald-600 font-bold uppercase mt-auto">
+                                    ✓ Factura con IVA • Garantía Directa
+                                  </p>
+
+                                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 mt-1">
+                                    <Link
+                                      href={`/web/product/${p.id}`}
+                                      className="py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[10px] uppercase tracking-wider text-center transition-colors"
+                                    >
+                                      Ficha
+                                    </Link>
+                                    <a
+                                      href={`https://wa.me/593969043453?text=${encodeURIComponent(`Hola ATOMIC! Deseo cotizar: ${p.name} ($${price.toFixed(2)})`)}`}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] uppercase tracking-wider text-center transition-colors shadow-sm cursor-pointer"
+                                    >
+                                      Cotizar WA
+                                    </a>
+                                  </div>
+                                </div>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      )
+                    })()}
+                  </div>
+                </div>
+              )}
+            </motion.section>
+          )
+        })()}
 
         {activeTab === 'nosotros' && (
           <motion.section key="nosotros" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="max-w-4xl mx-auto px-6 py-12">
