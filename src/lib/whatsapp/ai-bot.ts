@@ -7,15 +7,8 @@ import { processConversationalBotMessage } from '@/lib/bot/botBrain';
 import { 
     isJuan, 
     processJuanCommand, 
-    isSantiago,
-    processSantiagoCommand,
-    notifySantiagoPorteroElectrico,
     isCristina,
     processCristinaCommand,
-    isStefi,
-    processStefiCommand,
-    isKevin,
-    processKevinCommand,
     findAdvisorByPhone,
     processAdvisorCommand,
     karenState, 
@@ -239,7 +232,7 @@ function generateExpertConsultantFallback(messageText: string, contactName: stri
     const namePart = contactName && contactName !== 'Cliente WhatsApp' ? ` ${contactName}` : '';
 
     if (isRecruitment) {
-        return `¡Hola${namePart}! 👋 Qué gusto saludarte. Tu postulación para Asesor Comercial en ATOMIC Electronics ha sido recibida con éxito. 🚀\n\nPuedes revisar todos los detalles del Plan Laboral de 30 días aquí:\n👉 ${HR_PAGE_LINK}\n\nY únete de inmediato a nuestro grupo oficial de bienvenida e inducción en WhatsApp:\n📲 ${HR_GROUP_LINK}\n\nUna vez dentro, tu coordinadora asignada se pondrá en contacto contigo para explicarte el paso a paso y resolver cualquier duda. ¡Bienvenido al equipo! 💼✨`;
+        return `¡Hola${namePart}! 👋 Qué gusto que te hayas comunicado con nosotros. Tu postulación para Asesor Comercial en ATOMIC Electronics ha sido recibida. ✅\n\n🚀 *Tenemos cupos activos esta semana*, así que tu timing es perfecto.\n\n💰 *Plan salarial progresivo:*\n• Mes 1: $100 Fijo + 20% comisión + Bono $50\n• Mes 2: $200 Fijo + 20% comisión + Bono $65\n• Mes 3: $450 Fijo (Contrato de Ley) + Comisiones Corp.\n\n🏆 *Bonificaciones semanales extra:*\n🥉 $15 · 🥈 $35 · 🥇 $75 · 👑 $50 MVP\n\nLee todos los detalles aquí:\n📄 ${HR_PAGE_LINK}\n\nÚnete ya a nuestro grupo oficial:\n📲 ${HR_GROUP_LINK}\n\nAl ingresar al grupo, tu coordinadora te asignará tu categoría de productos y te explicará todo paso a paso. ¡Bienvenido al equipo! 💼`;
     }
 
     // DISCOVERY DE BIENVENIDA EMPÁTICO: Si entra un mensaje ambiguo o saludo general sin producto específico
@@ -248,7 +241,7 @@ function generateExpertConsultantFallback(messageText: string, contactName: stri
         (textLower.length < 25 && !/(cerco|camara|c[aá]mara|portero|ditec|antena|generador|boc241n|torniquet)/i.test(textLower));
 
     if (isAmbiguousQuery) {
-        return `¡Hola${namePart}! 👋 ¿Cómo puedo ayudarte hoy? Cuéntame qué estás buscando o qué necesitas y te ayudo de una.`;
+        return `¡Hola${namePart}! 👋 Bienvenido a *ATOMIC Electronics Ecuador*.\n\nCon mucho gusto te ayudamos. Cuéntanos qué producto o requerimiento te interesa cotizar hoy:\n\n🔹 *Cámaras de Seguridad:* Hogar, interiores 360° o exteriores IP66 resistentes a lluvia.\n🔹 *Videoporteros & Citofonía:* Para casas familiares o edificios inteligentes.\n🔹 *Control de Acceso:* Portero facial ZKTeco, huella digital y torniquetes.\n🔹 *Seguridad Perimetral:* Cercos eléctricos JFL/Hagroy de alto voltaje.\n🔹 *Barreras Automáticas:* Dítec 2027 para urbanizaciones y empresas.\n🔹 *Seguridad Comercial:* Antenas anti-hurto para tiendas y locales.\n🔹 *Servicios:* Mantenimiento preventivo de generadores eléctricos ($50).\n\n🛒 Puedes ver todo nuestro catálogo web aquí: https://atomiccotizador.shop/web\n\n¿Para qué tipo de espacio o proyecto lo necesitas (casa, conjunto residencial, local o negocio)? 📲`;
     }
 
     
@@ -324,25 +317,6 @@ export async function handleIncomingWhatsAppBot(params: {
     try {
         const { whatsappId, contactName, messageText, mediaUrl, conversationId } = params;
 
-        // A0. Verificar si el remitente es Santiago (Jefe y Propietario de Atomic)
-        if (isSantiago(whatsappId)) {
-            const santiagoReply = await processSantiagoCommand(messageText, whatsappId, conversationId);
-            await sendWhatsAppMessage(whatsappId, santiagoReply);
-            await prisma.wAMessage.create({
-                data: {
-                    conversationId,
-                    whatsappMessageId: `karen-santiago-${Date.now()}`,
-                    direction: 'OUTBOUND',
-                    type: 'text',
-                    body: santiagoReply,
-                    status: 'SENT',
-                    senderId: 'BOT_SANTIAGO_DIRECTOR'
-                }
-            });
-            console.log(`[SANTIAGO_INTERACTION] Karen respondió a Santiago (Jefe) en WhatsApp (${whatsappId})`);
-            return santiagoReply;
-        }
-
         // A. Verificar si el remitente es Juan (Administrador / Dueño) interactuando con Karen
         if (isJuan(whatsappId)) {
             const karenReply = await processJuanCommand(messageText, conversationId);
@@ -379,44 +353,6 @@ export async function handleIncomingWhatsAppBot(params: {
             });
             console.log(`[CRISTINA_INTERACTION] Bot respondió a Cristina en WhatsApp (${whatsappId})`);
             return cristinaReply;
-        }
-
-        // A3. Verificar si el remitente es Stefi (Edición & Medios)
-        if (isStefi(whatsappId)) {
-            const stefiReply = await processStefiCommand(messageText, whatsappId, conversationId);
-            await sendWhatsAppMessage(whatsappId, stefiReply);
-            await prisma.wAMessage.create({
-                data: {
-                    conversationId,
-                    whatsappMessageId: `stefi-bot-${Date.now()}`,
-                    direction: 'OUTBOUND',
-                    type: 'text',
-                    body: stefiReply,
-                    status: 'SENT',
-                    senderId: 'BOT_STEFI_EDITOR'
-                }
-            });
-            console.log(`[STEFI_INTERACTION] Karen respondió a Stefi en WhatsApp (${whatsappId})`);
-            return stefiReply;
-        }
-
-        // A4. Verificar si el remitente es Kevin (Ventas & CRM)
-        if (isKevin(whatsappId)) {
-            const kevinReply = await processKevinCommand(messageText, whatsappId, conversationId);
-            await sendWhatsAppMessage(whatsappId, kevinReply);
-            await prisma.wAMessage.create({
-                data: {
-                    conversationId,
-                    whatsappMessageId: `kevin-bot-${Date.now()}`,
-                    direction: 'OUTBOUND',
-                    type: 'text',
-                    body: kevinReply,
-                    status: 'SENT',
-                    senderId: 'BOT_KEVIN_COMPANION'
-                }
-            });
-            console.log(`[KEVIN_INTERACTION] Karen respondió a Kevin en WhatsApp (${whatsappId})`);
-            return kevinReply;
         }
 
         // A3. Verificar si el remitente es un Asesor Comercial registrado interactuando con su Tutor Bot
@@ -508,8 +444,20 @@ export async function handleIncomingWhatsAppBot(params: {
         const textLower = (messageText || '').toLowerCase();
         
         const hasExplicitLaboralIntent = 
-            /\b(empleo|vacante|postular|postulacion|postulación|hoja de vida|curriculum|cv|trabajar con ustedes|quiero trabajar|busco trabajo|puesto de trabajo|plan laboral|aspirante)\b/i.test(textLower) ||
-            (/\b(asesor comercial|vendedor)\b/i.test(textLower) && /\b(postular|aplicar|vacante|trabajar|cv|hoja de vida|sueldo|comision|comisiones)\b/i.test(textLower));
+            // Términos directos de búsqueda de empleo
+            /\b(empleo|vacante|postular|postulacion|postulación|hoja de vida|curriculum|cv|trabajar con ustedes|quiero trabajar|busco trabajo|puesto de trabajo|plan laboral|aspirante|me interesa el puesto|quiero postular|deseo postular|me interesa trabajar|interesado en trabajar|interesada en trabajar)\b/i.test(textLower) ||
+            // Frases de los copys de Facebook ("vi la publicación / anuncio / flyer / imagen / post")
+            (/\b(vi|vi un|llegó|me llegó|vi la|me aparecio|me salió|me salio|me apareci[oó])\b/i.test(textLower) && /\b(publicaci[oó]n|anuncio|flyer|imagen|post|convocatoria|oferta)\b/i.test(textLower)) ||
+            // "INFO" seguido o precedido de contexto de trabajo/sueldo
+            (/^info\.?$/i.test(textLower.trim()) === false && /\binfo\b/i.test(textLower) && /\b(empleo|trabajo|sueldo|comisi[oó]n|puesto|vacante|asesor|vendedor|postul)\b/i.test(textLower)) ||
+            // Mensaje corto exacto "INFO" + (si viene de campaña de empleo se detecta por contexto)
+            /^(info empleo|info trabajo|info vacante|info asesor|quiero info|info postulaci[oó]n|postulo|me postulo|postulo ahora)\.?$/i.test(textLower.trim()) ||
+            // Menciones combinadas de cargo + acción laboral
+            (/\b(asesor comercial|vendedor|asesor de ventas|ejecutivo comercial|representante de ventas)\b/i.test(textLower) && /\b(postular|aplicar|vacante|trabajar|cv|hoja de vida|sueldo|comision|comisiones|interesado|me interesa|disponible|cómo aplico|como aplico)\b/i.test(textLower)) ||
+            // Mensajes de ingreso extra / oportunidad de trabajo
+            /\b(ingresos extra|ingresos adicionales|oportunidad de trabajo|trabajo disponible|cupos disponibles|cupo disponible|trabajar desde casa|teletrabajo|empleo remoto|trabajo remoto|trabajo digital|hay trabajo|hay vacantes|hay cupos|tienen empleo|ofrecen trabajo|oferta de empleo|oferta laboral)\b/i.test(textLower) ||
+            // Menciones del plan salarial de los flyers ($100, $200, $450)
+            (/\$?(100|200|450)\s*(fijo|fijos|usd|dolares|dólares)?/i.test(textLower) && /\b(trabajo|empleo|asesor|sueldo|ganar|gano|pagan|pago)\b/i.test(textLower));
 
         const isRecruitmentPauta = textLower.includes('[pauta_meta:') && 
             (textLower.includes('convocatoria asesores') || textLower.includes('pauta-reclutamiento') || textLower.includes('empleo-ingeniero'));
@@ -524,25 +472,37 @@ export async function handleIncomingWhatsAppBot(params: {
 
             // === MUNDO RECLUTAMIENTO / RECURSOS HUMANOS ===
             systemPrompt = `
-Eres la Asistente de Selección y Talento Humano de ATOMIC Electronics Ecuador.
-Tu misión es recibir con máxima calidez, profesionalismo y naturalidad a los postulantes y aspirantes a Asesores Comerciales.
+Eres la Asistente de Selección y Talento Humano de ATOMIC Electronics Ecuador (Quito).
+Tu misión es recibir con calidez genuina, rapidez y profesionalismo a los postulantes que llegan — muchos vienen de grupos de Facebook o WhatsApp luego de ver nuestros flyers de convocatoria.
 
-INFORMACIÓN OFICIAL DE LA CONVOCATORIA (Plan Laboral 30 Días):
-- Dedicación: 2 horas diarias flexibles (100% digital/remoto o presencial).
-- Remuneración: Escalonada de $100 a $450 fijos mensuales + comisiones directas por venta.
-- Especialización: Asignación a categorías específicas (Tecnología, Seguridad, Gaming, etc.).
-- 7 actividades prácticas sencillas guiadas por coordinación.
-- Página explicativa oficial con todos los detalles del plan: ${HR_PAGE_LINK}
-- Grupo de inducción y bienvenida en WhatsApp: ${HR_GROUP_LINK}
+INFORMACIÓN OFICIAL DE LA CONVOCATORIA 2026:
+- Modalidad: Remoto/híbrido, 2 horas diarias flexibles, sin experiencia necesaria.
+- Plan salarial escalonado (progresivo y transparente):
+  * Mes 1 — Inducción: $100 USD fijo + 20% comisión directa + Bono $50 por cumplimiento.
+  * Mes 2 — Consolidación: $200 USD fijo + 20% comisión + Bono $65 por cumplimiento.
+  * Mes 3 — Planta: $450 USD básico de ley (contrato firmado) + Comisiones Corporativas.
+- Para vendedores con experiencia comprobada: acceso directo al nivel $450 sin escalafón.
+- Bonificaciones semanales adicionales en efectivo (Reto Semanal ATOMIC):
+  * 🥉 Bono Bronce +$15 USD por constancia semanal y 1 venta.
+  * 🥈 Bono Plata +$35 USD por facturar $500+ en la semana.
+  * 🥇 Bono Oro +$75 USD por facturar $1.000+ en la semana.
+  * 👑 MVP de la Semana +$50 USD por la venta unitaria más alta.
+- Catálogo de más de 3.000 productos con precios de importación directa.
+- Plataforma web propia con cotizador automático, CRM y seguimiento en tiempo real.
+- Página oficial con todo el detalle: ${HR_PAGE_LINK}
+- Grupo oficial de bienvenida e inducción: ${HR_GROUP_LINK}
 
-INSTRUCCIÓN CLAVE DE RESPUESTA:
-1. Saluda amablemente usando el nombre del aspirante si está disponible (${contactName}).
-2. Confirma con entusiasmo que su mensaje fue recibido para la vacante de Asesor Comercial.
-3. Bríndale de forma muy clara y estructurada:
-   - El enlace donde puede leer todo el Plan Laboral detallado: ${HR_PAGE_LINK}
-   - El enlace para unirse de inmediato al grupo oficial de WhatsApp: ${HR_GROUP_LINK}
-4. Indícale con total naturalidad que **una vez que ingrese al grupo, su coordinadora asignada se pondrá en contacto directo con él/ella para explicarle el plan laboral, resolver dudas y asignarle su categoría de productos**.
-5. Mantén un tono motivador, seguro y sumamente humano (usa emojis sobrios como 💼, 🚀, 📲).
+INSTRUCCIONES DE RESPUESTA (OBLIGATORIAS):
+1. Saluda con calidez usando su nombre si está disponible (${contactName}).
+2. Confirma inmediatamente que su postulación fue recibida y que tiene muy buen timing porque hay cupos activos esta semana.
+3. Bríndale de forma clara y estructurada:
+   - El enlace donde puede leer TODO el plan laboral: ${HR_PAGE_LINK}
+   - El enlace para unirse al grupo de WhatsApp: ${HR_GROUP_LINK}
+4. Menciona brevemente los bonos semanales para encender su interés y motivación.
+5. Indícale que al entrar al grupo su coordinadora le asignará su categoría de productos y lo guiará paso a paso.
+6. Cierra con un mensaje corto, motivador y humano. Usa emojis sobrios: 💼 🚀 📲 ✅
+7. NO hagas preguntas adicionales. Entrégale toda la información de forma directa y contundente.
+8. Tono: humano, cercano, ejecutivo y motivador. Nada genérico. Que sienta que lo estamos esperando.
 `;
         } else {
             const isCommercial = 
@@ -582,28 +542,6 @@ INSTRUCCIÓN CLAVE DE RESPUESTA:
                 if (isHotOpportunity) {
                     notifyJuanHotOpportunity(contactName, whatsappId, messageText).catch(() => {});
                 }
-
-                // 🔔 Alerta prioritaria para Santiago (Jefe & Propietario): Porteros Eléctricos y Citofonía
-                const isPorteroElectrico = 
-                    textLower.includes('portero') || 
-                    textLower.includes('citofon') || 
-                    textLower.includes('citófon') || 
-                    textLower.includes('intercom') || 
-                    textLower.includes('videoportero') || 
-                    textLower.includes('video portero') || 
-                    textLower.includes('frente de calle') || 
-                    textLower.includes('timbre con camara') || 
-                    textLower.includes('timbre con cámara') || 
-                    textLower.includes('commax') || 
-                    textLower.includes('belcom') || 
-                    textLower.includes('auricular') || 
-                    textLower.includes('citofonia') || 
-                    textLower.includes('citofonía');
-
-                if (isPorteroElectrico) {
-                    notifySantiagoPorteroElectrico(contactName, whatsappId, messageText, conversationId).catch(() => {});
-                }
-
                 notifyJuanIncomingBurst().catch(() => {});
             } else {
                 karenState.burstCounters.uncataloged++;
@@ -631,12 +569,11 @@ ${CATALOGO_MAESTRO_ATOMIC}
 ${liveInventorySnippet}
 
 METODOLOGÍA DE VENTA CONSULTIVA Y REGLAS DE ORO:
-1. DIRECTO, NATURAL Y SIN RODEOS (CERO TEXTOS BÍBLICOS NI ABRUMAR AL CLIENTE):
-   - Si el cliente saluda de forma general ("Hola", "Buenas tardes", "Saludos", "Info", "Ayuda") o no especifica qué busca:
-     * NUNCA le envíes una lista kilométrica de productos ni sueltes todo el catálogo. ¡Cero rodeos y al grano!
-     * Sé DIRECTO, fresco, empático y humano:
-       "¡Hola! 👋 ¿Cómo puedo ayudarte hoy? Cuéntame qué estás buscando o qué necesitas y te ayudo de una."
-   - Si el cliente ya menciona un producto o requerimiento, responde al grano con el valor, especificaciones clave y una pregunta consultiva ágil.
+1. DEMUESTRA CONOCIMIENTO TOTAL DE INMEDIATO:
+   - Si el cliente saluda o pregunta de forma general ("Hola", "Buenas tardes", "¿Qué venden?", "Busco seguridad"):
+     * Salúdalo con calidez y energía.
+     * Cuéntale de forma breve y atractiva qué tenemos en ATOMIC (Videoporteros/citofonía para casas y edificios, Control de acceso/torniquetes ZKTeco, Cercos eléctricos JFL/Hagroy, Cámaras inteligentes IMOU/Hikvision, Antenas antihurto y Barras antipánico).
+     * Haz la primera pregunta consultiva natural: "¿Para qué tipo de espacio o proyecto lo estás buscando? (¿Una casa, un edificio/conjunto residencial, un local comercial o una empresa?)"
 
 2. DESCUBRIMIENTO PROGRESIVO (NO AGRESIVO):
    - Nunca hagas un interrogatorio pesado. Pregunta 1 o máximo 2 detalles clave por mensaje de forma conversacional:
@@ -797,7 +734,7 @@ METODOLOGÍA DE VENTA CONSULTIVA Y REGLAS DE ORO:
                         "Authorization": `Bearer ${NVIDIA_API_KEY}`,
                         "Content-Type": "application/json"
                     },
-                    timeout: 7000
+                    timeout: 22000
                 }
             );
 
@@ -950,56 +887,28 @@ METODOLOGÍA DE VENTA CONSULTIVA Y REGLAS DE ORO:
                 console.log(`[BOT_SUCCESS] Respondió automáticamente (${sentType}) de forma resiliente a ${whatsappId}`);
             } catch (sendErr: any) {
                 const errMsg = sendErr?.response?.data?.error?.message || sendErr.message || 'Error al entregar por WhatsApp';
-                console.warn(`[BOT_SEND_GLITCH] Falló entrega inicial a ${whatsappId}: ${errMsg}. Reintentando automáticamente en 2.5 segundos...`);
+                console.error(`[BOT_SEND_FAILED] Recipiente: ${whatsappId}. Detalle:`, errMsg);
 
-                let inFlightSuccess = false;
-                try {
-                    // Reenvío inmediato en unos segundos (2.5s)
-                    await new Promise(res => setTimeout(res, 2500));
-                    if (shouldSendImage && detectedAsset?.imagePath) {
-                        await sendWhatsAppMedia(whatsappId, detectedAsset.imagePath, 'image', botReply.slice(0, 1000));
-                    } else {
-                        await sendWhatsAppMessage(whatsappId, botReply);
+                // Registrar en BD con metadatos de reintento inteligente para que el motor de auto-retry lo entregue
+                await prisma.wAMessage.create({
+                    data: {
+                        conversationId,
+                        whatsappMessageId: `bot-failed-${Date.now()}`,
+                        direction: 'OUTBOUND',
+                        type: shouldSendImage ? 'image' : 'text',
+                        mediaUrl: shouldSendImage ? detectedAsset.imagePath : null,
+                        body: botReply,
+                        status: 'FAILED',
+                        errorMessage: formatRetryMetadata(0, Date.now() + 15000, errMsg),
+                        senderId: 'BOT_ATOMIC_RESILIENT'
                     }
-                    inFlightSuccess = true;
-                    console.log(`[BOT_RETRY_SUCCESS] Reenvío en caliente completado con éxito para ${whatsappId}`);
+                }).catch(() => {});
 
-                    await prisma.wAMessage.create({
-                        data: {
-                            conversationId,
-                            whatsappMessageId: `bot-retry-ok-${Date.now()}`,
-                            direction: 'OUTBOUND',
-                            type: shouldSendImage ? 'image' : 'text',
-                            mediaUrl: shouldSendImage ? detectedAsset.imagePath : null,
-                            body: botReply,
-                            status: 'SENT',
-                            senderId: 'BOT_ATOMIC_INFLIGHT_RETRY'
-                        }
-                    });
-                } catch (retryErr: any) {
-                    const finalErr = retryErr?.response?.data?.error?.message || retryErr.message || errMsg;
-                    console.error(`[BOT_INFLIGHT_FAILED] Reintento falló para ${whatsappId}:`, finalErr);
-
-                    // Registrar en BD con metadatos de reintento ultrarrápido (3s) para auto-retry
-                    await prisma.wAMessage.create({
-                        data: {
-                            conversationId,
-                            whatsappMessageId: `bot-failed-${Date.now()}`,
-                            direction: 'OUTBOUND',
-                            type: shouldSendImage ? 'image' : 'text',
-                            mediaUrl: shouldSendImage ? detectedAsset.imagePath : null,
-                            body: botReply,
-                            status: 'FAILED',
-                            errorMessage: formatRetryMetadata(0, Date.now() + 3000, finalErr),
-                            senderId: 'BOT_ATOMIC_RESILIENT'
-                        }
-                    }).catch(() => {});
-
-                    await prisma.wAConversation.update({
-                        where: { id: conversationId },
-                        data: { priority: 'URGENT', status: 'LEAD_PAUTA' }
-                    }).catch(() => {});
-                }
+                // Marcar la conversación con alta prioridad y estado de atención
+                await prisma.wAConversation.update({
+                    where: { id: conversationId },
+                    data: { priority: 'URGENT', status: 'LEAD_PAUTA' }
+                }).catch(() => {});
             }
         }
 
