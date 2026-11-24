@@ -778,11 +778,11 @@ export default function PublicWebClient({
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between gap-3 py-2.5">
 
           {/* LEFT: 3-LINES HAMBURGER + TABS */}
-          <div className="flex items-center gap-2.5 overflow-x-auto scrollbar-hide no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          <div className="flex items-center gap-1.5 lg:gap-2 xl:gap-2.5 overflow-x-auto scrollbar-hide no-scrollbar min-w-0 pr-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {/* 3-LINES HAMBURGER ICON BUTTON */}
             <button
               onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
-              className={`p-2 rounded-full border transition-all duration-200 active:scale-95 shrink-0 shadow-sm cursor-pointer flex items-center justify-center ${
+              className={`p-1.5 lg:p-2 rounded-full border transition-all duration-200 active:scale-95 shrink-0 shadow-sm cursor-pointer flex items-center justify-center ${
                 isMegaMenuOpen
                   ? 'bg-blue-600 text-white border-blue-600 shadow-blue-500/30'
                   : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200 hover:text-slate-950'
@@ -797,15 +797,15 @@ export default function PublicWebClient({
             {activeTab && (
               <button
                 onClick={() => setActiveTab(null)}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-slate-100 border border-slate-200 text-slate-800 hover:bg-slate-200 text-xs font-bold font-mono tracking-wider transition-all shrink-0 mr-1 shadow-sm"
+                className="flex items-center gap-1 px-2.5 lg:px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-slate-800 hover:bg-slate-200 text-[10px] sm:text-xs font-bold font-mono tracking-wider transition-all shrink-0 mr-0.5 shadow-sm"
               >
-                <ChevronLeft size={15} />
-                <span className="hidden sm:inline">INICIO</span>
+                <ChevronLeft size={14} />
+                <span className="hidden md:inline">INICIO</span>
               </button>
             )}
 
             {/* ─── SECCIÓN 1: CATÁLOGO & NAVEGACIÓN PRINCIPAL ─── */}
-            <div className="flex items-center gap-1 bg-slate-100 hover:bg-slate-200/70 p-1 rounded-full border border-slate-200/80 backdrop-blur-md shrink-0 shadow-inner transition-colors">
+            <div className="flex items-center gap-0.5 lg:gap-1 bg-slate-100 hover:bg-slate-200/70 p-0.5 lg:p-1 rounded-full border border-slate-200/80 backdrop-blur-md shrink-0 shadow-inner transition-colors">
               {[
                 { id: 'categorias', label: 'CATEGORÍAS' },
                 { id: 'ofertas', label: 'OFERTAS' },
@@ -814,7 +814,7 @@ export default function PublicWebClient({
                 <button
                   key={tab.id}
                   onClick={() => { setActiveTab(activeTab === tab.id ? null : tab.id); setIsMegaMenuOpen(false); }}
-                  className={`shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-wider font-heading transition-all duration-200 whitespace-nowrap border ${
+                  className={`shrink-0 px-2 lg:px-2.5 xl:px-3.5 py-1 lg:py-1.5 rounded-full text-[10px] lg:text-[11px] font-bold tracking-wider font-heading transition-all duration-200 whitespace-nowrap border ${
                     activeTab === tab.id
                       ? 'bg-slate-950 text-white border-slate-950 shadow-md scale-105'
                       : 'bg-transparent text-slate-600 border-transparent hover:bg-white hover:text-slate-950'
@@ -826,10 +826,10 @@ export default function PublicWebClient({
             </div>
 
             {/* LÍNEA DIVISORIA VERTICAL 1 */}
-            <div className="h-5 w-[1px] bg-slate-300 shrink-0" />
+            <div className="h-4 lg:h-5 w-[1px] bg-slate-300 shrink-0" />
 
             {/* ─── SECCIÓN 2: SUSCRIBIBLES & CONTENIDO DINÁMICO ─── */}
-            <div className="flex items-center gap-1 bg-slate-100 hover:bg-slate-200/70 p-1 rounded-full border border-slate-200/80 backdrop-blur-md shrink-0 shadow-inner transition-colors">
+            <div className="flex items-center gap-0.5 lg:gap-1 bg-slate-100 hover:bg-slate-200/70 p-0.5 lg:p-1 rounded-full border border-slate-200/80 backdrop-blur-md shrink-0 shadow-inner transition-colors">
               {[
                 { id: 'landings', label: 'LANDINGS' },
                 { id: 'newsletter', label: 'NEWSLETTER' },
@@ -838,7 +838,7 @@ export default function PublicWebClient({
                 <button
                   key={tab.id}
                   onClick={() => { setActiveTab(activeTab === tab.id ? null : tab.id); setIsMegaMenuOpen(false); }}
-                  className={`shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-wider font-heading transition-all duration-200 whitespace-nowrap border ${
+                  className={`shrink-0 px-2 lg:px-2.5 xl:px-3.5 py-1 lg:py-1.5 rounded-full text-[10px] lg:text-[11px] font-bold tracking-wider font-heading transition-all duration-200 whitespace-nowrap border ${
                     activeTab === tab.id
                       ? 'bg-slate-950 text-white border-slate-950 shadow-md scale-105'
                       : 'bg-transparent text-slate-600 border-transparent hover:bg-white hover:text-slate-950'
@@ -850,10 +850,10 @@ export default function PublicWebClient({
             </div>
 
             {/* LÍNEA DIVISORIA VERTICAL 2 */}
-            <div className="h-5 w-[1px] bg-slate-300 shrink-0" />
+            <div className="h-4 lg:h-5 w-[1px] bg-slate-300 shrink-0" />
 
             {/* ─── SECCIÓN 3: CONFIANZA, EMPRESA & SOPORTE ─── */}
-            <div className="flex items-center gap-1 bg-slate-100 hover:bg-slate-200/70 p-1 rounded-full border border-slate-200/80 backdrop-blur-md shrink-0 shadow-inner transition-colors">
+            <div className="flex items-center gap-0.5 lg:gap-1 bg-slate-100 hover:bg-slate-200/70 p-0.5 lg:p-1 rounded-full border border-slate-200/80 backdrop-blur-md shrink-0 shadow-inner transition-colors">
               {[
                 { id: 'nosotros', label: 'NOSOTROS' },
                 { id: 'contacto', label: 'CONTACTO' },
@@ -862,7 +862,7 @@ export default function PublicWebClient({
                 <button
                   key={tab.id}
                   onClick={() => { setActiveTab(activeTab === tab.id ? null : tab.id); setIsMegaMenuOpen(false); }}
-                  className={`shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-bold tracking-wider font-heading transition-all duration-200 whitespace-nowrap border ${
+                  className={`shrink-0 px-2 lg:px-2.5 xl:px-3.5 py-1 lg:py-1.5 rounded-full text-[10px] lg:text-[11px] font-bold tracking-wider font-heading transition-all duration-200 whitespace-nowrap border ${
                     activeTab === tab.id
                       ? 'bg-slate-950 text-white border-slate-950 shadow-md scale-105'
                       : 'bg-transparent text-slate-600 border-transparent hover:bg-white hover:text-slate-950'
@@ -875,15 +875,16 @@ export default function PublicWebClient({
           </div>
 
           {/* RIGHT: WHATSAPP, LOGIN & USER */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* PORTAL VENDEDORES & LISTA DE PRECIOS */}
             <Link
               href="/web/precios-vendedor"
-              className="px-3 py-1.5 rounded-full border border-orange-500/40 hover:border-orange-600 bg-orange-50 hover:bg-orange-100 text-orange-800 hover:text-orange-950 font-bold font-heading uppercase tracking-wider text-[10px] sm:text-[11px] shadow-sm transition-all flex items-center gap-1.5"
+              className="px-2.5 sm:px-3 py-1.5 rounded-full border border-orange-500/40 hover:border-orange-600 bg-orange-50 hover:bg-orange-100 text-orange-800 hover:text-orange-950 font-bold font-heading uppercase tracking-wider text-[10px] sm:text-[11px] shadow-sm transition-all flex items-center gap-1 shrink-0"
               title="Portal de Vendedores & Lista de Precios"
             >
               <span className="text-orange-600">⚡</span>
-              <span>PRECIOS VENDEDOR</span>
+              <span className="hidden xl:inline">PRECIOS VENDEDOR</span>
+              <span className="xl:hidden">PRECIOS</span>
             </Link>
 
             {/* WHATSAPP CON CONTORNO ELEGANTE */}
@@ -891,11 +892,12 @@ export default function PublicWebClient({
               href="https://wa.me/593969043453?text=Hola%20ATOMIC!%20Deseo%20informaci%C3%B3n%20sobre%20sus%20productos."
               target="_blank"
               rel="noreferrer"
-              className="px-3 py-1.5 rounded-full border border-amber-500/50 hover:border-amber-600 bg-amber-50 hover:bg-amber-100 text-amber-800 hover:text-amber-900 font-bold font-heading uppercase tracking-wider text-[10px] sm:text-[11px] shadow-sm transition-all flex items-center gap-1.5"
+              className="px-2.5 sm:px-3 py-1.5 rounded-full border border-amber-500/50 hover:border-amber-600 bg-amber-50 hover:bg-amber-100 text-amber-800 hover:text-amber-900 font-bold font-heading uppercase tracking-wider text-[10px] sm:text-[11px] shadow-sm transition-all flex items-center gap-1 shrink-0"
               title="Asesoría Instantánea WhatsApp"
             >
-              <span>ASESORÍA WHATSAPP</span>
-              <span className="text-amber-600">→</span>
+              <span className="hidden 2xl:inline">ASESORÍA WHATSAPP</span>
+              <span className="2xl:hidden hidden sm:inline">WHATSAPP</span>
+              <span className="text-amber-600 font-bold">→</span>
             </a>
 
             {/* INICIAR SESIÓN / SELECTOR DE ACCESO */}
@@ -1316,6 +1318,20 @@ export default function PublicWebClient({
                         </div>
                         <div className="text-[10px] text-slate-500 pl-3.5">Respuesta inmediata de asesores</div>
                       </a>
+
+                      <div
+                        onClick={() => {
+                          setIsMegaMenuOpen(false)
+                          setActiveTab('nosotros')
+                        }}
+                        className="relative cursor-pointer hover:bg-rose-50/60 p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-rose-400"
+                      >
+                        <div className="text-xs font-bold text-slate-800 flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
+                          <span>Sobre Nosotros & Garantía</span>
+                        </div>
+                        <div className="text-[10px] text-slate-500 pl-3.5">Trayectoria ATOMIC, valores y respaldo comercial</div>
+                      </div>
 
                       <div
                         onClick={() => {
