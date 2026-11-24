@@ -30,6 +30,33 @@ const safeParseArray = (str: any, fallback: any = []) => {
     return fallback;
 };
 
+const FEATURED_KIDS_TABLETS = [
+    {
+        id: "amazon-fire-7-kids-atomic",
+        name: "Amazon Tablet Fire 7 Kids (Estuche Antigolpes & Control Parental)",
+        price: 145.19,
+        category: { name: "Tablets Infantiles" },
+        images: JSON.stringify(["https://m.media-amazon.com/images/I/61k92eZk4CL._AC_SL1000_.jpg"]),
+        provider: "Meeltech Store / Amazon"
+    },
+    {
+        id: "amazon-fire-8-kids-atomic",
+        name: "Amazon Tablet Fire HD 8 Kids Pro (Pantalla 8\" HD, 32GB, Bumper Infantil)",
+        price: 165.00,
+        category: { name: "Tablets Infantiles" },
+        images: JSON.stringify(["https://m.media-amazon.com/images/I/71Z8pD7K+KL._AC_SL1500_.jpg"]),
+        provider: "Amazon Oficial"
+    },
+    {
+        id: "amazon-fire-10-kids-atomic",
+        name: "Amazon Tablet Fire HD 10 Kids (Pantalla 10.1\" Full HD 1080p, 32GB)",
+        price: 195.00,
+        category: { name: "Tablets Infantiles" },
+        images: JSON.stringify(["https://m.media-amazon.com/images/I/61w7N1r6tTL._AC_SL1000_.jpg"]),
+        provider: "Amazon Oficial"
+    }
+];
+
 export default function MobileBlogPage() {
     const [products, setProducts] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
@@ -45,7 +72,10 @@ export default function MobileBlogPage() {
                     fetch("/api/web/phones").then(r => r.json()),
                     fetch("/api/auth/session").then(r => r.json()).catch(() => null)
                 ])
-                setProducts(pRes.products || [])
+                const apiProds = pRes.products || []
+                const existingNames = new Set(apiProds.map((x: any) => x.name.toLowerCase().replace(/[^a-z0-9]/g, ' ').replace(/\s+/g, ' ').trim()))
+                const extras = FEATURED_KIDS_TABLETS.filter(f => !existingNames.has(f.name.toLowerCase().replace(/[^a-z0-9]/g, ' ').replace(/\s+/g, ' ').trim()))
+                setProducts([...apiProds, ...extras])
                 if (sRes?.user?.role) setUserRole(sRes.user.role)
             } catch(e) {
                 console.error(e)
@@ -64,8 +94,33 @@ export default function MobileBlogPage() {
         }
 
         if (selectedCategoryFilter !== "TODOS") {
-            const catQ = selectedCategoryFilter.toLowerCase()
-            p = p.filter(x => x.name.toLowerCase().includes(catQ) || x.category?.name?.toLowerCase().includes(catQ))
+            if (selectedCategoryFilter === "TABLETS") {
+                p = p.filter(x => {
+                    const n = x.name.toLowerCase()
+                    const c = (x.category?.name || '').toLowerCase()
+                    return n.includes('tablet') || n.includes('ipad') || n.includes('tab ') || n.includes('fire') || n.includes('kindle') || n.includes('surface') || c.includes('tablet')
+                })
+            } else if (selectedCategoryFilter === "KIDS") {
+                p = p.filter(x => {
+                    const n = x.name.toLowerCase()
+                    const c = (x.category?.name || '').toLowerCase()
+                    return n.includes('kids') || n.includes('infantil') || n.includes('antigolpe') || n.includes('niño') || n.includes('niña') || n.includes('fire 7') || c.includes('infantil')
+                })
+            } else if (selectedCategoryFilter === "CELULARES") {
+                p = p.filter(x => {
+                    const n = x.name.toLowerCase()
+                    const c = (x.category?.name || '').toLowerCase()
+                    const isTab = n.includes('tablet') || n.includes('ipad') || n.includes('tab ') || n.includes('fire') || c.includes('tablet')
+                    return !isTab
+                })
+            } else if (selectedCategoryFilter === "SAMSUNG") {
+                p = p.filter(x => x.name.toLowerCase().includes("samsung"))
+            } else if (selectedCategoryFilter === "HONOR") {
+                p = p.filter(x => x.name.toLowerCase().includes("honor"))
+            } else {
+                const catQ = selectedCategoryFilter.toLowerCase()
+                p = p.filter(x => x.name.toLowerCase().includes(catQ) || x.category?.name?.toLowerCase().includes(catQ))
+            }
         }
 
         return p.sort((a, b) => a.name.localeCompare(b.name))
