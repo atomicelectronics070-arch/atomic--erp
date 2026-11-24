@@ -204,6 +204,104 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    const isBateriaSearch = 
+      searchLower.includes('bateria') || 
+      searchLower.includes('batería') || 
+      searchLower.includes('pila');
+
+    const wantsUps = searchLower.includes('ups');
+    const wantsSpeaker = searchLower.includes('parlante') || searchLower.includes('bafle') || searchLower.includes('altavoz');
+    const wantsCamera = searchLower.includes('camara') || searchLower.includes('cámara');
+    const wantsCable = searchLower.includes('cable') || searchLower.includes('flex');
+    const wantsCharger = searchLower.includes('cargador');
+    const wantsTester = searchLower.includes('probador') || searchLower.includes('tester');
+
+    if (isBateriaSearch) {
+      if (!wantsUps) {
+        where.NOT.push(
+          { name: { contains: 'UPS ', mode: 'insensitive' } },
+          { name: { contains: 'SISTEMA UPS', mode: 'insensitive' } },
+          { name: { contains: 'NO BREAK', mode: 'insensitive' } },
+          { name: { contains: 'NO-BREAK', mode: 'insensitive' } },
+          { name: { contains: 'REGULADOR BIFÁSICO', mode: 'insensitive' } }
+        );
+      }
+      if (!wantsSpeaker) {
+        where.NOT.push(
+          { name: { contains: 'PARLANTE', mode: 'insensitive' } },
+          { name: { contains: 'BAFLE', mode: 'insensitive' } },
+          { name: { contains: 'ALTAVOZ', mode: 'insensitive' } }
+        );
+      }
+      if (!wantsCamera) {
+        where.NOT.push(
+          { name: { contains: 'CAMARA DE SEGURIDAD', mode: 'insensitive' } },
+          { name: { contains: 'CÁMARA DE SEGURIDAD', mode: 'insensitive' } },
+          { name: { contains: 'CAMARA IP', mode: 'insensitive' } },
+          { name: { contains: 'CÁMARA IP', mode: 'insensitive' } },
+          { name: { contains: 'BODY CAMERA', mode: 'insensitive' } },
+          { name: { contains: 'HB8 PANTILT', mode: 'insensitive' } },
+          { name: { contains: 'EB3+PANEL', mode: 'insensitive' } },
+          { name: { contains: 'EB5 CAMARA', mode: 'insensitive' } }
+        );
+      }
+      where.NOT.push(
+        { name: { contains: 'RADIO MOVIL', mode: 'insensitive' } },
+        { name: { contains: 'RADIO PORTATIL ANALOGO', mode: 'insensitive' } },
+        { name: { contains: 'RADIO PORTATIL BANDA LIBRE', mode: 'insensitive' } },
+        { name: { contains: 'LINTERNA', mode: 'insensitive' } },
+        { name: { contains: 'REFLECTOR', mode: 'insensitive' } },
+        { name: { contains: 'LAMPARA', mode: 'insensitive' } },
+        { name: { contains: 'LÁMPARA', mode: 'insensitive' } },
+        { name: { contains: 'SERIE LED', mode: 'insensitive' } },
+        { name: { contains: 'AUDIFONOS', mode: 'insensitive' } },
+        { name: { contains: 'AUDÍFONOS', mode: 'insensitive' } },
+        { name: { contains: 'PIXEL BUDS', mode: 'insensitive' } },
+        { name: { contains: 'MICROFONO', mode: 'insensitive' } },
+        { name: { contains: 'MICRÓFONO', mode: 'insensitive' } },
+        { name: { contains: 'RECEPTOR DE AUDIO', mode: 'insensitive' } },
+        { name: { contains: 'TRANSMISOR / RECEPTOR', mode: 'insensitive' } },
+        { name: { contains: 'MOUSE INALAMBRICO', mode: 'insensitive' } },
+        { name: { contains: 'TECLADO Y MOUSE', mode: 'insensitive' } },
+        { name: { contains: 'LIJADORA', mode: 'insensitive' } },
+        { name: { contains: 'CAUTIN', mode: 'insensitive' } },
+        { name: { contains: 'CAUTÍN', mode: 'insensitive' } },
+        { name: { contains: 'FUMIGADORA TIPO MOCHILA', mode: 'insensitive' } },
+        { name: { contains: 'CONTADORA DE BILLETES', mode: 'insensitive' } },
+        { name: { contains: 'ASPIRADORA RECARGABLE', mode: 'insensitive' } },
+        { name: { contains: 'KIT TALADRO', mode: 'insensitive' } },
+        { name: { contains: 'COMBO TALADRO', mode: 'insensitive' } },
+        { name: { contains: 'SENSOR DE HUMO', mode: 'insensitive' } },
+        { name: { contains: 'SMART FINDER', mode: 'insensitive' } },
+        { name: { contains: 'HUMIDIFICADOR', mode: 'insensitive' } },
+        { name: { contains: 'INVERSOR DE VOLTAJE', mode: 'insensitive' } },
+        { name: { contains: 'INVERSOR OFF GRID', mode: 'insensitive' } },
+        { name: { contains: 'CONTROLADOR DE CARGA', mode: 'insensitive' } }
+      );
+      if (!wantsTester) {
+        where.NOT.push(
+          { name: { contains: 'PROBADOR DE BATERIA', mode: 'insensitive' } }
+        );
+      }
+      if (!wantsCharger) {
+        where.NOT.push(
+          { name: { contains: 'CARGADOR DE USB', mode: 'insensitive' } },
+          { name: { contains: 'SWITCH PARA CARGADOR', mode: 'insensitive' } },
+          { name: { contains: 'FUSIBLE PARA CARGADOR', mode: 'insensitive' } }
+        );
+      }
+      if (!wantsCable) {
+        where.NOT.push(
+          { name: { contains: 'CABLE DE BATERIA', mode: 'insensitive' } },
+          { name: { contains: 'VC-CABLE DE BATERIA', mode: 'insensitive' } },
+          { name: { contains: 'CABLE PARA BATERÍA', mode: 'insensitive' } },
+          { name: { contains: 'BORNES PARA BATERÍA', mode: 'insensitive' } },
+          { name: { contains: 'CONECTOR ANDERSON', mode: 'insensitive' } },
+          { name: { contains: 'HERRAMIENTA PARA TERMINALES', mode: 'insensitive' } }
+        );
+      }
+    }
+
     if (search) {
       const stopWords = new Set(['de', 'del', 'la', 'el', 'en', 'para', 'con', 'un', 'una', 'y']);
       const tokens = search
@@ -264,7 +362,8 @@ export async function GET(req: NextRequest) {
           const skipDescriptionKeywords = [
             'portatil', 'portátil', 'portatiles',
             'cerradura', 'cerraduras', 'cerrojo', 'cerrojos', 'chapa', 'chapas', 'smart lock',
-            'generador', 'generadores'
+            'generador', 'generadores',
+            'bateria', 'batería', 'baterias', 'baterías'
           ];
           for (const v of variants) {
             conditions.push({ name: { contains: v, mode: 'insensitive' } });

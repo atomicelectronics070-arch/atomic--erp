@@ -10,7 +10,7 @@ import {
   Layers, Package, AlertTriangle, ArrowRight, Laptop, Smartphone,
   Home, Wrench, Shield, CheckCircle2, X, Flame, Gift,
   MapPin, Building2, Clock, Zap, Phone, ArrowUpRight,
-  Filter, BadgeCheck, SlidersHorizontal, Send, Globe, Tag, FileText
+  Filter, BadgeCheck, SlidersHorizontal, Send, Globe, Tag, FileText, BatteryCharging
 } from "lucide-react"
 
 // ─── 100 MENSAJES CLASIFICADOS EN 10 CATEGORÍAS ───
@@ -580,6 +580,100 @@ function getGeneradorSpecs(p: any) {
   return { type, power, voltage }
 }
 
+// ─── FILTROS DIFERENCIADORES DE BATERÍAS & PILAS ───
+const BATERIA_FILTERS = [
+  { id: "all", label: "Todas las Baterías", badge: "Catálogo Completo" },
+  { id: "laptop", label: "Baterías de Laptop", badge: "HP / Dell / Apple / Lenovo", color: "blue" },
+  { id: "secas-12v", label: "Baterías Secas 12V (UPS / Alarmas)", badge: "Forza / Powest 7Ah-55Ah", color: "amber" },
+  { id: "litio-solar", label: "Baterías Litio LiFePO4 & Estaciones", badge: "2.5kW - 5kW Solar", color: "sky" },
+  { id: "pilas", label: "Pilas & Celdas 18650 / 9V", badge: "Energizer / Li-ion", color: "emerald" },
+  { id: "camaras-radios", label: "Cámaras & Radios", badge: "Canon / Nikon / Hytera", color: "purple" },
+  { id: "herramientas", label: "Herramientas Brushless", badge: "2.0Ah / 4.0Ah", color: "rose" },
+]
+
+function getBateriaSpecs(p: any) {
+  const text = `${p?.name || ''} ${p?.sku || ''} ${p?.specs || ''}`.toUpperCase()
+  
+  const isBattery = 
+    text.includes('BATERIA') || 
+    text.includes('BATERÍA') || 
+    text.includes('PILA') || 
+    text.includes('PILAS') || 
+    text.includes('POWERBANK') ||
+    text.includes('LIFEPO4')
+
+  if (!isBattery) return null
+
+  // 1. Tier / Subtype
+  let type: { label: string; bg: string; text: string; border: string; tier: string } | null = null
+
+  if (text.includes('PARA HP') || text.includes('PARA DELL') || text.includes('PARA ASUS') || text.includes('PARA ACER') || text.includes('PARA LENOVO') || text.includes('PARA MAC') || text.includes('PARA TOSHIBA') || text.includes('PARA SONY') || text.includes('PARA SAMSUNG') || text.includes('PARA MSI') || text.includes('BATERIA LAPTOP') || text.startsWith('VC-BATERIA') || text.startsWith('OR-BATERIA')) {
+    type = { label: 'Batería Laptop Certificada', bg: 'bg-blue-950/90', text: 'text-blue-300', border: 'border-blue-500/50', tier: 'laptop' }
+  } else if (text.includes('12V') || text.includes('POWEST') || text.includes('FORZA') || text.includes('XMART') || text.includes('CSB') || text.includes('ACIDO-PLOMO') || text.includes('ÁCIDO-PLOMO') || text.includes('PANEL DE ALARMA')) {
+    type = { label: 'Batería Seca Sellada 12V', bg: 'bg-amber-950/90', text: 'text-amber-300', border: 'border-amber-500/50', tier: 'secas-12v' }
+  } else if (text.includes('LIFEPO4') || text.includes('ESTACION DE CARGA') || text.includes('ESTACIÓN DE ENERGÍA') || text.includes('LMFP')) {
+    type = { label: 'Batería Litio Solar LiFePO4', bg: 'bg-sky-950/90', text: 'text-sky-300', border: 'border-sky-500/50', tier: 'litio-solar' }
+  } else if (text.includes('18650') || text.includes('14500') || text.includes('CR123') || text.includes('LIR2032') || text.includes('LIR2025') || text.includes('ENERGIZER') || text.includes('9V') || text.includes('ALCALINA') || text.includes('PILAS')) {
+    type = { label: 'Pila / Celda Recargable', bg: 'bg-emerald-950/90', text: 'text-emerald-300', border: 'border-emerald-500/50', tier: 'pilas' }
+  } else if (text.includes('MAQUINARIA') || text.includes('BRUSHLESS')) {
+    type = { label: 'Batería Maquinaria Brushless', bg: 'bg-rose-950/90', text: 'text-rose-300', border: 'border-rose-500/50', tier: 'herramientas' }
+  } else if (text.includes('NIKON') || text.includes('CANON') || text.includes('OLYMPUS') || text.includes('CASIO') || text.includes('PANASONIC') || text.includes('RADIO') || text.includes('PNC') || text.includes('HY-')) {
+    type = { label: 'Batería Cámara / Radio', bg: 'bg-purple-950/90', text: 'text-purple-300', border: 'border-purple-500/50', tier: 'camaras-radios' }
+  } else {
+    type = { label: 'Batería Recargable', bg: 'bg-zinc-800/90', text: 'text-zinc-200', border: 'border-white/20', tier: 'laptop' }
+  }
+
+  // 2. Voltage
+  let voltage: string | null = null
+  if (text.includes('51V')) voltage = '51V (48V)'
+  else if (text.includes('24V')) voltage = '24V'
+  else if (text.includes('15.4V')) voltage = '15.4V'
+  else if (text.includes('15.2V')) voltage = '15.2V'
+  else if (text.includes('14.8V')) voltage = '14.8V'
+  else if (text.includes('14.4V')) voltage = '14.4V'
+  else if (text.includes('12V') || text.includes('12 VCC')) voltage = '12V'
+  else if (text.includes('11.55V')) voltage = '11.55V'
+  else if (text.includes('11.42V')) voltage = '11.42V'
+  else if (text.includes('11.4V')) voltage = '11.4V'
+  else if (text.includes('11.36V')) voltage = '11.36V'
+  else if (text.includes('11.26V')) voltage = '11.26V'
+  else if (text.includes('11.25V')) voltage = '11.25V'
+  else if (text.includes('11.1V')) voltage = '11.1V'
+  else if (text.includes('10.95V')) voltage = '10.95V'
+  else if (text.includes('10.8V')) voltage = '10.8V'
+  else if (text.includes('7.64V')) voltage = '7.64V'
+  else if (text.includes('7.6V')) voltage = '7.6V'
+  else if (text.includes('7.4V')) voltage = '7.4V'
+  else if (text.includes('9V')) voltage = '9V'
+  else if (text.includes('3.7V')) voltage = '3.7V'
+  else if (text.includes('1.2V')) voltage = '1.2V'
+
+  // 3. Capacity
+  let capacity: string | null = null
+  const capMatch = text.match(/(\d+(?:\.\d+)?)\s*(MAH|WH|AH)\b/)
+  if (capMatch) {
+    capacity = `${capMatch[1]} ${capMatch[2]}`
+  }
+
+  // 4. Brand detected
+  let brand: string | null = null
+  if (text.includes('HP') || text.includes('PROBOOK') || text.includes('PAVILION') || text.includes('ENVY') || text.includes('OMEN')) brand = 'HP'
+  else if (text.includes('DELL') || text.includes('INSPIRON') || text.includes('LATITUDE') || text.includes('XPS') || text.includes('ALLIENWARE')) brand = 'Dell'
+  else if (text.includes('MAC') || text.includes('APPLE') || text.includes('A1618') || text.includes('A1398') || text.includes('A1494') || text.includes('A1417') || text.includes('A1322') || text.includes('A1502') || text.includes('A1582') || text.includes('A1990')) brand = 'Apple MacBook'
+  else if (text.includes('LENOVO') || text.includes('THINKPAD') || text.includes('IDEAPAD')) brand = 'Lenovo'
+  else if (text.includes('ASUS') || text.includes('VIVOBOOK') || text.includes('ZENBOOK') || text.includes('ROG')) brand = 'Asus'
+  else if (text.includes('ACER') || text.includes('ASPIRE') || text.includes('NITRO')) brand = 'Acer'
+  else if (text.includes('TOSHIBA') || text.includes('DYNABOOK')) brand = 'Toshiba'
+  else if (text.includes('MSI')) brand = 'MSI'
+  else if (text.includes('SAMSUNG')) brand = 'Samsung'
+  else if (text.includes('POWEST')) brand = 'Powest'
+  else if (text.includes('FORZA')) brand = 'Forza'
+  else if (text.includes('XMART')) brand = 'Xmart'
+  else if (text.includes('ENERGIZER')) brand = 'Energizer'
+
+  return { type, voltage, capacity, brand }
+}
+
 interface ProductCardProps {
   product: any
   copiedId: string | null
@@ -595,6 +689,7 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
   const laptopSpecs = getLaptopSpecs(p)
   const lockSpecs = getCerraduraSpecs(p)
   const genSpecs = getGeneradorSpecs(p)
+  const batSpecs = getBateriaSpecs(p)
 
   const isInvalidLogo = (url: string) => {
     if (!url || typeof url !== 'string') return true
@@ -664,6 +759,10 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
         ) : genSpecs?.type ? (
           <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-md border text-[10px] font-mono font-bold shadow-md tracking-wide ${genSpecs.type.bg} ${genSpecs.type.text} ${genSpecs.type.border}`}>
             {genSpecs.type.label}
+          </span>
+        ) : batSpecs?.type ? (
+          <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-md border text-[10px] font-mono font-bold shadow-md tracking-wide ${batSpecs.type.bg} ${batSpecs.type.text} ${batSpecs.type.border}`}>
+            {batSpecs.type.label}
           </span>
         ) : null}
       </div>
@@ -789,6 +888,27 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
             )}
           </div>
         )}
+
+        {/* Differentiation Tags for Baterías */}
+        {batSpecs && (
+          <div className="flex flex-wrap items-center gap-1 pt-0.5">
+            {batSpecs.brand && (
+              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono bg-blue-950/80 text-blue-300 border border-blue-500/30 font-bold flex items-center gap-1">
+                💻 {batSpecs.brand}
+              </span>
+            )}
+            {batSpecs.voltage && (
+              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono bg-amber-950/80 text-amber-300 border border-amber-500/30 font-bold flex items-center gap-1">
+                ⚡ {batSpecs.voltage}
+              </span>
+            )}
+            {batSpecs.capacity && (
+              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono bg-emerald-950/80 text-emerald-300 border border-emerald-500/30 font-bold flex items-center gap-1">
+                🔋 {batSpecs.capacity}
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Pricing Breakdown */}
@@ -895,7 +1015,12 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
                 genSpecs?.type?.tier === 'enchufes' ? `🔒 *Seguridad:* Cierre giratorio industrial contra tirones y sobrecargas en apagones` : '',
                 genSpecs && genSpecs.type.tier !== 'enchufes' ? `⚡ *Tipo de Planta:* ${genSpecs.type.label}` : '',
                 genSpecs && genSpecs.type.tier !== 'enchufes' && genSpecs.power ? `🔋 *Potencia de Salida:* ${genSpecs.power}` : '',
-                genSpecs && genSpecs.type.tier !== 'enchufes' ? `🛠️ *Respaldo:* Suministro eléctrico continuo para apagones y cortes de energía` : ''
+                genSpecs && genSpecs.type.tier !== 'enchufes' ? `🛠️ *Respaldo:* Suministro eléctrico continuo para apagones y cortes de energía` : '',
+                batSpecs?.type ? `🔋 *Tipo de Batería:* ${batSpecs.type.label}` : '',
+                batSpecs?.brand ? `💻 *Compatibilidad Oficial:* ${batSpecs.brand}` : '',
+                batSpecs?.voltage ? `⚡ *Voltaje Nominal:* ${batSpecs.voltage}` : '',
+                batSpecs?.capacity ? `🚀 *Capacidad Certificada:* ${batSpecs.capacity}` : '',
+                batSpecs ? `🛡️ *Calidad Certificada:* Celdas de grado A+ con protección inteligente contra sobrecalentamiento y sobrecarga` : ''
               ].filter(Boolean).join('\n')
 
               const commercialCopy = `🔥 *${p.name.toUpperCase()}*
@@ -956,6 +1081,8 @@ export default function PreciosVendedorClient() {
   const [tab1CerraduraFilter, setTab1CerraduraFilter] = useState("all")
   const [generadorFilter, setGeneradorFilter] = useState("all")
   const [tab1GeneradorFilter, setTab1GeneradorFilter] = useState("all")
+  const [bateriaFilter, setBateriaFilter] = useState("all")
+  const [tab1BateriaFilter, setTab1BateriaFilter] = useState("all")
   const [catProducts, setCatProducts] = useState<any[]>([])
   const [loadingCatProducts, setLoadingCatProducts] = useState(false)
 
@@ -1027,8 +1154,15 @@ export default function PreciosVendedorClient() {
         return s?.type?.tier !== "enchufes"
       })
     }
+    if (activeSubCat === "repuestos" && bateriaFilter !== "all") {
+      return catProducts.filter(p => {
+        const s = getBateriaSpecs(p)
+        if (!s) return false
+        return s.type?.tier === bateriaFilter
+      })
+    }
     return catProducts
-  }, [catProducts, activeSubCat, cameraFilter, iphoneFilter, laptopFilter, cerraduraFilter, generadorFilter])
+  }, [catProducts, activeSubCat, cameraFilter, iphoneFilter, laptopFilter, cerraduraFilter, generadorFilter, bateriaFilter])
 
   // Lista de productos filtrados en Tab 1 según resolución (cámaras), generación (iPhone), gama (laptops) o cerraduras
   const filteredTab1Products = useMemo(() => {
@@ -1037,6 +1171,7 @@ export default function PreciosVendedorClient() {
     const isLaptopSearch = searchTerm.toLowerCase().includes("laptop") || searchTerm.toLowerCase().includes("notebook") || searchTerm.toLowerCase().includes("portatil") || searchTerm.toLowerCase().includes("portátil")
     const isCerraduraSearch = searchTerm.toLowerCase().includes("cerradura") || searchTerm.toLowerCase().includes("cerrojo") || searchTerm.toLowerCase().includes("smart lock") || searchTerm.toLowerCase().includes("chapa")
     const isGenSearch = searchTerm.toLowerCase().includes("generador") || searchTerm.toLowerCase().includes("planta") || searchTerm.toLowerCase().includes("enchufe") || searchTerm.toLowerCase().includes("nema")
+    const isBateriaSearch = searchTerm.toLowerCase().includes("bateria") || searchTerm.toLowerCase().includes("batería") || searchTerm.toLowerCase().includes("pila")
 
     if (isCamSearch && tab1CameraFilter !== "all") {
       return products.filter(p => {
@@ -1094,8 +1229,16 @@ export default function PreciosVendedorClient() {
       })
     }
 
+    if (isBateriaSearch && tab1BateriaFilter !== "all") {
+      return products.filter(p => {
+        const s = getBateriaSpecs(p)
+        if (!s) return false
+        return s.type?.tier === tab1BateriaFilter
+      })
+    }
+
     return products
-  }, [products, searchTerm, tab1CameraFilter, tab1IphoneFilter, tab1LaptopFilter, tab1CerraduraFilter, tab1GeneradorFilter])
+  }, [products, searchTerm, tab1CameraFilter, tab1IphoneFilter, tab1LaptopFilter, tab1CerraduraFilter, tab1GeneradorFilter, tab1BateriaFilter])
 
   const showToast = (msg: string) => {
     setToastMessage(msg)
@@ -1520,6 +1663,34 @@ export default function PreciosVendedorClient() {
                   })}
                 </div>
               )}
+
+              {/* Quick Baterías Filter Pills when searching for bateria */}
+              {(searchTerm.toLowerCase().includes("bateria") || searchTerm.toLowerCase().includes("batería") || searchTerm.toLowerCase().includes("pila")) && (
+                <div className="pt-2.5 border-t border-white/[0.08] flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
+                  <span className="text-[10px] font-mono text-blue-400 shrink-0 font-bold uppercase tracking-wider flex items-center gap-1">
+                    <BatteryCharging size={11} className="text-blue-400" /> Línea Baterías:
+                  </span>
+                  {BATERIA_FILTERS.map(f => {
+                    const isActive = tab1BateriaFilter === f.id
+                    return (
+                      <button
+                        key={f.id}
+                        onClick={() => setTab1BateriaFilter(f.id)}
+                        className={`shrink-0 px-2.5 py-1 rounded-md text-[11px] font-mono transition-all flex items-center gap-1 border ${
+                          isActive
+                            ? "bg-blue-950 text-blue-200 border-blue-400/50 shadow-sm"
+                            : "bg-zinc-950/80 text-zinc-400 border-white/[0.06] hover:text-zinc-200"
+                        }`}
+                      >
+                        <span>{f.label}</span>
+                        <span className={`text-[9px] px-1 py-0.2 rounded ${isActive ? "bg-blue-900/60 text-blue-300 font-bold" : "text-zinc-500"}`}>
+                          {f.badge}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Product List */}
@@ -1795,6 +1966,42 @@ export default function PreciosVendedorClient() {
                     <span>
                       <strong>Estándar NEMA Twist-Lock:</strong> Conectores de seguridad con giro de bloqueo para plantas eléctricas de 20A y 30A (120V / 250V), ideales para tableros de transferencia y extensiones de uso rudo en apagones.
                     </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Diferenciador Especial para Baterías & Repuestos */}
+              {activeSubCat === "repuestos" && (
+                <div className="pt-3 border-t border-white/[0.08] space-y-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <span className="text-[11px] font-mono flex items-center gap-1.5 font-bold uppercase tracking-wider text-blue-400">
+                      <BatteryCharging size={12} className="text-blue-400" />
+                      Diferenciador por Línea & Aplicación de Batería:
+                    </span>
+                    <span className="text-[10px] font-mono text-zinc-400 bg-zinc-950 px-2.5 py-0.5 rounded-full border border-white/5">
+                      Mostrando {filteredCatProducts.length} de {catProducts.length} baterías
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-1">
+                    {BATERIA_FILTERS.map(f => {
+                      const isActive = bateriaFilter === f.id
+                      return (
+                        <button
+                          key={f.id}
+                          onClick={() => setBateriaFilter(f.id)}
+                          className={`shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-mono font-medium transition-all flex items-center gap-1.5 border ${
+                            isActive
+                              ? "bg-blue-950 text-blue-200 border-blue-400/50 shadow-md shadow-blue-950/40"
+                              : "bg-zinc-950/70 text-zinc-400 border-white/[0.06] hover:text-zinc-200 hover:bg-zinc-900"
+                          }`}
+                        >
+                          <span>{f.label}</span>
+                          <span className={`text-[10px] px-1.5 py-0.2 rounded ${isActive ? "bg-blue-900/60 text-blue-300 font-bold" : "bg-zinc-900 text-zinc-500"}`}>
+                            {f.badge}
+                          </span>
+                        </button>
+                      )
+                    })}
                   </div>
                 </div>
               )}
