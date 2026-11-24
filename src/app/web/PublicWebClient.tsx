@@ -4407,7 +4407,7 @@ export default function PublicWebClient({
           </div>
 
           {/* QUICK CATEGORY HUB BUTTONS */}
-          <div className="flex flex-wrap items-center justify-center gap-3 max-w-4xl mx-auto mb-16">
+          <div className="flex flex-wrap items-center justify-center gap-3 max-w-6xl mx-auto px-4 mb-12">
             <Link
               href="/web/camaras-hogar"
               className="px-5 py-3 rounded-full bg-white border border-amber-400 hover:border-amber-500 hover:bg-amber-50/40 text-xs font-bold text-slate-800 transition-all flex items-center gap-2 shadow-sm group"

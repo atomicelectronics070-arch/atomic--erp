@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
-import { MessageCircle, Instagram, Facebook, Youtube, Share2, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { MessageCircle, Instagram, Facebook, Youtube, Share2, Sparkles, ChevronLeft, ChevronRight, ChevronUp, Check, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 // TikTok custom SVG icon
 export function TikTokIcon({ className = "w-5 h-5" }: { className?: string }) {
@@ -110,54 +111,158 @@ export default function PermanentSocialBar({
   className = ""
 }: PermanentSocialBarProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // 1. MODO FLOTANTE PERMANENTE (Siempre visible en el costado o esquina de todas las páginas)
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsExpanded(false);
+      }
+    };
+    if (isExpanded) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isExpanded]);
+
+  const handleShare = async () => {
+    if (typeof window !== "undefined") {
+      const shareUrl = window.location.href;
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: "ATOMIC Ecuador • Tecnología, Hardware & Seguridad",
+            text: "Descubre el ecosistema comercial y tecnológico de ATOMIC Ecuador",
+            url: shareUrl,
+          });
+          return;
+        } catch (e) {}
+      }
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(shareUrl);
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2500);
+      }
+    }
+  };
+
+  // 1. MODO FLOTANTE: Botón Desplegable elegante con Redes Sociales, Botón Compartir y Chat a WhatsApp
   if (variant === "floating") {
     return (
       <aside 
+        ref={dropdownRef}
         aria-label="Redes Sociales Oficiales de ATOMIC"
-        className={`fixed left-2 sm:left-4 bottom-20 sm:bottom-6 z-50 transition-all duration-300 ${className}`}
+        className={`fixed left-3 sm:left-6 bottom-5 z-50 transition-all duration-300 ${className}`}
       >
-        <div className="relative group">
-          
-          {/* Main Floating Dock */}
-          <div className="flex flex-col items-center bg-[#070b18]/90 backdrop-blur-xl border border-white/15 hover:border-cyan-400/50 rounded-2xl p-1.5 shadow-[0_10px_35px_rgba(0,0,0,0.8)] transition-all duration-300 gap-1.5">
-            
-            {/* Header / Expand Toggle Indicator */}
-            <button
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center text-white shadow-md shadow-blue-500/30 cursor-pointer hover:scale-105 active:scale-95 transition-transform"
-              title="Redes Sociales Oficiales de ATOMIC"
-            >
-              <Share2 size={16} />
-            </button>
-
-            {/* Quick Icon Links */}
-            <div className={`flex flex-col gap-1.5 transition-all duration-300 ${isExpanded ? "max-h-[350px] opacity-100 mt-1" : "max-h-[300px] opacity-100"}`}>
-              {ATOMIC_SOCIAL_LINKS.map((item) => (
-                <a
-                  key={item.id}
-                  href={item.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`w-9 h-9 rounded-xl bg-gradient-to-br ${item.bgGradient} border ${item.borderColor} ${item.hoverGlow} flex items-center justify-center transition-all duration-300 hover:scale-110 group/btn relative`}
-                  title={`${item.name} (${item.account})`}
-                >
-                  <span className="scale-85 group-hover/btn:scale-100 transition-transform">
-                    {item.icon}
-                  </span>
-
-                  {/* Tooltip on Desktop hover */}
-                  <div className="hidden sm:group-hover/btn:flex absolute left-full ml-3 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-xl bg-slate-950/95 border border-white/20 text-white text-xs font-mono font-bold whitespace-nowrap shadow-xl z-50 pointer-events-none items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-                    <span>{item.name}</span>
-                    <span className="text-[10px] text-cyan-300 font-normal">({item.account})</span>
+        <div className="relative">
+          {/* Card Desplegable (Popup) */}
+          <AnimatePresence>
+            {isExpanded && (
+              <motion.div
+                initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 15, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                className="absolute bottom-full left-0 mb-3 w-80 sm:w-96 rounded-3xl bg-[#070b18]/95 backdrop-blur-2xl border border-white/20 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.9)] text-white text-left space-y-4"
+              >
+                {/* Header Card */}
+                <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse" />
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-300">
+                      Redes Sociales & Canales
+                    </span>
                   </div>
-                </a>
-              ))}
-            </div>
+                  <button
+                    onClick={() => setIsExpanded(false)}
+                    className="p-1 rounded-full bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                    title="Cerrar"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
 
-          </div>
+                {/* Acciones Rápidas: WhatsApp y Compartir */}
+                <div className="grid grid-cols-2 gap-2">
+                  <a
+                    href="https://wa.me/593969043453?text=Hola%20ATOMIC!%20Deseo%20informaci%C3%B3n%20sobre%20sus%20productos."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="py-2.5 px-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/30 transition-all cursor-pointer"
+                  >
+                    <MessageCircle size={15} />
+                    <span>Chat WhatsApp</span>
+                  </a>
+
+                  <button
+                    onClick={handleShare}
+                    className="py-2.5 px-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 border border-slate-700 transition-all cursor-pointer"
+                  >
+                    {isCopied ? (
+                      <>
+                        <Check size={15} className="text-emerald-400" />
+                        <span className="text-emerald-300">¡Copiado!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Share2 size={15} className="text-cyan-400" />
+                        <span>Compartir</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* Lista de Canales Oficiales */}
+                <div className="space-y-1.5 max-h-64 overflow-y-auto pr-1 scrollbar-thin">
+                  {ATOMIC_SOCIAL_LINKS.filter(item => item.id !== 'whatsapp-atomic').map((item) => (
+                    <a
+                      key={item.id}
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`p-2.5 rounded-2xl bg-gradient-to-r ${item.bgGradient} border ${item.borderColor} ${item.hoverGlow} flex items-center justify-between group transition-all duration-200 hover:scale-[1.01]`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center shrink-0 border border-white/15">
+                          {item.icon}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold text-white truncate group-hover:text-cyan-300 transition-colors">
+                            {item.name}
+                          </p>
+                          <p className="text-[10px] font-mono text-slate-400 truncate">
+                            {item.account}
+                          </p>
+                        </div>
+                      </div>
+                      <span className="text-[9px] font-mono font-bold text-cyan-300/80 bg-white/5 px-2 py-0.5 rounded-full border border-white/10 shrink-0">
+                        {item.tag}
+                      </span>
+                    </a>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Trigger Pill Button (Discreet & Collapsed by default) */}
+          <button
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-slate-950/90 hover:bg-slate-900 text-white border border-white/20 hover:border-cyan-400 shadow-[0_8px_30px_rgba(0,0,0,0.6)] backdrop-blur-xl transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer group"
+            title="Redes Sociales & Canales Oficiales de ATOMIC"
+          >
+            <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-slate-100 group-hover:text-cyan-300 transition-colors">
+              Redes Sociales
+            </span>
+            <ChevronUp
+              size={14}
+              className={`text-cyan-400 transition-transform duration-300 ${isExpanded ? "rotate-180" : "group-hover:-translate-y-0.5"}`}
+            />
+          </button>
         </div>
       </aside>
     );

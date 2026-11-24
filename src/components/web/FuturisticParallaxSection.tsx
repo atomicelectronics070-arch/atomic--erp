@@ -6,7 +6,7 @@ import { ArrowRight, ShieldCheck, Zap, Cpu, Building2, Lock, Radio } from "lucid
 
 export default function FuturisticParallaxSection() {
     return (
-        <div className="w-full my-12 overflow-hidden relative selection:bg-blue-500/30">
+        <div className="w-full my-6 overflow-hidden relative selection:bg-blue-500/30">
             {/* Scoped Pure CSS Parallax Styles */}
             <style jsx>{`
                 .futuristic-parallax-wrapper {
@@ -88,7 +88,7 @@ export default function FuturisticParallaxSection() {
                 }
             `}</style>
 
-            <div className="futuristic-parallax-wrapper rounded-3xl border border-white/10 shadow-2xl overflow-hidden max-w-7xl mx-auto">
+            <div className="futuristic-parallax-wrapper w-full border-y border-white/10 shadow-2xl overflow-hidden">
                 
                 {/* ── SECCIÓN 1: NO PARALLAX (INTRO ATOMIC REAL) ── */}
                 <section className="parallax-section no-parallax border-b border-white/10">
