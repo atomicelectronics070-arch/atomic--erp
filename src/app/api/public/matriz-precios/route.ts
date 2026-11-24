@@ -49,6 +49,33 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    const searchLower = (search || '').toLowerCase();
+    const isIphoneSearch = searchLower.includes('iphone') || searchLower.includes('i phone');
+    const wantsAccessories = 
+      searchLower.includes('cable') || 
+      searchLower.includes('cargador') || 
+      searchLower.includes('funda') || 
+      searchLower.includes('case') || 
+      searchLower.includes('soporte') || 
+      searchLower.includes('powerbank') || 
+      searchLower.includes('banco') || 
+      searchLower.includes('microfono') || 
+      searchLower.includes('micrófono');
+
+    if (isIphoneSearch && !wantsAccessories) {
+      where.NOT.push(
+        { name: { contains: 'CABLE', mode: 'insensitive' } },
+        { name: { contains: 'CARGADOR', mode: 'insensitive' } },
+        { name: { contains: 'BANCO DE CARGA', mode: 'insensitive' } },
+        { name: { contains: 'SOPORTE', mode: 'insensitive' } },
+        { name: { contains: 'MICROFONO', mode: 'insensitive' } },
+        { name: { contains: 'MICRÓFONO', mode: 'insensitive' } },
+        { name: { contains: 'VIDEÓFONO', mode: 'insensitive' } },
+        { name: { contains: 'VIDEOPORTERO', mode: 'insensitive' } },
+        { name: { contains: 'TIMBRE', mode: 'insensitive' } }
+      );
+    }
+
     if (search) {
       const stopWords = new Set(['de', 'del', 'la', 'el', 'en', 'para', 'con', 'un', 'una', 'y']);
       const tokens = search

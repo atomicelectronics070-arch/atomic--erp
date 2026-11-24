@@ -244,6 +244,65 @@ function getCameraSpecs(p: any) {
   return { resolution, tech, hasAudio, hasAlarm }
 }
 
+// ─── FILTROS DIFERENCIADORES DE IPHONE Y GAMA APPLE ───
+const IPHONE_FILTERS = [
+  { id: "all", label: "Todos los iPhone", badge: "Catálogo Apple" },
+  { id: "iphone-17", label: "iPhone 17 Series", badge: "A19 Bionic · 2026", color: "fuchsia" },
+  { id: "iphone-16", label: "iPhone 16 Series", badge: "$862 - $1,550", color: "amber" },
+  { id: "iphone-15", label: "iPhone 15 Series", badge: "USB-C · Titanio", color: "cyan" },
+  { id: "iphone-14", label: "iPhone 14 Series", badge: "$699 - $899", color: "purple" },
+  { id: "iphone-13", label: "iPhone 13 Series", badge: "$520 - $699", color: "emerald" },
+]
+
+function getIphoneSpecs(p: any) {
+  const text = `${p?.name || ''} ${p?.sku || ''} ${p?.specs || ''}`.toUpperCase()
+  const isApple = text.includes('IPHONE') || text.includes('APPLE')
+  if (!isApple) return null
+
+  // 1. Generation
+  let gen: { label: string; bg: string; text: string; border: string; tier: string } | null = null
+  if (text.includes('IPHONE 17')) {
+    gen = { label: 'iPhone 17 Series', bg: 'bg-fuchsia-950/90', text: 'text-fuchsia-300', border: 'border-fuchsia-500/50', tier: 'iphone-17' }
+  } else if (text.includes('IPHONE 16')) {
+    gen = { label: 'iPhone 16 Series', bg: 'bg-amber-950/90', text: 'text-amber-300', border: 'border-amber-500/50', tier: 'iphone-16' }
+  } else if (text.includes('IPHONE 15')) {
+    gen = { label: 'iPhone 15 Series', bg: 'bg-cyan-950/90', text: 'text-cyan-300', border: 'border-cyan-500/50', tier: 'iphone-15' }
+  } else if (text.includes('IPHONE 14')) {
+    gen = { label: 'iPhone 14 Series', bg: 'bg-purple-950/90', text: 'text-purple-300', border: 'border-purple-500/50', tier: 'iphone-14' }
+  } else if (text.includes('IPHONE 13')) {
+    gen = { label: 'iPhone 13 Series', bg: 'bg-emerald-950/90', text: 'text-emerald-300', border: 'border-emerald-500/50', tier: 'iphone-13' }
+  } else if (text.includes('IPHONE 12') || text.includes('IPHONE 11') || text.includes('IPHONE SE')) {
+    gen = { label: 'iPhone Legacy / SE', bg: 'bg-zinc-800/90', text: 'text-zinc-300', border: 'border-white/20', tier: 'iphone-legacy' }
+  }
+
+  // 2. Model & Tier
+  let model: { label: string; bg: string; text: string; border: string } | null = null
+  if (text.includes('PRO MAX')) {
+    model = { label: 'Pro Max 6.9" Titanio', bg: 'bg-amber-950/70', text: 'text-amber-300', border: 'border-amber-500/40' }
+  } else if (text.includes('PRO') && !text.includes('PRO MAX')) {
+    model = { label: 'Pro Titanio 120Hz', bg: 'bg-indigo-950/70', text: 'text-indigo-300', border: 'border-indigo-500/40' }
+  } else if (text.includes('AIR')) {
+    model = { label: 'Air Ultra Slim A19', bg: 'bg-sky-950/70', text: 'text-sky-300', border: 'border-sky-500/40' }
+  } else if (text.includes('PLUS')) {
+    model = { label: 'Plus Pantalla 6.7"', bg: 'bg-blue-950/70', text: 'text-blue-300', border: 'border-blue-500/40' }
+  } else if (text.includes('MINI')) {
+    model = { label: 'Mini Compact', bg: 'bg-emerald-950/70', text: 'text-emerald-300', border: 'border-emerald-500/40' }
+  }
+
+  // 3. Storage
+  let storage: string | null = null
+  if (text.includes('1TB') || text.includes('1 TB')) storage = '1 TB'
+  else if (text.includes('512GB') || text.includes('512 GB')) storage = '512 GB'
+  else if (text.includes('256GB') || text.includes('256 GB')) storage = '256 GB'
+  else if (text.includes('128GB') || text.includes('128 GB')) storage = '128 GB'
+  else if (text.includes('64GB') || text.includes('64 GB')) storage = '64 GB'
+
+  // 4. Condition
+  const isRefurbished = text.includes('REACONDICIONADO') || text.includes('SEMINUEVO') || text.includes('CPO')
+
+  return { gen, model, storage, isRefurbished }
+}
+
 interface ProductCardProps {
   product: any
   copiedId: string | null
@@ -255,6 +314,7 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
   const comision20 = saleP * 0.20
   const productWebUrl = `https://atomiccotizador.shop/web/product/${p.id}`
   const specs = getCameraSpecs(p)
+  const iphoneSpecs = getIphoneSpecs(p)
 
   const isInvalidLogo = (url: string) => {
     if (!url || typeof url !== 'string') return true
@@ -304,12 +364,16 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
           {p.category || "General"}
         </span>
 
-        {/* Resolution Badge (Top Right - Differentiator) */}
-        {specs.resolution && (
+        {/* Resolution or iPhone Generation Badge (Top Right - Differentiator) */}
+        {specs.resolution ? (
           <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-md border text-[10px] font-mono font-bold shadow-md tracking-wide ${specs.resolution.bg} ${specs.resolution.text} ${specs.resolution.border}`}>
             {specs.resolution.label}
           </span>
-        )}
+        ) : iphoneSpecs?.gen ? (
+          <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-md border text-[10px] font-mono font-bold shadow-md tracking-wide ${iphoneSpecs.gen.bg} ${iphoneSpecs.gen.text} ${iphoneSpecs.gen.border}`}>
+            {iphoneSpecs.gen.label}
+          </span>
+        ) : null}
       </div>
 
       {/* Info */}
@@ -325,7 +389,7 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
           {p.name}
         </h4>
 
-        {/* Differentiation Tags (Tech, Audio, Sirena) */}
+        {/* Differentiation Tags for Cameras (Tech, Audio, Sirena) */}
         {(specs.tech || specs.hasAudio || specs.hasAlarm) && (
           <div className="flex flex-wrap items-center gap-1 pt-0.5">
             {specs.tech && (
@@ -341,6 +405,31 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
             {specs.hasAlarm && (
               <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono bg-rose-950/70 text-rose-300 border border-rose-500/30 flex items-center gap-1 font-semibold">
                 <span>🚨</span> Sirena
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Differentiation Tags for iPhone (Model, Storage, Condition) */}
+        {iphoneSpecs && (
+          <div className="flex flex-wrap items-center gap-1 pt-0.5">
+            {iphoneSpecs.model && (
+              <span className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-semibold border ${iphoneSpecs.model.bg} ${iphoneSpecs.model.text} ${iphoneSpecs.model.border}`}>
+                {iphoneSpecs.model.label}
+              </span>
+            )}
+            {iphoneSpecs.storage && (
+              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono bg-zinc-800 text-cyan-300 border border-cyan-500/30 flex items-center gap-1 font-bold">
+                💾 {iphoneSpecs.storage}
+              </span>
+            )}
+            {iphoneSpecs.isRefurbished ? (
+              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono bg-amber-950/70 text-amber-300 border border-amber-500/30 flex items-center gap-1 font-semibold">
+                ♻️ CPO Reacondicionado
+              </span>
+            ) : (
+              <span className="px-1.5 py-0.5 rounded-md text-[9px] font-mono bg-emerald-950/70 text-emerald-300 border border-emerald-500/30 flex items-center gap-1 font-semibold">
+                ✨ 100% Nuevo Sellado
               </span>
             )}
           </div>
@@ -432,7 +521,11 @@ function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps
                 specs.resolution ? `🎯 *Resolución Oficial:* ${specs.resolution.label}` : '',
                 specs.tech ? `⚡ *Tecnología Óptica:* ${specs.tech.label}` : '',
                 specs.hasAudio ? `🎙️ *Audio:* Micrófono incorporado de alta fidelidad` : '',
-                specs.hasAlarm ? `🚨 *Seguridad:* Disuasión activa con alarma y sirena` : ''
+                specs.hasAlarm ? `🚨 *Seguridad:* Disuasión activa con alarma y sirena` : '',
+                iphoneSpecs?.gen ? `📱 *Generación:* ${iphoneSpecs.gen.label}` : '',
+                iphoneSpecs?.model ? `💎 *Gama & Acabado:* ${iphoneSpecs.model.label}` : '',
+                iphoneSpecs?.storage ? `💾 *Almacenamiento:* ${iphoneSpecs.storage}` : '',
+                iphoneSpecs ? (iphoneSpecs.isRefurbished ? `♻️ *Condición:* Reacondicionado Certificado Grado A+` : `📦 *Condición:* 100% Nuevo sellado en caja`) : ''
               ].filter(Boolean).join('\n')
 
               const commercialCopy = `🔥 *${p.name.toUpperCase()}*
@@ -485,6 +578,8 @@ export default function PreciosVendedorClient() {
   const [activeSubCat, setActiveSubCat] = useState("camaras")
   const [cameraFilter, setCameraFilter] = useState("all")
   const [tab1CameraFilter, setTab1CameraFilter] = useState("all")
+  const [iphoneFilter, setIphoneFilter] = useState("all")
+  const [tab1IphoneFilter, setTab1IphoneFilter] = useState("all")
   const [catProducts, setCatProducts] = useState<any[]>([])
   const [loadingCatProducts, setLoadingCatProducts] = useState(false)
 
@@ -495,41 +590,71 @@ export default function PreciosVendedorClient() {
 
   const quickFilters = ["Camara", "iPhone", "Laptop", "Cerradura", "Cocina", "Horno", "Generador", "Bateria"]
 
-  // Lista de productos filtrados en Tab 2 según resolución de cámara
+  // Lista de productos filtrados en Tab 2 según resolución de cámara o generación de iPhone
   const filteredCatProducts = useMemo(() => {
-    if (activeSubCat !== "camaras" || cameraFilter === "all") return catProducts
-    return catProducts.filter(p => {
-      const s = getCameraSpecs(p)
-      if (cameraFilter === "2mp") return s.resolution?.tier === "2mp"
-      if (cameraFilter === "4mp") return s.resolution?.tier === "4mp"
-      if (cameraFilter === "3mp") return s.resolution?.tier === "3mp"
-      if (cameraFilter === "5mp") return s.resolution?.tier === "5mp" || s.resolution?.tier === "6mp"
-      if (cameraFilter === "8mp") return s.resolution?.tier === "8mp"
-      if (cameraFilter === "wifi") return s.tech?.label?.includes("Wi-Fi") || s.tech?.label?.includes("Solar")
-      if (cameraFilter === "ptz") return s.tech?.label?.includes("PTZ")
-      if (cameraFilter === "kit") return s.resolution?.tier === "kit"
-      if (cameraFilter === "nvr") return s.resolution?.tier === "nvr"
-      return true
-    })
-  }, [catProducts, activeSubCat, cameraFilter])
+    if (activeSubCat === "camaras" && cameraFilter !== "all") {
+      return catProducts.filter(p => {
+        const s = getCameraSpecs(p)
+        if (cameraFilter === "2mp") return s.resolution?.tier === "2mp"
+        if (cameraFilter === "4mp") return s.resolution?.tier === "4mp"
+        if (cameraFilter === "3mp") return s.resolution?.tier === "3mp"
+        if (cameraFilter === "5mp") return s.resolution?.tier === "5mp" || s.resolution?.tier === "6mp"
+        if (cameraFilter === "8mp") return s.resolution?.tier === "8mp"
+        if (cameraFilter === "wifi") return s.tech?.label?.includes("Wi-Fi") || s.tech?.label?.includes("Solar")
+        if (cameraFilter === "ptz") return s.tech?.label?.includes("PTZ")
+        if (cameraFilter === "kit") return s.resolution?.tier === "kit"
+        if (cameraFilter === "nvr") return s.resolution?.tier === "nvr"
+        return true
+      })
+    }
+    if (activeSubCat === "celulares" && iphoneFilter !== "all") {
+      return catProducts.filter(p => {
+        const s = getIphoneSpecs(p)
+        if (iphoneFilter === "iphone-17") return s?.gen?.tier === "iphone-17"
+        if (iphoneFilter === "iphone-16") return s?.gen?.tier === "iphone-16"
+        if (iphoneFilter === "iphone-15") return s?.gen?.tier === "iphone-15"
+        if (iphoneFilter === "iphone-14") return s?.gen?.tier === "iphone-14"
+        if (iphoneFilter === "iphone-13") return s?.gen?.tier === "iphone-13"
+        return true
+      })
+    }
+    return catProducts
+  }, [catProducts, activeSubCat, cameraFilter, iphoneFilter])
 
-  // Lista de productos filtrados en Tab 1 según resolución si se busca cámaras
+  // Lista de productos filtrados en Tab 1 según resolución (cámaras) o generación (iPhone)
   const filteredTab1Products = useMemo(() => {
     const isCamSearch = searchTerm.toLowerCase().includes("camara") || searchTerm.toLowerCase() === "camaras"
-    if (!isCamSearch || tab1CameraFilter === "all") return products
-    return products.filter(p => {
-      const s = getCameraSpecs(p)
-      if (tab1CameraFilter === "2mp") return s.resolution?.tier === "2mp"
-      if (tab1CameraFilter === "4mp") return s.resolution?.tier === "4mp"
-      if (tab1CameraFilter === "5mp") return s.resolution?.tier === "5mp" || s.resolution?.tier === "6mp"
-      if (tab1CameraFilter === "8mp") return s.resolution?.tier === "8mp"
-      if (tab1CameraFilter === "wifi") return s.tech?.label?.includes("Wi-Fi") || s.tech?.label?.includes("Solar")
-      if (tab1CameraFilter === "ptz") return s.tech?.label?.includes("PTZ")
-      if (tab1CameraFilter === "kit") return s.resolution?.tier === "kit"
-      if (tab1CameraFilter === "nvr") return s.resolution?.tier === "nvr"
-      return true
-    })
-  }, [products, searchTerm, tab1CameraFilter])
+    const isIphoneSearch = searchTerm.toLowerCase().includes("iphone") || searchTerm.toLowerCase().includes("i phone") || searchTerm.toLowerCase().includes("apple")
+
+    if (isCamSearch && tab1CameraFilter !== "all") {
+      return products.filter(p => {
+        const s = getCameraSpecs(p)
+        if (tab1CameraFilter === "2mp") return s.resolution?.tier === "2mp"
+        if (tab1CameraFilter === "4mp") return s.resolution?.tier === "4mp"
+        if (tab1CameraFilter === "5mp") return s.resolution?.tier === "5mp" || s.resolution?.tier === "6mp"
+        if (tab1CameraFilter === "8mp") return s.resolution?.tier === "8mp"
+        if (tab1CameraFilter === "wifi") return s.tech?.label?.includes("Wi-Fi") || s.tech?.label?.includes("Solar")
+        if (tab1CameraFilter === "ptz") return s.tech?.label?.includes("PTZ")
+        if (tab1CameraFilter === "kit") return s.resolution?.tier === "kit"
+        if (tab1CameraFilter === "nvr") return s.resolution?.tier === "nvr"
+        return true
+      })
+    }
+
+    if (isIphoneSearch && tab1IphoneFilter !== "all") {
+      return products.filter(p => {
+        const s = getIphoneSpecs(p)
+        if (tab1IphoneFilter === "iphone-17") return s?.gen?.tier === "iphone-17"
+        if (tab1IphoneFilter === "iphone-16") return s?.gen?.tier === "iphone-16"
+        if (tab1IphoneFilter === "iphone-15") return s?.gen?.tier === "iphone-15"
+        if (tab1IphoneFilter === "iphone-14") return s?.gen?.tier === "iphone-14"
+        if (tab1IphoneFilter === "iphone-13") return s?.gen?.tier === "iphone-13"
+        return true
+      })
+    }
+
+    return products
+  }, [products, searchTerm, tab1CameraFilter, tab1IphoneFilter])
 
   const showToast = (msg: string) => {
     setToastMessage(msg)
@@ -842,6 +967,34 @@ export default function PreciosVendedorClient() {
                   })}
                 </div>
               )}
+
+              {/* Quick iPhone Generation Pills when searching for iPhone */}
+              {(searchTerm.toLowerCase().includes("iphone") || searchTerm.toLowerCase().includes("i phone") || searchTerm.toLowerCase().includes("apple")) && (
+                <div className="pt-2.5 border-t border-white/[0.08] flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
+                  <span className="text-[10px] font-mono text-amber-400 shrink-0 font-bold uppercase tracking-wider flex items-center gap-1">
+                    <Smartphone size={11} className="text-amber-400" /> Generación iPhone:
+                  </span>
+                  {IPHONE_FILTERS.map(f => {
+                    const isActive = tab1IphoneFilter === f.id
+                    return (
+                      <button
+                        key={f.id}
+                        onClick={() => setTab1IphoneFilter(f.id)}
+                        className={`shrink-0 px-2.5 py-1 rounded-md text-[11px] font-mono transition-all flex items-center gap-1 border ${
+                          isActive
+                            ? "bg-amber-950 text-amber-200 border-amber-400/50 shadow-sm"
+                            : "bg-zinc-950/80 text-zinc-400 border-white/[0.06] hover:text-zinc-200"
+                        }`}
+                      >
+                        <span>{f.label}</span>
+                        <span className={`text-[9px] px-1 py-0.2 rounded ${isActive ? "bg-amber-900/60 text-amber-300 font-bold" : "text-zinc-500"}`}>
+                          {f.badge}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Product List */}
@@ -947,6 +1100,42 @@ export default function PreciosVendedorClient() {
                         >
                           <span>{f.label}</span>
                           <span className={`text-[10px] px-1.5 py-0.2 rounded ${isActive ? "bg-cyan-900/60 text-cyan-300 font-bold" : "bg-zinc-900 text-zinc-500"}`}>
+                            {f.badge}
+                          </span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Diferenciador Especial para Celulares (Apple iPhone & Gama) */}
+              {activeSubCat === "celulares" && (
+                <div className="pt-3 border-t border-white/[0.08] space-y-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <span className="text-[11px] font-mono flex items-center gap-1.5 font-bold uppercase tracking-wider text-amber-400">
+                      <Smartphone size={12} className="text-amber-400" />
+                      Diferenciador por Generación Apple & Gama:
+                    </span>
+                    <span className="text-[10px] font-mono text-zinc-400 bg-zinc-950 px-2.5 py-0.5 rounded-full border border-white/5">
+                      Mostrando {filteredCatProducts.length} de {catProducts.length} equipos
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-1">
+                    {IPHONE_FILTERS.map(f => {
+                      const isActive = iphoneFilter === f.id
+                      return (
+                        <button
+                          key={f.id}
+                          onClick={() => setIphoneFilter(f.id)}
+                          className={`shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-mono font-medium transition-all flex items-center gap-1.5 border ${
+                            isActive
+                              ? "bg-amber-950 text-amber-200 border-amber-400/50 shadow-md shadow-amber-950/40"
+                              : "bg-zinc-950/70 text-zinc-400 border-white/[0.06] hover:text-zinc-200 hover:bg-zinc-900"
+                          }`}
+                        >
+                          <span>{f.label}</span>
+                          <span className={`text-[10px] px-1.5 py-0.2 rounded ${isActive ? "bg-amber-900/60 text-amber-300 font-bold" : "bg-zinc-900 text-zinc-500"}`}>
                             {f.badge}
                           </span>
                         </button>
