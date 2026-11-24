@@ -10,7 +10,7 @@ import {
   Layers, Package, AlertTriangle, ArrowRight, Laptop, Smartphone,
   Home, Wrench, Shield, CheckCircle2, X, Flame, Gift,
   MapPin, Building2, Clock, Zap, Phone, ArrowUpRight,
-  Filter, BadgeCheck, SlidersHorizontal, Send
+  Filter, BadgeCheck, SlidersHorizontal, Send, Globe, Tag, FileText
 } from "lucide-react"
 
 // ─── 100 MENSAJES CLASIFICADOS EN 10 CATEGORÍAS ───
@@ -179,11 +179,185 @@ type TabType =
   | "mensajes"
   | "contacto"
 
+interface ProductCardProps {
+  product: any
+  copiedId: string | null
+  copyToClipboard: (text: string, id: string, label: string) => void
+}
+
+function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps) {
+  const saleP = Number(p.salePrice) || 0
+  const comision20 = saleP * 0.20
+  const productWebUrl = `https://atomiccotizador.shop/web/product/${p.id}`
+
+  return (
+    <div
+      className="p-4 rounded-2xl bg-zinc-900/50 border border-white/[0.08] hover:border-cyan-500/30 transition-all flex flex-col justify-between space-y-3.5 group shadow-sm hover:shadow-xl hover:shadow-cyan-950/20 backdrop-blur-sm"
+    >
+      {/* Image Stage */}
+      <div className="w-full h-48 bg-zinc-950/80 rounded-xl border border-white/[0.06] overflow-hidden flex items-center justify-center relative p-3">
+        {p.image ? (
+          <img
+            src={p.image}
+            alt={p.name}
+            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+            loading="lazy"
+            onError={(e) => {
+              (e.currentTarget as HTMLElement).style.display = 'none';
+              const parent = (e.currentTarget as HTMLElement).parentElement;
+              if (parent) {
+                const fallback = parent.querySelector('.img-fallback');
+                if (fallback) fallback.classList.remove('hidden');
+              }
+            }}
+          />
+        ) : null}
+        <div className={`img-fallback flex flex-col items-center justify-center text-zinc-600 gap-1.5 ${p.image ? 'hidden' : ''}`}>
+          <Package size={28} className="text-zinc-600" />
+          <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">Sin Imagen Oficial</span>
+        </div>
+        <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-zinc-900/90 border border-white/[0.08] text-[10px] font-mono text-zinc-300">
+          {p.category || "General"}
+        </span>
+      </div>
+
+      {/* Info */}
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between text-[11px] font-mono">
+          <span className="text-emerald-400 flex items-center gap-1 font-medium">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            Stock Inmediato
+          </span>
+          <span className="text-zinc-400">SKU: {p.sku || "N/A"}</span>
+        </div>
+        <h4 className="text-xs sm:text-sm font-semibold text-zinc-100 group-hover:text-cyan-300 transition-colors line-clamp-2 leading-snug">
+          {p.name}
+        </h4>
+      </div>
+
+      {/* Pricing Breakdown */}
+      <div className="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-zinc-950/80 border border-white/5">
+        <div>
+          <span className="block text-[9px] font-mono text-zinc-400 uppercase">PVP Público</span>
+          <span className="text-base font-bold text-white font-mono">
+            ${saleP.toFixed(2)} <span className="text-[10px] text-zinc-400 font-normal">USD</span>
+          </span>
+        </div>
+        <div className="text-right">
+          <span className="block text-[9px] font-mono text-emerald-400 uppercase">Comisión (20%)</span>
+          <span className="text-sm font-bold text-emerald-400 font-mono">
+            +${comision20.toFixed(2)} USD
+          </span>
+        </div>
+      </div>
+
+      {/* Action Toolbar */}
+      <div className="pt-2 border-t border-white/[0.06] space-y-2">
+        {/* Link en Tienda Web */}
+        <div className="p-2 rounded-xl bg-zinc-950/90 border border-cyan-500/20 space-y-1">
+          <div className="flex items-center justify-between gap-1 text-[10px] font-mono">
+            <span className="text-cyan-400 font-bold flex items-center gap-1">
+              <Globe size={11} className="text-cyan-400 shrink-0" />
+              <span>Link Oficial Web:</span>
+            </span>
+            <button
+              onClick={() => copyToClipboard(productWebUrl, `link-${p.id}`, "Link Web")}
+              className="px-2 py-0.5 rounded bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/40 text-[9px] font-mono font-bold transition-colors flex items-center gap-1 cursor-pointer"
+              title="Copiar link directo para enviar por WhatsApp o redes"
+            >
+              {copiedId === `link-${p.id}` ? (
+                <Check size={10} className="text-emerald-400" />
+              ) : (
+                <Copy size={10} />
+              )}
+              <span>{copiedId === `link-${p.id}` ? "¡Copiado!" : "Copiar Link"}</span>
+            </button>
+          </div>
+          <div className="text-[10px] font-mono text-cyan-200/90 truncate bg-black/60 px-2 py-1 rounded border border-white/5 select-all flex items-center justify-between gap-1">
+            <span className="truncate">{productWebUrl}</span>
+            <a
+              href={`/web/product/${p.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-1 rounded bg-cyan-600/80 hover:bg-cyan-500 text-white shrink-0 transition-colors"
+              title="Abrir publicación en pestaña nueva"
+            >
+              <ExternalLink size={10} />
+            </a>
+          </div>
+        </div>
+
+        {/* Botón Ver en la Web */}
+        <a
+          href={`/web/product/${p.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:to-blue-500 text-white font-mono text-xs font-bold shadow-md shadow-cyan-950/30 transition-all group"
+        >
+          <Globe size={12} className="text-cyan-200" />
+          <span>Ver Artículo en la Web</span>
+          <ExternalLink size={11} className="group-hover:translate-x-0.5 transition-transform" />
+        </a>
+
+        {/* Botones Copiar Título & Copy Comercial PVP */}
+        <div className="grid grid-cols-2 gap-1.5">
+          <button
+            onClick={() => copyToClipboard(p.name, `title-${p.id}`, "Título")}
+            className="flex items-center justify-center gap-1 px-2 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-[10px] font-mono font-bold transition-colors border border-white/10"
+            title="Copiar el título limpio del producto"
+          >
+            {copiedId === `title-${p.id}` ? (
+              <Check size={11} className="text-emerald-400" />
+            ) : (
+              <Copy size={11} className="text-amber-400" />
+            )}
+            <span className="truncate">{copiedId === `title-${p.id}` ? "¡Título Copiado!" : "Copiar Título"}</span>
+          </button>
+
+          <button
+            onClick={() => {
+              const commercialCopy = `🔥 *${p.name.toUpperCase()}*
+━━━━━━━━━━━━━━━━━━━━━
+🏷️ *SKU / Código:* ${p.sku || 'N/A'}
+📂 *Categoría:* ${p.category || 'Tecnología & Equipamiento'}
+🛡️ *Garantía Oficial:* 1 Año directa con ATOMIC Ecuador
+📦 *Condición:* 100% Nuevo sellado en empaque original
+
+💰 *PRECIO OFICIAL PVP: $${saleP.toFixed(2)} USD*
+✨ *Stock:* Disponibilidad inmediata para entrega
+
+🚚 *Envíos y Retiros:*
+• Quito: Entrega a domicilio express o retiro en oficina (Sector El Labrador)
+• Provincias: Envíos 100% asegurados a todo el país vía Servientrega
+
+📲 *Ficha técnica completa y compra en línea:*
+${productWebUrl}
+
+💬 *Escríbenos directamente para coordinar tu entrega o responder cualquier duda.*`
+              copyToClipboard(commercialCopy, `copy-${p.id}`, "Copy Comercial PVP")
+            }}
+            className="flex items-center justify-center gap-1 px-2 py-2 rounded-xl bg-emerald-950/80 hover:bg-emerald-900/90 text-emerald-300 text-[10px] font-mono font-bold transition-all border border-emerald-500/40 shadow-sm"
+            title="Copiar copy comercial formateado en versión PVP para WhatsApp y Redes"
+          >
+            {copiedId === `copy-${p.id}` ? (
+              <Check size={11} className="text-emerald-400" />
+            ) : (
+              <Sparkles size={11} className="text-emerald-400" />
+            )}
+            <span className="truncate">{copiedId === `copy-${p.id}` ? "¡Copy Copiado!" : "Copy Comercial"}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function PreciosVendedorClient() {
   const [activeTab, setActiveTab] = useState<TabType>("pvp-todos")
   const [selectedMsgCat, setSelectedMsgCat] = useState("saludos")
   const [msgSearchTerm, setMsgSearchTerm] = useState("")
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
+  const [copiedId, setCopiedId] = useState<string | null>(null)
   const [toastMessage, setToastMessage] = useState<string | null>(null)
   const [isConciergeOpen, setIsConciergeOpen] = useState(false)
   const [imageModalUrl, setImageModalUrl] = useState<string | null>(null)
@@ -203,6 +377,15 @@ export default function PreciosVendedorClient() {
   const showToast = (msg: string) => {
     setToastMessage(msg)
     setTimeout(() => setToastMessage(null), 2800)
+  }
+
+  const copyToClipboard = (text: string, id: string, label: string) => {
+    navigator.clipboard.writeText(text)
+    setCopiedId(id)
+    showToast(`${label} copiado al portapapeles`)
+    setTimeout(() => {
+      setCopiedId((curr) => (curr === id ? null : curr))
+    }, 2200)
   }
 
   const handleCopyText = (text: string, label: string) => {
@@ -335,7 +518,7 @@ export default function PreciosVendedorClient() {
 
       {/* ── TOP EXECUTIVE COMMAND BAR HEADER ── */}
       <header className="sticky top-0 z-40 bg-zinc-950/85 backdrop-blur-2xl border-b border-white/[0.08]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+        <div className="w-full max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           
           {/* Brand Lockup */}
           <div className="flex items-center gap-3">
@@ -369,7 +552,7 @@ export default function PreciosVendedorClient() {
 
         {/* ── NAVIGATION SEGMENTED CONTROL BAR ── */}
         <div className="border-t border-white/[0.04] bg-zinc-950 px-4 overflow-x-auto scrollbar-hide py-2">
-          <div className="max-w-7xl mx-auto flex items-center gap-1">
+          <div className="w-full max-w-[1720px] mx-auto flex items-center gap-1">
             {navigationTabs.map(tab => {
               const isActive = activeTab === tab.id
               return (
@@ -392,36 +575,43 @@ export default function PreciosVendedorClient() {
       </header>
 
       {/* ── MAIN CONTENT ── */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-6">
+      <main className="w-full max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
 
         {/* ═══════════ PESTAÑA 1: TODOS LOS PVP (COMMAND SEARCH) ═══════════ */}
         {activeTab === "pvp-todos" && (
           <div className="space-y-6">
             
             {/* Command Header Banner */}
-            <div className="p-6 rounded-2xl bg-zinc-900/40 border border-white/[0.08] space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <span className="text-[10px] font-mono tracking-widest uppercase text-zinc-400 px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.08]">
-                    Matriz Central de Precios
-                  </span>
-                  <h1 className="text-xl sm:text-2xl font-semibold text-white tracking-tight mt-2">
-                    Buscador de Precios Públicos (PVP)
+            <div className="p-6 sm:p-7 rounded-2xl bg-zinc-900/60 border border-white/[0.08] space-y-4 shadow-xl backdrop-blur-sm relative overflow-hidden">
+              <div className="absolute top-0 right-0 -mr-16 -mt-16 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 relative z-10">
+                <div className="space-y-1.5 max-w-3xl">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-[10px] font-mono tracking-widest uppercase text-cyan-400 px-2.5 py-0.5 rounded-full bg-cyan-950/70 border border-cyan-500/30 font-bold flex items-center gap-1.5 shadow-sm">
+                      <Globe size={11} className="text-cyan-400" />
+                      Catálogo Maestro Central · Todos los Productos Indexados
+                    </span>
+                    <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 rounded-full font-semibold">
+                      Precios PVP Garantizados
+                    </span>
+                  </div>
+                  <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-white tracking-tight">
+                    Buscador de Precios Públicos (PVP) & Catálogo Central
                   </h1>
-                  <p className="text-zinc-400 text-xs sm:text-sm mt-0.5 max-w-2xl">
-                    Consulta el PVP autorizado al cliente, imágenes de catálogo y margen de comisión neta del 20%.
+                  <p className="text-zinc-300 text-xs sm:text-sm leading-relaxed">
+                    <strong>Aquí encontrarás la totalidad del catálogo oficial de productos de ATOMIC Ecuador</strong> (+3.000 SKUs activos de videovigilancia, computación empresarial y gamer, domótica smart, respaldo de energía, audio profesional, línea blanca y repuestos para talleres). Cada producto cuenta con <strong>1 año de garantía oficial</strong>, comisiones directas del 20% para vendedores autorizados y <strong>herramientas de venta rápida</strong>: copiado de enlace web directo, copiado de título limpio, generación de <strong>Copy Comercial PVP</strong> persuasivo para WhatsApp y redes, y botón directo para abrir y verificar el artículo en la tienda web.
                   </p>
                 </div>
 
                 {/* Live Stats Ribbon */}
-                <div className="flex items-center gap-2">
-                  <div className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-white/[0.08] text-right">
-                    <span className="block text-[10px] font-mono uppercase text-zinc-400">Indexados</span>
-                    <span className="text-xs font-mono font-semibold text-zinc-200">3.000+ SKUs</span>
+                <div className="flex items-center gap-2.5 shrink-0">
+                  <div className="px-3.5 py-2 rounded-xl bg-zinc-950/90 border border-cyan-500/30 text-right shadow-sm">
+                    <span className="block text-[10px] font-mono uppercase text-cyan-400/90">Inventario Central</span>
+                    <span className="text-sm font-mono font-bold text-white">3.000+ SKUs</span>
                   </div>
-                  <div className="px-3 py-1.5 rounded-xl bg-zinc-900 border border-white/[0.08] text-right">
-                    <span className="block text-[10px] font-mono uppercase text-zinc-400">Comisión</span>
-                    <span className="text-xs font-mono font-semibold text-emerald-400">20% Directo</span>
+                  <div className="px-3.5 py-2 rounded-xl bg-zinc-950/90 border border-emerald-500/30 text-right shadow-sm">
+                    <span className="block text-[10px] font-mono uppercase text-emerald-400">Comisión Vendedor</span>
+                    <span className="text-sm font-mono font-bold text-emerald-400">20% Directo</span>
                   </div>
                 </div>
               </div>
@@ -482,88 +672,15 @@ export default function PreciosVendedorClient() {
                 </p>
               </div>
             ) : (
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {products.map((p, idx) => {
-                  const saleP = Number(p.salePrice) || 0
-                  const comision20 = saleP * 0.20
-                  return (
-                    <div
-                      key={p.id || idx}
-                      className="p-4 rounded-xl bg-zinc-900/40 border border-white/[0.07] hover:border-white/[0.18] transition-all flex flex-col justify-between space-y-3.5 group shadow-sm hover:shadow-md"
-                    >
-                      {/* Image Stage */}
-                      <div className="w-full h-48 bg-zinc-950/70 rounded-lg border border-white/[0.05] overflow-hidden flex items-center justify-center relative p-3">
-                        {p.image ? (
-                          <img
-                            src={p.image}
-                            alt={p.name}
-                            className="w-full h-full object-contain group-hover:scale-102 transition-transform duration-200"
-                            loading="lazy"
-                            onError={(e) => {
-                              (e.currentTarget as HTMLElement).style.display = 'none';
-                              const parent = (e.currentTarget as HTMLElement).parentElement;
-                              if (parent) {
-                                const fallback = parent.querySelector('.img-fallback');
-                                if (fallback) fallback.classList.remove('hidden');
-                              }
-                            }}
-                          />
-                        ) : null}
-                        <div className={`img-fallback flex flex-col items-center justify-center text-zinc-600 gap-1.5 ${p.image ? 'hidden' : ''}`}>
-                          <Package size={28} className="text-zinc-600" />
-                          <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">Sin Imagen Oficial</span>
-                        </div>
-                        <span className="absolute top-2 left-2 px-2 py-0.5 rounded bg-zinc-900/90 border border-white/[0.08] text-[10px] font-mono text-zinc-400">
-                          {p.category || "General"}
-                        </span>
-                      </div>
-
-                      {/* Info */}
-                      <div className="space-y-1.5">
-                        <div className="flex items-center justify-between text-[11px] font-mono">
-                          <span className="text-emerald-400 flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                            Stock Inmediato
-                          </span>
-                          <span className="text-zinc-400">SKU: {p.sku || "N/A"}</span>
-                        </div>
-                        <h4 className="text-sm font-medium text-zinc-100 group-hover:text-white transition-colors line-clamp-2 leading-snug">
-                          {p.name}
-                        </h4>
-                      </div>
-
-                      {/* Pricing Footer */}
-                      <div className="pt-3 border-t border-white/[0.05] space-y-2.5">
-                        <div className="flex items-baseline justify-between">
-                          <div>
-                            <span className="text-[10px] text-zinc-400 font-mono block">PVP VENTA:</span>
-                            <span className="text-lg font-semibold text-white font-mono">
-                              ${saleP.toFixed(2)} <span className="text-xs text-zinc-400 font-normal">USD</span>
-                            </span>
-                          </div>
-                          <div className="text-right">
-                            <span className="text-[10px] text-emerald-400 font-mono block">COMISIÓN 20%:</span>
-                            <span className="text-sm font-semibold text-emerald-400 font-mono">
-                              +${comision20.toFixed(2)} USD
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Action */}
-                        <button
-                          onClick={() => {
-                            const txt = `Hola estimado/a cliente. Con gusto le cotizo el producto:\n\n📦 *${p.name}*\n• SKU: ${p.sku || 'N/A'}\n• Categoría: ${p.category || 'General'}\n• Garantía: 1 Año directa con ATOMIC Ecuador.\n• PVP Oficial: $${saleP.toFixed(2)} USD\n\n¿Desea entrega a domicilio en Quito o despacho asegurado a provincia?`
-                            handleCopyText(txt, `Cotización de ${p.name.substring(0, 22)}...`)
-                          }}
-                          className="w-full py-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-200 hover:text-white font-medium text-xs transition-all flex items-center justify-center gap-1.5 active:scale-98"
-                        >
-                          <Copy size={12} className="text-zinc-400" />
-                          <span>Copiar Cotización</span>
-                        </button>
-                      </div>
-                    </div>
-                  )
-                })}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
+                {products.map((p, idx) => (
+                  <ProductCard
+                    key={p.id || idx}
+                    product={p}
+                    copiedId={copiedId}
+                    copyToClipboard={copyToClipboard}
+                  />
+                ))}
               </div>
             )}
           </div>
@@ -572,16 +689,23 @@ export default function PreciosVendedorClient() {
         {/* ═══════════ PESTAÑA 2: LÍNEAS DE NEGOCIO (CATEGORÍAS) ═══════════ */}
         {activeTab === "pvp-categorias" && (
           <div className="space-y-6">
-            <div className="p-6 rounded-2xl bg-zinc-900/40 border border-white/[0.08] space-y-4">
-              <div>
-                <span className="text-[10px] font-mono tracking-widest uppercase text-zinc-400 px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.08]">
-                  Estructura de Catálogo
-                </span>
-                <h2 className="text-xl sm:text-2xl font-semibold text-white tracking-tight mt-2">
-                  Líneas de Negocio & Filtro por Especialidad
+            <div className="p-6 sm:p-7 rounded-2xl bg-zinc-900/60 border border-white/[0.08] space-y-4 shadow-xl backdrop-blur-sm relative overflow-hidden">
+              <div className="absolute top-0 right-0 -mr-16 -mt-16 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+              <div className="space-y-1.5 max-w-3xl relative z-10">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[10px] font-mono tracking-widest uppercase text-cyan-400 px-2.5 py-0.5 rounded-full bg-cyan-950/70 border border-cyan-500/30 font-bold flex items-center gap-1.5 shadow-sm">
+                    <Layers size={11} className="text-cyan-400" />
+                    Estructura por Líneas de Negocio · Catálogo Completo
+                  </span>
+                  <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 rounded-full font-semibold">
+                    10 Especialidades
+                  </span>
+                </div>
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-white tracking-tight">
+                  Líneas de Negocio & Filtro por Especialidad Técnica
                 </h2>
-                <p className="text-zinc-400 text-xs sm:text-sm mt-0.5 max-w-2xl">
-                  Selecciona la categoría para consultar sus modelos autorizados, precios oficiales y comisiones.
+                <p className="text-zinc-300 text-xs sm:text-sm leading-relaxed">
+                  Explora las 10 líneas maestras de tecnología y equipamiento de ATOMIC Ecuador. Al igual que en la matriz central, dispones de herramientas de venta inmediata en cada producto: copiado de link web, copiado de título, generación de copy comercial en versión PVP y acceso directo al artículo en la web pública.
                 </p>
               </div>
 
@@ -625,84 +749,15 @@ export default function PreciosVendedorClient() {
                 </p>
               </div>
             ) : (
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {catProducts.map((p, idx) => {
-                  const saleP = Number(p.salePrice) || 0
-                  const comision20 = saleP * 0.20
-                  return (
-                    <div
-                      key={p.id || idx}
-                      className="p-4 rounded-xl bg-zinc-900/40 border border-white/[0.07] hover:border-white/[0.18] transition-all flex flex-col justify-between space-y-3.5 group shadow-sm hover:shadow-md"
-                    >
-                      <div className="w-full h-48 bg-zinc-950/70 rounded-lg border border-white/[0.05] overflow-hidden flex items-center justify-center relative p-3">
-                        {p.image ? (
-                          <img
-                            src={p.image}
-                            alt={p.name}
-                            className="w-full h-full object-contain group-hover:scale-102 transition-transform duration-200"
-                            loading="lazy"
-                            onError={(e) => {
-                              (e.currentTarget as HTMLElement).style.display = 'none';
-                              const parent = (e.currentTarget as HTMLElement).parentElement;
-                              if (parent) {
-                                const fallback = parent.querySelector('.img-fallback');
-                                if (fallback) fallback.classList.remove('hidden');
-                              }
-                            }}
-                          />
-                        ) : null}
-                        <div className={`img-fallback flex flex-col items-center justify-center text-zinc-600 gap-1.5 ${p.image ? 'hidden' : ''}`}>
-                          <Package size={28} className="text-zinc-600" />
-                          <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">Sin Imagen Oficial</span>
-                        </div>
-                        <span className="absolute top-2 left-2 px-2 py-0.5 rounded bg-zinc-900/90 border border-white/[0.08] text-[10px] font-mono text-zinc-400">
-                          {p.category || "General"}
-                        </span>
-                      </div>
-
-                      <div className="space-y-1.5">
-                        <div className="flex items-center justify-between text-[11px] font-mono">
-                          <span className="text-emerald-400 flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                            Stock Inmediato
-                          </span>
-                          <span className="text-zinc-400">SKU: {p.sku || "N/A"}</span>
-                        </div>
-                        <h4 className="text-sm font-medium text-zinc-100 group-hover:text-white transition-colors line-clamp-2 leading-snug">
-                          {p.name}
-                        </h4>
-                      </div>
-
-                      <div className="pt-3 border-t border-white/[0.05] space-y-2.5">
-                        <div className="flex items-baseline justify-between">
-                          <div>
-                            <span className="text-[10px] text-zinc-400 font-mono block">PVP VENTA:</span>
-                            <span className="text-lg font-semibold text-white font-mono">
-                              ${saleP.toFixed(2)} <span className="text-xs text-zinc-400 font-normal">USD</span>
-                            </span>
-                          </div>
-                          <div className="text-right">
-                            <span className="text-[10px] text-emerald-400 font-mono block">COMISIÓN 20%:</span>
-                            <span className="text-sm font-semibold text-emerald-400 font-mono">
-                              +${comision20.toFixed(2)} USD
-                            </span>
-                          </div>
-                        </div>
-
-                        <button
-                          onClick={() => {
-                            const txt = `Hola estimado/a cliente. Con gusto le cotizo el producto:\n\n📦 *${p.name}*\n• SKU: ${p.sku || 'N/A'}\n• Categoría: ${p.category || 'General'}\n• Garantía: 1 Año directa con ATOMIC Ecuador.\n• PVP Oficial: $${saleP.toFixed(2)} USD\n\n¿Desea entrega a domicilio en Quito o despacho asegurado a provincia?`
-                            handleCopyText(txt, `Cotización de ${p.name.substring(0, 22)}...`)
-                          }}
-                          className="w-full py-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-200 hover:text-white font-medium text-xs transition-all flex items-center justify-center gap-1.5 active:scale-98"
-                        >
-                          <Copy size={12} className="text-zinc-400" />
-                          <span>Copiar Cotización</span>
-                        </button>
-                      </div>
-                    </div>
-                  )
-                })}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
+                {catProducts.map((p, idx) => (
+                  <ProductCard
+                    key={p.id || idx}
+                    product={p}
+                    copiedId={copiedId}
+                    copyToClipboard={copyToClipboard}
+                  />
+                ))}
               </div>
             )}
           </div>
@@ -723,7 +778,7 @@ export default function PreciosVendedorClient() {
               </p>
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
               {LANDINGS_LIST.map((l, i) => (
                 <div
                   key={i}
