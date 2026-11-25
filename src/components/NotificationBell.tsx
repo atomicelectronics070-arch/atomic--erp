@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Bell, MessageSquare, Target, DollarSign, Check, X } from "lucide-react"
+import { Bell, MessageSquare, Target, DollarSign, Check, X, CreditCard } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 
@@ -66,6 +66,8 @@ export default function NotificationBell() {
         } else if (notification.type === "TICKET") {
             // Deep link to finance with ticketId
             router.push(`/dashboard/finance?ticketId=${notification.relatedId}`)
+        } else if (notification.type === "BANK_ACCOUNT" || notification.type === "PROFILE") {
+            router.push("/dashboard/profile?tab=bank")
         } else if (notification.type === "GOAL") {
             router.push("/dashboard")
         }
@@ -76,6 +78,7 @@ export default function NotificationBell() {
             case "MESSAGE": return <MessageSquare size={16} className="text-blue-500" />
             case "GOAL": return <Target size={16} className="text-orange-500" />
             case "TICKET": return <DollarSign size={16} className="text-green-500" />
+            case "BANK_ACCOUNT": return <CreditCard size={16} className="text-emerald-600" />
             default: return <Bell size={16} className="text-neutral-500" />
         }
     }

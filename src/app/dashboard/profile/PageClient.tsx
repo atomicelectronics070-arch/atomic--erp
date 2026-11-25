@@ -9,7 +9,8 @@ import {
     Save, ShieldCheck, Loader2, Award,
     Sparkles, Trash2, Edit3, Building2,
     ChevronRight, LogOut, Key, Map, Search, DollarSign, Package,
-    Palette, Check, Zap, Eye, RefreshCw, Sun, Moon, Shield
+    Palette, Check, Zap, Eye, RefreshCw, Sun, Moon, Shield,
+    Landmark, Plus, CreditCard, Star
 } from "lucide-react"
 import PermanentSocialBar from "@/components/PermanentSocialBar"
 
@@ -135,9 +136,21 @@ export default function ProfilePage() {
     const { data: session, update } = useSession()
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
-    const [activeTab, setActiveTab] = useState<"info" | "themes" | "security">("info")
+    const [activeTab, setActiveTab] = useState<"info" | "bank" | "themes" | "security">("info")
     const [currentTheme, setCurrentTheme] = useState("ticketmaster-white")
     const [currentSurfaceTheme, setCurrentSurfaceTheme] = useState("cyber-glass")
+    const [bankAccounts, setBankAccounts] = useState<any[]>([])
+    const [savingBank, setSavingBank] = useState(false)
+    const [bankForm, setBankForm] = useState({
+        bankName: "Banco Pichincha",
+        customBankName: "",
+        accountType: "AHORROS" as "AHORROS" | "CORRIENTE",
+        accountNumber: "",
+        holderName: "",
+        holderId: "",
+        email: "",
+        isDefault: false
+    })
     
     const [formData, setFormData] = useState({
         name: "",
@@ -165,12 +178,25 @@ export default function ProfilePage() {
 
             const urlParams = new URLSearchParams(window.location.search)
             const tab = urlParams.get("tab")
-            if (tab === "themes" || tab === "security" || tab === "info") {
+            if (tab === "themes" || tab === "security" || tab === "info" || tab === "bank") {
                 setActiveTab(tab as any)
             }
         }
         fetchProfile()
+        fetchBankAccounts()
     }, [])
+
+    const fetchBankAccounts = async () => {
+        try {
+            const res = await fetch("/api/user/bank-accounts", { cache: "no-store" })
+            if (res.ok) {
+                const data = await res.json()
+                setBankAccounts(data.accounts || [])
+            }
+        } catch (e) {
+            console.error("Error fetching bank accounts:", e)
+        }
+    }
 
     const fetchProfile = async () => {
         setLoading(true)
@@ -187,11 +213,92 @@ export default function ProfilePage() {
                     residenceSector: data.residenceSector || "",
                     profilePicture: data.profilePicture || ""
                 }))
+                setBankForm(prev => ({
+                    ...prev,
+                    holderName: prev.holderName || `${data.name || ""} ${data.lastName || ""}`.trim(),
+                    email: prev.email || data.email || ""
+                }))
             }
         } catch (e) {
             console.error("Error fetching profile:", e)
         } finally {
             setLoading(false)
+        }
+    }
+
+    const handleAddBankAccount = async (e: React.FormEvent) => {
+        e.preventDefault()
+        const resolvedBank = bankForm.bankName === "OTRO" ? bankForm.customBankName.trim() : bankForm.bankName
+        if (!resolvedBank || !bankForm.accountNumber.trim() || !bankForm.holderName.trim() || !bankForm.holderId.trim()) {
+            alert("⚠️ Por favor completa banco, número de cuenta, nombre del titular y cédula/RUC.")
+            return
+        }
+        setSavingBank(true)
+        try {
+            const res = await fetch("/api/user/bank-accounts", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    bankName: resolvedBank,
+                    accountType: bankForm.accountType,
+                    accountNumber: bankForm.accountNumber.trim(),
+                    holderName: bankForm.holderName.trim(),
+                    holderId: bankForm.holderId.trim(),
+                    email: bankForm.email.trim(),
+                    isDefault: bankForm.isDefault || bankAccounts.length === 0
+                })
+            })
+            if (res.ok) {
+                const data = await res.json()
+                setBankAccounts(data.accounts || [])
+                setBankForm(prev => ({
+                    ...prev,
+                    accountNumber: "",
+                    holderId: "",
+                    customBankName: "",
+                    isDefault: false
+                }))
+                alert("✅ ¡Cuenta bancaria registrada correctamente para recibir pagos!")
+            } else {
+                const err = await res.json().catch(() => ({}))
+                alert(err.error || "⚠️ Error al registrar la cuenta bancaria.")
+            }
+        } catch (err) {
+            console.error(err)
+            alert("Error de conexión al guardar cuenta bancaria.")
+        } finally {
+            setSavingBank(false)
+        }
+    }
+
+    const handleSetDefaultBank = async (id: string) => {
+        try {
+            const res = await fetch("/api/user/bank-accounts", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id })
+            })
+            if (res.ok) {
+                const data = await res.json()
+                setBankAccounts(data.accounts || [])
+            }
+        } catch (err) {
+            console.error(err)
+        }
+    }
+
+    const handleDeleteBankAccount = async (id: string) => {
+        if (!confirm("¿Eliminar esta cuenta bancaria registrada?")) return
+        try {
+            const res = await fetch(`/api/user/bank-accounts?id=${encodeURIComponent(id)}`, {
+                method: "DELETE"
+            })
+            if (res.ok) {
+                const data = await res.json()
+                setBankAccounts(data.accounts || [])
+            }
+        } catch (err) {
+            console.error(err)
         }
     }
 
@@ -387,6 +494,21 @@ export default function ProfilePage() {
                     </button>
 
                     <button
+                        onClick={() => setActiveTab("bank")}
+                        className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
+                            activeTab === "bank"
+                                ? "bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+                                : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+                        }`}
+                    >
+                        <Landmark size={15} />
+                        <span>Cuentas Bancarias</span>
+                        <span className="px-1.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 text-[9px] font-mono font-bold">
+                            {bankAccounts.length}
+                        </span>
+                    </button>
+
+                    <button
                         onClick={() => setActiveTab("themes")}
                         className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
                             activeTab === "themes"
@@ -412,6 +534,218 @@ export default function ProfilePage() {
                     </button>
                 </div>
             </div>
+
+            {/* TAB BANK: Cuentas Bancarias para Recepción de Pagos */}
+            {activeTab === "bank" && (
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                    {/* Formulario para añadir cuenta */}
+                    <form onSubmit={handleAddBankAccount} className="lg:col-span-2 bg-slate-900/70 border border-slate-800 rounded-3xl p-6 space-y-4 shadow-xl backdrop-blur-xl h-fit">
+                        <div className="border-b border-slate-800 pb-4">
+                            <h3 className="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
+                                <Plus size={18} className="text-emerald-400" />
+                                <span>Añadir Cuenta Bancaria</span>
+                            </h3>
+                            <p className="text-xs text-slate-400 mt-1">
+                                Registra una o más cuentas bancarias a tu nombre para recibir bonificaciones, comisiones y liquidaciones.
+                            </p>
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <label className="text-[11px] font-mono font-bold uppercase text-slate-400">Banco / Institución *</label>
+                            <select
+                                value={bankForm.bankName}
+                                onChange={(e) => setBankForm({ ...bankForm, bankName: e.target.value })}
+                                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm font-bold text-white outline-none focus:border-emerald-400"
+                            >
+                                <option value="Banco Pichincha">Banco Pichincha</option>
+                                <option value="Banco Guayaquil">Banco Guayaquil</option>
+                                <option value="Produbanco">Produbanco</option>
+                                <option value="Banco del Pacífico">Banco del Pacífico</option>
+                                <option value="Banco Internacional">Banco Internacional</option>
+                                <option value="Banco Bolivariano">Banco Bolivariano</option>
+                                <option value="BanEcuador">BanEcuador</option>
+                                <option value="Cooperativa JEP">Cooperativa JEP</option>
+                                <option value="OTRO">Otra Institución / Cooperativa...</option>
+                            </select>
+                        </div>
+
+                        {bankForm.bankName === "OTRO" && (
+                            <div className="space-y-1.5">
+                                <label className="text-[11px] font-mono font-bold uppercase text-slate-400">Nombre de la Institución *</label>
+                                <input
+                                    type="text"
+                                    value={bankForm.customBankName}
+                                    onChange={(e) => setBankForm({ ...bankForm, customBankName: e.target.value })}
+                                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm font-bold text-white outline-none focus:border-emerald-400"
+                                    placeholder="Ej. Cooperativa Policía Nacional..."
+                                    required
+                                />
+                            </div>
+                        )}
+
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-1.5">
+                                <label className="text-[11px] font-mono font-bold uppercase text-slate-400">Tipo de Cuenta *</label>
+                                <select
+                                    value={bankForm.accountType}
+                                    onChange={(e) => setBankForm({ ...bankForm, accountType: e.target.value as "AHORROS" | "CORRIENTE" })}
+                                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-3 text-sm font-bold text-white outline-none focus:border-emerald-400"
+                                >
+                                    <option value="AHORROS">Ahorros</option>
+                                    <option value="CORRIENTE">Corriente</option>
+                                </select>
+                            </div>
+                            <div className="space-y-1.5">
+                                <label className="text-[11px] font-mono font-bold uppercase text-slate-400">Número de Cuenta *</label>
+                                <input
+                                    type="text"
+                                    value={bankForm.accountNumber}
+                                    onChange={(e) => setBankForm({ ...bankForm, accountNumber: e.target.value })}
+                                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-3 text-sm font-mono font-bold text-emerald-400 outline-none focus:border-emerald-400"
+                                    placeholder="Ej. 2204819201"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <label className="text-[11px] font-mono font-bold uppercase text-slate-400">Nombre Completo del Titular *</label>
+                            <input
+                                type="text"
+                                value={bankForm.holderName}
+                                onChange={(e) => setBankForm({ ...bankForm, holderName: e.target.value })}
+                                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm font-bold text-white outline-none focus:border-emerald-400"
+                                placeholder="Nombres y apellidos exactos..."
+                                required
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div className="space-y-1.5">
+                                <label className="text-[11px] font-mono font-bold uppercase text-slate-400">Cédula / RUC *</label>
+                                <input
+                                    type="text"
+                                    value={bankForm.holderId}
+                                    onChange={(e) => setBankForm({ ...bankForm, holderId: e.target.value })}
+                                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm font-mono font-bold text-white outline-none focus:border-emerald-400"
+                                    placeholder="17XXXXXXXX"
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-1.5">
+                                <label className="text-[11px] font-mono font-bold uppercase text-slate-400">Correo Comprobante</label>
+                                <input
+                                    type="email"
+                                    value={bankForm.email}
+                                    onChange={(e) => setBankForm({ ...bankForm, email: e.target.value })}
+                                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm font-bold text-white outline-none focus:border-emerald-400"
+                                    placeholder="correo@ejemplo.com"
+                                />
+                            </div>
+                        </div>
+
+                        <label className="flex items-center gap-2.5 p-3 rounded-xl bg-slate-950/70 border border-slate-800 cursor-pointer text-xs text-slate-300">
+                            <input
+                                type="checkbox"
+                                checked={bankForm.isDefault}
+                                onChange={(e) => setBankForm({ ...bankForm, isDefault: e.target.checked })}
+                                className="w-4 h-4 accent-emerald-500 rounded"
+                            />
+                            <span>Establecer como cuenta principal para recibir mis pagos</span>
+                        </label>
+
+                        <button
+                            type="submit"
+                            disabled={savingBank}
+                            className="w-full py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                        >
+                            {savingBank ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                            <span>{savingBank ? "Guardando Cuenta..." : "Registrar Cuenta Bancaria"}</span>
+                        </button>
+                    </form>
+
+                    {/* Lista de cuentas registradas */}
+                    <div className="lg:col-span-3 bg-slate-900/70 border border-slate-800 rounded-3xl p-6 space-y-5 shadow-xl backdrop-blur-xl">
+                        <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+                            <div>
+                                <h3 className="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
+                                    <CreditCard size={18} className="text-amber-400" />
+                                    <span>Mis Cuentas Registradas ({bankAccounts.length})</span>
+                                </h3>
+                                <p className="text-xs text-slate-400 mt-1">
+                                    Tesorería utilizará tu cuenta principal (o cualquiera registrada) para transferir bonos y comisiones.
+                                </p>
+                            </div>
+                        </div>
+
+                        {bankAccounts.length === 0 ? (
+                            <div className="p-10 text-center rounded-2xl bg-slate-950/60 border border-dashed border-slate-700 space-y-2">
+                                <Landmark size={36} className="mx-auto text-amber-400/70" />
+                                <p className="text-sm font-bold text-white">Aún no tienes cuentas bancarias registradas</p>
+                                <p className="text-xs text-slate-400 max-w-md mx-auto">
+                                    Añade al menos una cuenta bancaria usando el formulario de la izquierda para habilitar tus transferencias de bonos y pagos.
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="space-y-3">
+                                {bankAccounts.map((acc) => (
+                                    <div
+                                        key={acc.id}
+                                        className={`p-4 rounded-2xl border transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+                                            acc.isDefault
+                                                ? "bg-emerald-950/20 border-emerald-500/40 shadow-[0_0_20px_rgba(16,185,129,0.1)]"
+                                                : "bg-slate-950/80 border-slate-800"
+                                        }`}
+                                    >
+                                        <div className="space-y-1">
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                <span className="text-sm font-black text-white">{acc.bankName}</span>
+                                                <span className="px-2 py-0.5 rounded-md bg-slate-800 text-cyan-300 text-[10px] font-mono font-bold">
+                                                    {acc.accountType}
+                                                </span>
+                                                {acc.isDefault && (
+                                                    <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-black flex items-center gap-1">
+                                                        <Star size={10} /> PRINCIPAL
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="text-base font-mono font-black text-emerald-400 tracking-wider">
+                                                #{acc.accountNumber}
+                                            </p>
+                                            <p className="text-xs text-slate-400">
+                                                Titular: <strong className="text-slate-200">{acc.holderName}</strong> • CI/RUC: <span className="font-mono">{acc.holderId}</span>
+                                            </p>
+                                            {acc.email && (
+                                                <p className="text-[11px] text-slate-500">Notificaciones: {acc.email}</p>
+                                            )}
+                                        </div>
+
+                                        <div className="flex items-center gap-2 shrink-0">
+                                            {!acc.isDefault && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleSetDefaultBank(acc.id)}
+                                                    className="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[11px] font-bold cursor-pointer transition"
+                                                >
+                                                    Marcar Principal
+                                                </button>
+                                            )}
+                                            <button
+                                                type="button"
+                                                onClick={() => handleDeleteBankAccount(acc.id)}
+                                                className="p-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 cursor-pointer transition"
+                                                title="Eliminar cuenta"
+                                            >
+                                                <Trash2 size={15} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* TAB 1: Información Personal */}
             {activeTab === "info" && (

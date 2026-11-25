@@ -259,7 +259,8 @@ export default function DashboardLayout({
                             <GlassNavItem href="/dashboard/coordinacion" icon={<Users size={18} strokeWidth={1.8} />} label="Coordinación" isActive={pathname === '/dashboard/coordinacion'} />
                             <GlassNavItem href="/dashboard/coordinacion?tab=ASISTENCIAS" icon={<Calendar size={18} strokeWidth={1.8} />} label="Ajustar Asistencias" isActive={pathname.startsWith('/dashboard/coordinacion')} />
                             <GlassNavItem href="/dashboard/coordinacion" icon={<KeyRound size={18} strokeWidth={1.8} />} label="Gestor de Cuentas" isActive={pathname.startsWith('/dashboard/coordinacion')} />
-                            <GlassNavItem href="/dashboard/supervision" icon={<Shield size={18} strokeWidth={1.8} />} label="Supervisión" isActive={pathname.startsWith('/dashboard/supervision')} />
+                            <GlassNavItem href="/dashboard/supervision" icon={<Shield size={18} strokeWidth={1.8} />} label="Supervisión" isActive={pathname === '/dashboard/supervision'} />
+                            <GlassNavItem href="/dashboard/supervision/telemetria" icon={<Activity size={18} strokeWidth={1.8} />} label="Telemetría & Píxel" isActive={pathname.startsWith('/dashboard/supervision/telemetria')} />
                             {isJuanPablo && (
                                 <button
                                     type="button"
@@ -567,6 +568,20 @@ export default function DashboardLayout({
                         </div>
 
                         <div className="flex items-center gap-3 pr-2 sm:pr-4 border-r border-white/[0.08]">
+                            {isAdministrative && (
+                                <Link
+                                    href="/dashboard/supervision/telemetria"
+                                    title="Centro de Telemetría, Píxel y Reporte Inteligente (Supervisión)"
+                                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold transition-all ${
+                                        pathname.startsWith("/dashboard/supervision/telemetria")
+                                            ? "bg-cyan-500/25 border-cyan-400 text-cyan-200 shadow-[0_0_15px_rgba(6,182,212,0.35)]"
+                                            : "bg-white/[0.05] border-white/[0.1] text-cyan-300 hover:bg-cyan-500/15 hover:border-cyan-400/50"
+                                    }`}
+                                >
+                                    <Activity size={15} className="animate-pulse text-emerald-400" />
+                                    <span className="hidden md:inline">Telemetría</span>
+                                </Link>
+                            )}
                             <NotificationBell />
                         </div>
                         
