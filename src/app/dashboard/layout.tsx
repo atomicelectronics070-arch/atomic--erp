@@ -47,6 +47,7 @@ export default function DashboardLayout({
     const canAccessCrm = isAdministrative || isKevin || role.toUpperCase().includes("CRM")
     const isJuanPablo = userNameUpper.includes("JUAN") || userEmailUpper.includes("JUANGUZMAN") || userEmailUpper.includes("ATOMIC@INDUSTRIAS") || isAdministrative
     const isStefyOrCris = userNameUpper.includes("STEFY") || userEmailUpper.includes("STEFY") || userNameUpper.includes("CRIS") || userEmailUpper.includes("CRIS") || isAdministrative
+    const isStefyOnly = (userNameUpper.includes("STEFY") || userEmailUpper.includes("STEFY") || userEmailUpper.includes("EDICION")) && !isAdministrative
 
     const [showRoleStats, setShowRoleStats] = useState(false)
     const [userStats, setUserStats] = useState({
@@ -235,22 +236,36 @@ export default function DashboardLayout({
                 {/* ── NAV ITEMS (FIXED / ALL VISIBLE / NO COLLAPSE) ─── */}
                 <nav className="flex-1 overflow-y-auto px-3.5 py-4 space-y-1 custom-scrollbar">
                     
-                    {/* General */}
-                    <GlassNavItem href="/dashboard" icon={<Home size={18} strokeWidth={1.8} />} label="Home" isActive={pathname === '/dashboard'} />
-                    <GlassNavItem href="/dashboard/analytics" icon={<BarChart3 size={18} strokeWidth={1.8} />} label="Analytics" isActive={pathname === '/dashboard/analytics'} />
-                    
-                    {/* Operaciones & Ventas */}
-                    <div className="pt-3 pb-1 px-3.5 text-[11px] font-normal tracking-[0.5px] text-white/40">
-                        Operaciones & Ventas
-                    </div>
-                    <GlassNavItem href="/dashboard/asistencia" icon={<CheckSquare size={18} strokeWidth={1.8} />} label="Inicio del Día (Asistencia)" isActive={pathname.startsWith('/dashboard/asistencia')} />
-                    <GlassNavItem href="/dashboard/quotes" icon={<FileText size={18} strokeWidth={1.8} />} label="Cotizaciones" isActive={pathname.startsWith('/dashboard/quotes')} />
-                    <GlassNavItem href="/dashboard/matriz-precios" icon={<Table size={18} strokeWidth={1.8} />} label="Matriz de Precios" isActive={pathname.startsWith('/dashboard/matriz-precios') || pathname.startsWith('/dashboard/shop')} />
-                    <GlassNavItem href="/web/precios-vendedor" icon={<Tag size={18} strokeWidth={1.8} />} label="Portal Precios Vendedor" isActive={pathname.startsWith('/web/precios-vendedor') || pathname.startsWith('/dashboard/precios-vendedor')} />
-                    <GlassNavItem href="/dashboard/contactos-historicos" icon={<Users size={18} strokeWidth={1.8} />} label="Contactos Históricos" isActive={pathname.startsWith('/dashboard/contactos-historicos')} />
-                    <GlassNavItem href="/dashboard/scanner" icon={<Scan size={18} strokeWidth={1.8} />} label="Escáner Códigos" isActive={pathname.startsWith('/dashboard/scanner')} />
-                    {isStefyOrCris && (
-                        <GlassNavItem href="/dashboard/flash" icon={<Flame size={18} strokeWidth={1.8} />} label="Flash Studio (Edición)" isActive={pathname.startsWith('/dashboard/flash')} />
+                    {isStefyOnly ? (
+                        <>
+                            <div className="pt-3 pb-1 px-3.5 text-[11px] font-normal tracking-[0.5px] text-emerald-400/80 font-mono uppercase">
+                                Edición & Media · Flash
+                            </div>
+                            <GlassNavItem href="/dashboard/flash" icon={<Flame size={18} strokeWidth={1.8} />} label="Inicio del Día (Flash Studio)" isActive={pathname.startsWith('/dashboard/flash')} />
+                            <GlassNavItem href="/dashboard/banco-publicaciones" icon={<Layers size={18} strokeWidth={1.8} />} label="Banco Publicaciones" isActive={pathname.startsWith('/dashboard/banco-publicaciones')} />
+                            <GlassNavItem href="/dashboard/blogs" icon={<Share2 size={18} strokeWidth={1.8} />} label="Edición Audiovisual & Media" isActive={pathname.startsWith('/dashboard/blogs')} />
+                            <GlassNavItem href="/dashboard/lista-precios-proveedores" icon={<DollarSign size={18} strokeWidth={1.8} />} label="Precios & Proveedores 🔒" isActive={pathname.startsWith('/dashboard/lista-precios-proveedores')} />
+                        </>
+                    ) : (
+                        <>
+                            {/* General */}
+                            <GlassNavItem href="/dashboard" icon={<Home size={18} strokeWidth={1.8} />} label="Home" isActive={pathname === '/dashboard'} />
+                            <GlassNavItem href="/dashboard/analytics" icon={<BarChart3 size={18} strokeWidth={1.8} />} label="Analytics" isActive={pathname === '/dashboard/analytics'} />
+                            
+                            {/* Operaciones & Ventas */}
+                            <div className="pt-3 pb-1 px-3.5 text-[11px] font-normal tracking-[0.5px] text-white/40">
+                                Operaciones & Ventas
+                            </div>
+                            <GlassNavItem href="/dashboard/asistencia" icon={<CheckSquare size={18} strokeWidth={1.8} />} label="Inicio del Día (Asistencia)" isActive={pathname.startsWith('/dashboard/asistencia')} />
+                            <GlassNavItem href="/dashboard/quotes" icon={<FileText size={18} strokeWidth={1.8} />} label="Cotizaciones" isActive={pathname.startsWith('/dashboard/quotes')} />
+                            <GlassNavItem href="/dashboard/matriz-precios" icon={<Table size={18} strokeWidth={1.8} />} label="Matriz de Precios" isActive={pathname.startsWith('/dashboard/matriz-precios') || pathname.startsWith('/dashboard/shop')} />
+                            <GlassNavItem href="/web/precios-vendedor" icon={<Tag size={18} strokeWidth={1.8} />} label="Portal Precios Vendedor" isActive={pathname.startsWith('/web/precios-vendedor') || pathname.startsWith('/dashboard/precios-vendedor')} />
+                            <GlassNavItem href="/dashboard/contactos-historicos" icon={<Users size={18} strokeWidth={1.8} />} label="Contactos Históricos" isActive={pathname.startsWith('/dashboard/contactos-historicos')} />
+                            <GlassNavItem href="/dashboard/scanner" icon={<Scan size={18} strokeWidth={1.8} />} label="Escáner Códigos" isActive={pathname.startsWith('/dashboard/scanner')} />
+                            {isStefyOrCris && (
+                                <GlassNavItem href="/dashboard/flash" icon={<Flame size={18} strokeWidth={1.8} />} label="Flash Studio (Edición)" isActive={pathname.startsWith('/dashboard/flash')} />
+                            )}
+                        </>
                     )}
                     
                     {/* Solo Administrativos / Coordinación (Propietario, Admin, Juan Guzman, Cris Rivera, Software) */}
