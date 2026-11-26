@@ -497,13 +497,15 @@ export default function SectorParallaxShowcase() {
                 <div className="space-y-3 max-w-4xl">
                   <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-rose-500/15 border border-rose-400/40 text-rose-300 text-xs font-mono font-bold uppercase tracking-widest">
                     <Video size={14} className="text-rose-300" />
-                    <span>ATOMIC Studio • Producción Mensual & Dirección de Marca</span>
+                    <span>ATOMIC Studio • Video & Audio, Logotipos & Marca</span>
                   </div>
-                  <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white uppercase tracking-tight font-heading leading-tight">
-                    Creación de Contenido, Refinación de Catálogos & Estrategia de Marca
-                  </h2>
+                  <Link href="/web/creacion-contenido" className="block group">
+                    <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white group-hover:text-rose-200 transition-colors uppercase tracking-tight font-heading leading-tight">
+                      Creación de Contenido, Remodelación de Logotipos & Estrategia de Marca
+                    </h2>
+                  </Link>
                   <p className="text-xs sm:text-base text-slate-200 leading-relaxed max-w-3xl">
-                    Transforma la percepción de tu negocio en ventas sostenidas. Diseñamos <strong className="text-rose-300">paquetes mensuales de contenido para redes sociales (video e imagen)</strong> adaptados a tu marca, ejecutamos <strong className="text-white">refinación fotográfica y de productos para catálogos comerciales</strong>, y desarrollamos <strong className="text-rose-200">logotipos e identidad visual con estrategia y consistencia en el tiempo</strong>.
+                    Planes mensuales para redes sociales con <strong className="text-rose-300">planeación y estrategia en video y audio</strong>, donde además <strong className="text-white">te ayudamos a remodelar o crear tu logotipo</strong>, ejecutamos <strong className="text-rose-200">refinación de imágenes para catálogos</strong> y sostenemos la <strong className="text-white">consistencia estratégica de tu marca en el tiempo</strong>.
                   </p>
                 </div>
 
@@ -512,11 +514,11 @@ export default function SectorParallaxShowcase() {
                     href="/web/creacion-contenido"
                     className="px-6 py-3 rounded-full bg-gradient-to-r from-rose-500 to-fuchsia-600 hover:brightness-110 text-white font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-rose-500/25 flex items-center gap-2"
                   >
-                    <span>Ver Paquetes Mensuales</span>
+                    <span>Explorar Landing & Planes</span>
                     <ArrowRight size={14} />
                   </Link>
                   <a
-                    href={`https://wa.me/593969043453?text=${encodeURIComponent("Hola ATOMIC Studio! Quiero asesoría sobre sus paquetes mensuales de contenido (video/imagen), refinación de catálogo y diseño de marca.")}`}
+                    href={`https://wa.me/593969043453?text=${encodeURIComponent("Hola ATOMIC Studio! Quiero asesoría sobre sus planes mensuales de contenido (video/audio), remodelación de logotipo y catálogo.")}`}
                     target="_blank"
                     rel="noreferrer"
                     className="px-6 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider border border-white/20 transition-all"
@@ -527,49 +529,69 @@ export default function SectorParallaxShowcase() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 pt-2">
-                <div className="p-5 rounded-2xl bg-white/[0.05] border border-white/10 hover:border-rose-400/45 transition-all space-y-2">
+                <Link
+                  href="/web/creacion-contenido#estrategia-video-audio"
+                  className="p-5 rounded-2xl bg-white/[0.05] hover:bg-white/[0.09] border border-white/10 hover:border-rose-400/50 transition-all space-y-2 block group"
+                >
                   <div className="flex items-center gap-2 text-rose-300 font-mono text-[11px] font-bold uppercase tracking-wider">
                     <Video size={14} />
-                    <span>Redes Sociales</span>
+                    <span>Planeación Video + Audio</span>
                   </div>
-                  <h4 className="text-white font-bold text-sm sm:text-base font-heading">Paquetes Mensuales Video + Imagen</h4>
+                  <h4 className="text-white font-bold text-sm sm:text-base font-heading group-hover:text-rose-200 transition-colors">
+                    Estrategia Mensual Video & Audio
+                  </h4>
                   <p className="text-slate-300 text-xs leading-relaxed">
-                    Producción recurrente de reels estratégicos, piezas gráficas y fotografía de marca listas para publicar mes a mes con ritmo constante.
+                    Guiones, reels, locución comercial, musicalización y diseño sonoro FX planificados mes a mes para retener y vender.
                   </p>
-                </div>
+                </Link>
 
-                <div className="p-5 rounded-2xl bg-white/[0.05] border border-white/10 hover:border-amber-400/45 transition-all space-y-2">
-                  <div className="flex items-center gap-2 text-amber-300 font-mono text-[11px] font-bold uppercase tracking-wider">
-                    <Camera size={14} />
-                    <span>Catálogos Comerciales</span>
-                  </div>
-                  <h4 className="text-white font-bold text-sm sm:text-base font-heading">Refinación de Productos e Imagen</h4>
-                  <p className="text-slate-300 text-xs leading-relaxed">
-                    Retoque profesional, limpieza de fondo, balance de luz y presentación uniforme de todo tu portafolio para catálogos y tiendas online.
-                  </p>
-                </div>
-
-                <div className="p-5 rounded-2xl bg-white/[0.05] border border-white/10 hover:border-fuchsia-400/45 transition-all space-y-2">
+                <Link
+                  href="/web/creacion-contenido#remodelacion-logo"
+                  className="p-5 rounded-2xl bg-white/[0.05] hover:bg-white/[0.09] border border-white/10 hover:border-fuchsia-400/50 transition-all space-y-2 block group"
+                >
                   <div className="flex items-center gap-2 text-fuchsia-300 font-mono text-[11px] font-bold uppercase tracking-wider">
                     <Palette size={14} />
                     <span>Identidad Visual</span>
                   </div>
-                  <h4 className="text-white font-bold text-sm sm:text-base font-heading">Creación de Logotipos & Branding</h4>
+                  <h4 className="text-white font-bold text-sm sm:text-base font-heading group-hover:text-fuchsia-200 transition-colors">
+                    Remodelación & Logotipos
+                  </h4>
                   <p className="text-slate-300 text-xs leading-relaxed">
-                    Diseño de logotipos memorables, sistema tipográfico y paleta corporativa pensados desde cero para proyectar confianza y nivel profesional.
+                    Modernizamos tu logotipo actual o lo diseñamos desde cero adaptado a avatares digitales, videos y empaques.
                   </p>
-                </div>
+                </Link>
 
-                <div className="p-5 rounded-2xl bg-white/[0.05] border border-white/10 hover:border-cyan-400/45 transition-all space-y-2">
+                <Link
+                  href="/web/creacion-contenido#remodelacion-logo"
+                  className="p-5 rounded-2xl bg-white/[0.05] hover:bg-white/[0.09] border border-white/10 hover:border-amber-400/50 transition-all space-y-2 block group"
+                >
+                  <div className="flex items-center gap-2 text-amber-300 font-mono text-[11px] font-bold uppercase tracking-wider">
+                    <Camera size={14} />
+                    <span>Catálogos Comerciales</span>
+                  </div>
+                  <h4 className="text-white font-bold text-sm sm:text-base font-heading group-hover:text-amber-200 transition-colors">
+                    Refinación de Productos e Imagen
+                  </h4>
+                  <p className="text-slate-300 text-xs leading-relaxed">
+                    Limpieza de fondo, balance de luz y presentación uniforme de todo tu portafolio para catálogos y tiendas online.
+                  </p>
+                </Link>
+
+                <Link
+                  href="/web/creacion-contenido#planes-mensuales"
+                  className="p-5 rounded-2xl bg-white/[0.05] hover:bg-white/[0.09] border border-white/10 hover:border-cyan-400/50 transition-all space-y-2 block group"
+                >
                   <div className="flex items-center gap-2 text-cyan-300 font-mono text-[11px] font-bold uppercase tracking-wider">
                     <TrendingUp size={14} />
                     <span>Crecimiento Sostenido</span>
                   </div>
-                  <h4 className="text-white font-bold text-sm sm:text-base font-heading">Consistencia & Estrategia Continua</h4>
+                  <h4 className="text-white font-bold text-sm sm:text-base font-heading group-hover:text-cyan-200 transition-colors">
+                    Consistencia & Estrategia Continua
+                  </h4>
                   <p className="text-slate-300 text-xs leading-relaxed">
-                    Acompañamiento estratégico a través del tiempo para que tu marca mantenga una sola voz, estética coherente y mayor recordación.
+                    Acompañamiento estratégico a través del tiempo para sostener una sola voz, estética coherente y alta recordación.
                   </p>
-                </div>
+                </Link>
               </div>
             </div>
           </div>

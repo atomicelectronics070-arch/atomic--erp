@@ -4,12 +4,12 @@ import { prisma } from '@/lib/prisma'
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'ATOMIC Studio • Creación de Contenido & Planes de Redes Sociales',
-  description: 'Paquetes mensuales para Redes Sociales, producción audiovisual profesional y Mega Pack Creador de Contenido. La esencia de tu marca convertida en contenido que conecta y vende.',
+  title: 'ATOMIC Studio • Planes de Redes Sociales, Video y Audio, Remodelación de Logotipos y Catálogos',
+  description: 'Planes mensuales para redes sociales con planeación y estrategia en video y audio, remodelación o creación de logotipos, refinación de imágenes para catálogos y consistencia de marca.',
   openGraph: {
-    title: 'ATOMIC Studio • Innovación, Calidad y Rendimiento en Contenido',
-    description: 'Tickets armados mensuales desde $100. Diseños para Facebook e Instagram, Reels virales y sesiones de fotografía y video profesional.',
-    images: ['/images/atomic-studio/paquetes-creacion-contenido.jpg'],
+    title: 'ATOMIC Studio • Contenido Estratégico (Video + Audio), Logotipos & Catálogos',
+    description: 'Planes mensuales desde $100: estrategia de contenido con video y audio, remodelación de logotipo, refinación de productos para catálogo y consistencia de marca.',
+    images: ['/images/atomic-studio/planes-mensuales-redes-sociales.jpg'],
   }
 }
 
