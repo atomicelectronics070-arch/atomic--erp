@@ -18,6 +18,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import dynamic from "next/dynamic"
 import { calculateDiscountedPrice } from "@/lib/utils/pricing"
 import FuturisticParallaxSection from "@/components/web/FuturisticParallaxSection"
+import SectorParallaxShowcase from "@/components/web/SectorParallaxShowcase"
 
 const OFERTAS_COVERFLOW_SLIDES = [
   { 
@@ -4833,7 +4834,7 @@ export default function PublicWebClient({
 
       {/* ═══════════ MAIN FEATURED PROMO BANNERS (APPIT BENTO STYLE) ═══════════ */}
       {!searchQuery && !activeMainCategoryId && (
-        <section className="py-12 px-6 max-w-7xl mx-auto">
+        <section className="w-full max-w-[1920px] mx-auto px-3 sm:px-6 lg:px-10 xl:px-14 py-10">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* Promo Card 1: Mandos Gaming */}
@@ -4846,7 +4847,7 @@ export default function PublicWebClient({
                 <h3 className="text-3xl font-black uppercase text-slate-950 mb-2 leading-tight font-heading">
                   Mandos DualSense & Consolas
                 </h3>
-                <p className="text-slate-600 text-xs leading-relaxed max-w-md mb-6">
+                <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-xl mb-6">
                   Descubre mandos originales para PS5, PS4, Xbox Series X|S, Nintendo Switch y la nueva PlayStation Portal Remote Player con fotos HD y especificaciones.
                 </p>
               </div>
@@ -4869,7 +4870,7 @@ export default function PublicWebClient({
                 <h3 className="text-3xl font-black uppercase text-slate-950 mb-2 leading-tight font-heading">
                   Encimeras a Gas & Hornos
                 </h3>
-                <p className="text-slate-600 text-xs leading-relaxed max-w-md mb-6">
+                <p className="text-slate-600 text-xs sm:text-sm leading-relaxed max-w-xl mb-6">
                   Filtra por dimensiones en centímetros, número de hornillas y tipo de combustible. Promociones especiales y combos para armar tu cocina.
                 </p>
               </div>
@@ -4887,7 +4888,7 @@ export default function PublicWebClient({
       )}
 
       {/* ═══════════ PRODUCT GRID & FILTERS (APPIT BENTO CARDS) ═══════════ */}
-      <section className="w-full max-w-7xl mx-auto px-6 py-8 scroll-mt-32" id="productos">
+      <section className="w-full max-w-[1920px] mx-auto px-3 sm:px-6 lg:px-10 xl:px-14 py-8 scroll-mt-32" id="productos">
         
         {/* SECTION TITLE & FILTER RESULTS COUNTER */}
         <div className="flex flex-col gap-4 mb-6 pb-4 border-b border-slate-200">
@@ -5183,67 +5184,69 @@ export default function PublicWebClient({
       </section>
 
       {/* ═══════════ INTERACTIVE CAMPAIGN & LANDING BANNERS ═══════════ */}
-      <section className="w-full max-w-7xl mx-auto px-6 py-12 space-y-8">
+      <section className="w-full max-w-[1920px] mx-auto px-3 sm:px-6 lg:px-10 xl:px-14 py-12 space-y-8">
         
-        {/* Banner 1: Generadores Eléctricos vs Gasolina */}
-        <div className="rounded-3xl bg-gradient-to-r from-amber-50/80 via-yellow-50/60 to-white border border-amber-200/90 p-8 sm:p-12 flex flex-col lg:flex-row items-center justify-between gap-8 shadow-md relative overflow-hidden group">
-          <div className="space-y-4 max-w-2xl relative z-10">
-            <span className="px-3.5 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-black uppercase tracking-wider border border-amber-300">
-              ⚡ Energía & Comparativa Versus
-            </span>
-            <h3 className="text-2xl sm:text-4xl font-black text-slate-950 leading-tight font-heading">
-              ¿Generadores Eléctricos a Batería vs Generadores a Gasolina?
-            </h3>
-            <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
-              Analiza los pros y contras de cada tecnología. Silencio, cero humo, recarga solar vs potencia continua. Configura tu kit ideal con paneles solares y accesorios.
-            </p>
-            <div className="pt-2">
-              <Link
-                href="/web/generadores"
-                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-black text-sm hover:brightness-105 shadow-md transition-all"
-              >
-                <span>Ver Comparativa & Combos</span>
-                <ArrowRight size={16} />
-              </Link>
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          {/* Banner 1: Generadores Eléctricos vs Gasolina */}
+          <div className="rounded-3xl bg-gradient-to-r from-amber-50/80 via-yellow-50/60 to-white border border-amber-200/90 p-7 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-md relative overflow-hidden group">
+            <div className="space-y-4 relative z-10 flex-1">
+              <span className="inline-block px-3.5 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-black uppercase tracking-wider border border-amber-300">
+                ⚡ Energía & Comparativa Versus
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-black text-slate-950 leading-tight font-heading">
+                ¿Generadores Eléctricos a Batería vs Generadores a Gasolina?
+              </h3>
+              <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
+                Analiza los pros y contras de cada tecnología. Silencio, cero humo, recarga solar vs potencia continua. Configura tu kit ideal con paneles solares y accesorios.
+              </p>
+              <div className="pt-2">
+                <Link
+                  href="/web/generadores"
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 font-black text-sm hover:brightness-105 shadow-md transition-all"
+                >
+                  <span>Ver Comparativa & Combos</span>
+                  <ArrowRight size={16} />
+                </Link>
+              </div>
+            </div>
+            <div className="relative z-10 shrink-0 w-full sm:w-56 lg:w-64 aspect-square rounded-2xl bg-white border border-amber-200 overflow-hidden flex items-center justify-center p-4 shadow-sm">
+              <SafeImage src="/images/generadores/comparativa-generadores.jpg" alt="Generadores Eléctricos vs Gasolina" className="object-contain w-full h-full group-hover:scale-105 transition-transform" />
             </div>
           </div>
-          <div className="relative z-10 shrink-0 w-full lg:w-72 aspect-video sm:aspect-square rounded-2xl bg-white border border-amber-200 overflow-hidden flex items-center justify-center p-4 shadow-sm">
-            <SafeImage src="/images/generadores/comparativa-generadores.jpg" alt="Generadores Eléctricos vs Gasolina" className="object-contain w-full h-full group-hover:scale-105 transition-transform" />
-          </div>
-        </div>
 
-        {/* Banner 2: Botonera Antigolpes & Videoportero (IMAGEN REAL DEL KIT LCD 10") */}
-        <div className="rounded-3xl bg-gradient-to-r from-blue-50/80 via-cyan-50/60 to-white border border-cyan-200/90 p-8 sm:p-12 flex flex-col lg:flex-row items-center justify-between gap-8 shadow-md relative overflow-hidden group">
-          <div className="space-y-4 max-w-2xl relative z-10">
-            <span className="px-3.5 py-1 rounded-full bg-cyan-100 text-cyan-800 text-xs font-black uppercase tracking-wider border border-cyan-300">
-              🛡️ Ofertas de Alta Calidad
-            </span>
-            <h3 className="text-2xl sm:text-4xl font-black text-slate-950 leading-tight font-heading">
-              Kit Videoportero LCD 10" con Botonera Antigolpes Metálica & Antivandálica
-            </h3>
-            <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
-              Máxima durabilidad y seguridad perimetral para conjuntos, residencias y empresas. Visión nocturna, apertura remota desde smartphone y botonera metálica de alta resistencia.
-            </p>
-            <div className="pt-2 flex flex-wrap items-center gap-3">
-              <Link
-                href="/web/videoporteros"
-                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-black text-sm hover:brightness-105 shadow-md transition-all"
-              >
-                <span>Ver Videoporteros & Precios</span>
-                <ArrowRight size={16} />
-              </Link>
-              <a
-                href={`https://wa.me/593969043453?text=${encodeURIComponent("Hola ATOMIC! Deseo cotizar el Kit Videoportero LCD 10 con Botonera Antivandálica.")}`}
-                target="_blank"
-                rel="noreferrer"
-                className="px-5 py-3.5 rounded-xl bg-white hover:bg-cyan-50 text-slate-800 font-bold text-xs border border-cyan-200 shadow-sm transition-all"
-              >
-                Cotizar por WhatsApp
-              </a>
+          {/* Banner 2: Botonera Antigolpes & Videoportero (IMAGEN REAL DEL KIT LCD 10") */}
+          <div className="rounded-3xl bg-gradient-to-r from-blue-50/80 via-cyan-50/60 to-white border border-cyan-200/90 p-7 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-md relative overflow-hidden group">
+            <div className="space-y-4 relative z-10 flex-1">
+              <span className="inline-block px-3.5 py-1 rounded-full bg-cyan-100 text-cyan-800 text-xs font-black uppercase tracking-wider border border-cyan-300">
+                🛡️ Ofertas de Alta Calidad
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-black text-slate-950 leading-tight font-heading">
+                Kit Videoportero LCD 10" con Botonera Antigolpes Metálica & Antivandálica
+              </h3>
+              <p className="text-slate-700 text-xs sm:text-sm leading-relaxed">
+                Máxima durabilidad y seguridad perimetral para conjuntos, residencias y empresas. Visión nocturna, apertura remota desde smartphone y botonera metálica de alta resistencia.
+              </p>
+              <div className="pt-2 flex flex-wrap items-center gap-3">
+                <Link
+                  href="/web/videoporteros"
+                  className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-black text-sm hover:brightness-105 shadow-md transition-all"
+                >
+                  <span>Ver Videoporteros & Precios</span>
+                  <ArrowRight size={16} />
+                </Link>
+                <a
+                  href={`https://wa.me/593969043453?text=${encodeURIComponent("Hola ATOMIC! Deseo cotizar el Kit Videoportero LCD 10 con Botonera Antivandálica.")}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-5 py-3.5 rounded-xl bg-white hover:bg-cyan-50 text-slate-800 font-bold text-xs border border-cyan-200 shadow-sm transition-all"
+                >
+                  Cotizar por WhatsApp
+                </a>
+              </div>
             </div>
-          </div>
-          <div className="relative z-10 shrink-0 w-full lg:w-80 aspect-square rounded-2xl bg-white border border-cyan-200 overflow-hidden flex items-center justify-center p-3 shadow-md">
-            <SafeImage src="/images/videoporteros/videoportero-lcd10-kit.jpg" alt="Kit Videoportero LCD 10 con Botonera Antivandálica" className="object-contain w-full h-full group-hover:scale-105 transition-transform" />
+            <div className="relative z-10 shrink-0 w-full sm:w-56 lg:w-64 aspect-square rounded-2xl bg-white border border-cyan-200 overflow-hidden flex items-center justify-center p-3 shadow-md">
+              <SafeImage src="/images/videoporteros/videoportero-lcd10-kit.jpg" alt="Kit Videoportero LCD 10 con Botonera Antivandálica" className="object-contain w-full h-full group-hover:scale-105 transition-transform" />
+            </div>
           </div>
         </div>
 
@@ -5484,200 +5487,149 @@ export default function PublicWebClient({
             </div>
           )}
         </div>
+      </section>
 
-        {/* ═══════════ NUEVO APARTADO: NEWSLETTER OFICIAL (INTELIGENCIA DE IMPORTACIÓN & TÉCNICA) ═══════════ */}
-        <div className="rounded-[36px] bg-gradient-to-br from-slate-900 via-slate-950 to-blue-950 text-white p-8 sm:p-12 border border-blue-500/30 shadow-2xl relative overflow-hidden" id="newsletter-seccion">
+      {/* ═══════════ PARALLAX SECTORS SHOWCASE (5 BANDAS CON FOTO DE FONDO EN MOVIMIENTO) ═══════════ */}
+      <SectorParallaxShowcase />
+
+      {/* ═══════════ NEWSLETTER & CONSULTORÍA INTEGRAL (ALINEADOS HORIZONTALMENTE A 1920PX) ═══════════ */}
+      <section className="w-full max-w-[1920px] mx-auto px-3 sm:px-6 lg:px-10 xl:px-14 py-10 space-y-8">
+
+        {/* Newsletter Oficial */}
+        <div className="rounded-[36px] bg-gradient-to-br from-slate-900 via-slate-950 to-blue-950 text-white p-7 sm:p-10 lg:p-12 border border-blue-500/30 shadow-2xl relative overflow-hidden" id="newsletter-seccion">
           <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none" />
           
-          <div className="relative z-10 max-w-4xl space-y-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-500/20 border border-blue-400/40 text-blue-300 text-xs font-mono font-bold uppercase tracking-wider">
-              <Mail size={13} />
-              <span>The ATOMIC Gazette • Boletín Técnico Semanal</span>
+          <div className="relative z-10 grid grid-cols-1 xl:grid-cols-12 gap-8 items-center">
+            <div className="xl:col-span-6 space-y-5">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-500/20 border border-blue-400/40 text-blue-300 text-xs font-mono font-bold uppercase tracking-wider">
+                <Mail size={13} />
+                <span>The ATOMIC Gazette • Boletín Técnico Semanal</span>
+              </div>
+
+              <h3 className="text-2xl sm:text-4xl lg:text-5xl font-black font-heading leading-tight uppercase">
+                Inteligencia de Importación & Especialización Técnica
+              </h3>
+
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl">
+                Semanalmente subimos noticias y análisis de alto valor estratégico para saber <strong>qué productos importar, vender y distribuir en Ecuador</strong> con altos márgenes de ganancia, así como guías paso a paso para <strong>especializarte como técnico certificado</strong> en instalación de cerraduras smart, seguridad electrónica y citofonía.
+              </p>
+
+              <div className="pt-2 flex flex-wrap items-center gap-3">
+                <a
+                  href="https://wa.me/593989476556?text=Deseo%20suscribirme%20al%20bolet%C3%ADn%20semanal%20de%20importaci%C3%B3n%20y%20gu%C3%ADas%20t%C3%A9cnicas%20ATOMIC."
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-6 py-3.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-emerald-500/25 flex items-center gap-2"
+                >
+                  <MessageSquare size={14} />
+                  <span>Unirme al Canal VIP de WhatsApp</span>
+                </a>
+                <Link
+                  href="/web/precios-vendedor"
+                  className="px-6 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider border border-white/15 transition-all"
+                >
+                  Ver Matriz de Precios Mayorista
+                </Link>
+              </div>
             </div>
 
-            <h3 className="text-2xl sm:text-4xl lg:text-5xl font-black font-heading leading-tight uppercase">
-              Inteligencia de Importación & Especialización Técnica
-            </h3>
-
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-3xl">
-              Semanalmente subimos noticias y análisis de alto valor estratégico para saber <strong>qué productos importar, vender y distribuir en Ecuador</strong> con altos márgenes de ganancia, así como guías paso a paso para <strong>especializarte como técnico certificado</strong> en instalación de cerraduras smart, CCTV y citofonía.
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-              <div className="p-4 rounded-2xl bg-white/[0.05] border border-white/10 space-y-1">
+            <div className="xl:col-span-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="p-5 rounded-2xl bg-white/[0.05] border border-white/10 space-y-2">
                 <span className="text-emerald-400 font-mono text-xs font-bold block">01 / TENDENCIAS</span>
                 <h5 className="font-bold text-sm text-white">Artículos Más Rentables</h5>
-                <p className="text-[11px] text-slate-400 leading-relaxed">Conoce qué tecnología china y repuestos tienen mayor rotación inmediata.</p>
+                <p className="text-xs text-slate-400 leading-relaxed">Conoce qué tecnología importada y repuestos tienen mayor rotación inmediata.</p>
               </div>
 
-              <div className="p-4 rounded-2xl bg-white/[0.05] border border-white/10 space-y-1">
+              <div className="p-5 rounded-2xl bg-white/[0.05] border border-white/10 space-y-2">
                 <span className="text-blue-400 font-mono text-xs font-bold block">02 / CAPACITACIÓN</span>
                 <h5 className="font-bold text-sm text-white">Especialízate como Técnico</h5>
-                <p className="text-[11px] text-slate-400 leading-relaxed">Diagramas de conexión, configuración de apps móviles y resolución de fallas.</p>
+                <p className="text-xs text-slate-400 leading-relaxed">Diagramas de conexión, configuración de apps móviles y resolución de fallas.</p>
               </div>
 
-              <div className="p-4 rounded-2xl bg-white/[0.05] border border-white/10 space-y-1">
+              <div className="p-5 rounded-2xl bg-white/[0.05] border border-white/10 space-y-2">
                 <span className="text-amber-400 font-mono text-xs font-bold block">03 / COMUNIDAD VIP</span>
                 <h5 className="font-bold text-sm text-white">Alertas de Contenedor</h5>
-                <p className="text-[11px] text-slate-400 leading-relaxed">Entérate de la llegada de lotes antes de que salgan a la venta pública.</p>
+                <p className="text-xs text-slate-400 leading-relaxed">Entérate de la llegada de lotes antes de que salgan a la venta pública.</p>
               </div>
-            </div>
-
-            <div className="pt-3 flex flex-wrap items-center gap-3">
-              <a
-                href="https://wa.me/593989476556?text=Deseo%20suscribirme%20al%20bolet%C3%ADn%20semanal%20de%20importaci%C3%B3n%20y%20gu%C3%ADas%20t%C3%A9cnicas%20ATOMIC."
-                target="_blank"
-                rel="noreferrer"
-                className="px-6 py-3.5 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-emerald-500/25 flex items-center gap-2"
-              >
-                <MessageSquare size={14} />
-                <span>Unirme al Canal VIP de WhatsApp</span>
-              </a>
-              <Link
-                href="/web/precios-vendedor"
-                className="px-6 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider border border-white/15 transition-all"
-              >
-                Ver Matriz de Precios Mayorista
-              </Link>
             </div>
           </div>
         </div>
 
-        {/* ═══════════ NUEVO BANNER: LÍNEAS DE DISTRIBUCIÓN & PRECIOS MAYORISTAS (4K IMAGE BACKDROP) ═══════════ */}
-        <div className="rounded-[36px] border border-white/10 overflow-hidden shadow-2xl relative">
-          {/* 4K Tech Hub Background Image */}
-          <div className="absolute inset-0 z-0">
-            <img
-              src="/images/wholesale-tech-hub-4k.jpg"
-              alt="Centro Mayorista de Distribución ATOMIC"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-950/90 to-blue-950/80 backdrop-blur-[2px]" />
-          </div>
-
-          <div className="relative z-10 p-8 sm:p-14 space-y-6 text-white max-w-5xl">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs font-mono font-bold uppercase tracking-wider">
-              <Package size={13} />
-              <span>Importación Directa & Precios Mayoristas Únicos</span>
-            </div>
-
-            <h3 className="text-3xl sm:text-5xl font-black font-heading leading-tight uppercase tracking-tight">
-              Líneas de Distribución para Negocios, Técnicos & Emprendedores
-            </h3>
-
-            <p className="text-xs sm:text-base text-slate-300 leading-relaxed max-w-3xl">
-              Ponemos a tu disposición precios de mayorista directo para que inicies o escales tu negocio hoy mismo. Accede a descuentos de distribuidor <strong>a partir de solo 6 unidades surtidas</strong> con entrega express y garantía legal en todo el Ecuador.
-            </p>
-
-            {/* 4 Wholesale Categories Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
-              <div className="p-5 rounded-2xl bg-black/60 border border-white/10 space-y-2 backdrop-blur-md">
-                <span className="text-cyan-400 font-mono text-xs font-bold block">CIRCUITOS & MÓDULOS</span>
-                <h5 className="font-bold text-sm text-white">Tarjetas Electrónicas</h5>
-                <p className="text-xs text-slate-400 leading-relaxed">Fuentes conmutadas, módulos de control, relés y placas base a precio de fábrica.</p>
-                <span className="text-[10px] font-mono text-cyan-300 block pt-1 font-bold">Desde 6 unidades</span>
-              </div>
-
-              <div className="p-5 rounded-2xl bg-black/60 border border-white/10 space-y-2 backdrop-blur-md">
-                <span className="text-blue-400 font-mono text-xs font-bold block">TALLERES DE LAPTOP</span>
-                <h5 className="font-bold text-sm text-white">Repuestos de Computación</h5>
-                <p className="text-xs text-slate-400 leading-relaxed">Baterías de litio, pantallas LED slim, teclados para todas las marcas, cargadores tipo C y flex.</p>
-                <span className="text-[10px] font-mono text-blue-300 block pt-1 font-bold">Lotes para talleres</span>
-              </div>
-
-              <div className="p-5 rounded-2xl bg-black/60 border border-white/10 space-y-2 backdrop-blur-md">
-                <span className="text-amber-400 font-mono text-xs font-bold block">ALTA ROTACIÓN</span>
-                <h5 className="font-bold text-sm text-white">Tecnología China Económica</h5>
-                <p className="text-xs text-slate-400 leading-relaxed">Gadgets inteligentes, luces solares, cerraduras y accesorios de hogar para venta rápida.</p>
-                <span className="text-[10px] font-mono text-amber-300 block pt-1 font-bold">Margen 30% a 45%</span>
-              </div>
-
-              <div className="p-5 rounded-2xl bg-black/60 border border-white/10 space-y-2 backdrop-blur-md">
-                <span className="text-emerald-400 font-mono text-xs font-bold block">RESPALDO & GUÍA</span>
-                <h5 className="font-bold text-sm text-white">Capacitación Continua</h5>
-                <p className="text-xs text-slate-400 leading-relaxed">Asesoría personalizada y acompañamiento técnico directo por formar parte de nuestro equipo.</p>
-                <span className="text-[10px] font-mono text-emerald-300 block pt-1 font-bold">100% Asesoría Gratuita</span>
-              </div>
-            </div>
-
-            <div className="pt-4 flex flex-wrap items-center gap-3">
-              <a
-                href="https://wa.me/593989476556?text=Saludos%20Direcci%C3%B3n%20Comercial%20ATOMIC%2C%20solicito%20la%20lista%20de%20precios%20mayoristas%20(desde%206%20unidades)%20para%20distribuir."
-                target="_blank"
-                rel="noreferrer"
-                className="px-7 py-4 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:brightness-105 text-slate-950 font-black text-xs uppercase tracking-wider transition-all shadow-xl shadow-amber-500/30 flex items-center gap-2"
-              >
-                <span>Solicitar Lista Mayorista en WhatsApp</span>
-                <ArrowRight size={15} />
-              </a>
-              <Link
-                href="/web/precios-vendedor"
-                className="px-6 py-4 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider border border-white/20 transition-all"
-              >
-                Ver Matriz de Comisiones
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* ═══════════ NUEVO BANNER DE CIERRE: CUÉNTANOS TU PROYECTO (DISEÑO PRO EJECUTIVO) ═══════════ */}
-        <div className="rounded-[40px] bg-gradient-to-br from-[#070b16] via-[#0d162d] to-[#050812] border-2 border-blue-500/40 p-8 sm:p-14 shadow-2xl relative overflow-hidden text-white space-y-6">
+        {/* Banner de Cierre: Cuéntanos tu Proyecto */}
+        <div className="rounded-[40px] bg-gradient-to-br from-[#070b16] via-[#0d162d] to-[#050812] border-2 border-blue-500/40 p-7 sm:p-10 lg:p-12 shadow-2xl relative overflow-hidden text-white">
           <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/15 rounded-full blur-[100px] pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-600/15 rounded-full blur-[100px] pointer-events-none" />
 
-          <div className="relative z-10 max-w-4xl space-y-5">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/20 border border-blue-400/40 text-blue-300 text-xs font-mono font-bold uppercase tracking-widest">
-              <Sparkles size={14} className="text-blue-400" />
-              <span>CONSULTORÍA & DESARROLLO INTEGRAL ATOMIC</span>
+          <div className="relative z-10 grid grid-cols-1 xl:grid-cols-12 gap-8 items-center">
+            <div className="xl:col-span-7 space-y-5">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/20 border border-blue-400/40 text-blue-300 text-xs font-mono font-bold uppercase tracking-widest">
+                <Sparkles size={14} className="text-blue-400" />
+                <span>CONSULTORÍA & DESARROLLO INTEGRAL ATOMIC</span>
+              </div>
+
+              <h3 className="text-3xl sm:text-5xl font-black font-heading uppercase tracking-tight leading-tight">
+                ¿Tienes un Proyecto en Tecnología, Negocio o Software? Cuéntanoslo.
+              </h3>
+
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans max-w-3xl">
+                Ya sea que busques una comunidad activa donde enriquecer tus ideas, requieras asesoría especializada de ingeniería para implementar una infraestructura compleja, o simplemente desees realizar una compra garantizada para ti, tu negocio o tu emprendimiento: escríbenos con total confianza.
+              </p>
+
+              <div className="pt-2 flex flex-wrap items-center gap-3">
+                <a
+                  href="https://wa.me/593989476556?text=Saludos%20Direcci%C3%B3n%20Comercial%20ATOMIC%2C%20tengo%20un%20proyecto%20tecnol%C3%B3gico%20%2F%20requerimiento%20para%20mi%20negocio%20y%20deseo%20asesor%C3%ADa."
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-7 py-3.5 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:brightness-110 text-white font-black text-xs uppercase tracking-wider transition-all shadow-xl shadow-blue-600/30 flex items-center gap-2"
+                >
+                  <MessageSquare size={16} />
+                  <span>Hablar con Dirección General (WhatsApp)</span>
+                </a>
+
+                <a
+                  href="tel:+593989476556"
+                  className="px-6 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider border border-white/15 transition-all flex items-center gap-2"
+                >
+                  <PhoneCall size={14} />
+                  <span>Llamada Directa</span>
+                </a>
+
+                <Link
+                  href="/web/software"
+                  className="px-6 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider border border-white/15 transition-all"
+                >
+                  Ver Portafolio de Software
+                </Link>
+              </div>
             </div>
 
-            <h3 className="text-3xl sm:text-5xl font-black font-heading uppercase tracking-tight leading-tight">
-              ¿Tienes un Proyecto en Tecnología, Negocio o Software? Cuéntanoslo.
-            </h3>
-
-            <div className="space-y-4 text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
-              <p>
-                Ya sea que busques una comunidad activa donde compartir y enriquecer tus ideas, requieras asesoría especializada de ingeniería para implementar una infraestructura compleja, o simplemente desees realizar una compra garantizada para ti, tu negocio o tu emprendimiento: escríbenos con total confianza.
-              </p>
-              <p className="bg-white/[0.04] p-4 rounded-2xl border border-white/10 text-slate-200">
-                ⚡ En <strong>ATOMIC Electronics / AB Ingenieros</strong> integramos las mejores soluciones tecnológicas del mercado: <strong>desarrollo de software a medida</strong>, despliegue de <strong>sistemas de hardware corporativo</strong>, <strong>seguridad electrónica perimetral</strong> y <strong>control de accesos</strong>, con vinculación directa a aplicativos de <strong>gestión monetaria, control de tickets y plataformas ERP en la nube</strong>.
-              </p>
-            </div>
-
-            <div className="pt-4 flex flex-wrap items-center gap-3">
-              <a
-                href="https://wa.me/593989476556?text=Saludos%20Director%20Juan%20Guzm%C3%A1n%2C%20tengo%20un%20proyecto%20tecnol%C3%B3gico%20%2F%20requerimiento%20para%20mi%20negocio%20y%20deseo%20asesor%C3%ADa."
-                target="_blank"
-                rel="noreferrer"
-                className="px-8 py-4 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:brightness-110 text-white font-black text-xs uppercase tracking-wider transition-all shadow-xl shadow-blue-600/30 flex items-center gap-2 hover:scale-102"
-              >
-                <MessageSquare size={16} />
-                <span>Hablar con Dirección General (WhatsApp)</span>
-              </a>
-
-              <a
-                href="tel:+593989476556"
-                className="px-6 py-4 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider border border-white/15 transition-all flex items-center gap-2"
-              >
-                <PhoneCall size={14} />
-                <span>Llamada Directa</span>
-              </a>
-
-              <Link
-                href="/web/software"
-                className="px-6 py-4 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider border border-white/15 transition-all"
-              >
-                Ver Portafolio de Software
-              </Link>
+            <div className="xl:col-span-5 grid grid-cols-1 gap-3.5">
+              <div className="p-4 rounded-2xl bg-white/[0.05] border border-white/10">
+                <span className="text-cyan-300 font-mono text-[11px] font-bold uppercase tracking-wider block mb-1">Software & Agentes IA a Medida</span>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Olvídate de plantillas rígidas: desarrollamos agentes inteligentes operables por <strong>voz o texto</strong>, gestión monetaria, tickets y automatización exclusiva.
+                </p>
+              </div>
+              <div className="p-4 rounded-2xl bg-white/[0.05] border border-white/10">
+                <span className="text-blue-300 font-mono text-[11px] font-bold uppercase tracking-wider block mb-1">Infraestructura & Respaldo Eléctrico</span>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Despliegue de hardware corporativo, seguridad perimetral, accesos inteligentes y paneles/líneas de respaldo energético urbano.
+                </p>
+              </div>
+              <div className="p-4 rounded-2xl bg-white/[0.05] border border-white/10">
+                <span className="text-emerald-300 font-mono text-[11px] font-bold uppercase tracking-wider block mb-1">Importación Directa Multipaís</span>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Abastecimiento garantizado desde paquetes de 6 unidades o importación bajo pedido con respaldo integral ATOMIC.
+                </p>
+              </div>
             </div>
           </div>
         </div>
-
 
       </section>
 
       {/* ═══════════ BOTTOM BRANDING & CONFIDENCE (APPIT BENTO CARDS) ═══════════ */}
-      <section className="w-full max-w-7xl mx-auto px-6 pt-12 pb-20 border-t border-slate-200 mt-12">
+      <section className="w-full max-w-[1920px] mx-auto px-3 sm:px-6 lg:px-10 xl:px-14 pt-12 pb-20 border-t border-slate-200 mt-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
           <div className="p-8 rounded-3xl bg-white border border-slate-200/90 space-y-3 shadow-md hover:shadow-lg transition-all">
             <Truck className="mx-auto text-blue-600" size={32} />

@@ -3,19 +3,6 @@ import { prisma } from '@/lib/prisma';
 import { sendWhatsAppMessage, sendWhatsAppMedia } from '@/lib/whatsapp/service';
 import { formatRetryMetadata } from '@/lib/whatsapp/auto-retry';
 import { detectArticleAndCategory } from '@/lib/whatsapp/pauta-assets';
-import { processConversationalBotMessage } from '@/lib/bot/botBrain';
-import { 
-    isJuan, 
-    processJuanCommand, 
-    isCristina,
-    processCristinaCommand,
-    findAdvisorByPhone,
-    processAdvisorCommand,
-    karenState, 
-    notifyJuanIncomingBurst, 
-    notifyJuanHotOpportunity, 
-    notifyJuanUncatalogedChat 
-} from '@/lib/karen/karenBrain';
 
 const NVIDIA_API_KEY = process.env.NVIDIA_API_KEY || "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";
 const NVIDIA_MODEL = "meta/llama-3.2-90b-vision-instruct";
@@ -23,167 +10,205 @@ const NVIDIA_MODEL = "meta/llama-3.2-90b-vision-instruct";
 const HR_GROUP_LINK = "https://chat.whatsapp.com/EYwCyfg0mF99nmNEhBPCFt";
 const HR_PAGE_LINK = "https://atomiccotizador.shop/web/contrataciones";
 
+export type CrmCategoryKey =
+    | 'residencial'
+    | 'empresarial'
+    | 'consolas'
+    | 'postulante'
+    | 'soporte'
+    | 'sin_especificar'
+    | 'envios'
+    | 'general';
+
+export interface CrmClassificationResult {
+    roleType: 'EMPLEO' | 'CLIENTE';
+    category: CrmCategoryKey;
+}
+
+const CRM_TAG_META: Record<string, { color: string }> = {
+    EMPLEO: { color: '#F59E0B' },
+    CLIENTE: { color: '#10B981' },
+    'CAT:RESIDENCIAL': { color: '#3B82F6' },
+    'CAT:EMPRESARIAL': { color: '#6366F1' },
+    'CAT:CONSOLAS': { color: '#A855F7' },
+    'CAT:POSTULANTE': { color: '#F59E0B' },
+    'CAT:SOPORTE': { color: '#EF4444' },
+    'CAT:ENVIOS': { color: '#06B6D4' },
+    'CAT:SIN_ESPECIFICAR': { color: '#64748B' },
+    'CAT:GENERAL': { color: '#0EA5E9' }
+};
+
 /**
- * Matriz de Conocimiento Oficial de ATOMIC Electronics / ATOMIC Industrias
- * Contiene las líneas bandera, modelos, precios de referencia y casos de uso.
+ * Portafolio conciso oficial de ATOMIC Ecuador para Karen (Asesora Comercial Senior)
  */
-const CATALOGO_MAESTRO_ATOMIC = `
-PORTAFOLIO OFICIAL Y LÍNEAS PRINCIPALES DE ATOMIC ECUADOR:
+const CATALOGO_RESUMIDO_ATOMIC = `
+PORTAFOLIO ATOMIC ECUADOR (https://atomiccotizador.shop/web):
+1. SEGURIDAD RESIDENCIAL & DOMÓTICA:
+   - Cámaras Wi-Fi hogar: IMOU Ranger 360° $35.80 + IVA, IMOU Mini PT Color $39.10 + IVA, Doble Lente 360° $42.50 + IVA, EZVIZ H6C $43.99 + IVA (Envío Gratis). Web: /web/camaras-hogar
+   - Cámaras exterior IP66: Wi-Fi $47.82 + IVA, Doble Lente IP81 $63.77 + IVA, Kit NVR $95 + IVA, IMOU Cruiser Triple 11MP $135 + IVA. Web: /web/camaras-exterior
+   - Videoporteros: Residencial 2 Pantallas HD $285 (Envío Gratis), Hikvision DS-KIS212 $92.40 + IVA, Kit LCD 10" Antivandálico, Centrales Intelbras edificios (4 a 24 deptos desde $104.50 + IVA), Kocom 3 deptos $149. Web: /web/videoporteros
+   - Cercos Eléctricos (solo kit, materiales/mano de obra aparte): JFL Plata $89 + IVA, JFL Oro $109 + IVA, JFL Platino App $137 + IVA, Hagroy i8 $98 + IVA, Yanex $90 + IVA. Visita técnica Quito centro/norte/sur gratis; valles $25-$45; provincias $50-$100. Web: /web/cercos-electricos
+   - Cerraduras Smart & Biométricos: ZKTeco SenseFace 2A (facial/huella/App gratis) $175, Portero Multifunción ZKTeco $198.99 + IVA. Web: /web/cerraduras-smart y /web/portero-multifuncion
 
-1. VIDEOPORTEROS Y CITOFONÍA (Residencial y Edificios):
-- Portero de Video Residencial 2 Pantallas HD: $285.00 (Incluye frente exterior HD + 2 monitores interiores a color + ¡Envío Gratis!). Para casas y oficinas.
-- Kit Videoportero Hikvision DS-KIS212: $92.40 + IVA (Monitor LCD 7", audio supresión de ruido, calidad HD TVI, botón apertura).
-- Kit Citofonía KOCOM 3 Departamentos: $149.00 (Frente metálico exterior + 3 citófonos KDP-601A originales KOCOM).
-- Centrales Colectivas INTELBRAS Collective (Edificios y Condominios):
-  * Collective 4i (4 deptos): $121.81 + IVA
-  * Collective 8i (8 deptos): $134.20 + IVA
-  * Collective 12 (12 deptos): $104.50 + IVA
-  * Collective 12i (12 deptos): $143.00 + IVA
-  * Collective 16i (16 deptos): $155.38 + IVA
-  * Collective 20i (20 deptos): $176.46 + IVA
-  * Collective 24i (24 deptos): $190.18 + IVA
-  * Accesorios: Citófono CT-A1 ($11.55), TDMI 300 2 hilos ($15.40), Tags doble frecuencia ($3.85). Desvío a celular y apertura remota.
+2. EMPRESAS, ACCESO & FERRETERÍA INDUSTRIAL:
+   - Torniquetes ZKTeco: Trípode TS1000 $720, Flap FBL4000 $1,850, Molinete FHT2300 $2,950. Web: /web/torniquetes
+   - Barreras Vehiculares Dítec 2027: $1,928.90 + IVA (motor brushless 24V, hasta 6m). Web: /web/barreras-ditec
+   - Antenas Antihurto Retail: RF Dual $576 + IVA, Acrílico Crystal $745 + IVA, Dahua Mercury $499.96 + IVA. Barra antipánico $98 + IVA. Web: /web/antenas-antihurto
+   - Energía & Respaldo Urbano: Paneles/transferencia ATS, líneas alta capacidad edificios, generadores y mantenimiento preventivo desde $50 (básico) / $180+ (diésel/ATS). Web: /web/generadores y /web/mantenimiento-generadores
+   - Ferretería & Acabados: Carros de carga/herramientas hasta 200kg (/web/carros-industriales), planchas mármol PVC desde $27 y paneles WPC $9.09 (/web/paneles-ranurados), plantas bloqueras.
 
-2. CONTROL DE ACCESO Y PEATONAL (Torniquetes y Biometría):
-- Biométrico ZKTeco SenseFace 2A con Videoportero por App: $175.00 (Reconocimiento facial ultra rápido, huella dactilar, tarjetas RFID, PIN, videollamada a App móvil, WiFi 100% inalámbrico).
-- Torniquete Trípode ZKTeco TS1000 Pro: $720.00 (Acero inoxidable 304, paso bidireccional, compatible con huella y facial).
-- Torniquete Flap Barrier ZKTeco FBL4000 Pro: $1,850.00 (Aletas retráctiles de alta gama en acrílico/vidrio, paso fluido y elegante).
-- Torniquete Molinete Cuerpo Entero ZKTeco FHT2300: $2,950.00 (Máxima seguridad industrial, reja rotativa anti-intrusión).
-- Torniquete Horizontal 2 Puertas de Vidrio: $1,650.00 (Control peatonal para lobbies corporativos).
-- Torniquete Swing Speed de Cristal: $2,100.00 (Puertas batientes de vidrio templado de alta velocidad).
+3. DISTRIBUCIÓN MAYORISTA (PAQUETES DESDE 6 UNIDADES + ASESORÍA):
+   - Repuestos laptop (pantallas, baterías, cargadores, teclados), Raspberry Pi/placas lógicas/relés, cables, audífonos, drones, mini cámaras espía y electrónica económica masiva. Web: /web/repuestos y /web/precios-vendedor
+   - Importación directa verificada multi-país bajo pedido: /web/bajo-pedido
 
-3. SEGURIDAD PERIMETRAL Y CERCOS ELÉCTRICOS:
-- Catálogo web oficial: https://atomiccotizador.shop/web/cercos-electricos
-- Foto de pauta oficial: /images/cercos/kits-cercos-electricos-pauta.jpg
-- Kit Plata JFL (Cód 15023): $89.00 + IVA (Electrificador JFL, control remoto, batería 12V 4Ah, sirena 20W, letrero peligro).
-- Kit Oro JFL (Cód 11207): $109.00 + IVA (Electrificador JFL, control, batería, sirena 20W con caja metálica protectora).
-- Kit Platino JFL con App Móvil (Cód 11208): $137.00 + IVA (Electrificador JFL, módulo Ethernet ME-05 para armar/desarmar desde celular con notificaciones, sirena 30W con caja, batería 12V 4Ah, control, letrero).
-- Kit Platino Hagroy i8 (Cód 15083): $98.00 + IVA (Electrificador Hagroy i8 alto voltaje, control, batería 12V 4Ah, letrero, sirena 20W).
-- Kit Hagroy Yanex (Cód 11258): $90.00 + IVA (Electrificador Yanex, control, batería 12V 4Ah, letrero, sirena 20W).
-- AVISO OBLIGATORIO: El precio de materiales (alambrado, postes, aisladores) y mano de obra de instalación NO está incluido en el valor del kit electrificador.
-- VISITA TÉCNICA: Quito (centro, norte, sur) GRATIS. Valles $25-$45. Provincia $50-$100.
-
-4. CÁMARAS DE SEGURIDAD PARA EL HOGAR Y FAMILIA (100% Wi-Fi Interiores):
-- Catálogo web oficial: https://atomiccotizador.shop/web/camaras-hogar
-- Fotos oficiales disponibles: IMOU Ranger (10899), IMOU Mini PT Color (13067), Doble Lente 360° (21045), EZVIZ H6C.
-- Enfoque: Amas de casa, mamás, cuidado de bebés/niños, mascotas y adultos mayores.
-- Características clave: 100% Wi-Fi, audio bidireccional (habla y escucha desde el celular), visión nocturna, modo privacidad con 1 toque en app, sin mensualidades.
-- 1. IMOU Ranger 360° 3MP (Cód 10899): $35.80 + IVA (La opción más accesible y querida. Cobertura panorámica 360°, detección humana IA, modo privado, audio 2 vías).
-- 2. IMOU Mini PT Ranger 360° 3MP Full Color (Cód 13067): $39.10 + IVA (¡NUEVA! Visión nocturna a todo color con focos cálidos, sirena disuasiva activa, detección humana IA).
-- 3. Cámara Robótica Doble Lente 360° (Cód 21045): $42.50 + IVA (Doble cámara simultánea: un lente fijo a la puerta/cuna + un lente giratorio 360°, sin puntos ciegos).
-- 4. EZVIZ H6C 3MP Panorámica (Cód H6C-3MP): $43.99 + IVA (Seguimiento automático de movimiento, modo suspensión, audio bidireccional, ¡Envío Gratis a todo el país!).
-- Accesorios opcionales: Tarjeta MicroSD Kingston Original 64GB ($11.50) o 128GB ($18.00) para semanas de grabación continua.
-- Facilidad: Plug & Play fácil en 2 minutos (no requiere técnico obligatorio, pero si el cliente desea instalación técnica en pared/techo se puede coordinar).
-
-5. AUDIO, GAMING Y BARRAS DE SONIDO:
-- Catálogo web oficial: https://atomiccotizador.shop/web/barra-de-sonido
-- Barra de Sonido Gamer Bluetooth 1 HORA BOC241N: ¡Precio de Lanzamiento $28.90 + IVA!
-  * Potencia: 10W RMS con sonido cristalino sin distorsión y bajos profundos.
-  * Iluminación: 8 modos dinámicos de luz LED RGB para setups de PC, gaming y habitaciones.
-  * Batería: 2000 mAh recargable para más de 5 horas continuas de música sin cables.
-  * Conexiones 4 en 1: Bluetooth 5.0, cable AUX 3.5mm (para PC/Laptop/TV), puerto USB y ranura MicroSD/TF.
-  * Control y llamadas: Perilla ergonómica superior para volumen y micrófono manos libres para llamadas o Discord.
-  * 3 AÑOS DE GARANTÍA OFICIAL directa de ATOMIC.
-- Fotos oficiales disponibles: /images/audio/barra-sonido-boc241n-1hora-precio-28.jpg y /images/audio/barra-sonido-boc241n-1hora-futuro.jpg
-
-6. CÁMARAS DE SEGURIDAD PARA EXTERIORES E INTEMPERIE IP66 (Wi-Fi & NVR):
-- Catálogo web oficial: https://atomiccotizador.shop/web/camaras-exterior
-- Protección total contra lluvias extremas de la Sierra y humedad de la Costa con certificación IP66/IP67.
-- Modelos oficiales y promociones:
-  * Cámara Exterior Wi-Fi IP66 (Super Oferta): $47.82 + IVA (Instalación opcional por solo $20.99 adicionales).
-  * Cámara Doble Lente Exterior IP81 con Pan-Tilt 360°: $63.77 + IVA c/u (en combo de 3) o $20.99 con instalación. 2 cámaras en 1 sola: lente fijo + lente motorizado con autotracking y sirena.
-  * ATOMIC COMBO Kit NVR Wi-Fi NKS4223WBTH (Cód 10115): $95.00 + IVA. Grabador NVR centralizado inalámbrico + cámaras de intemperie con salida HDMI/VGA.
-  * IMOU Cruiser Triple Lente 11MP Pan-Tilt 360° (Cód 12759): $135.00 + IVA. Buque insignia con 3 lentes independientes, 11MP combinados, visión Full-Color 24/7 y sirena de 110dB.
-  * IMOU Titan Pro Aurora Full-Color: $115 solo equipo / $145 instalado (1 cam); $110 equipo / $130 instalado (2 cam); $105 equipo / $115 instalado (3 cam).
-- Fotos oficiales: /images/camaras-exterior/camara-imou-cruiser-triple-11mp.jpg, /images/camaras-exterior/camara-doble-lente-ip81-exterior.jpg, /images/camaras-exterior/camara-exterior-ip66-wifi.jpg
-
-7. PORTERO ELÉCTRICO MULTIFUNCIÓN ZKTECO CON APP MÓVIL (BIOMETRÍA FACIAL):
-- Catálogo web oficial: https://atomiccotizador.shop/web/portero-multifuncion
-- Precio de Lanzamiento Oficial: $198.99 + IVA
-- Capacidades de ingeniería:
-  * 1,500 Rostros con algoritmo anti-spoofing en luz visible (reconoce en menos de 0.3s).
-  * 3,000 Huellas digitales con sensor de alta precisión SilkID.
-  * 3,000 Tarjetas y llaveros de proximidad RFID 125kHz.
-  * 150,000 Registros de auditoría con fecha, hora y foto.
-  * Conexión Wi-Fi y App ZKBio Zlink oficial 100% GRATIS de por vida (videollamada en celular y apertura de chapa a distancia sin suscripciones).
-  * Salida de relé para cerradura eléctrica, magnética o portón vehicular.
-- Fotos oficiales: /images/porteros/portero-inteligente-app-movil-198.jpg y /images/porteros/portero-zkteco-multifuncion-zkbio.jpg
-
-8. BARRERAS VEHICULARES AUTOMÁTICAS DÍTEC SERIE 2027 (ALTO FLUJO & CORPORATIVO):
-- Catálogo web oficial: https://atomiccotizador.shop/web/barreras-ditec
-- Precio de Lanzamiento Exclusivo: $1,928.90 + IVA
-- Tecnología de punta europea:
-  * Motor Brushless 24V de uso continuo intensivo (100% duty cycle sin sobrecalentamiento).
-  * Mástiles de 3m, 4m y hasta 6 metros de longitud.
-  * Velocidad ultra rápida regulable de 2.0 a 6.0 segundos.
-  * Sistema antiaplastamiento con encoder digital de precisión y fotocélulas de seguridad.
-  * Integrable con TAGs RFID de telepeaje vehicular, cámaras de reconocimiento de placas LPR y tarjetas de proximidad.
-  * Ideal para condominios residenciales, centros comerciales, hospitales y parques logísticos.
-- Fotos oficiales: /images/barreras/barrera-ditec-tecnologia-2027-precio.jpg y /images/barreras/barrera-ditec-serie-2027-futuro.jpg
-
-9. SISTEMAS ANTIHURTO Y ANTENAS EAS PARA RETAIL ("NO DEJES QUE TE ROBEN"):
-- Catálogo web oficial: https://atomiccotizador.shop/web/antenas-antihurto
-- Reduce en más del 98% el robo hormiga en tiendas de ropa, bazares, calzado y farmacias.
-- Modelos disponibles:
-  * Sistema Antihurto RF Dual Estándar (Par de pedestales 8.2MHz): $576.00 + IVA. Cubre pasillos de hasta 1.40m, alarma de 95dB y luz LED estroboscópica roja.
-  * Sistema Antihurto Acrílico Crystal de Lujo (Par de pedestales transparentes): $745.00 + IVA. Cuerpo de acrílico cristalino de alta densidad para centros comerciales y boutiques de lujo, con rango de hasta 1.80m y tecnología DSP sin falsas alarmas.
-  * Accesorios consumibles: Tags rígidos mini/golf desde $0.12 c/u, desactivador magnético de 12,000 Gauss a $45.00, rollos de etiquetas adhesivas 4x4 a $28.00.
-- Fotos oficiales: /images/antihurto/antenas-antihurto-par-576.jpg y /images/antihurto/antenas-antihurto-retail-seguridad.jpg
-
-10. MANTENIMIENTO PREVENTIVO Y REPARACIÓN DE GENERADORES ELÉCTRICOS:
-- Catálogo web oficial: https://atomiccotizador.shop/web/mantenimiento-generadores
-- Soluciones energéticas integrales para plantas eléctricas residenciales, comerciales e industriales a gasolina y diésel.
-- Planes de servicio:
-  * Servicio Básico Preventivo: ¡Precio Promocional $50.00! (Limpieza del equipo, cambio de aceite de motor, limpieza de bujía/inyector básico y prueba de voltaje de salida bajo carga).
-  * Mantenimiento Industrial & Diésel Pesado: Desde $180.00 (Filtros de aceite/combustible/separador de agua, revisión de sistema de refrigeración, diagnóstico de módulo de control y calibración de tablero de transferencia ATS).
-- Recomendaciones técnicas:
-  * Equipos a gasolina: Mantenimiento preventivo cada 50-100 horas de uso o cada 3 meses.
-  * Equipos diésel: Cada 250 horas o cada 6 meses.
-  * Plantas industriales: Cada 500-1000 horas o anual integral con banco de carga.
-  * Arrancar el generador al menos 15 minutos cada 15 días para evitar degradación de combustible en carburador.
-- Fotos oficiales: /images/generadores/mantenimiento-generadores-electricos-50.jpg
-
-11. TECNOLOGÍA GLOBAL Y COMPUTACIÓN:
-- Más de 9,000 productos en catálogo: Smartphones de alta gama, Laptops corporativas, UPS Powest/APC, Domótica y cerraduras digitales inteligentes.
-- Tienda y catálogo completo en línea: https://atomiccotizador.shop/web
-- Envíos a todo el Ecuador con entrega rápida y garantía oficial.
+4. ELECTRÓNICA PRO, SOFTWARE IA, HOGAR & ENTRETENIMIENTO:
+   - Apple, Samsung, teléfonos, tablets, laptops, mini PCs y servidores TI (/web/apple, /web/laptops, /web/servidores)
+   - Software administrativo a medida con Agentes de IA operados por voz o texto (/web/software)
+   - Hogar: Encimeras, hornos, campanas, luminarias LED (/web/cocinas, /web/iluminacion)
+   - Entretenimiento: Barra Gamer 1 HORA BOC241N $28.90 + IVA, parlantes pro y gama habitual, consolas PS4/PS5/Switch, mini consolas, mandos, drones y cámaras deportivas (/web/barra-de-sonido, /web/consolas, /web/mandos)
 `;
 
 const STOP_WORDS = new Set([
-  'hola', 'buenas', 'buenos', 'tardes', 'dias', 'noches', 'precio', 'precios', 
-  'tienen', 'costo', 'cotizar', 'amigo', 'para', 'cuanto', 'vale', 'quiero', 
-  'necesito', 'busco', 'con', 'una', 'uno', 'unos', 'unas', 'casa', 'empresa', 
-  'oficina', 'local', 'favor', 'informacion', 'info', 'gracias', 'mas', 'menos'
+    'hola', 'buenas', 'buenos', 'tardes', 'dias', 'días', 'noches', 'precio', 'precios',
+    'tienen', 'costo', 'cotizar', 'amigo', 'para', 'cuanto', 'cuánto', 'vale', 'quiero',
+    'necesito', 'busco', 'con', 'una', 'uno', 'unos', 'unas', 'casa', 'empresa',
+    'oficina', 'local', 'favor', 'informacion', 'información', 'info', 'gracias', 'mas', 'más'
 ]);
 
 const SYNONYMS: Record<string, string[]> = {
-  'torniquete': ['torniquete', 'molinete', 'ts1000', 'fbl4000', 'fht2300'],
-  'torniquetes': ['torniquete', 'molinete', 'ts1000', 'fbl4000', 'fht2300'],
-  'timbre': ['videoportero', 'portero', 'kocom', 'ds-kis212'],
-  'citofono': ['citofono', 'citofonía', 'kocom', 'collective'],
-  'citofonos': ['citofono', 'citofonía', 'kocom', 'collective'],
-  'videoportero': ['videoportero', 'kocom', 'hikvision', 'collective'],
-  'videoporteros': ['videoportero', 'kocom', 'hikvision', 'collective'],
-  'camara': ['imou', 'hikvision', 'ranger', '1080p'],
-  'camaras': ['imou', 'hikvision', 'ranger', '1080p'],
-  'cámara': ['imou', 'hikvision', 'ranger', '1080p'],
-  'cámaras': ['imou', 'hikvision', 'ranger', '1080p'],
-  'cerco': ['cerco', 'jfl', 'hagroy', 'electrificador'],
-  'cercos': ['cerco', 'jfl', 'hagroy', 'electrificador'],
-  'barra': ['antipanico', 'panico'],
-  'antipanico': ['antipanico', 'barra', 'emergencia'],
-  'antipánico': ['antipanico', 'barra', 'emergencia'],
-  'biometrico': ['senseface', 'zkteco', 'facial'],
-  'biométrico': ['senseface', 'zkteco', 'facial'],
-  'antena': ['mercury', 'antihurto', 'rf mono', 'dahua'],
-  'antenas': ['mercury', 'antihurto', 'rf mono', 'dahua'],
-  'antihurto': ['mercury', 'antihurto', 'rf mono']
+    torniquete: ['torniquete', 'molinete', 'ts1000', 'fbl4000', 'fht2300'],
+    torniquetes: ['torniquete', 'molinete', 'ts1000', 'fbl4000', 'fht2300'],
+    timbre: ['videoportero', 'portero', 'kocom', 'ds-kis212'],
+    citofono: ['citofono', 'citofonía', 'kocom', 'collective'],
+    citofonos: ['citofono', 'citofonía', 'kocom', 'collective'],
+    videoportero: ['videoportero', 'kocom', 'hikvision', 'collective'],
+    videoporteros: ['videoportero', 'kocom', 'hikvision', 'collective'],
+    camara: ['imou', 'hikvision', 'ranger', 'ezviz'],
+    camaras: ['imou', 'hikvision', 'ranger', 'ezviz'],
+    cerco: ['cerco', 'jfl', 'hagroy', 'electrificador'],
+    cercos: ['cerco', 'jfl', 'hagroy', 'electrificador'],
+    biometrico: ['senseface', 'zkteco', 'facial'],
+    antena: ['mercury', 'antihurto', 'rf mono', 'dahua'],
+    antihurto: ['mercury', 'antihurto', 'rf mono'],
+    parlante: ['parlante', 'boc241n', 'barra', 'sonido'],
+    consola: ['playstation', 'ps4', 'ps5', 'nintendo', 'switch', 'consola'],
+    mando: ['mando', 'dualsense', 'control']
 };
 
-async function searchLiveProducts(text: string) {
-    const rawWords = text.toLowerCase().replace(/[^a-záéíóúüñ0-9\s]/gi, '').split(/\s+/).filter(w => w.length > 2);
-    const keywords: string[] = [];
+/**
+ * Clasifica de forma exacta la conversación en las categorías oficiales del CRM (EMPLEO vs CLIENTE + categoría)
+ */
+export function classifyMessageForCrm(fullText: string): CrmClassificationResult {
+    const cleanText = fullText
+        .replace(/\[PAUTA_META:[\s\S]*?\]/g, (m) => m.toLowerCase())
+        .toLowerCase()
+        .trim();
 
+    const isStrictRecruitment =
+        /\b(empleo|vacante|postular|postulacion|postulación|hoja de vida|curriculum|cv|trabajar con ustedes|quiero trabajar|busco trabajo|puesto de trabajo|plan laboral|aspirante|me interesa el puesto|me interesa trabajar|contrataciones)\b/i.test(cleanText) ||
+        (/\b(asesor comercial|vendedor|asesor de ventas)\b/i.test(cleanText) && /\b(postular|aplicar|vacante|trabajar|cv|sueldo|comisi[oó]n|interesado)\b/i.test(cleanText)) ||
+        (/\b(ingresos extra|trabajo desde casa|teletrabajo|empleo remoto|hay trabajo|hay vacantes|ofrecen trabajo|oferta laboral)\b/i.test(cleanText)) ||
+        /^(info empleo|info trabajo|info vacante|info postulaci[oó]n|postulo|me postulo)\.?$/i.test(cleanText) ||
+        cleanText.includes('pauta-reclutamiento') ||
+        cleanText.includes('convocatoria oficial');
+
+    if (isStrictRecruitment) {
+        return { roleType: 'EMPLEO', category: 'postulante' };
+    }
+
+    const isGreetingOnly = /^(hola|buenas|buen d[ií]a|buenas tardes|buenas noches|informaci[oó]n|info|saludos|que tal|qu[eé] tal|ayuda|me ayuda|precio|precios|cat[aá]logo|catalogo)\.?$/i.test(cleanText);
+    const hasProductSignal = /(c[aá]mara|videoportero|portero|citofon|ditec|barrera|antena|antihurto|torniquet|cerco|generador|laptop|iphone|apple|samsung|tablet|servidor|raspberry|rel[eé]|placa|repuesto|pantalla|parlante|barra|dron|consola|ps4|ps5|nintendo|mando|cocina|encimera|horno|campana|m[aá]rmol|wpc|cerradura|biom[eé]tric|ferreter|herramienta|carro|software|agente|ia\b|mayorista|6 unidades|garant[ií]a|soporte|reparaci[oó]n|falla|env[ií]o|domicilio)/i.test(cleanText);
+
+    if (!cleanText || isGreetingOnly || (cleanText.length < 28 && !hasProductSignal)) {
+        return { roleType: 'CLIENTE', category: 'sin_especificar' };
+    }
+
+    if (/(playstation|ps4|ps5|xbox|nintendo|switch|consola|consolas|mini consola|mando|mandos|gamepad|videojuego|joystick|joy-con|gamer|parlante|barra de sonido|dron|c[aá]mara deportiva)/i.test(cleanText)) {
+        return { roleType: 'CLIENTE', category: 'consolas' };
+    }
+
+    if (/(garant[ií]a|da[ñn]o|falla|no funciona|roto|reparaci[oó]n|averiado|soporte|servicio t[eé]cnico|mantenimiento)/i.test(cleanText)) {
+        return { roleType: 'CLIENTE', category: 'soporte' };
+    }
+
+    if (/(empresa|local|negocio|bodega|oficina|antena|antihurto|torniquete|barrera|ditec|control de acceso|establecimiento|sucursal|mayorista|6 unidades|emprendimiento|distribuci[oó]n|servidor|software|agente ia|ferreter|edificio|alto voltaje|panel de abastecimiento)/i.test(cleanText)) {
+        return { roleType: 'CLIENTE', category: 'empresarial' };
+    }
+
+    if (/(c[aá]mara|videoportero|portero|citofono|citofon[ií]a|hogar|casa|conjunto|residencial|alarma|cerco|domicilio|apartamento|departamento|cerradura|cocina|encimera|horno|campana|m[aá]rmol|wpc|dom[oó]tica)/i.test(cleanText)) {
+        return { roleType: 'CLIENTE', category: 'residencial' };
+    }
+
+    if (/(env[ií]o|servientrega|domicilio|quito|guayaquil|cuenca|ambato|machala|manta|portoviejo|loja|ibarra|entrega|sector)/i.test(cleanText)) {
+        return { roleType: 'CLIENTE', category: 'envios' };
+    }
+
+    return { roleType: 'CLIENTE', category: 'general' };
+}
+
+/**
+ * Guarda de manera atómica la clasificación (EMPLEO vs CLIENTE y Categoría CRM) en PostgreSQL
+ */
+async function persistCrmClassification(conversationId: string, classification: CrmClassificationResult) {
+    try {
+        const categoryTagName = `CAT:${classification.category.toUpperCase()}`;
+        const desiredTagNames = [classification.roleType, categoryTagName];
+
+        const existingConv = await prisma.wAConversation.findUnique({
+            where: { id: conversationId },
+            include: { tags: true }
+        });
+        if (!existingConv) return;
+
+        // Preservar etiquetas manuales ajenas a clasificación automática, reemplazando solo EMPLEO/CLIENTE y CAT:*
+        const staleTagIds = existingConv.tags
+            .filter(t => (t.name === 'EMPLEO' || t.name === 'CLIENTE' || t.name.startsWith('CAT:')) && !desiredTagNames.includes(t.name))
+            .map(t => ({ id: t.id }));
+
+        const tagRecords = await Promise.all(
+            desiredTagNames.map(name =>
+                prisma.wATag.upsert({
+                    where: { name },
+                    update: {},
+                    create: {
+                        name,
+                        color: CRM_TAG_META[name]?.color || '#3B82F6'
+                    }
+                })
+            )
+        );
+
+        let nextStatus = existingConv.status;
+        if (classification.roleType === 'EMPLEO') {
+            nextStatus = 'AUTO_REGISTER';
+        } else if (existingConv.status === 'AUTO_REGISTER' || existingConv.status === 'NEW') {
+            nextStatus = 'OPEN';
+        }
+
+        await prisma.wAConversation.update({
+            where: { id: conversationId },
+            data: {
+                status: nextStatus,
+                priority: classification.roleType === 'EMPLEO' || classification.category === 'empresarial' ? 'HIGH' : existingConv.priority,
+                tags: {
+                    ...(staleTagIds.length > 0 ? { disconnect: staleTagIds } : {}),
+                    connect: tagRecords.map(t => ({ id: t.id }))
+                }
+            }
+        });
+    } catch (e: any) {
+        console.warn('[KAREN_CRM_CLASSIFY_WARN]', e?.message || e);
+    }
+}
+
+async function searchLiveProducts(text: string) {
+    const rawWords = text
+        .toLowerCase()
+        .replace(/[^a-záéíóúüñ0-9\s]/gi, '')
+        .split(/\s+/)
+        .filter(w => w.length > 2);
+
+    const keywords: string[] = [];
     for (const w of rawWords) {
         if (STOP_WORDS.has(w)) continue;
         if (SYNONYMS[w]) {
@@ -193,118 +218,86 @@ async function searchLiveProducts(text: string) {
         }
     }
 
-    const uniqueKeywords = Array.from(new Set(keywords));
+    const uniqueKeywords = Array.from(new Set(keywords)).slice(0, 8);
     if (uniqueKeywords.length === 0) return [];
 
     try {
-        const products = await prisma.product.findMany({
+        return await prisma.product.findMany({
             where: {
                 isActive: true,
-                price: { gt: 5 },
+                price: { gt: 1 },
                 OR: uniqueKeywords.map(term => ({
                     name: { contains: term, mode: 'insensitive' }
                 }))
             },
-            take: 6,
-            orderBy: { price: 'desc' },
+            take: 5,
+            orderBy: { stock: 'desc' },
             select: {
                 id: true,
                 sku: true,
                 name: true,
                 price: true,
-                stock: true,
-                description: true
+                stock: true
             }
         });
-        return products;
-    } catch (e) {
+    } catch {
         return [];
     }
 }
 
 /**
- * Motor Autónomo de Inteligencia Artificial para WhatsApp Cloud API
- * Asesor Comercial Senior Consultivo + Reclutamiento de Talento
+ * Fallback natural, amigable y conciso si las APIs externas de IA no responden
  */
-
-function generateExpertConsultantFallback(messageText: string, contactName: string, isRecruitment: boolean): string {
+function generateNaturalConsultantFallback(
+    messageText: string,
+    contactName: string,
+    classification: CrmClassificationResult
+): string {
     const textLower = (messageText || '').toLowerCase();
-    const namePart = contactName && contactName !== 'Cliente WhatsApp' ? ` ${contactName}` : '';
+    const firstName = contactName && contactName !== 'Cliente WhatsApp' ? contactName.split(' ')[0] : '';
+    const greeting = firstName ? `¡Hola ${firstName}!` : '¡Hola!';
 
-    if (isRecruitment) {
-        return `¡Hola${namePart}! 👋 Qué gusto que te hayas comunicado con nosotros. Tu postulación para Asesor Comercial en ATOMIC Electronics ha sido recibida. ✅\n\n🚀 *Tenemos cupos activos esta semana*, así que tu timing es perfecto.\n\n💰 *Plan salarial progresivo:*\n• Mes 1: $100 Fijo + 20% comisión + Bono $50\n• Mes 2: $200 Fijo + 20% comisión + Bono $65\n• Mes 3: $450 Fijo (Contrato de Ley) + Comisiones Corp.\n\n🏆 *Bonificaciones semanales extra:*\n🥉 $15 · 🥈 $35 · 🥇 $75 · 👑 $50 MVP\n\nLee todos los detalles aquí:\n📄 ${HR_PAGE_LINK}\n\nÚnete ya a nuestro grupo oficial:\n📲 ${HR_GROUP_LINK}\n\nAl ingresar al grupo, tu coordinadora te asignará tu categoría de productos y te explicará todo paso a paso. ¡Bienvenido al equipo! 💼`;
+    if (classification.roleType === 'EMPLEO') {
+        return `${greeting} 👋 Qué gusto saludarte. Recibimos tu interés para postular como *Asesor Comercial en ATOMIC Electronics*.\n\n✅ Tenemos cupos disponibles esta semana. Puedes revisar todo el plan salarial y detalles aquí:\n🌐 ${HR_PAGE_LINK}\n\nY únete directo a nuestro grupo de bienvenida para iniciar tu inducción:\n📲 ${HR_GROUP_LINK}`;
     }
 
-    // DISCOVERY DE BIENVENIDA EMPÁTICO: Si entra un mensaje ambiguo o saludo general sin producto específico
-    const isAmbiguousQuery = 
-        /^(hola|buenas|buen d[ií]a|buenas tardes|buenas noches|informaci[oó]n|info|saludos|que tal|qu[eé] tal|ayuda|me ayuda|deseo informaci[oó]n|precio|precios|catalogo|cat[aá]logo)\.?$/i.test(textLower.trim()) ||
-        (textLower.length < 25 && !/(cerco|camara|c[aá]mara|portero|ditec|antena|generador|boc241n|torniquet)/i.test(textLower));
-
-    if (isAmbiguousQuery) {
-        return `¡Hola${namePart}! 👋 Bienvenido a *ATOMIC Electronics Ecuador*.\n\nCon mucho gusto te ayudamos. Cuéntanos qué producto o requerimiento te interesa cotizar hoy:\n\n🔹 *Cámaras de Seguridad:* Hogar, interiores 360° o exteriores IP66 resistentes a lluvia.\n🔹 *Videoporteros & Citofonía:* Para casas familiares o edificios inteligentes.\n🔹 *Control de Acceso:* Portero facial ZKTeco, huella digital y torniquetes.\n🔹 *Seguridad Perimetral:* Cercos eléctricos JFL/Hagroy de alto voltaje.\n🔹 *Barreras Automáticas:* Dítec 2027 para urbanizaciones y empresas.\n🔹 *Seguridad Comercial:* Antenas anti-hurto para tiendas y locales.\n🔹 *Servicios:* Mantenimiento preventivo de generadores eléctricos ($50).\n\n🛒 Puedes ver todo nuestro catálogo web aquí: https://atomiccotizador.shop/web\n\n¿Para qué tipo de espacio o proyecto lo necesitas (casa, conjunto residencial, local o negocio)? 📲`;
+    if (classification.category === 'sin_especificar') {
+        return `${greeting} Qué gusto saludarte 👋 Bienvenido a *ATOMIC Electronics Ecuador*.\n\nCuéntame qué estás buscando hoy (cámaras, videoporteros, cercos, cerraduras, laptops, repuestos, audio/consolas o proyectos para tu hogar/negocio) y con mucho gusto te asesoro al instante.`;
     }
 
-    
-    // Fallback: Mantenimiento de Generadores
-    if (textLower.includes('generador') || textLower.includes('planta electrica') || textLower.includes('planta eléctrica') || (textLower.includes('mantenimiento') && (textLower.includes('aceite') || textLower.includes('luz') || textLower.includes('diesel') || textLower.includes('gasolina')))) {
-        return `¡Hola${namePart}! ⚡ En ATOMIC Soluciones Energéticas cuidamos que tu generador esté listo cuando más lo necesites:\n\n🔧 *Mantenimiento Preventivo Básico (Promoción):* $50.00\n(Limpieza del equipo, cambio de aceite de motor, limpieza de bujía/inyector y revisión eléctrica integral de voltaje y frecuencia a 60Hz).\n\n🏭 *Mantenimiento Industrial & Diésel Pesado:* Desde $180.00\n(Cambio de filtros de aceite/combustible/separador de agua, revisión de refrigerante, prueba de tablero ATS y diagnóstico computarizado de módulo).\n\n💡 *Tip de Oro:* Enciende tu equipo al menos 15 minutos cada 15 días para evitar que la gasolina dañe el carburador.\n\n🌐 Revisa todos los detalles y recomendaciones de uso en nuestra web:\n👉 https://atomiccotizador.shop/web/mantenimiento-generadores\n\n¿De qué marca, modelo o capacidad en kVA es tu generador para coordinar la revisión técnica? 📲`;
+    if (textLower.includes('generador') || textLower.includes('mantenimiento')) {
+        return `${greeting} ⚡ En *ATOMIC* hacemos mantenimiento preventivo básico desde *$50* (limpieza, aceite y calibración) e industrial/ATS desde *$180*, además de proyectos de respaldo eléctrico.\n\nRevisa detalles en: https://atomiccotizador.shop/web/mantenimiento-generadores\n¿Qué capacidad o modelo de generador tienes para ayudarte?`;
     }
 
-    // Fallback: Barreras Automáticas Dítec
-    if (textLower.includes('ditec') || textLower.includes('dítec') || (textLower.includes('barrera') && (textLower.includes('vehicular') || textLower.includes('acceso') || textLower.includes('auto') || textLower.includes('talanquera')))) {
-        return `¡Hola${namePart}! 🚧 Con mucho gusto te asesoramos con nuestras *Barreras Vehiculares Automáticas Dítec Serie 2027* (Tecnología Europea de Vanguardia):\n\n🌟 *Precio Especial de Lanzamiento:* $1,928.90 + IVA\n🔹 *Motor Brushless 24V:* Ciclo continuo 100% de uso intensivo sin calentamiento.\n🔹 *Apertura Ultrarrápida:* Ajustable desde 2.0 segundos con mástiles de 3m a 6m.\n🔹 *Seguridad Antiaplastamiento:* Encoder digital de precisión + fotocélulas.\n🔹 *Compatibilidad:* TAGs RFID de telepeaje, lector de placas LPR y tarjetas de proximidad.\n\n🌐 Conoce todas las aplicaciones y ficha de ingeniería aquí:\n👉 https://atomiccotizador.shop/web/barreras-ditec\n\n¿Para qué tipo de proyecto (urbanización, hospital, centro comercial o empresa) la necesitas? Con gusto coordinamos una visita técnica o te enviamos la proforma. 📄`;
+    if (textLower.includes('ditec') || (textLower.includes('barrera') && textLower.includes('vehicular'))) {
+        return `${greeting} 🚧 Las *Barreras Vehiculares Dítec Serie 2027* están en *$1,928.90 + IVA* (motor 24V de uso continuo y apertura desde 2s).\n\nPuedes ver la ficha aquí: https://atomiccotizador.shop/web/barreras-ditec\n¿Para cuántas entradas o qué urbanización/empresa la necesitas?`;
     }
 
-    // Fallback: Antenas Anti-Hurto
-    if (textLower.includes('antena') || textLower.includes('antihurto') || textLower.includes('anti hurto') || textLower.includes('robo') || textLower.includes('sensor ropa') || textLower.includes('alarma ropa') || textLower.includes('tags')) {
-        return `¡Hola${namePart}! 🚨 ¡No dejes que te roben en tu negocio! En ATOMIC protegemos tu mercadería contra el robo hormiga con sistemas de alta detección:\n\n🔹 *Sistema RF Dual Estándar (Par de Pedestales 8.2MHz):* $576.00 + IVA\n(Detección precisa de tags y etiquetas en pasillos de hasta 1.40m, sirena de 95dB y luz LED estroboscópica roja).\n\n💎 *Sistema Acrílico Crystal de Lujo (Par Transparente):* $745.00 + IVA\n(Elegancia transparente para centros comerciales y boutiques de lujo, mayor alcance de hasta 1.80m y tecnología DSP anti-interferencias).\n\n🏷️ *Accesorios:* Tags rígidos mini/golf desde $0.12 c/u, desactivadores magnéticos de alta potencia ($45.00) y rollos de etiquetas adhesivas 4x4 ($28.00).\n\n🌐 Conoce la comparativa de modelos en nuestra página:\n👉 https://atomiccotizador.shop/web/antenas-antihurto\n\n¿Qué tipo de local comercial tienes (ropa, bazar, farmacia o electrónica) y cuántos metros mide la puerta de entrada? 📲`;
+    if (textLower.includes('antena') || textLower.includes('antihurto')) {
+        return `${greeting} 🚨 Para proteger tu local disponemos de *Antenas Antihurto RF* desde *$499.96 + IVA* (Dahua Mercury), *$576 + IVA* (Dual Estándar) y *$745 + IVA* (Crystal transparente).\n\nCatálogo: https://atomiccotizador.shop/web/antenas-antihurto\n¿Cuántos metros mide la entrada de tu local?`;
     }
 
-    // Fallback: Portero Multifunción ZKTeco
-    if (textLower.includes('portero') && (textLower.includes('zkteco') || textLower.includes('multifuncion') || textLower.includes('multifunción') || textLower.includes('198') || textLower.includes('zkbio') || textLower.includes('facial'))) {
-        return `¡Hola${namePart}! 🚪 El equipo estrella todo en uno es el *Portero Eléctrico Multifunción ZKTeco con App ZKBio Zlink* por solo *$198.99 + IVA*:\n\n✨ *6 Métodos de Acceso:* 1,500 Rostros (reconoce en 0.3s) + 3,000 Huellas digitales + 3,000 Tarjetas RFID + PIN + App móvil + Llave.\n📱 *App ZKBio Zlink GRATIS de por vida:* Recibe videollamadas cuando timbren y abre la puerta a distancia sin mensualidades.\n📋 *Auditoría:* Memoria de 150,000 eventos con foto y registro de hora.\n🛡️ *Garantía:* 3 AÑOS oficiales directa en ATOMIC.\n\n🌐 Puedes ver la demostración y fotos en nuestra web:\n👉 https://atomiccotizador.shop/web/portero-multifuncion\n\n¿En qué sector o ciudad te encuentras para coordinar tu envío o verificar la instalación? 📦`;
+    if (textLower.includes('torniquet') || textLower.includes('molinete')) {
+        return `${greeting} 🔒 Trabajamos torniquetes *ZKTeco* con garantía oficial:\n• Trípode TS1000 Pro: *$720*\n• Flap Barrier FBL4000: *$1,850*\n• Molinete FHT2300: *$2,950*\n\n¿Es para oficina, gimnasio o acceso corporativo?`;
     }
 
-    // Fallback: Cámaras de Exterior IP66
-    if ((textLower.includes('camara') || textLower.includes('cámara')) && (textLower.includes('exterior') || textLower.includes('intemperie') || textLower.includes('ip66') || textLower.includes('cruiser') || textLower.includes('titan') || textLower.includes('aurora') || textLower.includes('10115') || textLower.includes('12759') || textLower.includes('lluvia'))) {
-        return `¡Hola${namePart}! 📹 En ATOMIC disponemos de cámaras de seguridad 100% preparadas para exteriores e intemperie IP66 (resistentes a sol y lluvias torrenciales):\n\n🔹 *Cámara Exterior Wi-Fi IP66 (Super Oferta):* $47.82 + IVA (opción con instalación por solo +$20.99).\n🔹 *Cámara Doble Lente Exterior IP81 (360°):* $63.77 + IVA c/u (en paquete de 3) o $20.99 con instalación. ¡2 cámaras en 1 con autotracking!\n🔹 *ATOMIC COMBO Kit NVR Wi-Fi (Cód 10115):* $95.00 + IVA (Grabador NVR inalámbrico + cámaras de intemperie con salida HDMI).\n🔹 *IMOU Cruiser Triple Lente 11MP (Cód 12759):* $135.00 + IVA (3 lentes independientes, 11MP combinados y visión Full-Color 24/7).\n🔹 *IMOU Titan Pro Aurora Full-Color:* Desde $115 equipo / $145 instalado (descuentos especiales llevando 2 o 3).\n\n🛡️ *Garantía:* 3 AÑOS oficiales.\n🌐 Catálogo completo en: https://atomiccotizador.shop/web/camaras-exterior\n\n¿Qué área exterior deseas proteger (patio, portón vehicular, fachada o quinta)? 📲`;
+    if (textLower.includes('cerco') || textLower.includes('jfl') || textLower.includes('hagroy')) {
+        return `${greeting} ⚡ En cercos eléctricos tenemos kits desde *$89 + IVA* (JFL Plata), *$90 + IVA* (Hagroy Yanex), *$98 + IVA* (Hagroy i8) y *$137 + IVA* (JFL Platino con App). *(No incluye materiales ni mano de obra).* \n\nOpciones aquí: https://atomiccotizador.shop/web/cercos-electricos\n¿Necesitas solo el kit o también visita técnica?`;
     }
 
-    if (textLower.includes('torniquet') || textLower.includes('molinete') || textLower.includes('ts1000') || textLower.includes('fbl4000') || textLower.includes('fht2300')) {
-        return `¡Hola${namePart}! 👋 En ATOMIC Electronics somos distribuidores autorizados de torniquetes peatonales ZKTeco en Ecuador:\n\n🔹 *Torniquete Trípode TS1000 Pro:* $720 USD (Acero inoxidable 304 de alta durabilidad)\n🔹 *Torniquete Flap Barrier FBL4000 Pro:* $1,850 USD (Aletas retráctiles de lujo)\n🔹 *Molinete Cuerpo Entero FHT2300:* $2,950 USD (Máxima seguridad anti-intrusión)\n\n¿Para qué tipo de espacio o empresa lo necesitas (oficina, gimnasio, industria o edificio corporativo)? Con gusto te comparto la ficha técnica completa. 📋🔒`;
+    if (textLower.includes('videoportero') || textLower.includes('portero') || textLower.includes('citofon')) {
+        return `${greeting} 🚪 Tenemos desde el *Kit Hikvision DS-KIS212* (*$92.40 + IVA*), el *Kit Residencial 2 Pantallas HD* (*$285* con envío gratis), el *Portero Biométrico ZKTeco App* (*$198.99 + IVA*) y centrales *Intelbras Collective* para edificios desde *$104.50 + IVA*.\n\nVer modelos: https://atomiccotizador.shop/web/videoporteros\n¿Lo buscas para casa o edificio?`;
     }
 
-    if (textLower.includes('portero') || textLower.includes('videoportero') || textLower.includes('citofon') || textLower.includes('collective') || textLower.includes('kocom')) {
-        return `¡Hola${namePart}! 👋 Con mucho gusto te asesoramos con nuestros sistemas de videoporteros y citofonía para residencias y edificios:\n\n🏠 *Kit Residencial 2 Pantallas HD:* $285.00 USD (Frente exterior HD + 2 pantallas interiores a color + ¡Envío Gratis!).\n🏢 *Kit Hikvision DS-KIS212:* $92.40 + IVA (Monitor 7", audio nítido y apertura remota).\n🏢 *Centrales Colectivas INTELBRAS (Edificios):* Desde 4 hasta 24 departamentos (desde $104.50 + IVA) con desvío de llamadas a celulares.\n\n¿Para cuántos departamentos o para qué tipo de propiedad lo estás buscando? 📲`;
+    if (textLower.includes('camara') || textLower.includes('cámara') || textLower.includes('imou') || textLower.includes('ezviz')) {
+        return `${greeting} 📹 En cámaras Wi-Fi para hogar tenemos desde la *IMOU Ranger 360°* (*$35.80 + IVA*), *Mini PT Full Color* (*$39.10 + IVA*) y *EZVIZ H6C* (*$43.99 + IVA* envío gratis); y para exterior IP66 desde *$47.82 + IVA*.\n\nOpciones: https://atomiccotizador.shop/web/camaras-hogar\n¿Las necesitas para interior o exterior y en qué ciudad te encuentras?`;
     }
 
-    if (textLower.includes('cerco') || textLower.includes('jfl') || textLower.includes('hagroy') || textLower.includes('electrificad') || textLower.includes('yanex') || textLower.includes('xpower')) {
-        const isAskingInstallation = /instalaci|instalar|servicio|mano de obra|visita|tecnico|t[eé]cnico|obra|puesto/i.test(textLower);
-
-        if (isAskingInstallation) {
-            return `Hola un gusto${namePart}, somos Atomic, cuéntame más cómo podemos ayudar.\n\nClaro, disponemos de modelos con instalación. Si gusta podemos enviarle un técnico para que le ayude con una visita técnica para asesoría, verificar la dificultad de la instalación y brindarle los precios exactos.\n\nPor favor indícanos o envíanos tu ubicación para verificar la zona de cobertura de nuestra visita técnica:\n📍 *Quito (centro, centro norte, centro sur):* Visita técnica SIN COSTO (gratis).\n📍 *Valles o alrededores de Quito:* Entre $25 y $45 según el sector.\n📍 *Fuera de provincia:* A convenir entre $50 y $100.\n\n(También si lo prefieres, podemos brindarte un valor referencial aproximado sin necesidad de visita técnica).\n\n¿En qué sector se encuentra tu propiedad para coordinar? 📲`;
-        }
-
-        return `Hola un gusto${namePart}, somos Atomic, cuéntame más cómo podemos ayudar.\n\nDisponemos de los siguientes kits oficiales de cercos eléctricos perimetrales con garantía directa:\n\n⚡ *Kit Plata JFL (Cód 15023):* $89.00 + IVA\n(Electrificador JFL, Control remoto, Batería 12V-4A, Letrero peligro, Sirena 20W).\n\n⚡ *Kit Oro JFL (Cód 11207):* $109.00 + IVA\n(Electrificador JFL, Control, Batería 12V-4A, Letrero, Sirena 20W con caja metálica protectora).\n\n📱 *Kit Platino JFL con App Celular (Cód 11208):* $137.00 + IVA\n(Electrificador JFL, Módulo Ethernet ME-05 para armar/desarmar desde smartphone y recibir notificaciones, Sirena 30W con caja metálica, Batería 12V-4A, Control, Letrero).\n\n⚡ *Kit Platino Hagroy i8 (Cód 15083):* $98.00 + IVA\n(Electrificador Hagroy i8 alto voltaje, Control, Batería 12V-4A, Letrero, Sirena 20W).\n\n⚡ *Kit Yanex (Cód 11258):* $90.00 + IVA\n(Electrificador Hagroy Yanex, Control, Batería 12V-4A, Letrero, Sirena 20W).\n\n⚠️ *NOTA IMPORTANTE:* El precio de materiales (alambrado, postes, aisladores) y mano de obra de instalación NO está incluido en el valor del kit electrificador.\n\n🌐 Puedes ver todas las opciones y especificaciones en nuestra página web:\n👉 https://atomiccotizador.shop/web/cercos-electricos\n\n¿En qué sector o ciudad te encuentras para coordinar tu entrega o verificar la cobertura? 📦`;
+    if (textLower.includes('mayorista') || textLower.includes('6 unidades') || textLower.includes('distribu')) {
+        return `${greeting} 📦 Contamos con plan de distribución desde *paquetes de 6 unidades* en cables, audífonos, drones, mini cámaras espía, repuestos de laptop y electrónica técnica (Raspberry, placas, relés).\n\nPortal de precios: https://atomiccotizador.shop/web/precios-vendedor\n¿Qué línea te gustaría distribuir para enviarte opciones y asesoría?`;
     }
 
-    if (textLower.includes('camara') || textLower.includes('cámara') || textLower.includes('imou') || textLower.includes('ezviz') || textLower.includes('h6c') || textLower.includes('ranger') || textLower.includes('bebe') || textLower.includes('bebé') || textLower.includes('mascota') || textLower.includes('doble lente')) {
-        return `Hola un gusto${namePart}, somos Atomic, cuéntame más cómo podemos ayudar.\n\nDisponemos de 4 opciones oficiales de cámaras inteligentes 100% Wi-Fi para interiores de casa (fáciles de instalar en 2 minutos sin romper paredes y con app en tu celular sin mensualidades):\n\n💡 *1. IMOU Ranger 360° 3MP (Cód 10899):* $35.80 + IVA\n(La opción más económica y querida por familias. Detección humana IA, modo privacidad que cubre la lente, audio 2 vías para hablar y escuchar, visión nocturna).\n\n🌟 *2. IMOU Mini PT Ranger 360° Full Color (Cód 13067 - ¡NUEVA!):* $39.10 + IVA\n(Visión nocturna a TODO COLOR en la oscuridad, sirena disuasiva activa integrada, detección humana IA y rotación 360°).\n\n🛡️ *3. Cámara Robótica Doble Lente 360° (Cód 21045):* $42.50 + IVA\n(Doble cámara simultánea: un lente fijo vigilando la puerta/cuna + un lente giratorio 360° que sigue el movimiento en tu celular).\n\n🚚 *4. EZVIZ H6C 3MP Panorámica 360° (Oficial ATOMIC):* $43.99 + IVA\n(Seguimiento automático de personas, modo suspensión, audio bidireccional y ¡ENVÍO GRATIS a todo el país!).\n\n💾 *Memoria MicroSD opcional:* 64GB ($11.50) o 128GB ($18.00) para semanas de grabación.\n\n🌐 Puedes ver todas las opciones para cada espacio en nuestra página:\n👉 https://atomiccotizador.shop/web/camaras-hogar\n\n¿En qué sector o ciudad te encuentras para coordinar tu entrega o indicarte tiempos de despacho? 📦`;
-    }
-
-    if (textLower.includes('biometric') || textLower.includes('biométric') || textLower.includes('senseface') || textLower.includes('facial')) {
-        return `¡Hola${namePart}! 👋 El equipo estrella para control de asistencia y acceso es el *ZKTeco SenseFace 2A con Videoportero por App* por solo $175.00 USD:\n\n✨ Reconocimiento facial ultra veloz (menos de 0.3s)\n✨ Lector de huella digital + tarjetas RFID + PIN numérico\n✨ Conexión 100% WiFi y llamada directa a la App móvil\n✨ Apertura de puerta remota para oficinas y departamentos\n\n¿Te gustaría ver un video de cómo funciona o la ficha técnica detallada? 🚀`;
-    }
-
-        if (textLower.includes('barra') && (textLower.includes('sonido') || textLower.includes('audio') || textLower.includes('boc241n') || textLower.includes('1hora') || textLower.includes('gamer') || textLower.includes('parlante'))) {
-        return `¡Hola${namePart}! 🎶 Qué gusto saludarte. Disponemos de la espectacular *Barra de Sonido Gamer Bluetooth 1 HORA BOC241N* con precio especial de lanzamiento:\n\n🔥 *Precio de Lanzamiento:* $28.90 + IVA\n🔊 *Sonido Potente:* 10W RMS con bajos reforzados y agudos cristalinos\n🌈 *Iluminación RGB Dinámica:* 8 modos de iluminación sincronizables\n🔋 *Batería Recargable:* 2000 mAh (más de 5 horas continuas de música y juego)\n🔌 *Conectividad Universal:* Bluetooth 5.3 + Aux 3.5mm + USB + Tarjeta TF\n🛡️ *Garantía Oficial:* 3 AÑOS directos en ATOMIC\n\n🌐 Puedes ver las fotos y detalles completos en nuestra página:\n👉 https://atomiccotizador.shop/web/barra-de-sonido\n\n¿En qué ciudad te encuentras para coordinar tu envío hoy mismo? 🚀`;
-    }
-
-    if (textLower.includes('antena') || textLower.includes('antihurto') || textLower.includes('antipanico') || textLower.includes('antipánico') || textLower.includes('barra')) {
-        return `¡Hola${namePart}! 👋 Para seguridad comercial y normativas de emergencia disponemos de:\n\n🚨 *Par Antenas Antihurto RF Mono Dahua Mercury:* $499.96 + IVA (Detección de etiquetas y tags duros, alta resistencia para boutiques, farmacias y minimarkets).\n🚪 *Cerradura Barra Antipánico Reforzada:* $98.00 + IVA (Acero inoxidable certificado para salidas de emergencia con 10 años de durabilidad + ¡Envío Gratis!).\n\n¿Para qué tipo de local comercial o proyecto lo requieres? Con gusto te preparamos la proforma. 📄`;
-    }
-
-    return `¡Hola${namePart}! 👋 Qué gusto saludarte. Bienvenido a *ATOMIC Electronics Ecuador*.\n\nSomos especialistas en:\n🔹 Videoporteros y citofonía para casas y edificios\n🔹 Control de acceso y torniquetes peatonales ZKTeco\n🔹 Cercos eléctricos perimetrales JFL y Hagroy\n🔹 Cámaras de seguridad inteligentes IMOU y CCTV\n🔹 Laptops, domótica y más de 9,000 productos con garantía\n\n🛒 Puedes ver todo nuestro catálogo en línea aquí: https://atomiccotizador.shop/web\n\n¿Qué producto o requerimiento te gustaría cotizar hoy? Te respondo de inmediato. 📲`;
+    return `${greeting} Con mucho gusto te ayudo en *ATOMIC Electronics Ecuador* 😊\n\nPuedes revisar nuestro catálogo completo con precios actualizados aquí:\n🌐 https://atomiccotizador.shop/web\n\n¿Qué producto o solución específica te gustaría cotizar y para qué ciudad sería el envío?`;
 }
 
 export async function handleIncomingWhatsAppBot(params: {
@@ -315,434 +308,106 @@ export async function handleIncomingWhatsAppBot(params: {
     conversationId: string;
 }) {
     try {
-        const { whatsappId, contactName, messageText, mediaUrl, conversationId } = params;
+        const { whatsappId, contactName, messageText, conversationId } = params;
 
-        // A. Verificar si el remitente es Juan (Administrador / Dueño) interactuando con Karen
-        if (isJuan(whatsappId)) {
-            const karenReply = await processJuanCommand(messageText, conversationId);
-            await sendWhatsAppMessage(whatsappId, karenReply);
-            await prisma.wAMessage.create({
-                data: {
-                    conversationId,
-                    whatsappMessageId: `karen-juan-${Date.now()}`,
-                    direction: 'OUTBOUND',
-                    type: 'text',
-                    body: karenReply,
-                    status: 'SENT',
-                    senderId: 'KAREN_CHIEF_DIRECT'
-                }
-            });
-            console.log(`[KAREN_JUAN_INTERACTION] Karen respondió comando a Juan en WhatsApp`);
-            return karenReply;
-        }
-
-        // A2. Verificar si el remitente es Cristina (Coordinadora Operativa y Comercial) interactuando con el Bot
-        if (isCristina(whatsappId)) {
-            const cristinaReply = await processCristinaCommand(messageText, conversationId);
-            await sendWhatsAppMessage(whatsappId, cristinaReply);
-            await prisma.wAMessage.create({
-                data: {
-                    conversationId,
-                    whatsappMessageId: `karen-cristina-${Date.now()}`,
-                    direction: 'OUTBOUND',
-                    type: 'text',
-                    body: cristinaReply,
-                    status: 'SENT',
-                    senderId: 'BOT_CRISTINA_COORDINATOR'
-                }
-            });
-            console.log(`[CRISTINA_INTERACTION] Bot respondió a Cristina en WhatsApp (${whatsappId})`);
-            return cristinaReply;
-        }
-
-        // A3. Verificar si el remitente es un Asesor Comercial registrado interactuando con su Tutor Bot
-        const advisorUser = await findAdvisorByPhone(whatsappId);
-        if (advisorUser) {
-            const advisorReply = await processAdvisorCommand(messageText, whatsappId, conversationId);
-            await sendWhatsAppMessage(whatsappId, advisorReply);
-            await prisma.wAMessage.create({
-                data: {
-                    conversationId,
-                    whatsappMessageId: `advisor-bot-${Date.now()}`,
-                    direction: 'OUTBOUND',
-                    type: 'text',
-                    body: advisorReply,
-                    status: 'SENT',
-                    senderId: 'BOT_ASESORES_TUTOR'
-                }
-            });
-            console.log(`[ADVISOR_INTERACTION] Bot respondió a Asesor ${advisorUser.name} (${whatsappId})`);
-            return advisorReply;
-        }
-
-        // Registrar timestamp de actividad entrante para control de inactividad de Karen
-        karenState.lastIncomingAt = Date.now();
-
-        // B. Verificar si Karen puso el sistema en MODO MANUAL (🔴) o si este chat específico está en MODO MANUAL por asesor
-        if (karenState.mode === "MANUAL") {
-            console.log(`[KAREN_MANUAL_MODE] WhatsApp en modo manual global: se omite respuesta automática para ${whatsappId}`);
-            return null;
-        }
-
+        // Respetar exclusivamente si un asesor tomó el chat manualmente en el CRM
         const currentConv = await prisma.wAConversation.findUnique({
             where: { id: conversationId },
             include: { tags: true }
         });
 
         if (currentConv?.status === 'MANUAL' || currentConv?.tags?.some(t => t.name === 'BOT_OFF')) {
-            console.log(`[BOT_MUTED_CHAT] Chat ${conversationId} silenciado: atención 100% manual por asesor.`);
+            console.log(`[BOT_MUTED_CHAT] Chat ${conversationId} silenciado manualmente por asesor.`);
             return null;
         }
 
-        // C. Interceptar flujos conversacionales de Registro y Cotizador 1111 con botBrain
-        const brainRes = await processConversationalBotMessage(messageText, {
-            senderId: whatsappId,
-            senderName: contactName,
-            channel: 'WHATSAPP'
-        });
-
-        if (brainRes.handled) {
-            // Marcar conversación explícitamente como AUTO_REGISTER para el tercer apartado del CRM
-            await prisma.wAConversation.update({
-                where: { id: conversationId },
-                data: { status: 'AUTO_REGISTER', priority: 'HIGH' }
-            }).catch(() => {});
-
-            karenState.burstCounters.autoRegister++;
-            notifyJuanIncomingBurst().catch(() => {});
-
-            await sendWhatsAppMessage(whatsappId, brainRes.replyText);
-            await prisma.wAMessage.create({
-                data: {
-                    conversationId,
-                    whatsappMessageId: `bot-brain-${Date.now()}`,
-                    direction: 'OUTBOUND',
-                    type: 'text',
-                    body: brainRes.replyText,
-                    status: 'SENT',
-                    senderId: 'BOT_ATOMIC_BRAIN'
-                }
-            });
-            console.log(`[BOT_BRAIN_WHATSAPP_SUCCESS] Respondió flujo conversacional a ${whatsappId}`);
-            return brainRes.replyText;
-        }
-
-        // 1. Historial reciente para contexto
+        // 1. Historial reciente para contexto natural
         const recentMessages = await prisma.wAMessage.findMany({
             where: { conversationId },
             orderBy: { createdAt: 'desc' },
             take: 6
         });
 
-        const history = recentMessages.reverse().map(m => 
-            `${m.direction === 'INBOUND' ? 'Cliente' : 'Asesor ATOMIC'}: ${m.body}`
-        ).join('\n');
+        const historyLines = recentMessages
+            .slice()
+            .reverse()
+            .map(m => `${m.direction === 'INBOUND' ? 'Contacto' : 'Karen ATOMIC'}: ${m.body}`);
 
-        // 2. Clasificación de Intención Estricta (RECLUTAMIENTO vs COMERCIAL)
-        // REGLA FUNDAMENTAL DE SEGURIDAD: Solo derivar al grupo de empleo si el usuario menciona
-        // EXPLÍCITAMENTE términos laborales concretos. Jamás derivar por palabras genéricas como "contratar servicio", "vender producto", o saludos generales.
-        const textLower = (messageText || '').toLowerCase();
-        
-        const hasExplicitLaboralIntent = 
-            // Términos directos de búsqueda de empleo
-            /\b(empleo|vacante|postular|postulacion|postulación|hoja de vida|curriculum|cv|trabajar con ustedes|quiero trabajar|busco trabajo|puesto de trabajo|plan laboral|aspirante|me interesa el puesto|quiero postular|deseo postular|me interesa trabajar|interesado en trabajar|interesada en trabajar)\b/i.test(textLower) ||
-            // Frases de los copys de Facebook ("vi la publicación / anuncio / flyer / imagen / post")
-            (/\b(vi|vi un|llegó|me llegó|vi la|me aparecio|me salió|me salio|me apareci[oó])\b/i.test(textLower) && /\b(publicaci[oó]n|anuncio|flyer|imagen|post|convocatoria|oferta)\b/i.test(textLower)) ||
-            // "INFO" seguido o precedido de contexto de trabajo/sueldo
-            (/^info\.?$/i.test(textLower.trim()) === false && /\binfo\b/i.test(textLower) && /\b(empleo|trabajo|sueldo|comisi[oó]n|puesto|vacante|asesor|vendedor|postul)\b/i.test(textLower)) ||
-            // Mensaje corto exacto "INFO" + (si viene de campaña de empleo se detecta por contexto)
-            /^(info empleo|info trabajo|info vacante|info asesor|quiero info|info postulaci[oó]n|postulo|me postulo|postulo ahora)\.?$/i.test(textLower.trim()) ||
-            // Menciones combinadas de cargo + acción laboral
-            (/\b(asesor comercial|vendedor|asesor de ventas|ejecutivo comercial|representante de ventas)\b/i.test(textLower) && /\b(postular|aplicar|vacante|trabajar|cv|hoja de vida|sueldo|comision|comisiones|interesado|me interesa|disponible|cómo aplico|como aplico)\b/i.test(textLower)) ||
-            // Mensajes de ingreso extra / oportunidad de trabajo
-            /\b(ingresos extra|ingresos adicionales|oportunidad de trabajo|trabajo disponible|cupos disponibles|cupo disponible|trabajar desde casa|teletrabajo|empleo remoto|trabajo remoto|trabajo digital|hay trabajo|hay vacantes|hay cupos|tienen empleo|ofrecen trabajo|oferta de empleo|oferta laboral)\b/i.test(textLower) ||
-            // Menciones del plan salarial de los flyers ($100, $200, $450)
-            (/\$?(100|200|450)\s*(fijo|fijos|usd|dolares|dólares)?/i.test(textLower) && /\b(trabajo|empleo|asesor|sueldo|ganar|gano|pagan|pago)\b/i.test(textLower));
+        // 2. Identificar y persistir en CRM si es EMPLEO o CLIENTE + categoría CRM exacta
+        const recentInboundCombined = recentMessages
+            .filter(m => m.direction === 'INBOUND')
+            .map(m => m.body)
+            .join(' ');
+        const classification = classifyMessageForCrm(`${recentInboundCombined} ${messageText}`);
+        await persistCrmClassification(conversationId, classification);
 
-        const isRecruitmentPauta = textLower.includes('[pauta_meta:') && 
-            (textLower.includes('convocatoria asesores') || textLower.includes('pauta-reclutamiento') || textLower.includes('empleo-ingeniero'));
+        // 3. Buscar productos vivos relacionados si es cliente
+        const dbProducts = classification.roleType === 'CLIENTE'
+            ? await searchLiveProducts(messageText)
+            : [];
 
-        const isRecruitment = hasExplicitLaboralIntent || isRecruitmentPauta;
+        const liveInventorySnippet = dbProducts.length > 0
+            ? `\nPRODUCTOS EN STOCK EN BASE DE DATOS:\n${dbProducts
+                  .map(p => `- ${p.name} | $${p.price.toFixed(2)} USD | Stock: ${p.stock} | https://atomiccotizador.shop/web/product/${p.id}`)
+                  .join('\n')}`
+            : '';
 
-        let systemPrompt = "";
+        const firstName = contactName && contactName !== 'Cliente WhatsApp' ? contactName.split(' ')[0] : '';
 
-        if (isRecruitment) {
-            karenState.burstCounters.recruitment++;
-            notifyJuanIncomingBurst().catch(() => {});
+        const systemPrompt =
+            classification.roleType === 'EMPLEO'
+                ? `Eres Karen, asistente de ATOMIC Electronics Ecuador. Acabas de detectar que quien escribe busca EMPLEO / postular como asesor comercial.
+TU ESTILO: Muy natural, amigable, directo y BREVE (máximo 5 líneas cortas). Sin rodeos ni discursos largos.
+DATOS OFICIALES A DAR:
+- Saluda amablemente${firstName ? ` a ${firstName}` : ''} y confirma que hay cupos activos esta semana.
+- Enlace con toda la info del plan salarial: ${HR_PAGE_LINK}
+- Enlace al grupo oficial de bienvenida: ${HR_GROUP_LINK}
+- Dile brevemente que ahí le asignarán línea de productos y guía inicial.
+NO inventes otros precios ni metas cháchara corporativa.`
+                : `Eres Karen, asesora comercial senior especialista en ventas de ATOMIC Electronics Ecuador (https://atomiccotizador.shop/web).
+Atiendes por igual a cualquier persona que te escriba desde cualquier número, siempre como una vendedora profesional de élite.
 
-            // === MUNDO RECLUTAMIENTO / RECURSOS HUMANOS ===
-            systemPrompt = `
-Eres la Asistente de Selección y Talento Humano de ATOMIC Electronics Ecuador (Quito).
-Tu misión es recibir con calidez genuina, rapidez y profesionalismo a los postulantes que llegan — muchos vienen de grupos de Facebook o WhatsApp luego de ver nuestros flyers de convocatoria.
+PERSONALIDAD Y REGLAS ESTRICTAS DE RESPUESTA:
+1. SÉ MEGA NATURAL, AMIGABLE Y DIRECTA: Habla como una persona real experta y cercana en WhatsApp. Cero discursos robotizados o frases repetitivas de plantilla.
+2. PROHIBIDO EXTENDERSE: Respuestas cortas y precisas de máximo 3 a 5 líneas claras (aprox. 40 a 95 palabras), fáciles de leer en celular. Solo da una lista breve si el cliente pide varios modelos.
+3. ENFOQUE 100% EN VENDER Y CERRAR: Resuelve la duda con precio real en USD y enlace exacto si aplica, destaca un beneficio concreto (garantía directa, envío a todo Ecuador, paquetes mayoristas desde 6 uds) y termina con UNA sola pregunta natural para avanzar (ciudad, uso o cantidad).
+4. CATEGORIA CRM DETECTADA: ${classification.roleType} -> ${classification.category.toUpperCase()}.
+5. REGLAS CLAVE DE PRODUCTOS:
+   - Cercos eléctricos: aclara en una línea corta que el precio del kit NO incluye materiales ni mano de obra de instalación.
+   - Si pide info muy general ("hola", "info"): saluda súper cordial y pregúntale qué busca proteger, equipar o comprar.
+${CATALOGO_RESUMIDO_ATOMIC}
+${liveInventorySnippet}`;
 
-INFORMACIÓN OFICIAL DE LA CONVOCATORIA 2026:
-- Modalidad: Remoto/híbrido, 2 horas diarias flexibles, sin experiencia necesaria.
-- Plan salarial escalonado (progresivo y transparente):
-  * Mes 1 — Inducción: $100 USD fijo + 20% comisión directa + Bono $50 por cumplimiento.
-  * Mes 2 — Consolidación: $200 USD fijo + 20% comisión + Bono $65 por cumplimiento.
-  * Mes 3 — Planta: $450 USD básico de ley (contrato firmado) + Comisiones Corporativas.
-- Para vendedores con experiencia comprobada: acceso directo al nivel $450 sin escalafón.
-- Bonificaciones semanales adicionales en efectivo (Reto Semanal ATOMIC):
-  * 🥉 Bono Bronce +$15 USD por constancia semanal y 1 venta.
-  * 🥈 Bono Plata +$35 USD por facturar $500+ en la semana.
-  * 🥇 Bono Oro +$75 USD por facturar $1.000+ en la semana.
-  * 👑 MVP de la Semana +$50 USD por la venta unitaria más alta.
-- Catálogo de más de 3.000 productos con precios de importación directa.
-- Plataforma web propia con cotizador automático, CRM y seguimiento en tiempo real.
-- Página oficial con todo el detalle: ${HR_PAGE_LINK}
-- Grupo oficial de bienvenida e inducción: ${HR_GROUP_LINK}
-
-INSTRUCCIONES DE RESPUESTA (OBLIGATORIAS):
-1. Saluda con calidez usando su nombre si está disponible (${contactName}).
-2. Confirma inmediatamente que su postulación fue recibida y que tiene muy buen timing porque hay cupos activos esta semana.
-3. Bríndale de forma clara y estructurada:
-   - El enlace donde puede leer TODO el plan laboral: ${HR_PAGE_LINK}
-   - El enlace para unirse al grupo de WhatsApp: ${HR_GROUP_LINK}
-4. Menciona brevemente los bonos semanales para encender su interés y motivación.
-5. Indícale que al entrar al grupo su coordinadora le asignará su categoría de productos y lo guiará paso a paso.
-6. Cierra con un mensaje corto, motivador y humano. Usa emojis sobrios: 💼 🚀 📲 ✅
-7. NO hagas preguntas adicionales. Entrégale toda la información de forma directa y contundente.
-8. Tono: humano, cercano, ejecutivo y motivador. Nada genérico. Que sienta que lo estamos esperando.
-`;
-        } else {
-            const isCommercial = 
-                textLower.includes('precio') || 
-                textLower.includes('cuanto') || 
-                textLower.includes('cuánto') || 
-                textLower.includes('cotiz') || 
-                textLower.includes('compr') || 
-                textLower.includes('vend') || 
-                textLower.includes('proforma') || 
-                textLower.includes('camara') || 
-                textLower.includes('cámara') || 
-                textLower.includes('portero') || 
-                textLower.includes('torniquet') || 
-                textLower.includes('citofon') || 
-                textLower.includes('cerco') || 
-                textLower.includes('antena') || 
-                textLower.includes('seguridad') || 
-                textLower.includes('hola') || 
-                textLower.includes('buenas') || 
-                textLower.includes('catalogo') || 
-                textLower.includes('catálogo') ||
-                textLower.includes('info');
-
-            if (isCommercial) {
-                karenState.burstCounters.sales++;
-                const isHotOpportunity = 
-                    textLower.includes('torniquet') || 
-                    textLower.includes('molinete') || 
-                    textLower.includes('collective') || 
-                    textLower.includes('edificio') || 
-                    textLower.includes('conjunto') || 
-                    textLower.includes('antihurto') || 
-                    textLower.includes('biometric') || 
-                    textLower.includes('mayorista');
-
-                if (isHotOpportunity) {
-                    notifyJuanHotOpportunity(contactName, whatsappId, messageText).catch(() => {});
-                }
-                notifyJuanIncomingBurst().catch(() => {});
-            } else {
-                karenState.burstCounters.uncataloged++;
-                notifyJuanUncatalogedChat(contactName, whatsappId, messageText, conversationId).catch(() => {});
-                notifyJuanIncomingBurst().catch(() => {});
-            }
-
-            // === MUNDO COMERCIAL: ASESOR CONSULTIVO EXPERTO DE VENTAS ===
-            const dbProducts = await searchLiveProducts(messageText);
-            let liveInventorySnippet = "";
-
-            if (dbProducts.length > 0) {
-                liveInventorySnippet = `
-PRODUCTOS DESTACADOS ENCONTRADOS EN LA BASE DE DATOS:
-${dbProducts.map(p => `- ${p.name} (SKU: ${p.sku || 'N/A'}) | Precio: $${p.price.toFixed(2)} USD | Stock: ${p.stock} | Link: https://atomiccotizador.shop/web/product/${p.id}`).join('\n')}
-`;
-            }
-
-            systemPrompt = `
-Eres el Asesor Comercial Senior de ATOMIC Electronics Ecuador (también conocidos como ATOMIC Industrias).
-Eres un profesional de ventas consultivo de élite: sumamente conocedor de todo nuestro catálogo, educado, empático, directo, persuasivo y con excelente cierre comercial.
-
-${CATALOGO_MAESTRO_ATOMIC}
-
-${liveInventorySnippet}
-
-METODOLOGÍA DE VENTA CONSULTIVA Y REGLAS DE ORO:
-1. DEMUESTRA CONOCIMIENTO TOTAL DE INMEDIATO:
-   - Si el cliente saluda o pregunta de forma general ("Hola", "Buenas tardes", "¿Qué venden?", "Busco seguridad"):
-     * Salúdalo con calidez y energía.
-     * Cuéntale de forma breve y atractiva qué tenemos en ATOMIC (Videoporteros/citofonía para casas y edificios, Control de acceso/torniquetes ZKTeco, Cercos eléctricos JFL/Hagroy, Cámaras inteligentes IMOU/Hikvision, Antenas antihurto y Barras antipánico).
-     * Haz la primera pregunta consultiva natural: "¿Para qué tipo de espacio o proyecto lo estás buscando? (¿Una casa, un edificio/conjunto residencial, un local comercial o una empresa?)"
-
-2. DESCUBRIMIENTO PROGRESIVO (NO AGRESIVO):
-   - Nunca hagas un interrogatorio pesado. Pregunta 1 o máximo 2 detalles clave por mensaje de forma conversacional:
-     a) NECESIDAD EXACTA: ¿Qué espacio buscan proteger o equipar? (¿Cuántos departamentos, cuántas puertas, qué quieren resolver?).
-     b) UBICACIÓN: "¿En qué ciudad o provincia te encuentras para confirmarte el tiempo de despacho e instalación?".
-     c) PRESUPUESTO / ENFOQUE: "¿Tienes en mente un modelo específico o un presupuesto aproximado para recomendarte la alternativa que mejor se ajuste?".
-
-3. RECOMIENDA Y DA SUGERENCIAS CON ARGUMENTOS DE VALOR:
-   - Sé proactivo: no esperes a que el cliente adivine. Si te da una pista, sugiérele la solución exacta:
-     * Si es conjunto o edificio: recomiéndale la Central Intelbras Collective o Citofonía Kocom, explicando que es estable y desvía llamadas a celulares.
-     * Si es tienda o boutique con pérdidas: recomiéndale las Antenas Antihurto RF Dahua ($499.96) que detectan etiquetas blandas y tags duros.
-     * Si es casa o departamento: recomiéndale el Videoportero de 2 Pantallas ($285 con envío gratis) o la Cámara IMOU 360° ($45.40).
-     * Si es control de personal u oficina: recomiéndale el ZKTeco SenseFace 2A ($175) con reconocimiento facial y WiFi.
-     * Si es control de acceso masivo: recomiéndale nuestros torniquetes peatonales ZKTeco.
-
-4. ESTILO DE COMUNICACIÓN EN WHATSAPP:
-   - Respuestas directas, ágiles y eficaces (evita bloques enormes de texto).
-   - Usa párrafos cortos (2 a 3 líneas), viñetas limpias y emojis sobrios (🏢, 🔒, 📦, 📲, ✅).
-   - Precios claros en dólares americanos ($USD).
-   - Recuerda que hacemos envíos a todo el Ecuador y brindamos asesoría técnica.
-   - Termina SIEMPRE con una pregunta abierta o un llamado a la acción concreto.
-
-5. PROTOCOLO OBLIGATORIO PARA CERCOS ELÉCTRICOS (CUADERNO OFICIAL DE VENTAS ATOMIC):
-   Siempre que el cliente pregunte por cercos eléctricos, electrificadores, o kits de pauta, DEBES seguir estrictamente esta estructura:
-
-   A) SALUDO DE CONEXIÓN OBLIGATORIO:
-      Inicia diciendo: "Hola un gusto, somos Atomic, cuéntame más cómo podemos ayudar." (si se dispone del nombre del cliente: "Hola un gusto ${contactName}, somos Atomic, cuéntame más cómo podemos ayudar.").
-
-   B) DIFERENCIACIÓN OBLIGATORIA: SERVICIO (INSTALACIÓN/OBRA) vs PRODUCTO (KITS ELECTRIFICADORES):
-      - Si el cliente pregunta por INSTALACIÓN, VISITA TÉCNICA, SERVICIO, o CERCO COMPLETO CON MANO DE OBRA:
-        Ofrece la visita técnica con un técnico especialista para evaluar dificultad y cotizar:
-        "Claro, tenemos modelos con instalación. Si gusta podemos enviarle un técnico para que le ayude con una visita técnica para asesoría, precios y ver la dificultad de la instalación.
-        Por favor envíenos su ubicación para verificar la zona de cobertura de nuestra visita técnica:
-        • En Quito (centro, centro norte, centro sur): Sin costo (gratis).
-        • En Valles o alrededores de Quito: Entre $25 y $45 según el sector.
-        • Fuera de provincia: A convenir entre $50 y $100.
-        (Aclarar que también se puede brindar un precio aproximado sin visita si lo prefieren)."
-
-      - Si el cliente pregunta por KITS, PRECIOS, EQUIPOS, FOTOS, o información general de cercos:
-        Detalla los 5 kits oficiales:
-        ⚡ Kit Plata JFL (Cód 15023): $89.00 + IVA (Electrificador JFL, Control remoto, Batería 12V-4A, Letrero peligro, Sirena 20W).
-        ⚡ Kit Oro JFL (Cód 11207): $109.00 + IVA (Electrificador JFL, Control remoto, Batería 12V-4A, Letrero, Sirena 20W, Caja metálica de protección para sirena).
-        📱 Kit Platino JFL con App Celular (Cód 11208): $137.00 + IVA (Electrificador JFL, Módulo Ethernet ME-05 para armar/desarmar desde smartphone con alertas en tiempo real, Sirena 30W con caja metálica, Batería 12V-4A, Control, Letrero).
-        ⚡ Kit Platino Hagroy i8 (Cód 15083): $98.00 + IVA (Electrificador Hagroy i8 alto voltaje, Control, Batería 12V-4A, Letrero, Sirena 20W).
-        ⚡ Kit Yanex (Cód 11258): $90.00 + IVA (Electrificador Hagroy Yanex, Control, Batería 12V-4A, Letrero, Sirena 20W).
-
-        * ADVERTENCIA OBLIGATORIA (MANDATORIA, NUNCA OMITIR):
-        "⚠️ Nota importante: El precio de materiales (alambrado, postes, aisladores) y mano de obra de instalación NO está incluido en el valor del kit electrificador."
-
-        * ENLACE OFICIAL:
-        "🌐 Opciones y especificaciones en nuestra página web: https://atomiccotizador.shop/web/cercos-electricos"
-
-   C) CIERRE COMERCIAL:
-      - Pregunta la ubicación (sector o ciudad) para coordinar entrega o confirmar si aplica visita técnica sin costo.
-      - Ofrece entrega a domicilio con pago contraentrega o retiro en oficina.
-      - Si pide cotización formal: solicita Nombres/RUC, Razón Social y Correo electrónico.
-      - Si confirma compra directa: solicita Nombre, Apellido, Dirección exacta, Teléfono y Cédula.
-
-6. PROTOCOLO OBLIGATORIO PARA CÁMARAS DE SEGURIDAD PARA EL HOGAR (ESTRUCTURA DE VENTAS CONSULTIVAS):
-   Siempre que el cliente pregunte por cámaras de seguridad, cámaras para el hogar, cuidar al bebé, niños, mascotas o pauta de cámaras interiores, DEBES seguir estrictamente esta estructura:
-
-   A) SALUDO DE CONEXIÓN OBLIGATORIO:
-      Inicia diciendo: "Hola un gusto, somos Atomic, cuéntame más cómo podemos ayudar." (o "Hola un gusto ${contactName}, somos Atomic, cuéntame más cómo podemos ayudar.").
-
-   B) DESCUBRIMIENTO EMPÁTICO DEL HOGAR:
-      - Pregunta con calidez y cercanía qué espacio o a quién desea cuidar: "¿Para qué espacio de tu casa la necesitas? (¿Para cuidar a tu bebé o niños pequeños, acompañar a un adulto mayor, vigilar a tus mascotas o seguridad general de la casa?)".
-      - Resalta que son cámaras 100% Wi-Fi, muy fáciles de instalar en 2 minutos (Plug & Play enchufándolas a la corriente) y con aplicación gratuita en tu celular en español sin pagos mensuales.
-
-   C) LAS 4 OPCIONES OFICIALES DISPONIBLES:
-      Presenta las 4 alternativas con precios claros y transparentes:
-      1. 💡 *IMOU Ranger 360° 3MP (Cód 10899):* $35.80 + IVA
-         (La opción más económica y querida por familias. Cobertura panorámica 360°, detección humana inteligente que no se activa con sombras, audio bidireccional para hablar y escuchar, y modo privado que oculta la lente).
-      2. 🌟 *IMOU Mini PT Ranger 360° 3MP Full Color (Cód 13067 - ¡NUEVA!):* $39.10 + IVA
-         (Visión nocturna a TODO COLOR en la oscuridad, sirena disuasiva activa integrada, detección humana por IA y rotación 360°).
-      3. 🛡️ *Cámara Robótica Inteligente Doble Lente 360° (Cód 21045):* $42.50 + IVA
-         (Doble cámara en una sola: un lente fijo enfocado a la puerta/cuna y un lente giratorio 360° que sigue el movimiento en pantalla dividida en tu celular).
-      4. 🚚 *EZVIZ H6C 3MP Panorámica 360° (Oficial ATOMIC):* $43.99 + IVA
-         (Seguimiento inteligente automático de personas, modo suspensión de privacidad, audio bidireccional y ¡ENVÍO GRATIS a todo el Ecuador!).
-
-   D) ACLARACIONES IMPORTANTES:
-      - Memoria opcional: Puedes añadir tarjeta MicroSD Kingston Original de 64GB ($11.50) o 128GB ($18.00) para grabar semanas sin pagar nube.
-      - Enlace a la página web:
-        "🌐 Puedes ver las fotos y opciones para cada espacio en nuestra página: https://atomiccotizador.shop/web/camaras-hogar"
-
-   E) CIERRE COMERCIAL:
-      - Pregunta en qué ciudad o sector se encuentra para coordinar el despacho o retiro.
-      - Recuerda ofrecer pago contraentrega a domicilio o retiro en oficina.
-7. PROTOCOLO OBLIGATORIO PARA CÁMARAS DE EXTERIOR E INTEMPERIE IP66:
-   Siempre que el cliente pregunte por cámaras para exteriores, intemperie, lluvia, patio, portón, modelos IP66, Doble Lente exterior, Cruiser Triple o Titan Aurora:
-   - Resalta la certificación IP66 resistente a lluvias y climas extremos de Ecuador.
-   - Presenta las opciones destacadas:
-     1. Cámara Exterior Wi-Fi IP66: $47.82 + IVA (Instalación técnica opcional por solo $20.99).
-     2. Cámara Doble Lente IP81 360°: $63.77 + IVA c/u (en paquete de 3) o $20.99 con instalación. 2 cámaras en 1 con autotracking y sirena.
-     3. ATOMIC COMBO Kit NVR Wi-Fi NKS4223WBTH: $95.00 + IVA (Grabador NVR inalámbrico + cámaras con salida HDMI/VGA).
-     4. IMOU Cruiser Triple Lente 11MP: $135.00 + IVA (3 lentes independientes con 11MP combinados y visión Full-Color).
-     5. IMOU Titan Pro Aurora Full-Color: $115 equipo / $145 instalada (escala de descuento al llevar 2 o 3).
-   - Enlace: https://atomiccotizador.shop/web/camaras-exterior
-
-8. PROTOCOLO OBLIGATORIO PARA PORTERO MULTIFUNCIÓN ZKTECO ($198.99):
-   Siempre que el cliente consulte sobre porteros eléctricos, videoporteros con biometría, ZKTeco con app o apertura de puerta:
-   - Destaca que es un sistema todo en uno por solo $198.99 + IVA.
-   - Detalla los 6 métodos de acceso: 1,500 Rostros (reconoce en 0.3s con luz visible anti-spoofing), 3,000 Huellas digitales SilkID, 3,000 Tarjetas RFID, App Móvil ZKBio Zlink, PIN numérico y llave.
-   - Aclara que la App ZKBio Zlink es 100% GRATUITA de por vida (videollamada en celular y apertura de chapa a distancia sin suscripciones).
-   - Enlace: https://atomiccotizador.shop/web/portero-multifuncion
-
-9. PROTOCOLO OBLIGATORIO PARA BARRERAS AUTOMÁTICAS DÍTEC SERIE 2027:
-   Siempre que el cliente consulte por barreras vehiculares, talanqueras de acceso, Dítec, urbanizaciones, hospitales o parqueaderos:
-   - Destaca la ingeniería europea de Dítec y el precio especial de lanzamiento: $1,928.90 + IVA.
-   - Explica que cuenta con motor Brushless de 24V de uso continuo intensivo (100% duty cycle), apertura ultra veloz en 2 segundos, mástiles de hasta 6 metros y sistema antiaplastamiento por encoder digital.
-   - Ofrece visita técnica y proforma formal para condominios o empresas.
-   - Enlace: https://atomiccotizador.shop/web/barreras-ditec
-
-10. PROTOCOLO OBLIGATORIO PARA ANTENAS ANTI-HURTO ("NO DEJES QUE TE ROBEN"):
-   Siempre que el cliente consulte sobre antenas antihurto, alarmas para ropa, tags, sensores o pérdidas en su negocio:
-   - Empatiza con el problema del robo hormiga que afecta tiendas y boutiques.
-   - Presenta las dos alternativas de pedestales:
-     1. Sistema RF Dual Estándar (Par de pedestales 8.2MHz): $576.00 + IVA (ideal para boutiques, bazares y zapaterías).
-     2. Sistema Acrílico Crystal de Lujo (Par transparente): $745.00 + IVA (acrílico de alta densidad y mayor ancho de pasillo de hasta 1.80m sin falsas alarmas, ideal para centros comerciales).
-   - Menciona que disponemos de tags rígidos (desde $0.12 c/u), desactivadores magnéticos y etiquetas adhesivas.
-   - Enlace: https://atomiccotizador.shop/web/antenas-antihurto
-
-11. PROTOCOLO OBLIGATORIO PARA MANTENIMIENTO DE GENERADORES ELÉCTRICOS:
-   Siempre que el cliente pregunte por mantenimiento, reparación, cambio de aceite o revisión de generadores o plantas de luz:
-   - Explica el valor del mantenimiento preventivo para evitar que el equipo falle durante un apagón imprevisto.
-   - Presenta el Servicio Básico Promocional a solo $50.00 (limpieza del equipo, cambio de aceite y revisión eléctrica integral de voltaje y frecuencia).
-   - Para plantas diésel industriales: mantenimiento preventivo desde $180.00 con cambio de filtros, purga, diagnóstico de módulo y revisión de transferencias automáticas ATS.
-   - Da recomendaciones de uso: arrancar el equipo 15 minutos cada 15 días, no apagar con carga conectada y mantener en exteriores ventilados.
-   - Enlace: https://atomiccotizador.shop/web/mantenimiento-generadores
-`;
-        }
-
-/**
- * Generador de respuesta de contingencia inteligente de alta fidelidad.
- * Garantiza que NINGÚN chat quede muerto o sin respuesta si la API de IA externa tiene problemas.
- */
-
-        // 3. Consulta de IA con Cascada Resiliente (NVIDIA -> DeepSeek/OpenAI -> Consultor Experto Nativo)
         let botReply: string | null = null;
 
         try {
-            // Intento 1 con NVIDIA Llama-3.2-90B Vision
             const completion = await axios.post(
                 "https://integrate.api.nvidia.com/v1/chat/completions",
                 {
                     model: NVIDIA_MODEL,
                     messages: [
                         { role: "system", content: systemPrompt },
-                        { 
-                            role: "user", 
-                            content: `Historial de la conversación:\n${history}\n\nÚltimo mensaje recibido de ${contactName}:\n"${messageText}"`
+                        {
+                            role: "user",
+                            content: `Historial reciente:\n${historyLines.join('\n')}\n\nMensaje actual de ${contactName}:\n"${messageText}"\n\nResponde directo, natural y breve:`
                         }
                     ],
-                    temperature: 0.6,
-                    max_tokens: 380
+                    temperature: 0.55,
+                    max_tokens: 240
                 },
                 {
                     headers: {
-                        "Authorization": `Bearer ${NVIDIA_API_KEY}`,
+                        Authorization: `Bearer ${NVIDIA_API_KEY}`,
                         "Content-Type": "application/json"
                     },
-                    timeout: 22000
+                    timeout: 18000
                 }
             );
 
-            botReply = completion.data.choices?.[0]?.message?.content?.trim();
+            botReply = completion.data.choices?.[0]?.message?.content?.trim() || null;
         } catch (nvidiaErr: any) {
-            console.warn('[BOT_NVIDIA_UNAVAILABLE] Falló NVIDIA API, activando motor secundario...', nvidiaErr.message);
+            console.warn('[BOT_NVIDIA_UNAVAILABLE]', nvidiaErr?.message);
 
-            // Fallback secundario si existe DeepSeek u OpenAI en entorno
             if (process.env.DEEPSEEK_API_KEY) {
                 try {
                     const deepseekRes = await axios.post(
@@ -751,175 +416,96 @@ METODOLOGÍA DE VENTA CONSULTIVA Y REGLAS DE ORO:
                             model: "deepseek-chat",
                             messages: [
                                 { role: "system", content: systemPrompt },
-                                { role: "user", content: `Último mensaje recibido de ${contactName}:\n"${messageText}"` }
+                                { role: "user", content: `Historial:\n${historyLines.join('\n')}\n\nMensaje actual:\n"${messageText}"` }
                             ],
-                            temperature: 0.6,
-                            max_tokens: 350
+                            temperature: 0.55,
+                            max_tokens: 240
                         },
                         {
                             headers: {
-                                "Authorization": `Bearer ${process.env.DEEPSEEK_API_KEY}`,
+                                Authorization: `Bearer ${process.env.DEEPSEEK_API_KEY}`,
                                 "Content-Type": "application/json"
                             },
-                            timeout: 15000
+                            timeout: 12000
                         }
                     );
-                    botReply = deepseekRes.data.choices?.[0]?.message?.content?.trim();
+                    botReply = deepseekRes.data.choices?.[0]?.message?.content?.trim() || null;
                 } catch (dsErr: any) {
-                    console.warn('[BOT_DEEPSEEK_FAILED]', dsErr.message);
+                    console.warn('[BOT_DEEPSEEK_FAILED]', dsErr?.message);
                 }
-            }
-
-            // Fallback Maestro Determinista: Si ninguna API externa responde, NUNCA dejar el chat muerto
-            if (!botReply) {
-                console.log('[BOT_ENGAGING_RESILIENT_CONSULTANT] Empleando respuesta de consultor experto nativo.');
-                botReply = generateExpertConsultantFallback(messageText, contactName, isRecruitment);
             }
         }
 
-        if (botReply) {
-            // Detección autónoma: Si el cliente solicita fotos o si es consulta sobre cercos eléctricos o cámaras de hogar
-            const textLowerForDetection = messageText.toLowerCase();
-            const isAskingForVisuals = /foto|fotos|imagen|imagenes|imágenes|cat[aá]logo|modelo|ver|mu[eé]strame/i.test(textLowerForDetection);
-            const isSoundbarInquiry = /barra.*sonido|soundbar|boc241n|1\s*hora|parlante.*gamer/i.test(textLowerForDetection);
-            const isCercosInquiry = /cerco|cercos|electrificad|hagroy|jfl|yanex|xpower/i.test(textLowerForDetection);
-            const isCamarasExteriorInquiry = /(camara|c[aá]mara).*(exterior|intemperie|ip66|cruiser|titan|aurora|lluvia)|10115|12759/i.test(textLowerForDetection);
-            const isCamarasHogarInquiry = /camara|c[aá]mara|imou|ezviz|h6c|ranger|bebe|bebé|mascota|doble lente/i.test(textLowerForDetection);
-            const isPorteroInquiry = /portero.*(zkteco|multifunci|facial|huella|198)|zkbio/i.test(textLowerForDetection);
-            const isBarrerasInquiry = /ditec|d[ií]tec|barrera.*(vehicular|acceso|talanquera)|1928/i.test(textLowerForDetection);
-            const isAntenasInquiry = /antena.*(hurto|alarma|ropa|eas)|antihurto|no dejes que te roben|576|745/i.test(textLowerForDetection);
-            const isGeneradoresInquiry = /generador|planta.*el[eé]ctrica|mantenimiento.*(generador|aceite|planta)|50.*(mantenimiento|generador)/i.test(textLowerForDetection);
-            const detectedAsset = detectArticleAndCategory({ messagesText: messageText });
-            
-            let targetImagePath: string | null = detectedAsset.imagePath || null;
-            let shortCaption = '';
+        if (!botReply) {
+            botReply = generateNaturalConsultantFallback(messageText, contactName, classification);
+        }
 
-            if (isSoundbarInquiry || detectedAsset.id === 'barra-sonido') {
-                targetImagePath = '/images/audio/barra-sonido-boc241n-1hora-precio-28.jpg';
-                shortCaption = `🎶 *Barra de Sonido Gamer 1 HORA BOC241N* 🔥\n💰 *Precio:* $28.90 + IVA | 3 Años de Garantía\n🌐 https://atomiccotizador.shop/web/barra-de-sonido`;
-            } else if (isCercosInquiry || detectedAsset.id === 'cercos-electricos') {
-                targetImagePath = '/images/cercos/kits-cercos-electricos-pauta.jpg';
-                shortCaption = `⚡ *Kits Oficiales de Cercos Eléctricos ATOMIC* 🛡️\n🌐 Opciones en: https://atomiccotizador.shop/web/cercos-electricos\n⚠️ *Nota:* Materiales y mano de obra NO incluidos en el kit.`;
-            } else if (isCamarasExteriorInquiry || detectedAsset.id === 'camaras-exterior') {
-                if (textLowerForDetection.includes('12759') || textLowerForDetection.includes('cruiser') || textLowerForDetection.includes('triple')) {
-                    targetImagePath = '/images/camaras-exterior/camara-imou-cruiser-triple-11mp.jpg';
-                } else if (textLowerForDetection.includes('doble') || textLowerForDetection.includes('ip81')) {
-                    targetImagePath = '/images/camaras-exterior/camara-doble-lente-ip81-exterior.jpg';
-                } else if (textLowerForDetection.includes('10115') || textLowerForDetection.includes('nvr') || textLowerForDetection.includes('combo')) {
-                    targetImagePath = '/images/camaras-exterior/combo-kit-nks4223wbth.jpg';
-                } else if (textLowerForDetection.includes('titan') || textLowerForDetection.includes('aurora')) {
-                    targetImagePath = '/images/camaras-exterior/camara-imou-titan-pro-aurora.jpg';
-                } else {
-                    targetImagePath = '/images/camaras-exterior/camara-exterior-ip66-wifi.jpg';
-                }
-                shortCaption = `📹 *Cámaras de Seguridad Exterior IP66 ATOMIC* 🌧️\n🌐 Catálogo en: https://atomiccotizador.shop/web/camaras-exterior\n🛡️ 3 Años de Garantía e intemperie total.`;
-            } else if (isCamarasHogarInquiry || detectedAsset.id === 'camaras-hogar') {
-                if (textLowerForDetection.includes('10899') || textLowerForDetection.includes('ranger 3mp')) {
-                    targetImagePath = '/images/camaras/camara-imou-ranger-3mp-10899.jpg';
-                } else if (textLowerForDetection.includes('13067') || textLowerForDetection.includes('color') || textLowerForDetection.includes('mini pt')) {
-                    targetImagePath = '/images/camaras/camara-imou-mini-pt-fullcolor-13067.jpg';
-                } else if (textLowerForDetection.includes('doble') || textLowerForDetection.includes('lente') || textLowerForDetection.includes('21045')) {
-                    targetImagePath = '/images/camaras/camara-doble-lente-360-interior.jpg';
-                } else {
-                    targetImagePath = '/images/camaras/camara-ezviz-h6c-3mp-pauta.jpg';
-                }
-                shortCaption = `🌸 *Cámaras Inteligentes para el Hogar ATOMIC* 🏡\n🌐 Catálogo y opciones en: https://atomiccotizador.shop/web/camaras-hogar\n📲 Monitoreo en vivo desde tu celular sin cuotas mensuales.`;
-            } else if (isPorteroInquiry || detectedAsset.id === 'portero-multifuncion') {
-                targetImagePath = '/images/porteros/portero-inteligente-app-movil-198.jpg';
-                shortCaption = `🚪 *Portero Multifunción ZKTeco con App Móvil* 📲\n💰 *Precio:* $198.99 + IVA | App ZKBio Zlink GRATIS\n🌐 https://atomiccotizador.shop/web/portero-multifuncion`;
-            } else if (isBarrerasInquiry || detectedAsset.id === 'barreras-ditec') {
-                targetImagePath = '/images/barreras/barrera-ditec-tecnologia-2027-precio.jpg';
-                shortCaption = `🚧 *Barrera Automática Dítec Serie 2027* 🇪🇺\n💰 *Lanzamiento:* $1,928.90 + IVA | Motor 24V Uso Continuo\n🌐 https://atomiccotizador.shop/web/barreras-ditec`;
-            } else if (isAntenasInquiry || detectedAsset.id === 'antenas-antihurto') {
-                targetImagePath = '/images/antihurto/antenas-antihurto-par-576.jpg';
-                shortCaption = `🚨 *¡No Dejes Que Te Roben! Antenas Anti-Hurto ATOMIC* 🛡️\n💰 Desde $576.00 + IVA (Kit Acrílico $745.00)\n🌐 https://atomiccotizador.shop/web/antenas-antihurto`;
-            } else if (isGeneradoresInquiry || detectedAsset.id === 'mantenimiento-generadores') {
-                targetImagePath = '/images/generadores/mantenimiento-generadores-electricos-50.jpg';
-                shortCaption = `⚡ *Mantenimiento de Generadores Eléctricos ATOMIC* 🛠️\n💰 *Servicio Básico Promocional:* $50.00\n🌐 https://atomiccotizador.shop/web/mantenimiento-generadores`;
+        // Adjuntar foto oficial solo cuando aporta valor directo en consultas de producto específicas
+        const textLower = (messageText || '').toLowerCase();
+        const detectedAsset = detectArticleAndCategory({ messagesText: messageText });
+        const targetImagePath = classification.roleType === 'CLIENTE' ? (detectedAsset.imagePath || null) : null;
+        const shouldSendImage = Boolean(
+            targetImagePath &&
+            (/foto|fotos|imagen|im[aá]genes|modelo|mu[eé]strame/i.test(textLower) ||
+                ['barra-sonido', 'cercos-electricos', 'camaras-hogar', 'camaras-exterior', 'portero-multifuncion', 'barreras-ditec', 'antenas-antihurto', 'mantenimiento-generadores'].includes(detectedAsset.id || ''))
+        );
+
+        try {
+            let sentType = 'text';
+            let sentMediaUrl: string | null = null;
+
+            if (shouldSendImage && targetImagePath && botReply.length <= 950) {
+                await sendWhatsAppMedia(whatsappId, targetImagePath, 'image', botReply);
+                sentType = 'image';
+                sentMediaUrl = targetImagePath;
+            } else {
+                await sendWhatsAppMessage(whatsappId, botReply);
             }
 
-            const shouldSendImage = (isAskingForVisuals || isSoundbarInquiry || isCercosInquiry || isCamarasExteriorInquiry || isCamarasHogarInquiry || isPorteroInquiry || isBarrerasInquiry || isAntenasInquiry || isGeneradoresInquiry || ['barra-sonido', 'cercos-electricos', 'camaras-hogar', 'camaras-exterior', 'portero-multifuncion', 'barreras-ditec', 'antenas-antihurto', 'mantenimiento-generadores'].includes(detectedAsset.id || '')) && Boolean(targetImagePath);
-
-            try {
-                let sentType = 'text';
-                let sentMediaUrl: string | null = null;
-
-                if (shouldSendImage && targetImagePath) {
-                    console.log(`[BOT_AUTONOMOUS_IMAGE] Despachando foto oficial para ${whatsappId}: ${targetImagePath}`);
-                    
-                    // Meta WhatsApp API restringe captions a 1024 caracteres
-                    if (botReply.length <= 1000) {
-                        await sendWhatsAppMedia(whatsappId, targetImagePath, 'image', botReply);
-                        sentType = 'image';
-                        sentMediaUrl = targetImagePath;
-                    } else {
-                        const fallbackCaption = shortCaption || `✨ *Catálogo Oficial ATOMIC*\n🌐 https://atomiccotizador.shop/web`;
-                        await sendWhatsAppMedia(whatsappId, targetImagePath, 'image', fallbackCaption);
-                        await sendWhatsAppMessage(whatsappId, botReply);
-                        sentType = 'image';
-                        sentMediaUrl = targetImagePath;
-                    }
-                } else {
-                    // Enviar mensaje por WhatsApp Cloud API con auto-reintentos
-                    await sendWhatsAppMessage(whatsappId, botReply);
+            await prisma.wAMessage.create({
+                data: {
+                    conversationId,
+                    whatsappMessageId: `bot-${Date.now()}`,
+                    direction: 'OUTBOUND',
+                    type: sentType,
+                    mediaUrl: sentMediaUrl,
+                    body: botReply,
+                    status: 'SENT',
+                    senderId: 'KAREN_SALES_CLASSIFIER'
                 }
+            });
 
-                // 5. Guardar el mensaje OUTBOUND en la base de datos con status SENT
-                await prisma.wAMessage.create({
-                    data: {
-                        conversationId,
-                        whatsappMessageId: `bot-${Date.now()}`,
-                        direction: 'OUTBOUND',
-                        type: sentType,
-                        mediaUrl: sentMediaUrl,
-                        body: botReply,
-                        status: 'SENT',
-                        senderId: 'BOT_ATOMIC_RESILIENT'
-                    }
-                });
+            await prisma.wAConversation.update({
+                where: { id: conversationId },
+                data: { updatedAt: new Date(), lastMessageAt: new Date() }
+            }).catch(() => {});
 
-                // Actualizar timestamp de conversación
-                await prisma.wAConversation.update({
-                    where: { id: conversationId },
-                    data: { updatedAt: new Date(), lastMessageAt: new Date() }
-                }).catch(() => {});
+            console.log(`[KAREN_SALES_OK] ${whatsappId} -> ${classification.roleType}/${classification.category} (${sentType})`);
+        } catch (sendErr: any) {
+            const errMsg = sendErr?.response?.data?.error?.message || sendErr?.message || 'Error al entregar por WhatsApp';
+            console.error(`[KAREN_SEND_FAILED] ${whatsappId}:`, errMsg);
 
-                console.log(`[BOT_SUCCESS] Respondió automáticamente (${sentType}) de forma resiliente a ${whatsappId}`);
-            } catch (sendErr: any) {
-                const errMsg = sendErr?.response?.data?.error?.message || sendErr.message || 'Error al entregar por WhatsApp';
-                console.error(`[BOT_SEND_FAILED] Recipiente: ${whatsappId}. Detalle:`, errMsg);
-
-                // Registrar en BD con metadatos de reintento inteligente para que el motor de auto-retry lo entregue
-                await prisma.wAMessage.create({
-                    data: {
-                        conversationId,
-                        whatsappMessageId: `bot-failed-${Date.now()}`,
-                        direction: 'OUTBOUND',
-                        type: shouldSendImage ? 'image' : 'text',
-                        mediaUrl: shouldSendImage ? detectedAsset.imagePath : null,
-                        body: botReply,
-                        status: 'FAILED',
-                        errorMessage: formatRetryMetadata(0, Date.now() + 15000, errMsg),
-                        senderId: 'BOT_ATOMIC_RESILIENT'
-                    }
-                }).catch(() => {});
-
-                // Marcar la conversación con alta prioridad y estado de atención
-                await prisma.wAConversation.update({
-                    where: { id: conversationId },
-                    data: { priority: 'URGENT', status: 'LEAD_PAUTA' }
-                }).catch(() => {});
-            }
+            await prisma.wAMessage.create({
+                data: {
+                    conversationId,
+                    whatsappMessageId: `bot-failed-${Date.now()}`,
+                    direction: 'OUTBOUND',
+                    type: shouldSendImage ? 'image' : 'text',
+                    mediaUrl: shouldSendImage ? targetImagePath : null,
+                    body: botReply,
+                    status: 'FAILED',
+                    errorMessage: formatRetryMetadata(0, Date.now() + 15000, errMsg),
+                    senderId: 'KAREN_SALES_CLASSIFIER'
+                }
+            }).catch(() => {});
         }
 
         return botReply;
     } catch (error: any) {
-        const errorDetail = error.response?.data || error.message;
-        console.error('[BOT_PROCESSING_ERROR]', errorDetail);
-
-        // Si ocurre una excepción inesperada, enviar la respuesta de emergencia al cliente
+        console.error('[KAREN_BOT_ERROR]', error?.response?.data || error?.message);
         try {
-            const emergencyReply = generateExpertConsultantFallback(params.messageText, params.contactName, false);
+            const fallbackClass = classifyMessageForCrm(params.messageText || '');
+            const emergencyReply = generateNaturalConsultantFallback(params.messageText, params.contactName, fallbackClass);
             await sendWhatsAppMessage(params.whatsappId, emergencyReply);
 
             await prisma.wAMessage.create({
@@ -930,13 +516,11 @@ METODOLOGÍA DE VENTA CONSULTIVA Y REGLAS DE ORO:
                     type: 'text',
                     body: emergencyReply,
                     status: 'SENT',
-                    senderId: 'BOT_EMERGENCY_RESCUE'
+                    senderId: 'KAREN_SALES_EMERGENCY'
                 }
             });
-            console.log(`[BOT_EMERGENCY_SUCCESS] Chat rescatado exitosamente para ${params.whatsappId}`);
             return emergencyReply;
-        } catch (rescueErr: any) {
-            console.error('[BOT_RESCUE_FAILED]', rescueErr.message);
+        } catch {
             return null;
         }
     }

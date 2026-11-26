@@ -2,15 +2,6 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { handleIncomingWhatsAppBot } from '@/lib/whatsapp/ai-bot';
-import { 
-    checkAndSendMorningBriefingToJuan, 
-    checkAndSendScheduledCoordinatorReminders,
-    checkAndSendMondaySkillsBriefingToJuan,
-    checkAndSendScheduledAdvisorReminders,
-    checkAndSendDaily5pmTeamCheckin,
-    checkAndSendDaily530pmJuanReport,
-    checkAndSendSantiago24hExpiringAlerts
-} from '@/lib/karen/karenBrain';
 
 const VERIFY_TOKEN = process.env.WHATSAPP_VERIFY_TOKEN || 'atomic_whatsapp_verify_token_2026';
 
@@ -26,38 +17,8 @@ export async function GET(req: Request) {
     return new Response('Forbidden', { status: 403 });
 }
 
-// Control de concurrencia: Debounce en memoria para rutinas programadas de Karen
-let lastScheduledRoutinesRun = 0;
-const ROUTINES_DEBOUNCE_MS = 60_000; // Máximo 1 verificación cada 60s para no saturar PostgreSQL
-
 export async function POST(req: Request) {
     try {
-        const now = Date.now();
-        if (now - lastScheduledRoutinesRun > ROUTINES_DEBOUNCE_MS) {
-            lastScheduledRoutinesRun = now;
-
-            // Disparar saludo matutino automático de Karen para Juan si es horario AM
-            checkAndSendMorningBriefingToJuan().catch(() => {});
-
-            // Disparar briefing de habilidades de Karen para Juan (Lunes 5:00 AM)
-            checkAndSendMondaySkillsBriefingToJuan().catch(() => {});
-
-            // Disparar recordatorios programados a Cristina (9:00 AM apertura / 7:00 PM cierre)
-            checkAndSendScheduledCoordinatorReminders().catch(() => {});
-
-            // Disparar recordatorios diarios a Asesores Comerciales (12 PM timbraje, 3 PM prospección, 5 PM publicaciones)
-            checkAndSendScheduledAdvisorReminders().catch(() => {});
-
-            // Disparar chequeo diario 5:00 PM a Cristina, Stefi y Kevin
-            checkAndSendDaily5pmTeamCheckin().catch(() => {});
-
-            // Disparar reporte ejecutivo consolidado 5:30 PM a Juan
-            checkAndSendDaily530pmJuanReport().catch(() => {});
-
-            // Monitoreo preventivo de la ventana de 24 horas de Meta para Santiago (Jefe)
-            checkAndSendSantiago24hExpiringAlerts().catch(() => {});
-        }
-
         const body = await req.json();
 
         // Basic structure validation

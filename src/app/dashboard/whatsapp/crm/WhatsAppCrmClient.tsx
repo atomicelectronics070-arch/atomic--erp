@@ -97,10 +97,11 @@ function hasHighPurchaseIntent(chat: Chat): boolean {
 
 // 3. ¿Sin especificar? (Solo saludos o mensajes muy breves que no especifican producto ni intención)
 function isUnspecified(chat: Chat): boolean {
+    if (chat.status === 'AUTO_REGISTER' || chat.status === 'REGISTRO_AUTOMATICO') return false;
     const text = getChatFullText(chat).trim();
     if (!text) return true;
     const isGreetingOnly = /^(hola|buenas|buen d[ií]a|buenas tardes|buenas noches|informaci[oó]n|info|saludos|que tal|qu[eé] tal|ayuda|me ayuda)\.?$/i.test(text);
-    const hasNoProductKeywords = !/(c[aá]mara|videoportero|citofon|ditec|barrera|antena|antihurto|torniquet|cerco|generador|laptop|precio|trabajo|empleo|garant[ií]a)/i.test(text);
+    const hasNoProductKeywords = !/(c[aá]mara|videoportero|citofon|ditec|barrera|antena|antihurto|torniquet|cerco|generador|laptop|iphone|apple|samsung|tablet|servidor|raspberry|rel[eé]|placa|repuesto|pantalla|parlante|barra|dron|consola|ps4|ps5|mando|cocina|horno|campana|m[aá]rmol|wpc|cerradura|biom[eé]tric|ferreter|herramienta|software|agente|mayorista|precio|trabajo|empleo|vacante|postul|garant[ií]a|cotiz|compr)/i.test(text);
     return isGreetingOnly || (text.length < 30 && hasNoProductKeywords);
 }
 
@@ -110,15 +111,16 @@ function isDeliveryIntent(chat: Chat): boolean {
     return /(env[ií]o|servientrega|domicilio|quito|guayaquil|cuenca|ambato|machala|manta|portoviejo|loja|ibarra|entrega|direcci[oó]n|sector)/i.test(text);
 }
 
-// 5. Categoría temática
+// 5. Categoría temática (clasificación CRM)
 function categorizarChat(chat: Chat): 'residencial' | 'empresarial' | 'consolas' | 'postulante' | 'soporte' | 'sin_especificar' | 'envios' | 'general' {
+    if (chat.status === 'AUTO_REGISTER' || chat.status === 'REGISTRO_AUTOMATICO') return 'postulante';
     if (isUnspecified(chat)) return 'sin_especificar';
     const allText = getChatFullText(chat);
-    if (/(playstation|ps4|ps5|xbox|nintendo|switch|consola|consolas|mando|mandos|gamepad|videojuego|joystick|joy-con|gamer)/i.test(allText)) return 'consolas';
-    if (/(trabajo|empleo|asesor comercial|comisi[oó]n|curriculum|cv|postulaci[oó]n|vacante|sueldo|horario|requisito)/i.test(allText)) return 'postulante';
-    if (/(garant[ií]a|da[ñn]o|falla|no funciona|roto|reparaci[oó]n|averiado|soporte|servicio t[eé]cnico)/i.test(allText)) return 'soporte';
-    if (/(empresa|local|negocio|bodega|oficina|antena|antihurto|torniquete|barrera|control de acceso|establecimiento|sucursal)/i.test(allText)) return 'empresarial';
-    if (/(c[aá]mara|videoportero|citofono|citofonía|hogar|casa|conjunto|residencial|alarma|cerco|domicilio|apartamento|departamento)/i.test(allText)) return 'residencial';
+    if (/(trabajo|empleo|asesor comercial|comisi[oó]n|curriculum|cv|postulaci[oó]n|postular|vacante|sueldo|horario|requisito|plan laboral)/i.test(allText)) return 'postulante';
+    if (/(playstation|ps4|ps5|xbox|nintendo|switch|consola|consolas|mini consola|mando|mandos|gamepad|videojuego|joystick|joy-con|gamer|parlante|barra de sonido|dron|c[aá]mara deportiva)/i.test(allText)) return 'consolas';
+    if (/(garant[ií]a|da[ñn]o|falla|no funciona|roto|reparaci[oó]n|averiado|soporte|servicio t[eé]cnico|mantenimiento)/i.test(allText)) return 'soporte';
+    if (/(empresa|local|negocio|bodega|oficina|antena|antihurto|torniquete|barrera|ditec|control de acceso|establecimiento|sucursal|mayorista|6 unidades|emprendimiento|distribuci[oó]n|servidor|software|agente ia|ferreter|edificio|alto voltaje|panel de abastecimiento)/i.test(allText)) return 'empresarial';
+    if (/(c[aá]mara|videoportero|citofono|citofon[ií]a|hogar|casa|conjunto|residencial|alarma|cerco|domicilio|apartamento|departamento|cerradura|cocina|encimera|horno|campana|m[aá]rmol|wpc|dom[oó]tica)/i.test(allText)) return 'residencial';
     if (isDeliveryIntent(chat)) return 'envios';
     return 'general';
 }
