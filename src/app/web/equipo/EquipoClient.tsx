@@ -253,6 +253,41 @@ export default function EquipoClient() {
 
         </div>
 
+        {/* ── MÓDULOS DE APOYO IA & AUTOMATIZACIÓN (DISCRETO) ── */}
+        <div className="p-5 sm:p-6 rounded-2xl bg-zinc-900/35 border border-white/[0.06] space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-400 font-semibold">
+              Célula de Agentes IA &amp; Asistencia Operativa
+            </span>
+            <span className="text-[10px] font-mono text-zinc-500">
+              Soporte interno y atención automatizada
+            </span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            {[
+              { name: "Karen", role: "Atención comercial y clasificación CRM" },
+              { name: "Wanda", role: "Coordinación de flujos y seguimiento" },
+              { name: "Wax", role: "Automatización rápida y respaldos" },
+              { name: "Logan", role: "Análisis técnico y arquitectura" },
+              { name: "Doplin", role: "Redacción, síntesis y documentación" },
+              { name: "Teithan", role: "Control operativo y verificación" },
+              { name: "Romu", role: "Contenido de marca y difusión social" },
+              { name: "Alex", role: "Campañas digitales y tráfico comercial" },
+            ].map((ai) => (
+              <div
+                key={ai.name}
+                className="px-3 py-2.5 rounded-xl bg-zinc-950/60 border border-white/[0.05] space-y-0.5"
+              >
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-zinc-500 shrink-0" />
+                  <span className="text-xs font-semibold text-zinc-200">{ai.name}</span>
+                </div>
+                <p className="text-[10px] text-zinc-500 leading-snug">{ai.role}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* ── CONTENIDO PERSONAL & RESEÑAS EN CLIPS ── */}
         <div className="p-6 sm:p-8 rounded-3xl bg-zinc-900/50 border border-white/[0.08] space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
