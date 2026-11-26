@@ -2,7 +2,7 @@
 
 import React from "react"
 import Link from "next/link"
-import { ArrowRight, ShieldCheck, Zap, Cpu, Building2, Lock, Bot, Sparkles, MessageSquare, Mic, Home, Smartphone } from "lucide-react"
+import { ArrowRight, ShieldCheck, Cpu, Building2, Lock, Bot, Sparkles, MessageSquare, Mic, Home, Smartphone } from "lucide-react"
 
 export default function FuturisticParallaxSection() {
     return (
@@ -245,40 +245,51 @@ export default function FuturisticParallaxSection() {
                     </div>
                 </section>
 
-                {/* ── SECCIÓN 3: NO PARALLAX (PILARES DE INGENIERÍA) ── */}
+                {/* ── SECCIÓN 3: NO PARALLAX (ECOSISTEMA HARDWARE + SOFTWARE PARA PROYECTOS COMPLEJOS) ── */}
                 <section className="parallax-section no-parallax border-y border-white/10">
-                    <div className="max-w-4xl mx-auto space-y-6">
+                    <div className="max-w-6xl mx-auto space-y-6 w-full">
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-bold uppercase tracking-widest">
                             <Cpu size={14} className="text-emerald-400" />
                             <span>Integración Hardware + Software</span>
                         </div>
 
-                        <h2 className="futuristic-title font-heading uppercase">
-                            Ecosistema Tecnológico ATOMIC
-                        </h2>
+                        <div className="space-y-3">
+                            <h2 className="futuristic-title font-heading uppercase">
+                                Ecosistema Tecnológico ATOMIC
+                            </h2>
+                            <p className="text-slate-300 text-sm sm:text-base max-w-3xl mx-auto font-sans leading-relaxed">
+                                Diseñamos propuestas de alto impacto para proyectos tecnológicos de alcance complejo, uniendo electrónica profesional y software inteligente con una arquitectura clara, escalable y fácil de operar.
+                            </p>
+                        </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-3 text-left">
-                            <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2.5 hover:border-blue-500/40 transition-all">
-                                <Lock className="text-blue-400" size={24} />
-                                <h4 className="text-white font-bold text-sm">Control de Acceso & Barreras</h4>
-                                <p className="text-slate-400 text-xs leading-relaxed">
-                                    Torniquetes bidireccionales, barreras vehiculares de alto tráfico y cerraduras biométricas con auditoría remota.
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 lg:gap-6 pt-3 text-left">
+                            <div className="p-6 rounded-2xl bg-white/[0.04] border border-white/10 space-y-3 hover:border-blue-500/45 transition-all">
+                                <div className="w-10 h-10 rounded-xl bg-blue-500/15 border border-blue-400/30 flex items-center justify-center text-blue-400">
+                                    <Building2 size={22} />
+                                </div>
+                                <h4 className="text-white font-bold text-base font-heading">Configuraciones en Instituciones</h4>
+                                <p className="text-slate-300 text-xs sm:text-[13px] leading-relaxed">
+                                    Estructuramos infraestructuras completas para empresas, entidades educativas y corporaciones: conectividad robusta, control centralizado y automatización diseñada para operar a gran escala.
                                 </p>
                             </div>
 
-                            <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2.5 hover:border-emerald-500/40 transition-all">
-                                <ShieldCheck className="text-emerald-400" size={24} />
-                                <h4 className="text-white font-bold text-sm">CCTV 4K & Videoporteros</h4>
-                                <p className="text-slate-400 text-xs leading-relaxed">
-                                    Kits de videoportero con botoneras metálicas antivandálicas, reconocimiento facial y monitoreo en app móvil.
+                            <div className="p-6 rounded-2xl bg-white/[0.04] border border-white/10 space-y-3 hover:border-emerald-500/45 transition-all">
+                                <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-400/30 flex items-center justify-center text-emerald-400">
+                                    <Cpu size={22} />
+                                </div>
+                                <h4 className="text-white font-bold text-base font-heading">Sistemas Particulares a Medida</h4>
+                                <p className="text-slate-300 text-xs sm:text-[13px] leading-relaxed">
+                                    Desarrollamos arquitecturas exclusivas donde hardware especializado y software propio trabajan sincronizados, resolviendo necesidades técnicas complejas que los paquetes estándar no cubren.
                                 </p>
                             </div>
 
-                            <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/10 space-y-2.5 hover:border-amber-500/40 transition-all">
-                                <Zap className="text-amber-400" size={24} />
-                                <h4 className="text-white font-bold text-sm">Energía & Respaldo Crítico</h4>
-                                <p className="text-slate-400 text-xs leading-relaxed">
-                                    Generadores eléctricos, bancos solares y cargadores para vehículos eléctricos para mantener continuidad de negocio.
+                            <div className="p-6 rounded-2xl bg-white/[0.04] border border-white/10 space-y-3 hover:border-cyan-500/45 transition-all">
+                                <div className="w-10 h-10 rounded-xl bg-cyan-500/15 border border-cyan-400/30 flex items-center justify-center text-cyan-400">
+                                    <ShieldCheck size={22} />
+                                </div>
+                                <h4 className="text-white font-bold text-base font-heading">Módulos de Seguridad Residencial</h4>
+                                <p className="text-slate-300 text-xs sm:text-[13px] leading-relaxed">
+                                    Implementamos soluciones claras e intuitivas para hogares y conjuntos: protección perimetral inteligente, accesos digitales y alertas en tiempo real sin complicaciones técnicas.
                                 </p>
                             </div>
                         </div>
