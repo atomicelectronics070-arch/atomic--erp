@@ -11,7 +11,7 @@ import {
   Home, Wrench, Shield, CheckCircle2, X, Flame, Gift,
   MapPin, Building2, Clock, Zap, Phone, ArrowUpRight,
   Filter, BadgeCheck, SlidersHorizontal, Send, Globe, Tag, FileText, BatteryCharging,
-  Calculator, Loader2
+  Calculator, Loader2, Plus, Minus, Trash2, ShoppingCart
 } from "lucide-react"
 import QuotationClient from "@/app/dashboard/quotes/QuotationClient"
 
@@ -681,9 +681,12 @@ interface ProductCardProps {
   product: any
   copiedId: string | null
   copyToClipboard: (text: string, id: string, label: string) => void
+  onAddToQuote: (product: any) => void
+  onDirectQuote: (product: any) => void
+  addedQty?: number
 }
 
-function ProductCard({ product: p, copiedId, copyToClipboard }: ProductCardProps) {
+function ProductCard({ product: p, copiedId, copyToClipboard, onAddToQuote, onDirectQuote, addedQty = 0 }: ProductCardProps) {
   const saleP = Number(p.salePrice) || 0
   const comision20 = saleP * 0.20
   const productWebUrl = `https://atomiccotizador.shop/web/product/${p.id}`
@@ -1057,6 +1060,37 @@ ${productWebUrl}
             <span className="truncate">{copiedId === `copy-${p.id}` ? "¡Copy Copiado!" : "Copy Comercial"}</span>
           </button>
         </div>
+
+        {/* Botón Doble Elegante: (+ Añadir a Cotización | Flecha con Vistito para Cotizar Directo) */}
+        <div className="grid grid-cols-[1fr_52px] items-stretch rounded-xl border border-orange-400/50 bg-zinc-950/90 overflow-hidden divide-x divide-orange-400/30 shadow-sm">
+          <button
+            type="button"
+            onClick={() => onAddToQuote(p)}
+            className={`px-3 py-2 flex items-center justify-center gap-1.5 text-[11px] font-medium transition-colors cursor-pointer ${
+              addedQty > 0
+                ? "bg-orange-500/20 text-orange-200 hover:bg-orange-500/30"
+                : "text-zinc-200 hover:bg-orange-500/15 hover:text-orange-200"
+            }`}
+            title="Añadir producto al borrador de cotización (puedes agregar varios y luego cotizar)"
+          >
+            <Plus size={13} className="text-orange-400 shrink-0" />
+            <span className="truncate">
+              {addedQty > 0 ? `Añadido (${addedQty})` : "Añadir a Cotizar"}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onDirectQuote(p)}
+            className="flex items-center justify-center bg-orange-500/10 hover:bg-orange-500/25 text-orange-300 hover:text-orange-100 transition-all cursor-pointer group/direct"
+            title="Cotizar directo este producto ahora"
+          >
+            <span className="relative inline-flex items-center justify-center w-6 h-5">
+              <Check size={10} strokeWidth={3} className="absolute -top-0.5 left-1/2 -translate-x-1/2 text-emerald-400" />
+              <ArrowRight size={14} className="translate-y-1 text-orange-300 group-hover/direct:translate-x-0.5 transition-transform" />
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -1082,8 +1116,64 @@ export default function PreciosVendedorClient() {
     session: any
   } | null>(null)
 
-  const openFloatingQuoteModal = async () => {
+  const [quoteDraftItems, setQuoteDraftItems] = useState<any[]>([])
+  const [isQuoteTrayOpen, setIsQuoteTrayOpen] = useState(false)
+  const [lastAddedItemName, setLastAddedItemName] = useState<string | null>(null)
+  const [activeQuoteItems, setActiveQuoteItems] = useState<any[] | undefined>(undefined)
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("atomic_quote_items")
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setQuoteDraftItems(parsed)
+        }
+      }
+    } catch {}
+  }, [])
+
+  const syncDraftStorage = (nextItems: any[]) => {
+    try {
+      localStorage.setItem("atomic_quote_items", JSON.stringify(nextItems))
+    } catch {}
+  }
+
+  const toQuoteItem = (p: any) => {
+    let img: string | undefined = undefined
+    if (Array.isArray(p.images) && p.images.length > 0) {
+      img = p.images[0]
+    } else if (typeof p.images === "string" && p.images.startsWith("[")) {
+      try {
+        const arr = JSON.parse(p.images)
+        if (Array.isArray(arr) && arr.length > 0) img = arr[0]
+      } catch {}
+    } else if (typeof p.image === "string") {
+      img = p.image
+    }
+    return {
+      id: String(p.id || Date.now()),
+      productId: p.sku || String(p.id || "").slice(0, 8),
+      description: p.name || "Producto ATOMIC",
+      quantity: 1,
+      unitPrice: Number(p.salePrice) || 0,
+      discountPercent: 0,
+      customImage: img,
+      _rawId: String(p.id || "")
+    }
+  }
+
+  const openFloatingQuoteModal = async (itemsToLoad?: any[]) => {
     setIsToolsDropdownOpen(false)
+    if (Array.isArray(itemsToLoad) && itemsToLoad.length > 0) {
+      setActiveQuoteItems(itemsToLoad)
+      syncDraftStorage(itemsToLoad)
+    } else if (quoteDraftItems.length > 0) {
+      setActiveQuoteItems(quoteDraftItems)
+      syncDraftStorage(quoteDraftItems)
+    } else {
+      setActiveQuoteItems(undefined)
+    }
     setIsQuoteModalOpen(true)
     if (quoteBootstrap) return
     setLoadingQuoteBootstrap(true)
@@ -1100,6 +1190,68 @@ export default function PreciosVendedorClient() {
     } finally {
       setLoadingQuoteBootstrap(false)
     }
+  }
+
+  const handleAddToQuoteDraft = (p: any) => {
+    const newItem = toQuoteItem(p)
+    setQuoteDraftItems((prev) => {
+      const idx = prev.findIndex(
+        (it) => it._rawId === newItem._rawId || (it.productId && it.productId === newItem.productId && it.description === newItem.description)
+      )
+      let next: any[]
+      if (idx >= 0) {
+        next = prev.map((it, i) => (i === idx ? { ...it, quantity: (Number(it.quantity) || 1) + 1 } : it))
+      } else {
+        next = [...prev, newItem]
+      }
+      syncDraftStorage(next)
+      return next
+    })
+    setLastAddedItemName(p.name || "Producto")
+    setIsQuoteTrayOpen(true)
+  }
+
+  const handleDirectQuoteProduct = (p: any) => {
+    const singleItem = [toQuoteItem(p)]
+    setQuoteDraftItems(singleItem)
+    setIsQuoteTrayOpen(false)
+    openFloatingQuoteModal(singleItem)
+  }
+
+  const handleUpdateDraftQty = (id: string, delta: number) => {
+    setQuoteDraftItems((prev) => {
+      const next = prev
+        .map((it) => (it.id === id ? { ...it, quantity: Math.max(0, (Number(it.quantity) || 1) + delta) } : it))
+        .filter((it) => it.quantity > 0)
+      syncDraftStorage(next)
+      if (next.length === 0) setIsQuoteTrayOpen(false)
+      return next
+    })
+  }
+
+  const handleRemoveFromDraft = (id: string) => {
+    setQuoteDraftItems((prev) => {
+      const next = prev.filter((it) => it.id !== id)
+      syncDraftStorage(next)
+      if (next.length === 0) setIsQuoteTrayOpen(false)
+      return next
+    })
+  }
+
+  const handleClearQuoteDraft = () => {
+    setQuoteDraftItems([])
+    setIsQuoteTrayOpen(false)
+    setLastAddedItemName(null)
+    try {
+      localStorage.removeItem("atomic_quote_items")
+    } catch {}
+  }
+
+  const getProductDraftQty = (p: any) => {
+    const found = quoteDraftItems.find(
+      (it) => it._rawId === String(p.id || "") || it.id === String(p.id || "")
+    )
+    return found ? Number(found.quantity) || 0 : 0
   }
 
   // Sub-categoría seleccionada en Tab 2
@@ -1580,7 +1732,7 @@ export default function PreciosVendedorClient() {
 
                         <button
                           type="button"
-                          onClick={openFloatingQuoteModal}
+                          onClick={() => openFloatingQuoteModal()}
                           className="w-full text-left px-3 py-2.5 rounded-xl bg-orange-500/15 hover:bg-orange-500/25 border border-orange-400/40 text-white transition-all flex items-center gap-3 cursor-pointer group"
                         >
                           <div className="w-8 h-8 rounded-lg bg-orange-500/20 border border-orange-400/40 flex items-center justify-center text-orange-300 shrink-0">
@@ -1642,7 +1794,7 @@ export default function PreciosVendedorClient() {
 
               <button
                 type="button"
-                onClick={openFloatingQuoteModal}
+                onClick={() => openFloatingQuoteModal()}
                 className="px-3 py-1.5 rounded-xl bg-zinc-900/70 hover:bg-orange-500/15 border border-white/[0.08] hover:border-orange-400/50 text-[11px] font-medium text-zinc-300 hover:text-orange-200 flex items-center gap-1.5 transition-all cursor-pointer"
               >
                 <Calculator size={13} className="text-orange-400" />
@@ -1926,6 +2078,9 @@ export default function PreciosVendedorClient() {
                     product={p}
                     copiedId={copiedId}
                     copyToClipboard={copyToClipboard}
+                    onAddToQuote={handleAddToQuoteDraft}
+                    onDirectQuote={handleDirectQuoteProduct}
+                    addedQty={getProductDraftQty(p)}
                   />
                 ))}
               </div>
@@ -2240,6 +2395,9 @@ export default function PreciosVendedorClient() {
                     product={p}
                     copiedId={copiedId}
                     copyToClipboard={copyToClipboard}
+                    onAddToQuote={handleAddToQuoteDraft}
+                    onDirectQuote={handleDirectQuoteProduct}
+                    addedQty={getProductDraftQty(p)}
                   />
                 ))}
               </div>
@@ -3145,6 +3303,141 @@ export default function PreciosVendedorClient() {
         </button>
       </div>
 
+      {/* ── POP FLOTANTE: AÑADIENDO PRODUCTOS A LA COTIZACIÓN ── */}
+      <AnimatePresence>
+        {quoteDraftItems.length > 0 && !isQuoteModalOpen && (
+          <div className="fixed bottom-5 left-4 sm:left-6 z-[60] max-w-[calc(100vw-2rem)]">
+            {isQuoteTrayOpen ? (
+              <motion.div
+                initial={{ opacity: 0, y: 16, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 16, scale: 0.96 }}
+                transition={{ duration: 0.16 }}
+                className="w-[360px] sm:w-[410px] max-w-full bg-zinc-950/95 border border-orange-400/60 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.85)] backdrop-blur-2xl overflow-hidden text-zinc-100"
+              >
+                <div className="px-4 py-3 border-b border-white/[0.08] bg-zinc-900/80 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                    <span className="text-xs font-semibold text-white truncate">
+                      Añadiendo a la Cotización
+                    </span>
+                    <span className="px-1.5 py-0.5 rounded-full bg-orange-500/20 border border-orange-400/40 text-orange-200 text-[10px] font-mono font-semibold shrink-0">
+                      {quoteDraftItems.reduce((s, it) => s + (Number(it.quantity) || 1), 0)} uds
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      type="button"
+                      onClick={handleClearQuoteDraft}
+                      className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-400 hover:bg-white/[0.05] transition-colors cursor-pointer"
+                      title="Vaciar lista"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsQuoteTrayOpen(false)}
+                      className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.05] transition-colors cursor-pointer"
+                      title="Minimizar ventana"
+                    >
+                      <ChevronDown size={14} />
+                    </button>
+                  </div>
+                </div>
+
+                {lastAddedItemName && (
+                  <div className="px-4 py-1.5 bg-emerald-500/10 border-b border-emerald-500/20 text-[11px] text-emerald-300 flex items-center gap-1.5 truncate">
+                    <Check size={12} className="shrink-0 text-emerald-400" />
+                    <span className="truncate">Agregado: <strong className="text-emerald-200">{lastAddedItemName}</strong></span>
+                  </div>
+                )}
+
+                <div className="max-h-48 overflow-y-auto divide-y divide-white/[0.06] px-3 py-1">
+                  {quoteDraftItems.map((it) => (
+                    <div key={it.id} className="py-2.5 flex items-center justify-between gap-2.5">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium text-white truncate">{it.description}</p>
+                        <p className="text-[10px] font-mono text-zinc-400">
+                          ${Number(it.unitPrice || 0).toFixed(2)} c/u · Subtotal: <span className="text-emerald-400 font-semibold">${((Number(it.quantity) || 1) * (Number(it.unitPrice) || 0)).toFixed(2)}</span>
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateDraftQty(it.id, -1)}
+                          className="w-6 h-6 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-white/10 flex items-center justify-center text-zinc-300 cursor-pointer"
+                        >
+                          <Minus size={11} />
+                        </button>
+                        <span className="w-6 text-center text-xs font-mono font-semibold text-white">
+                          {it.quantity}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateDraftQty(it.id, 1)}
+                          className="w-6 h-6 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-white/10 flex items-center justify-center text-zinc-300 cursor-pointer"
+                        >
+                          <Plus size={11} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveFromDraft(it.id)}
+                          className="p-1 rounded-lg text-zinc-500 hover:text-rose-400 cursor-pointer"
+                        >
+                          <X size={12} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="p-3.5 border-t border-white/[0.08] bg-zinc-900/70 space-y-2.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-zinc-400">Subtotal estimado (sin IVA):</span>
+                    <span className="font-mono font-bold text-white text-sm">
+                      ${quoteDraftItems.reduce((s, it) => s + (Number(it.quantity) || 1) * (Number(it.unitPrice) || 0), 0).toFixed(2)} USD
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => openFloatingQuoteModal(quoteDraftItems)}
+                      className="flex-1 py-2.5 px-4 rounded-xl bg-orange-500 hover:bg-orange-400 text-zinc-950 font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-lg cursor-pointer"
+                    >
+                      <Calculator size={14} />
+                      <span>Cotizar ({quoteDraftItems.length})</span>
+                    </button>
+                    <Link
+                      href="/dashboard/quotes"
+                      onClick={() => syncDraftStorage(quoteDraftItems)}
+                      className="py-2.5 px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-white/10 text-zinc-200 text-xs font-medium flex items-center gap-1 transition-colors"
+                      title="Ir al Cotizador Oficial (/dashboard/quotes) con estos productos cargados"
+                    >
+                      <ExternalLink size={13} />
+                    </Link>
+                  </div>
+                </div>
+              </motion.div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsQuoteTrayOpen(true)}
+                className="px-4 py-2.5 rounded-full bg-zinc-950/95 hover:bg-zinc-900 border border-orange-400/60 text-white flex items-center gap-2.5 shadow-2xl backdrop-blur-xl transition-all cursor-pointer"
+              >
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <ShoppingCart size={14} className="text-orange-400" />
+                <span className="text-xs font-semibold">
+                  Cotizar ({quoteDraftItems.length})
+                </span>
+                <span className="text-[11px] font-mono text-emerald-400 font-semibold">
+                  ${quoteDraftItems.reduce((s, it) => s + (Number(it.quantity) || 1) * (Number(it.unitPrice) || 0), 0).toFixed(2)}
+                </span>
+              </button>
+            )}
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* ── VENTANA FLOTANTE DEL COTIZADOR PRO (/dashboard/quotes SIN REDIRECCIÓN) ── */}
       <AnimatePresence>
         {isQuoteModalOpen && (
@@ -3178,6 +3471,7 @@ export default function PreciosVendedorClient() {
                   nextNumber={quoteBootstrap.nextNumber || "PROP-00-001"}
                   session={quoteBootstrap.session}
                   embedded={true}
+                  initialItemsOverride={activeQuoteItems}
                   onCloseModal={() => setIsQuoteModalOpen(false)}
                 />
               )}

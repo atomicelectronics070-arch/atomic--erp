@@ -56,9 +56,10 @@ interface QuotationClientProps {
     session: any
     embedded?: boolean
     onCloseModal?: () => void
+    initialItemsOverride?: QuoteItem[]
 }
 
-export default function QuotationClient({ initialProducts, initialHistory, initialClients, nextNumber, session, embedded = false, onCloseModal }: QuotationClientProps) {
+export default function QuotationClient({ initialProducts, initialHistory, initialClients, nextNumber, session, embedded = false, onCloseModal, initialItemsOverride }: QuotationClientProps) {
     const [clientName, setClientName] = useState("")
     const [clientCedula, setClientCedula] = useState("")
     const [clientEmail, setClientEmail] = useState("")
@@ -97,12 +98,21 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
     }, []);
     const [advisorName, setAdvisorName] = useState(session?.user?.name?.toUpperCase() || "ASESOR ATOMIC")
 
-    const [items, setItems] = useState<QuoteItem[]>([
-        { id: "1", productId: "", description: "", quantity: 1, unitPrice: 0 }
-    ])
+    const [items, setItems] = useState<QuoteItem[]>(
+        initialItemsOverride && initialItemsOverride.length > 0
+            ? initialItemsOverride
+            : [{ id: "1", productId: "", description: "", quantity: 1, unitPrice: 0 }]
+    )
+
+    useEffect(() => {
+        if (initialItemsOverride && initialItemsOverride.length > 0) {
+            setItems(initialItemsOverride);
+        }
+    }, [initialItemsOverride]);
 
     // Load pre-selected quote items from Suicide Squad or catalog tools
     useEffect(() => {
+        if (initialItemsOverride && initialItemsOverride.length > 0) return;
         try {
             const saved = localStorage.getItem('atomic_quote_items');
             if (saved) {
@@ -117,7 +127,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
         } catch (e) {
             console.error("Error loading atomic_quote_items", e);
         }
-    }, []);
+    }, [initialItemsOverride]);
 
     const [productPool, setProductPool] = useState<Product[]>(initialProducts || [])
     const [searchResults, setSearchResults] = useState<Product[]>((initialProducts || []).slice(0, 25))
@@ -1019,14 +1029,24 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                     </div>
 
                     {onCloseModal && (
-                        <button
-                            type="button"
-                            onClick={onCloseModal}
-                            className="self-end md:self-auto px-3 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-white/10 text-xs font-medium text-zinc-300 hover:text-white flex items-center gap-1.5 transition-colors cursor-pointer"
-                        >
-                            <X size={14} />
-                            <span>Cerrar Cotizador</span>
-                        </button>
+                        <div className="self-end md:self-auto flex items-center gap-2">
+                            <a
+                                href="/dashboard/quotes"
+                                className="px-3 py-1.5 rounded-xl bg-orange-500/15 hover:bg-orange-500/25 border border-orange-400/40 text-xs font-medium text-orange-200 flex items-center gap-1.5 transition-colors"
+                                title="Abrir el Cotizador Oficial en pantalla completa"
+                            >
+                                <ExternalLink size={13} />
+                                <span>Cotizador Completo</span>
+                            </a>
+                            <button
+                                type="button"
+                                onClick={onCloseModal}
+                                className="px-3 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-white/10 text-xs font-medium text-zinc-300 hover:text-white flex items-center gap-1.5 transition-colors cursor-pointer"
+                            >
+                                <X size={14} />
+                                <span>Cerrar</span>
+                            </button>
+                        </div>
                     )}
                 </div>
 
