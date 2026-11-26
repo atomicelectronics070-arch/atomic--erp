@@ -2,7 +2,7 @@
 
 import React from "react"
 import Link from "next/link"
-import { ArrowRight, ShieldCheck, Cpu, Building2, Lock, Bot, Sparkles, MessageSquare, Mic, Home, Smartphone, Globe, Package } from "lucide-react"
+import { ArrowRight, ShieldCheck, Cpu, Building2, Lock, Bot, Sparkles, MessageSquare, Mic, Home, Smartphone, Globe, Package, Zap } from "lucide-react"
 
 export default function FuturisticParallaxSection() {
     return (
@@ -364,33 +364,75 @@ export default function FuturisticParallaxSection() {
                     </div>
                 </section>
 
-                {/* ── SECCIÓN 5: NO PARALLAX (CIERRE EJECUTIVO & CTA) ── */}
-                <section className="parallax-section no-parallax border-t border-white/10">
-                    <div className="max-w-2xl mx-auto space-y-5">
-                        <h2 className="futuristic-title font-heading uppercase">
-                            Ingeniería Real en Marcha
-                        </h2>
-                        
-                        <p className="text-slate-300 text-xs sm:text-sm font-sans leading-relaxed">
-                            Respaldo directo con garantía escrita de 1 año, repuestos originales y asesoría técnica personalizada antes y después de cada instalación.
-                        </p>
+                {/* ── SECCIÓN 5: NO PARALLAX (SISTEMAS DE GENERACIÓN Y RESPALDO ENERGÉTICO URBANO) ── */}
+                <section className="parallax-section no-parallax border-t border-white/10 overflow-hidden">
+                    <div
+                        aria-hidden="true"
+                        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_rgba(245,158,11,0.14),_transparent_65%)]"
+                    />
+                    <div className="relative z-10 max-w-6xl mx-auto space-y-6 w-full">
+                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/15 border border-amber-400/35 text-amber-300 text-xs font-mono font-bold uppercase tracking-widest">
+                            <Zap size={14} className="text-amber-400 animate-pulse" />
+                            <span>Ingeniería Eléctrica Urbana • Alta Capacidad</span>
+                        </div>
+
+                        <div className="space-y-3">
+                            <h2 className="futuristic-title font-heading uppercase max-w-4xl mx-auto">
+                                Sistemas de Generación y Respaldo Energético Urbano
+                            </h2>
+                            <p className="text-slate-300 text-sm sm:text-base max-w-3xl mx-auto font-sans leading-relaxed">
+                                Planeamos y desarrollamos proyectos integrales de respaldo eléctrico para edificios, conjuntos habitacionales y zonas urbanas: configuración de paneles de abastecimiento, transferencia automática y líneas para sistemas de alto voltaje.
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 lg:gap-6 pt-2 text-left">
+                            <div className="p-6 rounded-2xl bg-white/[0.04] border border-white/10 space-y-3 hover:border-amber-400/50 transition-all">
+                                <div className="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-400/30 flex items-center justify-center text-amber-400">
+                                    <Zap size={22} />
+                                </div>
+                                <h4 className="text-white font-bold text-base font-heading">Paneles de Abastecimiento & ATS</h4>
+                                <p className="text-slate-300 text-xs sm:text-[13px] leading-relaxed">
+                                    Configuración de tableros eléctricos generales, sistemas de transferencia automática y protección inteligente ante cortes de red.
+                                </p>
+                            </div>
+
+                            <div className="p-6 rounded-2xl bg-white/[0.04] border border-white/10 space-y-3 hover:border-blue-400/50 transition-all">
+                                <div className="w-10 h-10 rounded-xl bg-blue-500/15 border border-blue-400/30 flex items-center justify-center text-blue-400">
+                                    <Building2 size={22} />
+                                </div>
+                                <h4 className="text-white font-bold text-base font-heading">Líneas de Alto Voltaje en Edificios</h4>
+                                <p className="text-slate-300 text-xs sm:text-[13px] leading-relaxed">
+                                    Ingeniería y tendido de acometidas de alta exigencia para torres, conjuntos cerrados, ascensores, bombeo y áreas comunes.
+                                </p>
+                            </div>
+
+                            <div className="p-6 rounded-2xl bg-white/[0.04] border border-white/10 space-y-3 hover:border-emerald-400/50 transition-all">
+                                <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-400/30 flex items-center justify-center text-emerald-400">
+                                    <ShieldCheck size={22} />
+                                </div>
+                                <h4 className="text-white font-bold text-base font-heading">Planeación & Desarrollo Íntegro</h4>
+                                <p className="text-slate-300 text-xs sm:text-[13px] leading-relaxed">
+                                    Cálculo de demanda energética, dimensionamiento de generación continua, montaje llave en mano y soporte técnico garantizado.
+                                </p>
+                            </div>
+                        </div>
 
                         <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
                             <Link
-                                href="/web/precios-vendedor"
-                                className="px-6 py-3.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg shadow-blue-600/30 flex items-center gap-2"
+                                href="/web/generadores"
+                                className="px-6 py-3.5 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-amber-500/25 flex items-center gap-2"
                             >
-                                <span>Ver Portal de Precios & Matriz PVP</span>
+                                <span>Línea de Generación & Respaldo</span>
                                 <ArrowRight size={14} />
                             </Link>
 
                             <a
-                                href={`https://wa.me/593969043453?text=${encodeURIComponent("Hola ATOMIC! Requiero asesoría técnica para un proyecto de infraestructura o cotización.")}`}
+                                href={`https://wa.me/593969043453?text=${encodeURIComponent("Hola ATOMIC! Requiero asesoría para un proyecto integral de generación, paneles de abastecimiento o líneas de alto voltaje para edificio/conjunto.")}`}
                                 target="_blank"
                                 rel="noreferrer"
                                 className="px-6 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider border border-white/15 transition-all flex items-center gap-2"
                             >
-                                <span>Hablar con un Ingeniero</span>
+                                <span>Planificar Proyecto Energético</span>
                             </a>
                         </div>
                     </div>
