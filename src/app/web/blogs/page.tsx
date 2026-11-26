@@ -45,6 +45,10 @@ export default async function BlogsGallery() {
 
           {/* Floating Gallery */}
           <div className="flex items-center gap-4 overflow-x-auto pb-4 mb-12 scrollbar-hide">
+            <Link href="/web/blogs/resena-48-leyes-del-poder" className="px-6 py-2 rounded-full border border-amber-500/60 bg-amber-500/15 text-amber-300 hover:text-white hover:bg-amber-500/25 text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+              <span>Reseña 48 Leyes (Clips 1–2h)</span>
+            </Link>
             <Link href="/web/blogs" className="px-6 py-2 rounded-full border border-indigo-500 bg-indigo-500/10 text-indigo-400 text-xs font-bold uppercase tracking-widest whitespace-nowrap">
               Todos los Blogs
             </Link>
@@ -64,6 +68,48 @@ export default async function BlogsGallery() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12 mb-32">
+              {/* Featured 48 Laws Review in Clips */}
+              <Link
+                  href="/web/blogs/resena-48-leyes-del-poder"
+                  className="group relative flex flex-col h-[520px] overflow-hidden bg-slate-900/60 backdrop-blur-xl border-2 border-amber-500/40 hover:border-amber-400 transition-all duration-500 hover:shadow-[0_0_50px_rgba(245,158,11,0.25)] rounded-2xl"
+              >
+                  <div className="relative w-full h-[55%] overflow-hidden bg-neutral-900 border-b border-white/10 shrink-0">
+                      <img
+                          src="/images/rpg/guild_hall.jpg"
+                          alt="Reseña Las 48 Leyes del Poder en Clips"
+                          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-all duration-700"
+                      />
+                      <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#030712] to-transparent pointer-events-none" />
+                      <div className="absolute top-4 left-4 flex items-center gap-2 bg-black/80 backdrop-blur-md border border-amber-500/50 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider text-amber-300 shadow-lg">
+                          <Sparkles size={12} className="text-amber-400" />
+                          <span>Reseña Editorial • Clips 1–2h</span>
+                      </div>
+                  </div>
+
+                  <div className="relative p-7 flex-1 flex flex-col bg-[#030712] group-hover:bg-[#030712]/90 transition-colors">
+                      <div className="flex items-center space-x-3 mb-3 text-[9px] font-black uppercase tracking-[0.2em] text-amber-400">
+                          <div className="flex items-center space-x-1 border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 rounded">
+                              <Clock size={10} />
+                              <span>1–2 horas total</span>
+                          </div>
+                          <div className="flex items-center space-x-1 text-white/40">
+                              <User size={10} />
+                              <span>Obra: Robert Greene</span>
+                          </div>
+                      </div>
+                      <h2 className="text-xl md:text-2xl font-black text-white leading-tight mb-2 group-hover:text-amber-200 transition-all line-clamp-2">
+                          Cómo digerir Las 48 Leyes del Poder en clips resumidos (Post + Clips)
+                      </h2>
+                      <p className="text-xs text-white/60 line-clamp-2 mb-4 font-normal">
+                          Nuestra postura honesta sobre el libro de Robert Greene y acceso directo al tablero interactivo de 48 clips cortos.
+                      </p>
+                      <div className="mt-auto pt-4 border-t border-white/10 flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-amber-400 group-hover:text-amber-300 transition-colors">
+                          <span>Leer Reseña &amp; Abrir Clips</span>
+                          <ChevronRight size={14} />
+                      </div>
+                  </div>
+              </Link>
+
               {/* Featured AI Prompts Guide Card */}
               <Link 
                   href="/prompts"

@@ -467,6 +467,7 @@ interface PublicWebClientProps {
   metadata: { categories: any[], collections: any[] }
   userRole?: string
   storeSettings?: any
+  initialTab?: string | null
 }
 
 const normalizeText = (s: string) =>
@@ -1194,7 +1195,8 @@ const SPECIALIZED_AREAS = [
 export default function PublicWebClient({ 
   initialProducts = [], 
   metadata = { categories: [], collections: [] }, 
-  userRole 
+  userRole,
+  initialTab = null
 }: PublicWebClientProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [activeMainCategoryId, setActiveMainCategoryId] = useState<string | null>(null)
@@ -1264,7 +1266,7 @@ export default function PublicWebClient({
     }
   }
   const userMenuRef = useRef<HTMLDivElement>(null)
-  const [activeTab, setActiveTab] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState<string | null>(initialTab)
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false)
   const [coverflowSection, setCoverflowSection] = useState<'ofertas' | 'promociones' | 'temporada' | 'combos' | 'instalacion' | 'servicios'>('ofertas')
   const [catalogSubdivision, setCatalogSubdivision] = useState<string>("todos")
@@ -1535,13 +1537,23 @@ export default function PublicWebClient({
 
             {/* BACK ARROW — visible when a tab is active */}
             {activeTab && (
-              <button
-                onClick={() => setActiveTab(null)}
-                className="flex items-center gap-1 px-2.5 lg:px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-slate-800 hover:bg-slate-200 text-[10px] sm:text-xs font-bold font-mono tracking-wider transition-all shrink-0 mr-0.5 shadow-sm"
-              >
-                <ChevronLeft size={14} />
-                <span className="hidden md:inline">INICIO</span>
-              </button>
+              initialTab ? (
+                <Link
+                  href="/web"
+                  className="flex items-center gap-1 px-2.5 lg:px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-slate-800 hover:bg-slate-200 text-[10px] sm:text-xs font-bold font-mono tracking-wider transition-all shrink-0 mr-0.5 shadow-sm"
+                >
+                  <ChevronLeft size={14} />
+                  <span className="hidden md:inline">INICIO</span>
+                </Link>
+              ) : (
+                <button
+                  onClick={() => setActiveTab(null)}
+                  className="flex items-center gap-1 px-2.5 lg:px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-slate-800 hover:bg-slate-200 text-[10px] sm:text-xs font-bold font-mono tracking-wider transition-all shrink-0 mr-0.5 shadow-sm"
+                >
+                  <ChevronLeft size={14} />
+                  <span className="hidden md:inline">INICIO</span>
+                </button>
+              )
             )}
 
             {/* ─── SECCIÓN 1: CATÁLOGO & NAVEGACIÓN PRINCIPAL ─── */}
@@ -1600,8 +1612,18 @@ export default function PublicWebClient({
               >
                 EQUIPO
               </Link>
+              <Link
+                href="/web/nosotros"
+                onClick={() => setIsMegaMenuOpen(false)}
+                className={`shrink-0 px-2 lg:px-2.5 xl:px-3.5 py-1 lg:py-1.5 rounded-full text-[10px] lg:text-[11px] font-bold tracking-wider font-heading transition-all duration-200 whitespace-nowrap border ${
+                  activeTab === 'nosotros'
+                    ? 'bg-slate-950 text-white border-slate-950 shadow-md scale-105'
+                    : 'bg-transparent text-slate-600 border-transparent hover:bg-white hover:text-slate-950'
+                }`}
+              >
+                NOSOTROS
+              </Link>
               {[
-                { id: 'nosotros', label: 'NOSOTROS' },
                 { id: 'contacto', label: 'CONTACTO' },
                 { id: 'resenas', label: 'RESEÑAS' },
               ].map((tab) => (
@@ -2056,19 +2078,17 @@ export default function PublicWebClient({
                         <div className="text-[10px] text-slate-500 pl-3.5">Respuesta inmediata de asesores</div>
                       </a>
 
-                      <div
-                        onClick={() => {
-                          setIsMegaMenuOpen(false)
-                          setActiveTab('nosotros')
-                        }}
-                        className="relative cursor-pointer hover:bg-rose-50/60 p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-rose-400"
+                      <Link
+                        href="/web/nosotros"
+                        onClick={() => setIsMegaMenuOpen(false)}
+                        className="relative cursor-pointer hover:bg-rose-50/60 p-2 rounded-xl transition-all after:absolute after:top-1/2 after:-left-3 after:w-3 after:h-0.5 after:bg-rose-400 block"
                       >
                         <div className="text-xs font-bold text-slate-800 flex items-center gap-2">
                           <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
-                          <span>Sobre Nosotros & Garantía</span>
+                          <span>Sobre Nosotros &amp; Garantía</span>
                         </div>
                         <div className="text-[10px] text-slate-500 pl-3.5">Trayectoria ATOMIC, valores y respaldo comercial</div>
-                      </div>
+                      </Link>
 
                       <Link
                         href="/web/equipo"
@@ -2675,9 +2695,9 @@ export default function PublicWebClient({
 
                     <div className="space-y-3.5">
                       {[
-                        { num: '01', title: '12 Prompts de IA para Fotografía Hiperrealista & VFX', href: '/prompts', tag: 'IA & Creatividad' },
-                        { num: '02', title: 'Cómo un Bot de WhatsApp con Facturación SRI Triplica Ventas', href: '/web/software', tag: 'Software Empresarial' },
-                        { num: '03', title: 'Cámara Exterior Doble Lente PIP con Autotracking 360°', href: '/aurora-pro', tag: 'Seguridad Residencial' },
+                        { num: '01', title: 'Reseña en Clips: Las 48 Leyes del Poder (Robert Greene) en 1–2h', href: '/web/blogs/resena-48-leyes-del-poder', tag: 'Reseña & Clips' },
+                        { num: '02', title: '12 Prompts de IA para Fotografía Hiperrealista & VFX', href: '/prompts', tag: 'IA & Creatividad' },
+                        { num: '03', title: 'Cómo un Bot de WhatsApp con Facturación SRI Triplica Ventas', href: '/web/software', tag: 'Software Empresarial' },
                         { num: '04', title: 'Cursos Gratuitos con MIT, Harvard & Stanford', href: '/recursos', tag: 'Educación Élite' },
                       ].map((item) => (
                         <Link
@@ -2724,6 +2744,19 @@ export default function PublicWebClient({
 
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {[
+                  {
+                    id: 'blog-resena-48-leyes',
+                    category: 'recursos',
+                    tag: '#BLOG // RESEÑA EN CLIPS (1–2H)',
+                    readTime: '4 min',
+                    date: 'Noviembre 2026',
+                    author: 'Juan Pablo G.',
+                    image: '/images/rpg/guild_hall.jpg',
+                    title: '📚 Reseña en Clips: Digerir Las 48 Leyes del Poder (Robert Greene) en 1–2 Horas',
+                    desc: 'No somos autores del libro; compartimos nuestra reseña en video-clips cortos ley por ley para asimilar sus lecciones clave rápido y sin humo. Accede directo al tablero de clips.',
+                    href: '/web/blogs/resena-48-leyes-del-poder',
+                    ctaText: '📚 ¿Quieres asimilar Las 48 Leyes del Poder (Robert Greene) sin pasarte semanas leyendo? Revisa nuestra reseña y entra directo al tablero de clips resumidos de 1–2h: https://atomiccotizador.shop/web/blogs/resena-48-leyes-del-poder 👉 Clips directos: https://atomiccotizador.shop/web/juan-pablo-guzman'
+                  },
                   {
                     id: 'blog-laptops-review',
                     category: 'reviews',
@@ -3738,43 +3771,56 @@ export default function PublicWebClient({
         })()}
 
         {activeTab === 'nosotros' && (
-          <motion.section key="nosotros" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="max-w-7xl mx-auto px-4 sm:px-6 py-10 space-y-12">
+          <motion.section key="nosotros" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} className="w-full max-w-[1680px] mx-auto px-4 sm:px-6 lg:px-10 py-10 space-y-12">
             {/* Header & Breadcrumb */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-slate-200 text-left">
               <div className="space-y-3">
                 <div className="flex flex-wrap items-center gap-2.5">
-                  <button onClick={() => setActiveTab(null)} className="p-2.5 rounded-2xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 hover:text-slate-950 transition-all shadow-sm cursor-pointer flex items-center gap-1.5 text-xs font-bold" title="Volver a Inicio">
-                    <ChevronLeft size={16} />
-                    <span>Inicio</span>
-                  </button>
+                  {initialTab ? (
+                    <Link href="/web" className="p-2.5 rounded-2xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 hover:text-slate-950 transition-all shadow-sm flex items-center gap-1.5 text-xs font-bold" title="Volver a Inicio">
+                      <ChevronLeft size={16} />
+                      <span>Inicio</span>
+                    </Link>
+                  ) : (
+                    <button onClick={() => setActiveTab(null)} className="p-2.5 rounded-2xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 hover:text-slate-950 transition-all shadow-sm cursor-pointer flex items-center gap-1.5 text-xs font-bold" title="Volver a Inicio">
+                      <ChevronLeft size={16} />
+                      <span>Inicio</span>
+                    </button>
+                  )}
                   <span className="px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 font-mono font-bold text-[10px] uppercase tracking-widest flex items-center gap-1.5">
                     <span className="w-2 h-2 rounded-full bg-blue-600 animate-ping" />
-                    CORPORATIVO & LIDERAZGO // ATOMIC ECUADOR
+                    SOBRE LA EMPRESA &amp; EQUIPO // ATOMIC ECUADOR
                   </span>
                   <span className="hidden sm:inline-block text-[10px] font-mono text-slate-400">
-                    RUC: 1723948291001 • MATRIZ QUITO
+                    MATRIZ QUITO • COBERTURA NACIONAL
                   </span>
                 </div>
 
                 <div>
                   <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight text-slate-950 font-heading leading-tight">
-                    The ATOMIC Story <span className="text-blue-600 font-mono text-2xl sm:text-4xl">#NOSOTROS</span>
+                    Conoce a <span className="text-blue-600 font-mono text-2xl sm:text-4xl">ATOMIC</span>
                   </h1>
                   <p className="text-xs sm:text-sm text-slate-600 max-w-3xl mt-2 leading-relaxed font-sans">
-                    Ingeniería de vanguardia, distribución directa sin intermediarios, laboratorio técnico propio y desarrollo de software de alta disponibilidad para empresas y residencias en Ecuador.
+                    Importación directa, pruebas técnicas en taller, desarrollo de software administrativo con agentes de IA y atención comercial transparente para hogares, negocios e instituciones en Ecuador.
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <Link
+                  href="/web/equipo"
+                  className="px-4 py-2.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-sm"
+                >
+                  <span>Equipo Directivo</span>
+                </Link>
                 <a
-                  href="https://wa.me/593969043453?text=Hola%20equipo%20directivo%20de%20ATOMIC,%20deseo%20conocer%20m%C3%A1s%20sobre%20su%20empresa%20y%20alianzas%20comerciales."
+                  href="https://wa.me/593969043453?text=Hola%20equipo%20de%20ATOMIC,%20deseo%20informaci%C3%B3n%20sobre%20sus%20productos%20y%20alianzas%20comerciales."
                   target="_blank"
                   rel="noreferrer"
                   className="px-4 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-md cursor-pointer"
                 >
                   <MessageSquare size={14} className="text-emerald-400" />
-                  <span>Contacto Directivo</span>
+                  <span>Contacto Directo</span>
                 </a>
               </div>
             </div>
@@ -3794,21 +3840,21 @@ export default function PublicWebClient({
               <div className="relative z-10 max-w-3xl space-y-4">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-300 font-mono text-[10px] font-bold uppercase tracking-widest">
                   <Sparkles size={12} className="text-amber-400" />
-                  <span>Nuestra Esencia & Manifiesto 2027</span>
+                  <span>Operación Real &amp; Enfoque Práctico</span>
                 </div>
                 <h2 className="text-2xl sm:text-4xl font-black font-heading tracking-tight leading-tight text-white">
-                  Democratizando la Tecnología más Avanzada del Mundo en Ecuador
+                  Tecnología Confiable, Software Propio e Importación Directa en Ecuador
                 </h2>
                 <p className="text-xs sm:text-base text-slate-300 leading-relaxed font-sans">
-                  Nacimos para romper el modelo tradicional de especulación e intermediación tecnológica. En <strong className="text-white">ATOMIC</strong> fusionamos importación directa de hardware original (Dell, Apple, Lenovo, Anker SOLIX, Dahua, Ditec), laboratorio técnico de homologación en Quito y desarrollo de software ERP multi-tenant propio con emisión de facturación SRI en 3 segundos.
+                  Trabajamos para ofrecer precios justos y asesoría honesta sin intermediarios innecesarios. En <strong className="text-white">ATOMIC</strong> combinamos importación verificada de hardware (Apple, Samsung, Dell, Anker SOLIX, Dahua, Ditec, ZKTeco), revisión técnica en Quito y desarrollo de software administrativo a medida con agentes de IA e integración SRI.
                 </p>
                 <div className="pt-2 flex flex-wrap items-center gap-3 text-xs font-mono text-slate-400">
                   <span className="flex items-center gap-1.5 text-blue-400">
-                    <CheckCircle2 size={14} /> Facturación 100% Legal SRI
+                    <CheckCircle2 size={14} /> Facturación Legal SRI
                   </span>
                   <span>•</span>
                   <span className="flex items-center gap-1.5 text-emerald-400">
-                    <CheckCircle2 size={14} /> Garantía Local 1 Año
+                    <CheckCircle2 size={14} /> Garantía Escrita 1 Año
                   </span>
                   <span>•</span>
                   <span className="flex items-center gap-1.5 text-cyan-400">
@@ -3821,10 +3867,10 @@ export default function PublicWebClient({
             {/* Impact Metrics (4 Bento Cards) */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { stat: '100%', title: 'Productos Originales', desc: 'Equipos nuevos sellados de fábrica con trazabilidad fiscal SRI y garantía oficial.' },
-                { stat: '24 Prov.', title: 'Cobertura Nacional', desc: 'Despacho el mismo día en Quito y envíos 24h asegurados a todo el territorio nacional.' },
-                { stat: '24/7', title: 'Soporte Consultivo', desc: 'Atención técnica real por ingenieros y especialistas vía WhatsApp CRM sin bots impersonales.' },
-                { stat: 'I+D', title: 'Laboratorio Propio', desc: 'Banco de pruebas y testeo térmico/funcional en hardware antes de comercialización.' },
+                { stat: '100%', title: 'Productos Verificados', desc: 'Equipos nuevos con respaldo documental, trazabilidad fiscal SRI y garantía directa.' },
+                { stat: '24 Prov.', title: 'Cobertura Nacional', desc: 'Entregas en el día dentro de Quito y envíos asegurados a las 24 provincias.' },
+                { stat: 'IA + Team', title: 'Atención Ágil', desc: 'Asistente comercial Karen 24/7 por WhatsApp y seguimiento cercano de asesores reales.' },
+                { stat: 'Taller', title: 'Revisión Técnica', desc: 'Pruebas previas de encendido, carga y estabilidad antes de despachar tu equipo.' },
               ].map((m, idx) => (
                 <div key={idx} className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200/90 shadow-sm text-left hover:shadow-md hover:border-blue-300 transition-all">
                   <p className="text-3xl sm:text-4xl font-black text-slate-900 font-heading tracking-tight">{m.stat}</p>
@@ -3834,19 +3880,19 @@ export default function PublicWebClient({
               ))}
             </div>
 
-            {/* Leadership & Executive Founders Section */}
+            {/* Leadership & Operations Section */}
             <div className="space-y-6 text-left">
               <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 pb-3 border-b border-slate-200">
                 <div>
                   <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-blue-600 block">
-                    EQUIPO DIRECTIVO & ESPECIALISTAS // LEADERSHIP
+                    EQUIPO &amp; DIRECCIÓN // ATOMIC
                   </span>
                   <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-slate-950 font-heading">
-                    El Liderazgo Detrás de ATOMIC
+                    Quiénes Trabajamos Detrás de ATOMIC
                   </h2>
                 </div>
                 <p className="text-xs font-mono text-slate-500">
-                  Perfiles públicos, canales de verificación y contacto directo
+                  Perfiles públicos, reseñas en video y contacto directo
                 </p>
               </div>
 
@@ -3860,7 +3906,7 @@ export default function PublicWebClient({
                       </div>
                       <span className="px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30 text-[9px] font-mono font-bold uppercase tracking-wider flex items-center gap-1">
                         <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-                        DIRECCIÓN OPERATIVA
+                        OPERACIÓN &amp; SOFTWARE
                       </span>
                     </div>
 
@@ -3869,12 +3915,12 @@ export default function PublicWebClient({
                         Santiago Guzmán
                       </h3>
                       <p className="text-xs font-mono text-cyan-400 uppercase tracking-wider mt-0.5">
-                        Fundador & Director Ejecutivo (CEO)
+                        Fundador &amp; Director Técnico
                       </p>
                     </div>
 
                     <p className="text-xs text-slate-300 leading-relaxed font-sans">
-                      Lidera la visión estratégica y desarrollo del motor tecnológico de ATOMIC: arquitectura ERP multi-tenant de alta disponibilidad, integración de emisión electrónica SRI y la infraestructura de importación y distribución nacional de hardware.
+                      A cargo de la operación general, desarrollo de software administrativo con agentes de IA e integración electrónica SRI, además de la coordinación de importaciones y logística nacional.
                     </p>
                   </div>
 
@@ -3919,7 +3965,7 @@ export default function PublicWebClient({
                       </div>
                       <span className="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30 text-[9px] font-mono font-bold uppercase tracking-wider flex items-center gap-1">
                         <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                        LABORATORIO I+D
+                        COMERCIAL &amp; PRUEBAS
                       </span>
                     </div>
 
@@ -3928,12 +3974,12 @@ export default function PublicWebClient({
                         Ing. Juan Pablo Guzmán
                       </h3>
                       <p className="text-xs font-mono text-amber-400 uppercase tracking-wider mt-0.5">
-                        Cofundador & Director de I+D
+                        Cofundador &amp; Dirección Comercial
                       </p>
                     </div>
 
                     <p className="text-xs text-slate-300 leading-relaxed font-sans">
-                      Responsable de la homologación técnica de producto, benchmarks de hardware y control de calidad bajo estrés. Creador de la serie '48 Leyes del Poder' y referente audiovisual de reviews técnicos y unboxing para el mercado ecuatoriano.
+                      Encargado de pruebas técnicas de hardware, control de calidad y ventas B2B. Además comparte reseñas en clips cortos resumidos del libro «Las 48 Leyes del Poder» (Robert Greene) para digerir sus ideas clave en 1 a 2 horas.
                     </p>
                   </div>
 
@@ -3942,25 +3988,21 @@ export default function PublicWebClient({
                       href="/web/juan-pablo-guzman"
                       className="w-full py-2.5 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs uppercase tracking-wider text-center transition-all flex items-center justify-center gap-1.5 shadow-md"
                     >
-                      <span>Ver Serie 48 Leyes & Bio</span>
+                      <span>Ver Clips Reseña 48 Leyes &amp; Bio</span>
                       <ArrowRight size={13} />
                     </Link>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[10px] font-mono">
-                      {isRegistered && (
-                        <a
-                          href="https://www.tiktok.com/@juanguzman35886"
-                          target="_blank"
-                          rel="noreferrer"
-                          className="py-2 px-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-colors flex items-center justify-center gap-1"
-                        >
-                          <span>TikTok @juanguzman35886</span>
-                        </a>
-                      )}
+                      <Link
+                        href="/web/blogs/resena-48-leyes-del-poder"
+                        className="py-2 px-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-amber-300 hover:text-amber-200 transition-colors flex items-center justify-center gap-1"
+                      >
+                        <span>Leer Post en Blog</span>
+                      </Link>
                       <a
-                        href="https://wa.me/593969043453?text=Hola%20Ing.%20Juan%20Pablo%20Guzm%C3%A1n,%20le%C3%AD%20sobre%20el%20laboratorio%20I%2BD%20y%20deseo%20asesor%C3%ADa."
+                        href="https://wa.me/593969043453?text=Hola%20Ing.%20Juan%20Pablo%20Guzm%C3%A1n,%20vi%20tu%20perfil%20y%20deseo%20asesor%C3%ADa."
                         target="_blank"
                         rel="noreferrer"
-                        className={`py-2 px-2.5 rounded-lg bg-emerald-950/50 hover:bg-emerald-900/60 border border-emerald-800/50 text-emerald-300 transition-colors flex items-center justify-center gap-1 ${!isRegistered ? 'col-span-full' : ''}`}
+                        className="py-2 px-2.5 rounded-lg bg-emerald-950/50 hover:bg-emerald-900/60 border border-emerald-800/50 text-emerald-300 transition-colors flex items-center justify-center gap-1"
                       >
                         <Phone size={10} />
                         <span>096 904 3453</span>
@@ -3969,50 +4011,50 @@ export default function PublicWebClient({
                   </div>
                 </div>
 
-                {/* Karen & Customer Success Lead */}
+                {/* Karen AI Assistant */}
                 <div className="group rounded-3xl bg-white text-slate-900 p-6 sm:p-7 border border-slate-200/90 shadow-xl flex flex-col justify-between hover:border-emerald-500/50 transition-all">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div className="relative w-14 h-14 rounded-2xl overflow-hidden border-2 border-emerald-500 shadow-md">
                         <SafeImage
                           src="/images/karen_executive_avatar.jpg"
-                          alt="Karen Customer Success Lead"
+                          alt="Karen Asistente Comercial IA"
                           fill
                           className="object-cover"
                         />
                       </div>
                       <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[9px] font-mono font-bold uppercase tracking-wider flex items-center gap-1">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
-                        ASESORÍA 24/7 EN VIVO
+                        ASISTENTE IA 24/7
                       </span>
                     </div>
 
                     <div>
                       <h3 className="text-xl font-black font-heading text-slate-950 group-hover:text-emerald-700 transition-colors">
-                        Karen & Mesa de Ayuda
+                        Karen • Asistente Comercial IA
                       </h3>
                       <p className="text-xs font-mono text-emerald-600 uppercase tracking-wider mt-0.5 font-bold">
-                        Customer Success & Atención Comercial
+                        Atención Inmediata &amp; Clasificación CRM
                       </p>
                     </div>
 
                     <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                      Lidera la atención inmediata y soporte post-venta personalizado. Emisión de cotizaciones corporativas al instante, validación de inventario en tiempo real y seguimiento de guías de despacho Servientrega a nivel nacional.
+                      Nuestra asistente virtual especializada en responder de forma directa y amigable tus dudas de precio, stock o postulación laboral, canalizando cada caso en el CRM para darte seguimiento rápido.
                     </p>
                   </div>
 
                   <div className="pt-5 mt-6 border-t border-slate-100 space-y-2">
                     <a
-                      href="https://wa.me/593969043453?text=Hola%20Karen,%20deseo%20asesor%C3%ADa%20personalizada%20y%20cotizaci%C3%B3n%20para%20un%20producto%20de%20ATOMIC."
+                      href="https://wa.me/593969043453?text=Hola%20Karen,%20deseo%20cotizar%20un%20producto%20de%20ATOMIC."
                       target="_blank"
                       rel="noreferrer"
                       className="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider text-center transition-all flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/20 cursor-pointer"
                     >
                       <MessageSquare size={14} />
-                      <span>Chatear con Karen (WhatsApp)</span>
+                      <span>Escribir por WhatsApp</span>
                     </a>
                     <div className="py-2 px-2.5 rounded-lg bg-slate-50 border border-slate-100 text-slate-500 text-[10px] font-mono text-center">
-                      Respuesta promedio: &lt; 2 minutos
+                      Disponible 24/7 con respaldo de equipo humano
                     </div>
                   </div>
                 </div>

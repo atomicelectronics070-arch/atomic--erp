@@ -101,10 +101,10 @@ export default function EquipoClient() {
               {/* Bio & Responsibilities */}
               <div className="space-y-3 text-zinc-300 text-xs sm:text-sm leading-relaxed">
                 <p>
-                  Lidera la <strong>estrategia general, arquitectura tecnológica e importación</strong> de ATOMIC. Creador y arquitecto del motor ERP multi-tenant de alta concurrencia, integración nativa de facturación electrónica con el SRI y la plataforma central de precios públicos y cotizaciones automáticas.
+                  Encargado de la <strong>operación general, desarrollo de software administrativo con agentes de IA e importaciones</strong> en ATOMIC, incluyendo integración de facturación electrónica SRI y el sistema central de precios y cotizaciones.
                 </p>
                 <p>
-                  Supervisa la red logística nacional desde Quito, garantizando despachos diarios por Servientrega y encomiendas con respaldo de garantía escrita de 1 año directamente con fábrica.
+                  Supervisa la logística nacional desde Quito, coordinando envíos diarios por Servientrega y encomiendas con garantía escrita de 1 año.
                 </p>
               </div>
 
@@ -190,10 +190,10 @@ export default function EquipoClient() {
               {/* Bio & Responsibilities */}
               <div className="space-y-3 text-zinc-300 text-xs sm:text-sm leading-relaxed">
                 <p>
-                  Dirige la <strong>estrategia comercial nacional, canales de distribución B2B y laboratorios de pruebas</strong> de hardware en ATOMIC. Responsable de la homologación técnica de productos, benchmarks de rendimiento bajo estrés y control de calidad.
+                  Dirige la <strong>estrategia comercial nacional, canales de distribución B2B y pruebas técnicas</strong> de hardware en ATOMIC. Responsable de la revisión de equipos y control de calidad.
                 </p>
                 <p>
-                  Creador del contenido estratégico audiovisual de la empresa y la serie <strong>'Las 48 Leyes del Poder y Crecimiento Viral'</strong>, orientada a liderazgo comercial, psicología de negocios y fidelización de clientes locales.
+                  Comparte una serie de <strong>reseñas en clips cortos resumidos</strong> sobre el libro <strong>«Las 48 Leyes del Poder» (Robert Greene)</strong> para ayudar a digerir y asimilar sus ideas principales en 1 a 2 horas, junto a notas prácticas sobre fidelización comercial.
                 </p>
               </div>
 
@@ -222,7 +222,7 @@ export default function EquipoClient() {
                 href="/web/juan-pablo-guzman"
                 className="w-full py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs uppercase tracking-wider text-center transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20"
               >
-                <span>Ver Serie 48 Leyes &amp; Bio de Juan Pablo</span>
+                <span>Ver Clips Resumidos 48 Leyes &amp; Bio</span>
                 <ArrowRight size={14} />
               </Link>
 
@@ -253,24 +253,32 @@ export default function EquipoClient() {
 
         </div>
 
-        {/* ── CONTENIDO PERSONAL & FORMACIÓN COMERCIAL ── */}
+        {/* ── CONTENIDO PERSONAL & RESEÑAS EN CLIPS ── */}
         <div className="p-6 sm:p-8 rounded-3xl bg-zinc-900/50 border border-white/[0.08] space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <span className="text-[10px] font-mono tracking-widest uppercase text-cyan-400 px-2.5 py-0.5 rounded bg-cyan-950/60 border border-cyan-500/30 font-bold">
-                Contenido Audiovisual &amp; Formación
+                Reseña de Libro en Clips Cortos (Robert Greene)
               </span>
               <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight mt-1.5">
-                Serie Oficial: Las 48 Leyes del Poder en los Negocios
+                Las 48 Leyes del Poder en Clips Resumidos (1–2 Horas)
               </h3>
             </div>
-            <Link
-              href="/web/juan-pablo-guzman"
-              className="px-4 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-medium text-zinc-200 hover:text-white transition-all flex items-center gap-1.5 w-fit"
-            >
-              <span>Ver todos los episodios</span>
-              <ArrowRight size={13} />
-            </Link>
+            <div className="flex flex-wrap items-center gap-2">
+              <Link
+                href="/web/blogs/resena-48-leyes-del-poder"
+                className="px-4 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-xs font-medium text-amber-300 transition-all flex items-center gap-1.5 w-fit"
+              >
+                <span>Leer post del blog</span>
+              </Link>
+              <Link
+                href="/web/juan-pablo-guzman"
+                className="px-4 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-medium text-zinc-200 hover:text-white transition-all flex items-center gap-1.5 w-fit"
+              >
+                <span>Abrir los 48 clips</span>
+                <ArrowRight size={13} />
+              </Link>
+            </div>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
