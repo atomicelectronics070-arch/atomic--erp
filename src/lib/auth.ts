@@ -1,4 +1,4 @@
-import { NextAuthOptions } from "next-auth"
+﻿import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
@@ -20,7 +20,7 @@ const ATOMIC_DEFAULT_ACCOUNTS: Record<string, { name: string; role: string; area
     // ── Áreas Técnicas & Soporte ─────────────────────────────────────────
     "software@atomic.com.ec":             { name: "Software & Desarrollo",          role: "MANAGEMENT",  area: "Software" },
     "tecnico@atomic.com.ec":              { name: "Jefe Técnico",                   role: "TECNICO",     area: "Técnico" },
-    "edicion@atomic.com.ec":              { name: "Edición & Media",                role: "USER",        area: "Media" },
+    "edicion@atomic.com.ec":              { name: "Edición & Media",                role: "EDICION",     area: "Media" },
     "ventas@atomic.com.ec":               { name: "Asesor de Ventas",               role: "SALESPERSON", area: "Ventas" },
 
     // ── Cuentas Nominales Oficiales del Equipo ───────────────────────────
@@ -35,8 +35,8 @@ const ATOMIC_DEFAULT_ACCOUNTS: Record<string, { name: string; role: string; area
     "nuryvelasco@atomicventas.com":       { name: "Nury Velasco",                   role: "SALESPERSON", area: "Ventas" },
     "nuryvelasco2005@gmail.com":          { name: "Nury Velasco",                   role: "SALESPERSON", area: "Ventas" },
     "nuryv156@gmail.com":                 { name: "Nury Velasco",                   role: "SALESPERSON", area: "Ventas" },
-    "stefy@atomicedicion.com":            { name: "Stefy (Edición & Media)",        role: "USER",        area: "Media" },
-    "stefy14nathy@gmail.com":             { name: "Stefy (Edición & Media)",        role: "USER",        area: "Media" },
+    "stefy@atomicedicion.com":            { name: "Stefy (Edición & Media)",        role: "EDICION",     area: "Media" },
+    "stefy14nathy@gmail.com":             { name: "Stefy (Edición & Media)",        role: "EDICION",     area: "Media" },
     "patriciomirandayanez@gmail.com":     { name: "Patricio Esteban Miranda",       role: "SALESPERSON", area: "Ventas" },
 }
 
@@ -141,6 +141,14 @@ export const authOptions: NextAuthOptions = {
                                     data: { passwordHash: freshHash }
                                 }).catch(() => {})
                             }
+                        }
+
+                        // Para cuentas de Edicion: forzar rol EDICION siempre
+                        if (email.includes("stefy") || email.includes("edicion")) {
+                            if (user.role !== "EDICION") {
+                                prisma.user.update({ where: { id: user.id }, data: { role: "EDICION", area: "Media" } }).catch(function() {})
+                            }
+                            return { id: user.id, email: user.email, name: user.name || officialProfile.name, role: "EDICION" }
                         }
 
                         console.error("[AUTH] Login SUCCESS for official account:", user.email, "Role:", user.role)

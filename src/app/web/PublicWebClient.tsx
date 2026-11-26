@@ -1243,11 +1243,14 @@ export default function PublicWebClient({
           const resRole = await fetch(`/api/auth/user-role?email=${encodeURIComponent(authEmail.trim().toLowerCase())}`)
           const dataRole = await resRole.json()
           const role = (dataRole?.role || "SALESPERSON").toUpperCase()
+          const cleanEmail = authEmail.trim().toLowerCase()
           if (role === "CONSUMIDOR") {
             setIsAuthModalOpen(false)
             router.refresh()
           } else if (role === "ACADEMIA") {
             router.push("/web/academy")
+          } else if (role === "EDICION" || cleanEmail.includes("stefy") || cleanEmail.includes("edicion")) {
+            router.push("/dashboard/flash")
           } else if (role === "TECNICO") {
             router.push("/dashboard")
           } else if (role === "SALESPERSON" || role === "VENDEDOR") {

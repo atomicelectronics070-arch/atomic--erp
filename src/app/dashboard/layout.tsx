@@ -47,7 +47,7 @@ export default function DashboardLayout({
     const canAccessCrm = isAdministrative || isKevin || role.toUpperCase().includes("CRM")
     const isJuanPablo = userNameUpper.includes("JUAN") || userEmailUpper.includes("JUANGUZMAN") || userEmailUpper.includes("ATOMIC@INDUSTRIAS") || isAdministrative
     const isStefyOrCris = userNameUpper.includes("STEFY") || userEmailUpper.includes("STEFY") || userNameUpper.includes("CRIS") || userEmailUpper.includes("CRIS") || isAdministrative
-    const isStefyOnly = (userNameUpper.includes("STEFY") || userEmailUpper.includes("STEFY") || userEmailUpper.includes("EDICION")) && !isAdministrative
+    const isStefyOnly = (rolesList.includes("EDICION") || userNameUpper.includes("STEFY") || userEmailUpper.includes("STEFY") || userEmailUpper.includes("EDICION")) && !isAdministrative
 
     const [showRoleStats, setShowRoleStats] = useState(false)
     const [userStats, setUserStats] = useState({
@@ -332,12 +332,12 @@ export default function DashboardLayout({
                         </button>
                     </div>
 
-                    {/* Botón Destacado: Inicio del Día (Asistencia & Metas de Venta) */}
+                    {/* Botón Destacado: Inicio del Día (Flash Studio para Stefy / Asistencia para Ventas) */}
                     <div className="pb-1 px-1">
                         <Link
-                            href="/dashboard/asistencia"
+                            href={isStefyOnly ? "/dashboard/flash" : "/dashboard/asistencia"}
                             className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-[16px] bg-gradient-to-r from-emerald-500/20 via-teal-600/20 to-cyan-600/20 hover:from-emerald-500/30 hover:to-cyan-600/30 border border-emerald-400/40 hover:border-emerald-300 text-white shadow-[0_0_20px_rgba(16,185,129,0.15)] hover:shadow-[0_0_25px_rgba(16,185,129,0.35)] transition-all group cursor-pointer"
-                            title="Inicio del Día: Registro diario de Asistencia, Números Telefónicos, Publicaciones, Grupos y Estados"
+                            title={isStefyOnly ? "Inicio del Día: Flash Studio (Edición)" : "Inicio del Día: Registro diario de Asistencia, Números Telefónicos, Publicaciones, Grupos y Estados"}
                         >
                             <div className="flex items-center gap-3">
                                 <div className="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center text-emerald-300 group-hover:scale-110 transition-transform">
@@ -346,7 +346,7 @@ export default function DashboardLayout({
                                 <span className="text-[13px] font-bold tracking-tight">Inicio del Día</span>
                             </div>
                             <span className="px-2 py-0.5 rounded-full text-[9px] font-mono font-black bg-emerald-400 text-black shadow-sm uppercase">
-                                METAS
+                                {isStefyOnly ? "FLASH" : "METAS"}
                             </span>
                         </Link>
                     </div>

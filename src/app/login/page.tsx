@@ -97,10 +97,12 @@ function LoginForm() {
                     const resRole = await fetch(`/api/auth/user-role?email=${encodeURIComponent(email.trim().toLowerCase())}`)
                     const dataRole = await resRole.json()
                     const uRole = (dataRole?.role || "SALESPERSON").toUpperCase()
+                    const cleanEmail = email.trim().toLowerCase()
                     let targetPath = callbackUrl && callbackUrl.startsWith("/") ? callbackUrl : ""
                     if (!targetPath) {
                         if (uRole === "CONSUMIDOR") targetPath = "/web"
                         else if (uRole === "ACADEMIA" || uRole === "CURSOS") targetPath = "/web/academy"
+                        else if (uRole === "EDICION" || cleanEmail.includes("stefy") || cleanEmail.includes("edicion")) targetPath = "/dashboard/flash"
                         else if (uRole === "TECNICO") targetPath = "/dashboard"
                         else targetPath = "/dashboard/asistencia"
                     }
