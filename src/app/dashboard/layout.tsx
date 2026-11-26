@@ -245,7 +245,8 @@ export default function DashboardLayout({
                     </div>
                     <GlassNavItem href="/dashboard/asistencia" icon={<CheckSquare size={18} strokeWidth={1.8} />} label="Inicio del Día (Asistencia)" isActive={pathname.startsWith('/dashboard/asistencia')} />
                     <GlassNavItem href="/dashboard/quotes" icon={<FileText size={18} strokeWidth={1.8} />} label="Cotizaciones" isActive={pathname.startsWith('/dashboard/quotes')} />
-                    <GlassNavItem href="/dashboard/matriz-precios" icon={<Table size={18} strokeWidth={1.8} />} label="Matriz de Precios" isActive={pathname.startsWith('/dashboard/matriz-precios') || pathname.startsWith('/dashboard/shop') || pathname.startsWith('/dashboard/precios-vendedor')} />
+                    <GlassNavItem href="/dashboard/matriz-precios" icon={<Table size={18} strokeWidth={1.8} />} label="Matriz de Precios" isActive={pathname.startsWith('/dashboard/matriz-precios') || pathname.startsWith('/dashboard/shop')} />
+                    <GlassNavItem href="/web/precios-vendedor" icon={<Tag size={18} strokeWidth={1.8} />} label="Portal Precios Vendedor" isActive={pathname.startsWith('/web/precios-vendedor') || pathname.startsWith('/dashboard/precios-vendedor')} />
                     <GlassNavItem href="/dashboard/contactos-historicos" icon={<Users size={18} strokeWidth={1.8} />} label="Contactos Históricos" isActive={pathname.startsWith('/dashboard/contactos-historicos')} />
                     <GlassNavItem href="/dashboard/scanner" icon={<Scan size={18} strokeWidth={1.8} />} label="Escáner Códigos" isActive={pathname.startsWith('/dashboard/scanner')} />
                     

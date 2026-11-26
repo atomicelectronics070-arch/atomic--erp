@@ -10,8 +10,10 @@ import {
   Layers, Package, AlertTriangle, ArrowRight, Laptop, Smartphone,
   Home, Wrench, Shield, CheckCircle2, X, Flame, Gift,
   MapPin, Building2, Clock, Zap, Phone, ArrowUpRight,
-  Filter, BadgeCheck, SlidersHorizontal, Send, Globe, Tag, FileText, BatteryCharging
+  Filter, BadgeCheck, SlidersHorizontal, Send, Globe, Tag, FileText, BatteryCharging,
+  Calculator, Loader2
 } from "lucide-react"
+import QuotationClient from "@/app/dashboard/quotes/QuotationClient"
 
 // ─── 100 MENSAJES CLASIFICADOS EN 10 CATEGORÍAS ───
 const MESSAGE_CATEGORIES = [
@@ -1069,6 +1071,36 @@ export default function PreciosVendedorClient() {
   const [toastMessage, setToastMessage] = useState<string | null>(null)
   const [isConciergeOpen, setIsConciergeOpen] = useState(false)
   const [imageModalUrl, setImageModalUrl] = useState<string | null>(null)
+  const [isToolsDropdownOpen, setIsToolsDropdownOpen] = useState(false)
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false)
+  const [loadingQuoteBootstrap, setLoadingQuoteBootstrap] = useState(false)
+  const [quoteBootstrap, setQuoteBootstrap] = useState<{
+    products: any[]
+    history: any[]
+    clients: any[]
+    nextNumber: string
+    session: any
+  } | null>(null)
+
+  const openFloatingQuoteModal = async () => {
+    setIsToolsDropdownOpen(false)
+    setIsQuoteModalOpen(true)
+    if (quoteBootstrap) return
+    setLoadingQuoteBootstrap(true)
+    try {
+      const res = await fetch("/api/quotes/bootstrap", { cache: "no-store" })
+      if (res.ok) {
+        const data = await res.json()
+        setQuoteBootstrap(data)
+      } else {
+        setQuoteBootstrap({ products: [], history: [], clients: [], nextNumber: "PROP-00-001", session: null })
+      }
+    } catch {
+      setQuoteBootstrap({ products: [], history: [], clients: [], nextNumber: "PROP-00-001", session: null })
+    } finally {
+      setLoadingQuoteBootstrap(false)
+    }
+  }
 
   // Sub-categoría seleccionada en Tab 2
   const [activeSubCat, setActiveSubCat] = useState("camaras")
@@ -1503,6 +1535,119 @@ export default function PreciosVendedorClient() {
                   </button>
                 )
               })}
+            </div>
+
+            {/* ── DESPLEGABLE DEBAJO DEL RECUADRO TOMATE: HERRAMIENTAS -> COTIZAR (VENTANA FLOTANTE) ── */}
+            <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2 relative">
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setIsToolsDropdownOpen((prev) => !prev)}
+                  className={`px-3.5 py-1.5 rounded-xl border text-xs font-semibold flex items-center gap-2 transition-all cursor-pointer ${
+                    isToolsDropdownOpen || isQuoteModalOpen
+                      ? "bg-orange-500/20 text-orange-200 border-orange-400/70 shadow-[0_0_15px_rgba(251,146,60,0.18)]"
+                      : "bg-zinc-900/80 hover:bg-zinc-800/90 text-zinc-200 border-orange-400/40 hover:border-orange-400/70"
+                  }`}
+                >
+                  <Wrench size={13} className="text-orange-400" />
+                  <span>Herramientas</span>
+                  <ChevronDown
+                    size={13}
+                    className={`text-orange-300 transition-transform duration-150 ${isToolsDropdownOpen ? "rotate-180" : ""}`}
+                  />
+                </button>
+
+                <AnimatePresence>
+                  {isToolsDropdownOpen && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-30"
+                        onClick={() => setIsToolsDropdownOpen(false)}
+                      />
+                      <motion.div
+                        initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                        transition={{ duration: 0.14 }}
+                        className="absolute left-0 top-full mt-2 w-72 rounded-2xl bg-zinc-950/95 border border-orange-400/50 shadow-2xl backdrop-blur-2xl p-1.5 z-40 space-y-1"
+                      >
+                        <div className="px-3 py-1.5 border-b border-white/[0.06] flex items-center justify-between">
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-orange-300 font-semibold">
+                            Herramientas Comerciales
+                          </span>
+                          <span className="text-[9px] font-mono text-emerald-400">Sin salir</span>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={openFloatingQuoteModal}
+                          className="w-full text-left px-3 py-2.5 rounded-xl bg-orange-500/15 hover:bg-orange-500/25 border border-orange-400/40 text-white transition-all flex items-center gap-3 cursor-pointer group"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-orange-500/20 border border-orange-400/40 flex items-center justify-center text-orange-300 shrink-0">
+                            <Calculator size={15} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-xs font-semibold text-orange-100 flex items-center gap-1.5">
+                              <span>Cotizar</span>
+                              <span className="px-1.5 py-0.5 rounded bg-orange-500/25 text-orange-200 text-[9px] font-mono">
+                                FLOTANTE
+                              </span>
+                            </div>
+                            <p className="text-[10px] text-zinc-400 truncate">
+                              Abrir Cotizador Pro sin redireccionar
+                            </p>
+                          </div>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsToolsDropdownOpen(false)
+                            setActiveTab("mensajes")
+                          }}
+                          className="w-full text-left px-3 py-2 rounded-xl hover:bg-white/[0.05] text-zinc-300 hover:text-white transition-colors flex items-center gap-2.5 text-xs cursor-pointer"
+                        >
+                          <MessageSquare size={14} className="text-zinc-400" />
+                          <span>100 Respuestas Rápidas</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsToolsDropdownOpen(false)
+                            setActiveTab("metodos-pago")
+                          }}
+                          className="w-full text-left px-3 py-2 rounded-xl hover:bg-white/[0.05] text-zinc-300 hover:text-white transition-colors flex items-center gap-2.5 text-xs cursor-pointer"
+                        >
+                          <CreditCard size={14} className="text-zinc-400" />
+                          <span>Cuentas Bancarias Oficiales</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsToolsDropdownOpen(false)
+                            setIsConciergeOpen(true)
+                          }}
+                          className="w-full text-left px-3 py-2 rounded-xl hover:bg-white/[0.05] text-zinc-300 hover:text-white transition-colors flex items-center gap-2.5 text-xs cursor-pointer"
+                        >
+                          <Phone size={14} className="text-emerald-400" />
+                          <span>Soporte Bodega Stefy</span>
+                        </button>
+                      </motion.div>
+                    </>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <button
+                type="button"
+                onClick={openFloatingQuoteModal}
+                className="px-3 py-1.5 rounded-xl bg-zinc-900/70 hover:bg-orange-500/15 border border-white/[0.08] hover:border-orange-400/50 text-[11px] font-medium text-zinc-300 hover:text-orange-200 flex items-center gap-1.5 transition-all cursor-pointer"
+              >
+                <Calculator size={13} className="text-orange-400" />
+                <span>Cotizador Rápido</span>
+              </button>
             </div>
           </div>
         </div>
@@ -2999,6 +3144,47 @@ export default function PreciosVendedorClient() {
           <MessageSquare size={14} className="text-zinc-400 group-hover:text-zinc-200" />
         </button>
       </div>
+
+      {/* ── VENTANA FLOTANTE DEL COTIZADOR PRO (/dashboard/quotes SIN REDIRECCIÓN) ── */}
+      <AnimatePresence>
+        {isQuoteModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[70] bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-5"
+            onClick={() => setIsQuoteModalOpen(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 12 }}
+              transition={{ duration: 0.16 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-[1520px] max-h-[94vh] bg-[#09090b] border border-orange-400/50 rounded-2xl shadow-[0_25px_80px_rgba(0,0,0,0.85)] overflow-y-auto relative"
+            >
+              {loadingQuoteBootstrap || !quoteBootstrap ? (
+                <div className="py-32 flex flex-col items-center justify-center gap-3 text-zinc-400">
+                  <Loader2 size={28} className="animate-spin text-orange-400" />
+                  <span className="text-xs font-mono uppercase tracking-wider text-orange-200">
+                    Cargando Cotizador Pro ATOMIC...
+                  </span>
+                </div>
+              ) : (
+                <QuotationClient
+                  initialProducts={quoteBootstrap.products || []}
+                  initialHistory={quoteBootstrap.history || []}
+                  initialClients={quoteBootstrap.clients || []}
+                  nextNumber={quoteBootstrap.nextNumber || "PROP-00-001"}
+                  session={quoteBootstrap.session}
+                  embedded={true}
+                  onCloseModal={() => setIsQuoteModalOpen(false)}
+                />
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </div>
   )

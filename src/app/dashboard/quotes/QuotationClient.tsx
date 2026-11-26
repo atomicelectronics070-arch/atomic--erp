@@ -54,9 +54,11 @@ interface QuotationClientProps {
     initialClients: any[]
     nextNumber: string
     session: any
+    embedded?: boolean
+    onCloseModal?: () => void
 }
 
-export default function QuotationClient({ initialProducts, initialHistory, initialClients, nextNumber, session }: QuotationClientProps) {
+export default function QuotationClient({ initialProducts, initialHistory, initialClients, nextNumber, session, embedded = false, onCloseModal }: QuotationClientProps) {
     const [clientName, setClientName] = useState("")
     const [clientCedula, setClientCedula] = useState("")
     const [clientEmail, setClientEmail] = useState("")
@@ -93,7 +95,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
         // Fetch system users for the share modal
         fetch('/api/admin/manage-users').then(r => r.json()).then(d => { if (d.users) setSystemUsers(d.users) }).catch(() => {})
     }, []);
-    const [advisorName, setAdvisorName] = useState(session.user?.name?.toUpperCase() || "ASESOR ATOMIC")
+    const [advisorName, setAdvisorName] = useState(session?.user?.name?.toUpperCase() || "ASESOR ATOMIC")
 
     const [items, setItems] = useState<QuoteItem[]>([
         { id: "1", productId: "", description: "", quantity: 1, unitPrice: 0 }
@@ -261,7 +263,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
         }
         if (mode === 'full' || mode === 'products_only') {
             if (q.items) {
-                const parsedItems = safeParseArray(q.items)
+                const parsedItems = safeParseArray(q.items || q.itemsData)
                 if (parsedItems.length > 0) setItems(parsedItems)
             }
         }
@@ -272,7 +274,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
     const handleDownloadQuotePDF = async (q: any) => {
         setQuoteMenuOpen(null)
         try {
-            const parsedItems = safeParseArray(q.items)
+            const parsedItems = safeParseArray(q.items || q.itemsData)
             const itemDiscount = parsedItems.reduce((acc: number, item: any) => acc + (item.quantity * item.unitPrice * ((item.discountPercent || 0) / 100)), 0)
             const rawSubtotal = parsedItems.reduce((acc: number, item: any) => acc + (item.quantity * item.unitPrice), 0)
             const globalDisc = (rawSubtotal - itemDiscount) * ((q.discountPercent || 0) / 100)
@@ -458,7 +460,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
     const handleDownloadQuoteExcel = async (q: any) => {
         setQuoteMenuOpen(null)
         try {
-            const parsedItems = safeParseArray(q.items)
+            const parsedItems = safeParseArray(q.items || q.itemsData)
             const itemDiscount = parsedItems.reduce((acc: number, item: any) => acc + (item.quantity * item.unitPrice * ((item.discountPercent || 0) / 100)), 0)
             const rawSubtotal = parsedItems.reduce((acc: number, item: any) => acc + (item.quantity * item.unitPrice), 0)
             const globalDisc = (rawSubtotal - itemDiscount) * ((q.discountPercent || 0) / 100)
@@ -988,123 +990,160 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
 
 
     return (
-        <div className="min-h-screen bg-[#030712] text-slate-100 font-sans pb-32 space-y-8 p-6 lg:p-10 rounded-3xl border border-slate-800/80 shadow-2xl relative overflow-hidden">
+        <div className={`${embedded ? "p-4 sm:p-6" : "min-h-screen p-4 sm:p-6 lg:p-8 pb-28"} bg-[#09090b] text-zinc-100 font-sans selection:bg-zinc-800 selection:text-white space-y-5 relative`}>
             
-            {/* Ambient Background Glow */}
-            <div className="absolute top-0 right-1/3 w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none" />
-            <div className="absolute bottom-1/4 left-0 w-[400px] h-[400px] bg-indigo-500/5 rounded-full blur-[100px] pointer-events-none" />
+            {/* ── TOP EXECUTIVE COMMAND BAR HEADER (ESTILO PORTAL MAESTRO) ── */}
+            <header className="bg-zinc-950/90 backdrop-blur-2xl border border-white/[0.08] rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    {/* Brand Lockup */}
+                    <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-zinc-900 border border-orange-400/40 flex items-center justify-center shadow-inner shrink-0">
+                            <span className="text-orange-300 font-mono font-bold text-xs tracking-tight">AT</span>
+                        </div>
+                        <div>
+                            <div className="flex flex-wrap items-center gap-2">
+                                <span className="text-sm font-semibold tracking-tight text-white">ATOMIC</span>
+                                <span className="text-zinc-600">/</span>
+                                <span className="text-xs font-mono uppercase tracking-widest text-orange-300 font-semibold">Cotizador Pro</span>
+                                <span className="px-2 py-0.5 text-[10px] font-mono font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 rounded-full">
+                                    {quoteNumber}
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                                <span className="text-[11px] text-zinc-400">
+                                    Formato Oficial ATOMIC · PDF A4, Excel (.xlsx), Ticket POS & Link Online
+                                </span>
+                            </div>
+                        </div>
+                    </div>
 
-            {/* Header */}
-            <div className="bg-slate-900/90 border border-slate-800/80 p-6 rounded-3xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-xl">
-                <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-[0_0_25px_rgba(99,102,241,0.4)] shrink-0">
-                        <FileText size={28} />
-                    </div>
-                    <div>
-                        <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-3">
-                            <span>Cotizador Empresarial Pro</span>
-                            <span className="px-3 py-1 text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 rounded-full">
-                                FORMATO OFICIAL ATOMIC
-                            </span>
-                        </h1>
-                        <p className="text-xs text-slate-400 font-medium flex items-center gap-2 mt-1">
-                            Doc N°: <span className="text-cyan-400 font-bold font-mono">{quoteNumber}</span> • Emisión oficial en formato idéntico al Excel (PDF A4, Excel .xlsx & Ticket)
-                        </p>
-                    </div>
+                    {onCloseModal && (
+                        <button
+                            type="button"
+                            onClick={onCloseModal}
+                            className="self-end md:self-auto px-3 py-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-white/10 text-xs font-medium text-zinc-300 hover:text-white flex items-center gap-1.5 transition-colors cursor-pointer"
+                        >
+                            <X size={14} />
+                            <span>Cerrar Cotizador</span>
+                        </button>
+                    )}
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3">
-                    <button 
-                        onClick={handleFillTest}
-                        className="px-4 py-2.5 bg-amber-500/10 border border-amber-500/30 text-amber-300 hover:bg-amber-500/20 font-mono font-bold text-xs rounded-2xl transition-all flex items-center gap-2"
-                        title="Rellenar cotización genérica de prueba"
-                    >
-                        <Zap size={15}/> Prueba
-                    </button>
-                    <button 
-                        onClick={() => setIsHistoryOpen(true)} 
-                        className="px-4 py-2.5 bg-slate-950 border border-slate-800 text-slate-300 hover:text-white font-mono font-bold text-xs rounded-2xl transition-all flex items-center gap-2"
-                    >
-                        <History size={15}/> Historial
-                    </button>
-                    <button 
+                {/* ── BARRA DE ACCIONES EN RECUADRO NARANJA CLARO (MISMO ESTILO QUE PRECIOS VENDEDOR) ── */}
+                <div className="p-1.5 rounded-xl bg-zinc-900/70 border border-orange-400/70 shadow-[0_0_15px_rgba(251,146,60,0.08)] flex flex-wrap items-center gap-1.5">
+                    <button
+                        type="button"
                         onClick={handleGeneratePDF}
-                        className="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-wider rounded-2xl transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(6,182,212,0.3)]"
+                        className="px-3.5 py-2 rounded-lg bg-orange-500/20 hover:bg-orange-500/30 text-orange-200 border border-orange-400/50 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
                         title="Exportar cotización en PDF con el formato corporativo oficial idéntico al Excel"
                     >
-                        <FileOutput size={15} /> Exportar PDF Oficial
+                        <FileOutput size={14} className="text-orange-400" />
+                        <span>Exportar PDF Oficial</span>
                     </button>
-                    <button 
+
+                    <button
+                        type="button"
                         onClick={() => handleGenerateExcel()}
                         disabled={isExportingExcel}
-                        className="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs uppercase tracking-wider rounded-2xl transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.3)] disabled:opacity-50"
+                        className="px-3.5 py-2 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-200 border border-emerald-500/35 text-xs font-semibold flex items-center gap-1.5 transition-all disabled:opacity-50 cursor-pointer"
                         title="Exportar formato exacto Excel (.xlsx) con Logo Superior A1:D4 y fórmulas"
                     >
-                        {isExportingExcel ? <Loader2 size={15} className="animate-spin" /> : <FileSpreadsheet size={15} />}
-                        {isExportingExcel ? "Generando..." : "Exportar Excel (.xlsx)"}
+                        {isExportingExcel ? <Loader2 size={14} className="animate-spin text-emerald-400" /> : <FileSpreadsheet size={14} className="text-emerald-400" />}
+                        <span>{isExportingExcel ? "Generando..." : "Excel (.xlsx)"}</span>
                     </button>
-                    <button 
+
+                    <button
+                        type="button"
                         onClick={() => handleShareQuoteNative()}
                         disabled={isNativeSharing}
-                        className="px-5 py-2.5 bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-black text-xs uppercase tracking-wider rounded-2xl transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(139,92,246,0.3)] disabled:opacity-50"
-                        title="Compartir cotización directamente a WhatsApp, Messenger, Facebook u otras apps de tu teléfono"
+                        className="px-3.5 py-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.09] text-zinc-200 border border-white/[0.08] text-xs font-medium flex items-center gap-1.5 transition-all disabled:opacity-50 cursor-pointer"
+                        title="Compartir cotización directamente a WhatsApp, Messenger, Facebook u otras apps"
                     >
-                        {isNativeSharing ? <Loader2 size={15} className="animate-spin" /> : <Share2 size={15} />}
-                        {isNativeSharing ? "Preparando..." : "📲 Compartir"}
+                        {isNativeSharing ? <Loader2 size={14} className="animate-spin" /> : <Share2 size={14} className="text-zinc-400" />}
+                        <span>{isNativeSharing ? "Preparando..." : "Compartir"}</span>
                     </button>
-                    <button 
+
+                    <button
+                        type="button"
+                        onClick={handleGenerateTicket}
+                        className="px-3.5 py-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.09] text-zinc-200 border border-white/[0.08] text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer"
+                    >
+                        <FileText size={14} className="text-zinc-400" />
+                        <span>Ticket POS</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() => setIsHistoryOpen(true)}
+                        className="px-3.5 py-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.09] text-zinc-200 border border-white/[0.08] text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer"
+                    >
+                        <History size={14} className="text-zinc-400" />
+                        <span>Historial ({quoteHistory.length})</span>
+                    </button>
+
+                    <button
+                        type="button"
                         onClick={() => setShowSalesCopyModal(true)}
-                        className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-[#026CDF] hover:from-blue-500 hover:to-[#0053CD] text-white font-black text-xs uppercase tracking-wider rounded-2xl transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(2,108,223,0.3)]"
+                        className="px-3.5 py-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.09] text-zinc-200 border border-white/[0.08] text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer"
                         title="Abrir mensajes y scripts de bienvenida para Marketplace y WhatsApp"
                     >
-                        <MessageSquare size={15} /> 💬 Mensajes para Copiar
+                        <MessageSquare size={14} className="text-zinc-400" />
+                        <span>Mensajes</span>
                     </button>
-                    <button 
-                        onClick={handleGenerateTicket}
-                        className="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-black text-xs uppercase tracking-wider rounded-2xl transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(99,102,241,0.3)]"
+
+                    <button
+                        type="button"
+                        onClick={handleFillTest}
+                        className="ml-auto px-3 py-2 rounded-lg bg-zinc-950/70 hover:bg-zinc-800 text-zinc-400 hover:text-orange-300 border border-white/[0.06] text-xs font-medium flex items-center gap-1.5 transition-all cursor-pointer"
+                        title="Rellenar cotización genérica de prueba"
                     >
-                        <FileOutput size={15} /> Ticket POS
+                        <Zap size={13} className="text-orange-400" />
+                        <span>Prueba</span>
                     </button>
                 </div>
-            </div>
+            </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                 
-                {/* Left Column: Form & Items */}
-                <div className="lg:col-span-2 space-y-8">
+                {/* Left Column: Subject, Client & Items */}
+                <div className="lg:col-span-2 space-y-5">
                     
                     {/* Project Subject */}
-                    <div className="bg-slate-900/90 border border-indigo-500/30 p-6 rounded-3xl shadow-xl space-y-2">
-                        <label className="text-[10px] font-mono font-bold uppercase text-indigo-400 tracking-wider flex items-center gap-2">
-                            <Briefcase size={14} /> Asunto / Tema del Proyecto
+                    <div className="bg-zinc-900/60 border border-white/[0.08] p-5 rounded-2xl space-y-2 backdrop-blur-sm">
+                        <label className="text-[11px] font-mono font-semibold uppercase text-orange-300 tracking-wider flex items-center gap-2">
+                            <Briefcase size={13} className="text-orange-400" />
+                            <span>Asunto / Tema del Proyecto</span>
                         </label>
                         <input 
                             value={quoteSubject} 
                             onChange={e => setQuoteSubject(e.target.value)} 
-                            placeholder="Ej: Implementación de Sistema de Seguridad Perimetral..."
-                            className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-base font-bold text-white outline-none focus:border-indigo-500/50 transition-colors placeholder:text-slate-600" 
+                            placeholder="Ej: Implementación de Sistema de Seguridad Perimetral o Equipos..."
+                            className="w-full bg-zinc-950/90 border border-white/[0.08] rounded-xl px-4 py-3 text-sm font-medium text-white outline-none focus:border-orange-400/70 transition-colors placeholder:text-zinc-600" 
                         />
                     </div>
 
                     {/* Client Info */}
-                    <div className="bg-slate-900/90 border border-slate-800/80 p-6 lg:p-8 rounded-3xl space-y-6 shadow-xl relative">
-                        <div className="flex justify-between items-center border-b border-slate-800 pb-4">
-                            <h2 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
-                                <Building2 className="text-cyan-400" size={18} /> Datos del Cliente
+                    <div className="bg-zinc-900/60 border border-white/[0.08] p-5 rounded-2xl space-y-4 backdrop-blur-sm relative">
+                        <div className="flex flex-wrap justify-between items-center border-b border-white/[0.06] pb-3.5 gap-2">
+                            <h2 className="text-xs font-mono font-semibold text-zinc-200 uppercase tracking-wider flex items-center gap-2">
+                                <Building2 className="text-orange-400" size={15} />
+                                <span>Datos del Cliente</span>
                             </h2>
                             <button 
+                                type="button"
                                 onClick={handleSaveClient} 
                                 disabled={isSavingClient}
-                                className="bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 px-4 py-2 rounded-2xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all disabled:opacity-50"
+                                className="bg-zinc-950 hover:bg-zinc-800 border border-white/10 text-zinc-200 px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all disabled:opacity-50 cursor-pointer"
                                 title="Guardar como nuevo cliente en la base de datos"
                             >
-                                {isSavingClient ? <span className="animate-pulse">Guardando...</span> : <><Plus size={14} /> Guardar Cliente</>}
+                                {isSavingClient ? <span className="animate-pulse">Guardando...</span> : <><Plus size={13} className="text-emerald-400" /> Guardar Cliente</>}
                             </button>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-2 relative">
-                                <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">Razón Social / Nombre</label>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                            <div className="space-y-1.5 relative">
+                                <label className="text-[11px] font-medium text-zinc-400">Razón Social / Nombre *</label>
                                 <input 
                                     value={clientName} 
                                     onChange={e => {
@@ -1112,18 +1151,19 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                         setShowClientList(true)
                                     }} 
                                     onFocus={() => setShowClientList(true)}
-                                    className="w-full bg-slate-950 border border-slate-800 text-white p-3.5 text-xs font-bold font-mono uppercase rounded-2xl outline-none focus:border-cyan-500/50 transition-colors" 
-                                    placeholder="Buscar cliente existente..."
+                                    className="w-full bg-zinc-950/90 border border-white/[0.08] text-white px-3.5 py-2.5 text-xs font-semibold uppercase rounded-xl outline-none focus:border-orange-400/70 transition-colors placeholder:text-zinc-600" 
+                                    placeholder="Buscar cliente o escribir nombre..."
                                 />
-                                {showClientList && clientName && (
-                                    <div className="absolute top-full left-0 w-full bg-slate-950 border border-slate-800 shadow-2xl rounded-2xl z-50 max-h-52 overflow-y-auto mt-1">
-                                        <div className="flex justify-between items-center p-3 border-b border-slate-800">
-                                            <span className="text-[10px] font-mono font-bold text-slate-400 uppercase">Coincidencias ({initialClients.filter((c: any) => c.name.toLowerCase().includes(clientName.toLowerCase())).slice(0, 20).length})</span>
-                                            <button onClick={() => setShowClientList(false)} className="text-slate-400 hover:text-white"><X size={14}/></button>
+                                {showClientList && clientName && initialClients.length > 0 && (
+                                    <div className="absolute top-full left-0 w-full bg-zinc-950 border border-white/15 shadow-2xl rounded-xl z-50 max-h-52 overflow-y-auto mt-1">
+                                        <div className="flex justify-between items-center px-3 py-2 border-b border-white/[0.08]">
+                                            <span className="text-[10px] font-mono text-zinc-400 uppercase">Coincidencias ({initialClients.filter((c: any) => c.name.toLowerCase().includes(clientName.toLowerCase())).slice(0, 20).length})</span>
+                                            <button type="button" onClick={() => setShowClientList(false)} className="text-zinc-400 hover:text-white"><X size={13}/></button>
                                         </div>
                                         {initialClients.filter((c: any) => c.name.toLowerCase().includes(clientName.toLowerCase())).slice(0, 20).map((c: any) => (
                                             <button 
                                                 key={c.id} 
+                                                type="button"
                                                 onClick={() => {
                                                     setClientName(c.name)
                                                     setClientCity(c.city || "")
@@ -1138,55 +1178,55 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                                     }
                                                     setShowClientList(false)
                                                 }} 
-                                                className="w-full text-left p-3 hover:bg-slate-900 border-b border-slate-800/60 flex items-center justify-between group transition-colors"
+                                                className="w-full text-left px-3 py-2.5 hover:bg-zinc-900 border-b border-white/[0.05] flex items-center justify-between group transition-colors cursor-pointer"
                                             >
                                                 <div>
-                                                    <p className="text-xs font-bold text-white uppercase">{c.name}</p>
-                                                    <p className="text-[10px] text-slate-400 font-mono mt-0.5">{c.city || "Sin ciudad"} • {c.phone || "Sin tel"}{c.cedula ? ` • CI: ${c.cedula}` : ''}</p>
+                                                    <p className="text-xs font-semibold text-white uppercase">{c.name}</p>
+                                                    <p className="text-[10px] text-zinc-400 font-mono mt-0.5">{c.city || "Sin ciudad"} • {c.phone || "Sin tel"}{c.cedula ? ` • CI: ${c.cedula}` : ''}</p>
                                                 </div>
-                                                <ChevronRight size={14} className="text-slate-600 group-hover:text-cyan-400" />
+                                                <ChevronRight size={13} className="text-zinc-600 group-hover:text-orange-400" />
                                             </button>
                                         ))}
                                     </div>
                                 )}
                             </div>
 
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">Ciudad / Ubicación</label>
-                                <input value={clientCity} onChange={e => setClientCity(e.target.value)} className="w-full bg-slate-950 border border-slate-800 text-white p-3.5 text-xs font-bold font-mono uppercase rounded-2xl outline-none focus:border-cyan-500/50 transition-colors" placeholder="Quito, Guayaquil..." />
+                            <div className="space-y-1.5">
+                                <label className="text-[11px] font-medium text-zinc-400">Ciudad / Ubicación *</label>
+                                <input value={clientCity} onChange={e => setClientCity(e.target.value)} className="w-full bg-zinc-950/90 border border-white/[0.08] text-white px-3.5 py-2.5 text-xs font-semibold uppercase rounded-xl outline-none focus:border-orange-400/70 transition-colors placeholder:text-zinc-600" placeholder="Quito, Guayaquil..." />
                             </div>
 
-                            <div className="space-y-2">
+                            <div className="space-y-1.5">
                                 <div className="flex justify-between items-center">
-                                    <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">Correo Electrónico</label>
+                                    <label className="text-[11px] font-medium text-zinc-400">Correo Electrónico</label>
                                     <label className="flex items-center gap-1.5 cursor-pointer group">
-                                        <input type="checkbox" checked={emailNotSpecified} onChange={e => setEmailNotSpecified(e.target.checked)} className="rounded border-slate-700 bg-slate-950 text-cyan-400" />
-                                        <span className="text-[9px] font-mono font-bold text-slate-400 group-hover:text-slate-200 uppercase">Sin correo</span>
+                                        <input type="checkbox" checked={emailNotSpecified} onChange={e => setEmailNotSpecified(e.target.checked)} className="rounded border-zinc-700 bg-zinc-950 accent-orange-500" />
+                                        <span className="text-[10px] text-zinc-400 group-hover:text-zinc-200">Sin correo</span>
                                     </label>
                                 </div>
                                 <input 
                                     disabled={emailNotSpecified}
                                     value={clientEmail} 
                                     onChange={e => setClientEmail(e.target.value)} 
-                                    className={`w-full bg-slate-950 border border-slate-800 text-white p-3.5 text-xs font-bold font-mono rounded-2xl outline-none focus:border-cyan-500/50 transition-colors ${emailNotSpecified ? 'opacity-50 cursor-not-allowed' : ''}`} 
+                                    className={`w-full bg-zinc-950/90 border border-white/[0.08] text-white px-3.5 py-2.5 text-xs font-mono rounded-xl outline-none focus:border-orange-400/70 transition-colors placeholder:text-zinc-600 ${emailNotSpecified ? 'opacity-45 cursor-not-allowed' : ''}`} 
                                     placeholder={emailNotSpecified ? "NO ESPECIFICA" : "correo@empresa.com"}
                                 />
                             </div>
 
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider">Teléfono / Celular</label>
-                                <input value={clientPhone} onChange={e => setClientPhone(e.target.value)} className="w-full bg-slate-950 border border-slate-800 text-white p-3.5 text-xs font-bold font-mono rounded-2xl outline-none focus:border-cyan-500/50 transition-colors" placeholder="099..." />
+                            <div className="space-y-1.5">
+                                <label className="text-[11px] font-medium text-zinc-400">Teléfono / Celular *</label>
+                                <input value={clientPhone} onChange={e => setClientPhone(e.target.value)} className="w-full bg-zinc-950/90 border border-white/[0.08] text-white px-3.5 py-2.5 text-xs font-mono rounded-xl outline-none focus:border-orange-400/70 transition-colors placeholder:text-zinc-600" placeholder="099..." />
                             </div>
 
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
-                                    <span>•CI / •RUC (Identificación)</span>
-                                    <span className="text-[9px] text-cyan-400 font-normal">Excel Col E7</span>
-                                </label>
+                            <div className="space-y-1.5 md:col-span-2">
+                                <div className="flex items-center justify-between">
+                                    <label className="text-[11px] font-medium text-zinc-400">CI / RUC (Identificación)</label>
+                                    <span className="text-[10px] font-mono text-zinc-500">Excel Col E7</span>
+                                </div>
                                 <input 
                                     value={clientCedula} 
                                     onChange={e => setClientCedula(e.target.value)} 
-                                    className="w-full bg-slate-950 border border-slate-800 text-white p-3.5 text-xs font-bold font-mono rounded-2xl outline-none focus:border-cyan-500/50 transition-colors" 
+                                    className="w-full bg-zinc-950/90 border border-white/[0.08] text-white px-3.5 py-2.5 text-xs font-mono rounded-xl outline-none focus:border-orange-400/70 transition-colors placeholder:text-zinc-600" 
                                     placeholder="17XXXXXXXX o RUC 13 dígitos" 
                                 />
                             </div>
@@ -1194,41 +1234,46 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                     </div>
 
                     {/* Products Detail */}
-                    <div className="bg-slate-900/90 border border-slate-800/80 p-6 lg:p-8 rounded-3xl space-y-6 shadow-xl">
-                        <div className="flex justify-between items-center border-b border-slate-800 pb-4">
-                            <h2 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
-                                <ShoppingCart className="text-emerald-400" size={18} /> Detalle de Ítems
+                    <div className="bg-zinc-900/60 border border-white/[0.08] p-5 rounded-2xl space-y-4 backdrop-blur-sm">
+                        <div className="flex justify-between items-center border-b border-white/[0.06] pb-3.5">
+                            <h2 className="text-xs font-mono font-semibold text-zinc-200 uppercase tracking-wider flex items-center gap-2">
+                                <ShoppingCart className="text-emerald-400" size={15} />
+                                <span>Detalle de Ítems ({items.length})</span>
                             </h2>
-                            <button onClick={handleAddItem} className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/20 px-4 py-2 rounded-2xl text-xs font-mono font-bold flex items-center gap-1.5 transition-all">
-                                <Plus size={14} /> Añadir Fila
+                            <button
+                                type="button"
+                                onClick={handleAddItem}
+                                className="bg-orange-500/15 hover:bg-orange-500/25 border border-orange-400/40 text-orange-200 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+                            >
+                                <Plus size={13} /> Añadir Fila
                             </button>
                         </div>
                         
                         {/* Table Header */}
-                        <div className="hidden md:flex items-center gap-3 px-4 py-3 bg-slate-950 border border-slate-800 rounded-2xl text-[10px] font-mono font-bold text-cyan-400 uppercase tracking-wider">
-                            <div className="w-12 text-center">Img</div>
+                        <div className="hidden md:flex items-center gap-2.5 px-3.5 py-2.5 bg-zinc-950/90 border border-white/[0.08] rounded-xl text-[10px] font-mono font-semibold text-zinc-400 uppercase tracking-wider">
+                            <div className="w-11 text-center">Img</div>
                             <div className="w-24">SKU</div>
                             <div className="flex-1">Descripción del Producto</div>
-                            <div className="w-16 text-center">Stock</div>
-                            <div className="w-24 text-center">Cant.</div>
-                            <div className="w-32 text-right">Precio Unit.</div>
-                            <div className="w-20 text-center">Desc %</div>
-                            <div className="w-28 text-right">Total</div>
-                            <div className="w-10"></div>
+                            <div className="w-14 text-center">Stock</div>
+                            <div className="w-20 text-center">Cant.</div>
+                            <div className="w-28 text-right">Precio Unit.</div>
+                            <div className="w-16 text-center">Desc %</div>
+                            <div className="w-24 text-right">Total</div>
+                            <div className="w-9"></div>
                         </div>
 
-                        <div className="space-y-3">
+                        <div className="space-y-2.5">
                             <AnimatePresence mode="popLayout">
                                 {items.map((item) => (
                                     <motion.div 
                                         key={item.id}
-                                        initial={{ opacity: 0, y: 10 }}
+                                        initial={{ opacity: 0, y: 8 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, x: -20 }}
-                                        className="flex flex-col md:flex-row items-stretch md:items-center gap-3 p-3.5 bg-slate-950 border border-slate-800 rounded-2xl group hover:border-slate-700 transition-all relative"
+                                        exit={{ opacity: 0, x: -16 }}
+                                        className="flex flex-col md:flex-row items-stretch md:items-center gap-2.5 p-3 bg-zinc-950/80 border border-white/[0.08] rounded-xl group hover:border-orange-400/30 transition-all relative"
                                     >
                                         {/* Image */}
-                                        <div className="w-12 h-12 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-center relative overflow-hidden shrink-0 mx-auto md:mx-0">
+                                        <div className="w-11 h-11 bg-zinc-900 border border-white/[0.08] rounded-lg flex items-center justify-center relative overflow-hidden shrink-0 mx-auto md:mx-0">
                                             <input 
                                                 type="file" 
                                                 accept="image/*" 
@@ -1248,48 +1293,48 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                                         return <img src={parsedImages[0]} className="w-full h-full object-contain" alt="preview" />;
                                                     }
                                                 }
-                                                return <ImageIcon size={16} className="text-slate-600" />;
+                                                return <ImageIcon size={15} className="text-zinc-600" />;
                                             })()}
                                         </div>
 
                                         {/* SKU Code */}
                                         <div className="w-full md:w-24 shrink-0">
-                                            <label className="md:hidden text-[9px] font-mono font-bold text-slate-400 block mb-1">CÓDIGO SKU</label>
+                                            <label className="md:hidden text-[10px] text-zinc-400 block mb-1">SKU</label>
                                             <input 
                                                 value={item.productId} 
                                                 readOnly 
-                                                className="w-full bg-slate-900 border border-slate-800 text-cyan-300 p-2 text-xs font-mono font-bold uppercase rounded-xl text-center" 
+                                                className="w-full bg-zinc-900 border border-white/[0.06] text-orange-300 px-2 py-2 text-[11px] font-mono font-semibold uppercase rounded-lg text-center" 
                                                 placeholder="SKU" 
                                             />
                                         </div>
 
                                         {/* Product Description Search */}
-                                        <div className="flex-1 min-w-[220px] relative">
-                                            <label className="md:hidden text-[9px] font-mono font-bold text-slate-400 block mb-1">DESCRIPCIÓN</label>
+                                        <div className="flex-1 min-w-[200px] relative">
+                                            <label className="md:hidden text-[10px] text-zinc-400 block mb-1">Descripción</label>
                                             <input 
                                                 value={item.description} 
                                                 onFocus={() => handleProductFocus(item.id, item.description)}
                                                 onChange={e => handleProductSearch(item.id, e.target.value)} 
-                                                className="w-full bg-slate-900 border border-slate-800 text-white p-2.5 text-xs font-bold rounded-xl outline-none focus:border-cyan-500/50 transition-colors" 
-                                                placeholder="Buscar producto..."
+                                                className="w-full bg-zinc-900 border border-white/[0.08] text-white px-3 py-2 text-xs font-medium rounded-lg outline-none focus:border-orange-400/60 transition-colors" 
+                                                placeholder="Buscar producto en catálogo..."
                                             />
                                             {showProductList === item.id && (
                                                 <div 
                                                     ref={searchDropdownRef}
-                                                    className="absolute top-full left-0 w-full bg-slate-950 border border-slate-800 shadow-2xl rounded-2xl z-50 max-h-64 overflow-y-auto mt-1 min-w-[300px] divide-y divide-slate-800/60"
+                                                    className="absolute top-full left-0 w-full bg-zinc-950 border border-white/15 shadow-2xl rounded-xl z-50 max-h-64 overflow-y-auto mt-1 min-w-[300px] divide-y divide-white/[0.06]"
                                                 >
-                                                    <div className="px-3 py-1.5 bg-slate-900/90 text-[10px] font-mono font-bold text-cyan-400 flex items-center justify-between sticky top-0 z-10 backdrop-blur-md">
-                                                        <span>{isSearchingProducts ? "🔍 Buscando en 9,600+ productos..." : `Resultados (${searchResults.length})`}</span>
+                                                    <div className="px-3 py-1.5 bg-zinc-900 text-[10px] font-mono text-orange-300 flex items-center justify-between sticky top-0 z-10">
+                                                        <span>{isSearchingProducts ? "Buscando en catálogo..." : `Resultados (${searchResults.length})`}</span>
                                                         <button 
                                                             type="button" 
                                                             onMouseDown={(e) => { e.preventDefault(); setShowProductList(null); }}
-                                                            className="text-slate-400 hover:text-white"
+                                                            className="text-zinc-400 hover:text-white"
                                                         >
                                                             <X size={12}/>
                                                         </button>
                                                     </div>
                                                     {searchResults.length === 0 ? (
-                                                        <div className="p-4 text-center text-xs text-slate-500 font-mono">
+                                                        <div className="p-4 text-center text-xs text-zinc-500">
                                                             {isSearchingProducts ? "Buscando productos..." : "No se encontraron coincidencias"}
                                                         </div>
                                                     ) : (
@@ -1301,25 +1346,25 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                                                     e.preventDefault();
                                                                     selectProduct(item.id, p);
                                                                 }} 
-                                                                className="w-full text-left p-3 hover:bg-slate-900 border-b border-slate-800 flex items-center gap-3 transition-colors group cursor-pointer"
+                                                                className="w-full text-left p-2.5 hover:bg-zinc-900 flex items-center gap-3 transition-colors group cursor-pointer"
                                                             >
-                                                                <div className="w-9 h-9 bg-slate-900 rounded-lg flex-shrink-0 overflow-hidden border border-slate-800 flex items-center justify-center">
+                                                                <div className="w-9 h-9 bg-zinc-900 rounded-lg flex-shrink-0 overflow-hidden border border-white/[0.08] flex items-center justify-center">
                                                                     {p.images && safeParseArray(p.images).length > 0 ? (
                                                                         <img src={safeParseArray(p.images)[0]} className="w-full h-full object-contain" alt={p.name} />
                                                                     ) : (
-                                                                        <ImageIcon size={14} className="text-slate-600" />
+                                                                        <ImageIcon size={14} className="text-zinc-600" />
                                                                     )}
                                                                 </div>
                                                                 <div className="flex-1 min-w-0">
                                                                     <div className="flex items-center gap-1.5">
                                                                         {p.sku && (
-                                                                            <span className="text-[9px] font-mono font-bold text-cyan-300 bg-cyan-950/80 px-1 py-0.5 rounded border border-cyan-800/40 shrink-0">
+                                                                            <span className="text-[9px] font-mono font-semibold text-orange-300 bg-orange-500/10 px-1.5 py-0.5 rounded border border-orange-500/30 shrink-0">
                                                                                 {p.sku}
                                                                             </span>
                                                                         )}
-                                                                        <p className="text-xs font-bold text-white truncate group-hover:text-cyan-200">{p.name}</p>
+                                                                        <p className="text-xs font-medium text-white truncate group-hover:text-orange-200">{p.name}</p>
                                                                     </div>
-                                                                    <p className="text-[10px] text-cyan-400 font-mono mt-0.5">${p.price.toFixed(2)} • Stock: {p.stock || 0}</p>
+                                                                    <p className="text-[10px] text-emerald-400 font-mono mt-0.5">${p.price.toFixed(2)} • Stock: {p.stock || 0}</p>
                                                                 </div>
                                                             </button>
                                                         ))
@@ -1329,70 +1374,71 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                         </div>
 
                                         {/* Stock Badge */}
-                                        <div className="w-full md:w-16 text-center shrink-0 flex md:block items-center justify-between">
-                                            <span className="md:hidden text-[9px] font-mono font-bold text-slate-400">STOCK</span>
-                                            <span className="text-xs font-mono font-bold text-slate-400 bg-slate-900 border border-slate-800 px-2.5 py-1 rounded-lg inline-block">
+                                        <div className="w-full md:w-14 text-center shrink-0 flex md:block items-center justify-between">
+                                            <span className="md:hidden text-[10px] text-zinc-400">Stock</span>
+                                            <span className="text-[11px] font-mono text-zinc-400 bg-zinc-900 border border-white/[0.06] px-2 py-1 rounded-lg inline-block">
                                                 {findProduct(item.productId, item.description)?.stock || 0}
                                             </span>
                                         </div>
 
                                         {/* Quantity Input */}
-                                        <div className="w-full md:w-24 shrink-0">
-                                            <label className="md:hidden text-[9px] font-mono font-bold text-slate-400 block mb-1">CANTIDAD</label>
+                                        <div className="w-full md:w-20 shrink-0">
+                                            <label className="md:hidden text-[10px] text-zinc-400 block mb-1">Cantidad</label>
                                             <input 
                                                 type="number" 
                                                 min="1"
                                                 value={item.quantity === 0 ? '' : item.quantity} 
                                                 onChange={e => handleItemChange(item.id, "quantity", parseInt(e.target.value) || 0)} 
-                                                className="w-full bg-slate-900 border border-slate-800 text-white p-2.5 text-center rounded-xl font-mono font-black text-xs outline-none focus:border-cyan-500/50" 
+                                                className="w-full bg-zinc-900 border border-white/[0.08] text-white px-2 py-2 text-center rounded-lg font-mono font-semibold text-xs outline-none focus:border-orange-400/60" 
                                             />
                                         </div>
 
                                         {/* Unit Price Input */}
-                                        <div className="w-full md:w-32 shrink-0 relative">
-                                            <label className="md:hidden text-[9px] font-mono font-bold text-slate-400 block mb-1">PRECIO UNIT ($)</label>
+                                        <div className="w-full md:w-28 shrink-0 relative">
+                                            <label className="md:hidden text-[10px] text-zinc-400 block mb-1">Precio Unit ($)</label>
                                             <div className="relative flex items-center">
-                                                <span className="absolute left-3 text-slate-500 text-xs font-bold">$</span>
+                                                <span className="absolute left-2.5 text-zinc-500 text-xs font-mono">$</span>
                                                 <input 
                                                     type="number" 
                                                     step="0.01"
                                                     value={item.unitPrice === 0 ? '' : item.unitPrice} 
                                                     onChange={e => handleItemChange(item.id, "unitPrice", parseFloat(e.target.value) || 0)} 
-                                                    className="w-full bg-slate-900 border border-slate-800 p-2.5 pl-7 text-right text-emerald-400 rounded-xl font-mono font-black text-xs outline-none focus:border-emerald-500/50" 
+                                                    className="w-full bg-zinc-900 border border-white/[0.08] py-2 pr-2.5 pl-6 text-right text-emerald-400 rounded-lg font-mono font-semibold text-xs outline-none focus:border-emerald-500/50" 
                                                 />
                                             </div>
                                         </div>
 
                                         {/* Discount % */}
-                                        <div className="w-full md:w-20 shrink-0">
-                                            <label className="md:hidden text-[9px] font-mono font-bold text-slate-400 block mb-1">DESC %</label>
+                                        <div className="w-full md:w-16 shrink-0">
+                                            <label className="md:hidden text-[10px] text-zinc-400 block mb-1">Desc %</label>
                                             <input 
                                                 type="number" 
                                                 min="0" 
                                                 max="100"
                                                 value={item.discountPercent || 0} 
                                                 onChange={e => handleItemChange(item.id, "discountPercent", parseFloat(e.target.value) || 0)} 
-                                                className="w-full bg-slate-900 border border-slate-800 p-2.5 text-center text-pink-400 rounded-xl font-mono font-bold text-xs outline-none focus:border-pink-500/50" 
+                                                className="w-full bg-zinc-900 border border-white/[0.08] px-2 py-2 text-center text-orange-300 rounded-lg font-mono font-semibold text-xs outline-none focus:border-orange-400/60" 
                                                 title="Descuento individual (%)" 
                                             />
                                         </div>
 
                                         {/* Item Total */}
-                                        <div className="w-full md:w-28 text-right shrink-0 flex md:block items-center justify-between">
-                                            <span className="md:hidden text-[9px] font-mono font-bold text-slate-400">TOTAL</span>
-                                            <span className="text-xs font-black text-emerald-400 font-mono block">
+                                        <div className="w-full md:w-24 text-right shrink-0 flex md:block items-center justify-between">
+                                            <span className="md:hidden text-[10px] text-zinc-400">Total</span>
+                                            <span className="text-xs font-bold text-white font-mono block">
                                                 ${((item.quantity * item.unitPrice) * (1 - ((item.discountPercent || 0)/100))).toFixed(2)}
                                             </span>
                                         </div>
 
                                         {/* Remove Action */}
-                                        <div className="w-full md:w-10 flex justify-end md:justify-center shrink-0">
+                                        <div className="w-full md:w-9 flex justify-end md:justify-center shrink-0">
                                             <button 
+                                                type="button"
                                                 onClick={() => handleRemoveItem(item.id)} 
-                                                className="p-2 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-xl transition-colors"
+                                                className="p-1.5 text-zinc-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
                                                 title="Eliminar fila"
                                             >
-                                                <Trash2 size={16} />
+                                                <Trash2 size={15} />
                                             </button>
                                         </div>
                                     </motion.div>
@@ -1402,125 +1448,135 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                     </div>
                 </div>
 
-                {/* Right Column: Totals & State */}
-                <div className="lg:col-span-1 space-y-8">
+                {/* Right Column: AI Generator & Totals */}
+                <div className="lg:col-span-1 space-y-5">
                     
                     {/* Generador Rápido IA */}
-                    <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950/70 p-6 rounded-3xl border border-indigo-500/30 shadow-xl space-y-4 relative overflow-hidden">
-                        <div className="flex items-center gap-2 text-cyan-400">
-                            <Sparkles size={18} />
-                            <h2 className="text-xs font-mono font-bold uppercase tracking-wider">Generador Rápido con IA</h2>
+                    <div className="bg-zinc-900/60 p-5 rounded-2xl border border-white/[0.08] space-y-3.5 backdrop-blur-sm">
+                        <div className="flex items-center gap-2 text-orange-300">
+                            <Sparkles size={15} className="text-orange-400" />
+                            <h2 className="text-xs font-mono font-semibold uppercase tracking-wider">Generador Rápido con IA</h2>
                         </div>
-                        <p className="text-[11px] text-slate-400 leading-relaxed">
-                            Pega texto desordenado de WhatsApp o notas. La IA extraerá cliente, productos y valores automáticamente.
+                        <p className="text-xs text-zinc-400 leading-relaxed">
+                            Pega texto desordenado de WhatsApp o notas y auto-completa cliente, productos y valores.
                         </p>
                         <textarea 
                             value={quickText}
                             onChange={(e) => setQuickText(e.target.value)}
                             placeholder="Ej: cotizame a juan perez 2 camaras a 15 y un dvr a 40 para quito su tel es 0999"
-                            className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 text-xs font-mono text-white placeholder-slate-600 outline-none focus:border-cyan-500/50 min-h-[100px] resize-none"
+                            className="w-full bg-zinc-950/90 border border-white/[0.08] rounded-xl p-3 text-xs text-white placeholder-zinc-600 outline-none focus:border-orange-400/60 min-h-[88px] resize-none"
                         />
                         
                         {quickWarning && (
-                            <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start gap-2 text-amber-300">
+                            <div className="p-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-start gap-2 text-amber-300">
                                 <AlertTriangle size={14} className="shrink-0 mt-0.5" />
-                                <p className="text-[10px] font-mono leading-tight">{quickWarning}</p>
+                                <p className="text-[11px] leading-tight">{quickWarning}</p>
                             </div>
                         )}
 
                         <div className="flex gap-2">
                             <button 
+                                type="button"
                                 onClick={() => quickInputRef.current?.click()}
-                                className="flex-1 flex items-center justify-center gap-1.5 bg-slate-950 border border-slate-800 text-slate-300 font-mono font-bold text-[10px] py-2.5 rounded-xl hover:bg-slate-900 transition-colors"
+                                className="flex-1 flex items-center justify-center gap-1.5 bg-zinc-950 border border-white/[0.08] text-zinc-300 text-xs font-medium py-2 rounded-xl hover:bg-zinc-800 transition-colors cursor-pointer"
                             >
-                                <Upload size={12} /> {quickImage ? "Imagen Lista" : "Subir 1 Imagen"}
+                                <Upload size={13} /> {quickImage ? "Imagen Lista" : "Subir Imagen"}
                             </button>
                             <input type="file" accept="image/*" hidden ref={quickInputRef} onChange={handleQuickImageUpload} />
                             
                             <button 
+                                type="button"
                                 onClick={handleQuickGenerate}
                                 disabled={isExtracting || !quickText.trim()}
-                                className="flex-1 flex items-center justify-center gap-1.5 bg-gradient-to-r from-cyan-500 to-indigo-600 text-slate-950 font-mono font-black text-[10px] py-2.5 rounded-xl uppercase tracking-wider hover:scale-105 transition-all shadow-[0_0_15px_rgba(6,182,212,0.3)] disabled:opacity-50"
+                                className="flex-1 flex items-center justify-center gap-1.5 bg-orange-500/20 hover:bg-orange-500/30 border border-orange-400/50 text-orange-200 font-semibold text-xs py-2 rounded-xl transition-all disabled:opacity-50 cursor-pointer"
                             >
                                 {isExtracting ? "Analizando..." : "Auto-Completar"}
                             </button>
                         </div>
 
                         {quickSuccess && (
-                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="space-y-2">
+                            <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="space-y-2 pt-1">
                                 <button 
+                                    type="button"
                                     onClick={handleGeneratePDF}
-                                    className="w-full flex items-center justify-center gap-2 bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-mono font-bold text-xs py-3 rounded-2xl hover:bg-emerald-500/30 transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)]"
+                                    className="w-full flex items-center justify-center gap-2 bg-emerald-500/15 border border-emerald-500/35 text-emerald-200 font-semibold text-xs py-2.5 rounded-xl hover:bg-emerald-500/25 transition-all cursor-pointer"
                                 >
-                                    <Download size={14} /> DESCARGAR COTIZACIÓN EN PDF
+                                    <Download size={14} /> Descargar PDF Oficial
                                 </button>
                                 <button 
+                                    type="button"
                                     onClick={() => handleGenerateExcel()}
                                     disabled={isExportingExcel}
-                                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600/30 to-teal-600/30 border border-emerald-500/50 text-emerald-300 font-mono font-bold text-xs py-3 rounded-2xl hover:bg-emerald-500/40 transition-all shadow-[0_0_15px_rgba(16,185,129,0.3)] disabled:opacity-50"
+                                    className="w-full flex items-center justify-center gap-2 bg-zinc-950 border border-white/10 text-zinc-200 font-semibold text-xs py-2.5 rounded-xl hover:bg-zinc-800 transition-all disabled:opacity-50 cursor-pointer"
                                 >
-                                    {isExportingExcel ? <Loader2 size={14} className="animate-spin" /> : <FileSpreadsheet size={14} />}
-                                    DESCARGAR COTIZACIÓN EN EXCEL (.XLSX)
+                                    {isExportingExcel ? <Loader2 size={14} className="animate-spin" /> : <FileSpreadsheet size={14} className="text-emerald-400" />}
+                                    Descargar Excel (.xlsx)
                                 </button>
                             </motion.div>
                         )}
                     </div>
 
                     {/* Totals Summary */}
-                    <div className="bg-slate-900/90 border border-slate-800/80 p-6 lg:p-8 rounded-3xl space-y-6 shadow-xl sticky top-24">
-                        <h2 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2 border-b border-slate-800 pb-4">
-                            <Calculator className="text-emerald-400" size={18} /> Resumen de Totales
+                    <div className="bg-zinc-900/75 border border-orange-400/40 p-5 rounded-2xl space-y-5 shadow-xl sticky top-4">
+                        <h2 className="text-xs font-mono font-semibold text-white uppercase tracking-wider flex items-center gap-2 border-b border-white/[0.06] pb-3.5">
+                            <Calculator className="text-orange-400" size={15} />
+                            <span>Resumen de Totales</span>
                         </h2>
                         
-                        <div className="space-y-4 text-xs font-mono font-bold">
-                            <div className="flex justify-between items-center text-slate-300">
+                        <div className="space-y-3 text-xs">
+                            <div className="flex justify-between items-center text-zinc-300">
                                 <span>Subtotal</span>
-                                <span>${subtotal.toFixed(2)}</span>
+                                <span className="font-mono font-semibold text-white">${subtotal.toFixed(2)}</span>
                             </div>
                             
-                            <div className="flex justify-between items-center text-slate-300">
-                                <span className="flex items-center gap-1">Descuento Global <Percent size={12}/></span>
-                                <div className="flex items-center gap-2">
+                            <div className="flex justify-between items-center text-zinc-300">
+                                <span className="flex items-center gap-1">Descuento Global <Percent size={12} className="text-zinc-500"/></span>
+                                <div className="flex items-center gap-1.5 font-mono">
                                     <input 
                                         type="number" 
                                         min="0" max="100" 
                                         value={discountPercent} 
                                         onChange={(e) => setDiscountPercent(parseFloat(e.target.value) || 0)}
-                                        className="w-16 bg-slate-950 border border-slate-800 p-1 text-right text-pink-400 rounded-lg outline-none focus:border-pink-500/50"
-                                    /> %
+                                        className="w-16 bg-zinc-950 border border-white/[0.08] px-2 py-1 text-right text-orange-300 rounded-lg outline-none focus:border-orange-400/60"
+                                    />
+                                    <span className="text-zinc-400">%</span>
                                 </div>
                             </div>
                             {totalDiscountAmount > 0 && (
-                                <div className="flex justify-between items-center text-rose-400">
-                                    <span>Valor Descontado</span>
+                                <div className="flex justify-between items-center text-rose-400 font-mono">
+                                    <span>Descontado</span>
                                     <span>-${totalDiscountAmount.toFixed(2)}</span>
                                 </div>
                             )}
 
-                            <div className="flex justify-between items-center text-slate-300">
+                            <div className="flex justify-between items-center text-zinc-300">
                                 <span>IVA (15%)</span>
-                                <span>${taxAmount.toFixed(2)}</span>
+                                <span className="font-mono font-semibold text-white">${taxAmount.toFixed(2)}</span>
                             </div>
                         </div>
 
-                        <div className="pt-6 border-t border-slate-800">
-                            <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest mb-1">Total Liquidación</p>
-                            <p className="text-4xl font-black text-emerald-400 font-mono tracking-tight" style={{ textShadow: "0 0 20px rgba(74,222,128,0.4)" }}>
-                                ${total.toFixed(2)}
-                            </p>
+                        <div className="pt-4 border-t border-white/[0.08] flex items-end justify-between">
+                            <div>
+                                <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">Total Liquidación</p>
+                                <p className="text-3xl font-bold text-emerald-400 font-mono tracking-tight mt-0.5">
+                                    ${total.toFixed(2)}
+                                </p>
+                            </div>
+                            <span className="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30 text-[10px] font-mono text-emerald-300">USD</span>
                         </div>
                         
-                        <div className="pt-4 border-t border-slate-800 space-y-3">
-                            <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Estado Inicial</label>
-                            <div className="flex flex-col gap-2">
+                        <div className="pt-4 border-t border-white/[0.08] space-y-2.5">
+                            <label className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 block">Estado Inicial</label>
+                            <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-zinc-950 border border-white/[0.08]">
                                 {["PENDIENTE", "CERRADO", "ABANDONADO"].map(s => (
                                     <button 
                                         key={s} 
+                                        type="button"
                                         onClick={() => setStatus(s as any)} 
-                                        className={`py-3 px-4 text-xs font-mono font-bold uppercase tracking-wider rounded-2xl transition-all border ${
+                                        className={`py-2 px-2 text-[10px] font-mono font-semibold uppercase rounded-lg transition-all cursor-pointer ${
                                             status === s 
-                                            ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.3)]' 
-                                            : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-white'
+                                            ? 'bg-orange-500/20 border border-orange-400/50 text-orange-200' 
+                                            : 'text-zinc-400 hover:text-zinc-200 border border-transparent'
                                         }`}
                                     >
                                         {s}
@@ -1539,44 +1595,46 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                     <>
                         <motion.div 
                             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50"
+                            className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50"
                             onClick={() => { setIsHistoryOpen(false); setQuoteMenuOpen(null) }}
                         />
                         <motion.div 
                             initial={{ x: "100%" }}
                             animate={{ x: 0 }}
                             exit={{ x: "100%" }}
-                            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                            className="fixed top-0 right-0 h-full w-full max-w-sm bg-slate-900 border-l border-slate-800 z-[60] flex flex-col shadow-2xl text-white"
+                            transition={{ type: "spring", damping: 25, stiffness: 220 }}
+                            className="fixed top-0 right-0 h-full w-full max-w-sm bg-zinc-950 border-l border-white/10 z-[60] flex flex-col shadow-2xl text-zinc-100"
                         >
-                            <div className="px-6 py-5 flex justify-between items-center border-b border-slate-800 bg-slate-950">
-                                <h3 className="text-sm font-mono font-black text-cyan-400 uppercase tracking-tight flex items-center gap-2">
-                                    <History size={16} /> Historial de Cotizaciones
+                            <div className="px-5 py-4 flex justify-between items-center border-b border-white/[0.08] bg-zinc-950">
+                                <h3 className="text-xs font-mono font-semibold text-orange-300 uppercase tracking-wider flex items-center gap-2">
+                                    <History size={15} className="text-orange-400" /> Historial de Cotizaciones
                                 </h3>
-                                <button onClick={() => setIsHistoryOpen(false)} className="p-2 text-slate-400 hover:text-white rounded-full"><X size={18}/></button>
+                                <button type="button" onClick={() => setIsHistoryOpen(false)} className="p-1.5 text-zinc-400 hover:text-white rounded-lg"><X size={16}/></button>
                             </div>
-                            <div className="p-6 overflow-y-auto h-full space-y-4 font-mono bg-slate-950">
-                                {quoteHistory.map((q: any) => (
-                                    <div key={q.id} className="p-4 bg-slate-900 border border-slate-800 rounded-2xl shadow-xl hover:border-cyan-500/40 transition-all group relative">
-                                        <div className="flex justify-between items-start mb-3">
-                                            <span className="text-[10px] font-bold text-cyan-300 bg-cyan-500/10 border border-cyan-500/30 px-2 py-0.5 rounded-full">{q.quoteNumber}</span>
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-[9px] text-slate-400 font-bold">{new Date(q.createdAt).toLocaleDateString()}</span>
-                                                {/* Botón Directo de Compartir */}
+                            <div className="p-4 overflow-y-auto h-full space-y-3 bg-[#09090b]">
+                                {quoteHistory.length === 0 ? (
+                                    <p className="text-xs text-zinc-500 text-center py-12">Sin cotizaciones recientes en tu historial.</p>
+                                ) : quoteHistory.map((q: any) => (
+                                    <div key={q.id} className="p-4 bg-zinc-900/70 border border-white/[0.08] rounded-xl hover:border-orange-400/40 transition-all group relative">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <span className="text-[10px] font-mono font-semibold text-orange-300 bg-orange-500/10 border border-orange-500/30 px-2 py-0.5 rounded-full">{q.quoteNumber}</span>
+                                            <div className="flex items-center gap-1.5">
+                                                <span className="text-[10px] text-zinc-400 font-mono">{new Date(q.createdAt).toLocaleDateString()}</span>
                                                 <button
+                                                    type="button"
                                                     onClick={(e) => { e.stopPropagation(); handleOSShareQuote(q); }}
-                                                    className="p-1.5 rounded-lg bg-violet-500/10 hover:bg-violet-500/20 text-violet-400 hover:text-violet-300 border border-violet-500/30 transition-colors"
-                                                    title="Compartir a WhatsApp, Messenger o aplicaciones del teléfono"
+                                                    className="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition-colors"
+                                                    title="Compartir"
                                                 >
-                                                    <Share2 size={13} />
+                                                    <Share2 size={12} />
                                                 </button>
-                                                {/* ⋮ 3-DOT MENU */}
                                                 <div className="relative">
                                                     <button
+                                                        type="button"
                                                         onClick={(e) => { e.stopPropagation(); setQuoteMenuOpen(quoteMenuOpen === q.id ? null : q.id) }}
-                                                        className="p-1.5 rounded-lg hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+                                                        className="p-1.5 rounded-lg hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors"
                                                     >
-                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
                                                             <circle cx="12" cy="5" r="2.2"/><circle cx="12" cy="12" r="2.2"/><circle cx="12" cy="19" r="2.2"/>
                                                         </svg>
                                                     </button>
@@ -1586,11 +1644,11 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                                                 initial={{ opacity: 0, scale: 0.9, y: -5 }}
                                                                 animate={{ opacity: 1, scale: 1, y: 0 }}
                                                                 exit={{ opacity: 0, scale: 0.9 }}
-                                                                className="absolute right-0 top-8 w-60 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl z-50 overflow-hidden"
+                                                                className="absolute right-0 top-8 w-56 bg-zinc-950 border border-white/15 rounded-xl shadow-2xl z-50 overflow-hidden"
                                                                 onClick={(e) => e.stopPropagation()}
                                                             >
-                                                                <div className="px-3 py-2 border-b border-slate-800">
-                                                                    <p className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-widest">Opciones de Cotización</p>
+                                                                <div className="px-3 py-2 border-b border-white/[0.08]">
+                                                                    <p className="text-[9px] font-mono text-zinc-400 uppercase tracking-widest">Opciones</p>
                                                                 </div>
                                                                 {[
                                                                     { icon: '⬇️', label: 'Descargar PDF', action: () => handleDownloadQuotePDF(q) },
@@ -1598,12 +1656,12 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                                                     { icon: '📲', label: 'Compartir (WhatsApp / Apps)', action: () => handleOSShareQuote(q) },
                                                                     { icon: '👤', label: 'Compartir a Perfil…', action: () => { setShareModalOpen(q); setQuoteMenuOpen(null) } },
                                                                     { icon: '✏️', label: 'Editar (nombre + productos)', action: () => handleLoadQuoteMode(q, 'full') },
-                                                                    { icon: '🏷️', label: 'Editar (solo nombre del cliente)', action: () => handleLoadQuoteMode(q, 'name_only') },
+                                                                    { icon: '🏷️', label: 'Editar (solo cliente)', action: () => handleLoadQuoteMode(q, 'name_only') },
                                                                     { icon: '📦', label: 'Editar (solo productos)', action: () => handleLoadQuoteMode(q, 'products_only') },
                                                                 ].map((opt, i) => (
-                                                                    <button key={i} onClick={opt.action}
-                                                                        className="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-300 hover:bg-slate-800 hover:text-white transition-colors flex items-center gap-2.5">
-                                                                        <span className="text-sm">{opt.icon}</span>
+                                                                    <button key={i} type="button" onClick={opt.action}
+                                                                        className="w-full text-left px-3.5 py-2 text-xs font-medium text-zinc-300 hover:bg-zinc-900 hover:text-white transition-colors flex items-center gap-2">
+                                                                        <span className="text-xs">{opt.icon}</span>
                                                                         <span>{opt.label}</span>
                                                                     </button>
                                                                 ))}
@@ -1613,10 +1671,10 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                                 </div>
                                             </div>
                                         </div>
-                                        <p className="text-xs font-bold text-white uppercase tracking-tight line-clamp-1 mb-2 font-sans">{q.clientName}</p>
-                                        <div className="flex justify-between items-end mt-4">
-                                            <span className="text-[10px] font-bold px-2.5 py-1 bg-slate-950 text-slate-300 rounded-full border border-slate-800">{q.status}</span>
-                                            <p className="text-base font-black text-emerald-400">${q.total?.toFixed(2)}</p>
+                                        <p className="text-xs font-semibold text-white uppercase tracking-tight line-clamp-1 mb-2">{q.clientName}</p>
+                                        <div className="flex justify-between items-end mt-3">
+                                            <span className="text-[10px] font-mono px-2 py-0.5 bg-zinc-950 text-zinc-300 rounded-full border border-white/[0.08]">{q.status}</span>
+                                            <p className="text-sm font-bold font-mono text-emerald-400">${q.total?.toFixed(2)}</p>
                                         </div>
                                     </div>
                                 ))}
@@ -1631,44 +1689,44 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                 {shareModalOpen && (
                     <>
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[70]"
+                            className="fixed inset-0 bg-black/75 backdrop-blur-sm z-[70]"
                             onClick={() => setShareModalOpen(null)} />
-                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
+                        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
                             className="fixed inset-0 z-[80] flex items-center justify-center p-4">
-                            <div className="bg-[#0a0a0f] border border-slate-700 rounded-3xl p-6 shadow-2xl max-w-sm w-full">
-                                <div className="flex justify-between items-center mb-4">
-                                    <h3 className="font-black text-white text-sm flex items-center gap-2">
+                            <div className="bg-zinc-950 border border-white/15 rounded-2xl p-5 shadow-2xl max-w-sm w-full">
+                                <div className="flex justify-between items-center mb-3">
+                                    <h3 className="font-semibold text-white text-sm flex items-center gap-2">
                                         <span>👤</span> Compartir Cotización
                                     </h3>
-                                    <button onClick={() => setShareModalOpen(null)} className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400"><X size={16}/></button>
+                                    <button type="button" onClick={() => setShareModalOpen(null)} className="p-1 rounded-lg hover:bg-zinc-800 text-zinc-400"><X size={15}/></button>
                                 </div>
-                                <p className="text-[11px] font-mono text-slate-400 mb-4">
-                                    Enviar <span className="text-cyan-400 font-bold">{shareModalOpen?.quoteNumber}</span> al historial de otro perfil
+                                <p className="text-xs text-zinc-400 mb-4">
+                                    Enviar <span className="text-orange-300 font-mono font-semibold">{shareModalOpen?.quoteNumber}</span> al historial de otro perfil
                                 </p>
-                                <div className="space-y-3 mb-5">
-                                    <button onClick={() => setShareTarget('todos')}
-                                        className={`w-full py-2.5 px-4 rounded-2xl text-xs font-bold transition-all border ${shareTarget === 'todos' ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300' : 'bg-slate-900 border-slate-700 text-slate-300 hover:border-slate-600'}`}>
+                                <div className="space-y-3 mb-4">
+                                    <button type="button" onClick={() => setShareTarget('todos')}
+                                        className={`w-full py-2 px-3.5 rounded-xl text-xs font-medium transition-all border ${shareTarget === 'todos' ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300' : 'bg-zinc-900 border-white/10 text-zinc-300 hover:border-white/20'}`}>
                                         📢 Enviar a TODOS los perfiles
                                     </button>
-                                    <div className="border-t border-slate-800 pt-3">
-                                        <p className="text-[10px] font-mono font-bold text-slate-400 mb-2 uppercase tracking-widest">O enviar a perfil específico</p>
+                                    <div className="border-t border-white/[0.08] pt-3">
+                                        <p className="text-[10px] font-mono text-zinc-400 mb-2 uppercase tracking-wider">O enviar a perfil específico</p>
                                         <div className="space-y-1.5 max-h-44 overflow-y-auto">
                                             {systemUsers.filter((u: any) => u.email !== session?.user?.email).map((u: any) => (
-                                                <button key={u.id} onClick={() => setShareTarget(u.email)}
-                                                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-bold transition-all border ${shareTarget === u.email ? 'bg-blue-500/20 border-blue-500/40 text-blue-300' : 'bg-slate-900 border-slate-800 text-slate-300 hover:border-slate-700'}`}>
-                                                    <span className="text-slate-500 mr-1.5 text-[9px]">{u.role}</span>
+                                                <button key={u.id} type="button" onClick={() => setShareTarget(u.email)}
+                                                    className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-all border ${shareTarget === u.email ? 'bg-orange-500/20 border-orange-400/50 text-orange-200' : 'bg-zinc-900 border-white/[0.06] text-zinc-300 hover:border-white/15'}`}>
+                                                    <span className="text-zinc-500 mr-1.5 text-[10px] font-mono">{u.role}</span>
                                                     {u.name || u.email}
                                                 </button>
                                             ))}
                                             {systemUsers.length === 0 && (
-                                                <p className="text-[10px] font-mono text-slate-500 py-2 text-center">Cargando perfiles...</p>
+                                                <p className="text-[11px] text-zinc-500 py-2 text-center">Cargando perfiles...</p>
                                             )}
                                         </div>
                                     </div>
                                 </div>
-                                <button onClick={() => handleShareQuote(shareModalOpen)} disabled={!shareTarget || isSharingQuote}
-                                    className="w-full py-3 bg-gradient-to-r from-cyan-600 to-indigo-600 text-white font-black rounded-2xl text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-                                    {isSharingQuote ? <Loader2 size={16} className="animate-spin"/> : <Send size={16}/>}
+                                <button type="button" onClick={() => handleShareQuote(shareModalOpen)} disabled={!shareTarget || isSharingQuote}
+                                    className="w-full py-2.5 bg-orange-500 hover:bg-orange-400 text-zinc-950 font-bold rounded-xl text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors">
+                                    {isSharingQuote ? <Loader2 size={14} className="animate-spin"/> : <Send size={14}/>}
                                     {isSharingQuote ? 'Compartiendo...' : 'Compartir Cotización'}
                                 </button>
                             </div>
@@ -1681,47 +1739,50 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
             <AnimatePresence>
                 {postPdfSharePrompt && (
                     <motion.div
-                        initial={{ opacity: 0, y: 50, scale: 0.95 }}
+                        initial={{ opacity: 0, y: 40, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 50, scale: 0.95 }}
-                        className="fixed bottom-6 right-6 z-[95] max-w-sm w-full bg-slate-900/95 border-2 border-violet-500/50 backdrop-blur-xl p-5 rounded-3xl shadow-[0_0_35px_rgba(139,92,246,0.35)] flex flex-col gap-3"
+                        exit={{ opacity: 0, y: 40, scale: 0.95 }}
+                        className="fixed bottom-6 right-6 z-[95] max-w-sm w-full bg-zinc-950/95 border border-orange-400/50 backdrop-blur-xl p-5 rounded-2xl shadow-2xl flex flex-col gap-3"
                     >
                         <div className="flex items-start justify-between gap-3">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
-                                    <CheckCircle2 size={22} />
+                                <div className="w-9 h-9 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                                    <CheckCircle2 size={18} />
                                 </div>
                                 <div>
-                                    <h4 className="text-sm font-black text-white">¡PDF Generado con Éxito!</h4>
-                                    <p className="text-[11px] font-mono text-slate-300">
-                                        Cotización <span className="text-cyan-400 font-bold">{postPdfSharePrompt.quoteNumber}</span>
+                                    <h4 className="text-sm font-semibold text-white">¡PDF Generado con Éxito!</h4>
+                                    <p className="text-[11px] font-mono text-zinc-300">
+                                        Cotización <span className="text-orange-300 font-semibold">{postPdfSharePrompt.quoteNumber}</span>
                                     </p>
                                 </div>
                             </div>
                             <button 
+                                type="button"
                                 onClick={() => setPostPdfSharePrompt(null)}
-                                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                                className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
                             >
-                                <X size={16} />
+                                <X size={15} />
                             </button>
                         </div>
-                        <p className="text-xs text-slate-300 leading-relaxed">
+                        <p className="text-xs text-zinc-400 leading-relaxed">
                             ¿Deseas compartirla directamente a WhatsApp, Messenger o aplicaciones de tu teléfono?
                         </p>
                         <div className="flex items-center gap-2 pt-1">
                             <button
+                                type="button"
                                 onClick={() => {
                                     const target = postPdfSharePrompt;
                                     setPostPdfSharePrompt(null);
                                     handleShareQuoteNative({ quoteNumber: target.quoteNumber, clientName: target.clientName });
                                 }}
-                                className="flex-1 py-2.5 px-4 bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-black text-xs rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all"
+                                className="flex-1 py-2 px-4 bg-orange-500 hover:bg-orange-400 text-zinc-950 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all"
                             >
-                                <Share2 size={15} /> 📲 Compartir Ahora
+                                <Share2 size={14} /> Compartir Ahora
                             </button>
                             <button
+                                type="button"
                                 onClick={() => setPostPdfSharePrompt(null)}
-                                className="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl transition-all"
+                                className="py-2 px-4 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-medium text-xs rounded-xl transition-all"
                             >
                                 Listo
                             </button>
@@ -1742,113 +1803,106 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                             onClick={() => setExternalShareModalData(null)}
                         />
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                            initial={{ opacity: 0, scale: 0.95, y: 16 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 16 }}
                             className="fixed inset-0 z-[101] flex items-center justify-center p-4 pointer-events-none"
                         >
-                            <div className="bg-slate-900 border border-slate-700 rounded-3xl p-6 shadow-2xl max-w-md w-full pointer-events-auto flex flex-col gap-5 text-white max-h-[90vh] overflow-y-auto">
+                            <div className="bg-zinc-950 border border-white/15 rounded-2xl p-6 shadow-2xl max-w-md w-full pointer-events-auto flex flex-col gap-4 text-white max-h-[90vh] overflow-y-auto">
                                 <div className="flex justify-between items-start">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-600 flex items-center justify-center text-white shadow-lg">
-                                            <Share2 size={22} />
+                                        <div className="w-10 h-10 rounded-xl bg-orange-500/20 border border-orange-400/40 flex items-center justify-center text-orange-300">
+                                            <Share2 size={18} />
                                         </div>
                                         <div>
-                                            <h3 className="text-base font-black text-white">Compartir Cotización Oficial</h3>
-                                            <p className="text-xs text-cyan-400 font-mono font-bold">
+                                            <h3 className="text-sm font-semibold text-white">Compartir Cotización Oficial</h3>
+                                            <p className="text-xs text-orange-300 font-mono">
                                                 {externalShareModalData.quoteNumber} • {externalShareModalData.clientName}
                                             </p>
                                         </div>
                                     </div>
                                     <button
+                                        type="button"
                                         onClick={() => setExternalShareModalData(null)}
-                                        className="p-1.5 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
+                                        className="p-1.5 rounded-xl hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors"
                                     >
-                                        <X size={18} />
+                                        <X size={16} />
                                     </button>
                                 </div>
 
-                                {/* Preview de Texto Oficial Requerido */}
-                                <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 text-xs space-y-2">
-                                    <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-                                        <Sparkles size={12} className="text-cyan-400" /> Mensaje Oficial Configurado:
+                                <div className="bg-zinc-900/70 border border-white/[0.08] rounded-xl p-4 text-xs space-y-2.5">
+                                    <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
+                                        <Sparkles size={12} className="text-orange-400" /> Mensaje Oficial Configurado:
                                     </span>
-                                    <p className="text-slate-300 whitespace-pre-line leading-relaxed italic font-sans bg-slate-900/60 p-3 rounded-xl border border-slate-800/80">
+                                    <p className="text-zinc-300 whitespace-pre-line leading-relaxed italic bg-zinc-950 p-3 rounded-lg border border-white/[0.06]">
                                         "{externalShareModalData.shareText}"
                                     </p>
                                     <button
+                                        type="button"
                                         onClick={() => {
                                             navigator.clipboard.writeText(externalShareModalData.shareText);
                                             setIsCopiedShare(true);
                                             setTimeout(() => setIsCopiedShare(false), 2500);
                                         }}
-                                        className="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors border border-slate-700"
+                                        className="w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 font-medium text-xs rounded-lg flex items-center justify-center gap-2 transition-colors border border-white/10"
                                     >
                                         {isCopiedShare ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
                                         {isCopiedShare ? "¡Mensaje y Link Copiados!" : "Copiar Mensaje y Enlace Oficial"}
                                     </button>
                                 </div>
 
-                                {/* Botones de Aplicaciones Directas */}
                                 <div className="space-y-2">
-                                    <p className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">
+                                    <p className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">
                                         Escoger Aplicación de Envío:
                                     </p>
-                                    <div className="grid grid-cols-2 gap-2.5">
-                                        {/* WhatsApp */}
+                                    <div className="grid grid-cols-2 gap-2">
                                         <a
                                             href={`https://api.whatsapp.com/send?text=${encodeURIComponent(externalShareModalData.shareText)}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="p-3 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 hover:border-emerald-500/60 text-emerald-300 font-black text-xs rounded-2xl flex items-center justify-center gap-2 transition-all shadow-sm"
+                                            className="p-2.5 bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/35 text-emerald-300 font-semibold text-xs rounded-xl flex items-center justify-center gap-2 transition-all"
                                         >
-                                            <span className="text-base">💬</span> WhatsApp
+                                            <span>💬</span> WhatsApp
                                         </a>
-
-                                        {/* Facebook Messenger */}
                                         <a
                                             href={`https://www.facebook.com/dialog/send?link=${encodeURIComponent(externalShareModalData.onlineUrl)}&app_id=291494419107518&redirect_uri=${encodeURIComponent(externalShareModalData.onlineUrl)}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="p-3 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 hover:border-blue-500/60 text-blue-300 font-black text-xs rounded-2xl flex items-center justify-center gap-2 transition-all shadow-sm"
+                                            className="p-2.5 bg-blue-500/15 hover:bg-blue-500/25 border border-blue-500/35 text-blue-300 font-semibold text-xs rounded-xl flex items-center justify-center gap-2 transition-all"
                                         >
-                                            <span className="text-base">⚡</span> Messenger
+                                            <span>⚡</span> Messenger
                                         </a>
-
-                                        {/* Facebook */}
                                         <a
                                             href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(externalShareModalData.onlineUrl)}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="p-3 bg-indigo-600/20 hover:bg-indigo-600/30 border border-indigo-500/40 hover:border-indigo-500/60 text-indigo-300 font-black text-xs rounded-2xl flex items-center justify-center gap-2 transition-all shadow-sm"
+                                            className="p-2.5 bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/35 text-indigo-300 font-semibold text-xs rounded-xl flex items-center justify-center gap-2 transition-all"
                                         >
-                                            <span className="text-base">📘</span> Facebook
+                                            <span>📘</span> Facebook
                                         </a>
-
-                                        {/* Telegram */}
                                         <a
                                             href={`https://t.me/share/url?url=${encodeURIComponent(externalShareModalData.onlineUrl)}&text=${encodeURIComponent(externalShareModalData.shareText)}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="p-3 bg-sky-600/20 hover:bg-sky-600/30 border border-sky-500/40 hover:border-sky-500/60 text-sky-300 font-black text-xs rounded-2xl flex items-center justify-center gap-2 transition-all shadow-sm"
+                                            className="p-2.5 bg-sky-500/15 hover:bg-sky-500/25 border border-sky-500/35 text-sky-300 font-semibold text-xs rounded-xl flex items-center justify-center gap-2 transition-all"
                                         >
-                                            <span className="text-base">✈️</span> Telegram
+                                            <span>✈️</span> Telegram
                                         </a>
                                     </div>
                                 </div>
 
-                                {/* Acciones complementarias */}
-                                <div className="border-t border-slate-800 pt-3 flex items-center gap-2">
+                                <div className="border-t border-white/[0.08] pt-3 flex items-center gap-2">
                                     <a
                                         href={externalShareModalData.onlineUrl}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex-1 py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-colors border border-slate-700"
+                                        className="flex-1 py-2 px-3 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-white font-medium text-xs rounded-xl flex items-center justify-center gap-1.5 transition-colors border border-white/10"
                                     >
                                         <ExternalLink size={14} /> Ver en Línea
                                     </a>
                                     {externalShareModalData.pdfBlob && (
                                         <button
+                                            type="button"
                                             onClick={() => {
                                                 const url = window.URL.createObjectURL(externalShareModalData.pdfBlob);
                                                 const a = document.createElement("a");
@@ -1859,7 +1913,7 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                                                 window.URL.revokeObjectURL(url);
                                                 document.body.removeChild(a);
                                             }}
-                                            className="flex-1 py-2.5 px-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-md"
+                                            className="flex-1 py-2 px-3 bg-orange-500 hover:bg-orange-400 text-zinc-950 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all"
                                         >
                                             <Download size={14} /> Descargar PDF
                                         </button>
@@ -1880,24 +1934,25 @@ export default function QuotationClient({ initialProducts, initialHistory, initi
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setShowSalesCopyModal(false)}
-                            className="fixed inset-0 bg-slate-950/70 backdrop-blur-md z-50"
+                            className="fixed inset-0 bg-black/75 backdrop-blur-md z-50"
                         />
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95, y: 20 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="fixed inset-4 sm:inset-8 md:inset-12 lg:inset-16 max-w-5xl mx-auto my-auto bg-white rounded-3xl z-50 overflow-hidden shadow-2xl border border-slate-200 flex flex-col max-h-[92vh]"
+                            className="fixed inset-4 sm:inset-8 md:inset-12 lg:inset-16 max-w-5xl mx-auto my-auto bg-white rounded-2xl z-50 overflow-hidden shadow-2xl border border-slate-200 flex flex-col max-h-[92vh]"
                         >
                             <div className="p-4 sm:p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50 shrink-0">
                                 <div className="flex items-center gap-2">
-                                    <div className="w-8 h-8 rounded-xl bg-[#026CDF]/10 border border-[#026CDF]/20 flex items-center justify-center text-[#026CDF]">
+                                    <div className="w-8 h-8 rounded-xl bg-orange-500/10 border border-orange-500/25 flex items-center justify-center text-orange-600">
                                         <MessageSquare size={16} />
                                     </div>
-                                    <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">
+                                    <h3 className="text-sm font-bold text-slate-900 uppercase tracking-tight">
                                         Scripts de Ventas & Marketplace (ATOMIC ERP)
                                     </h3>
                                 </div>
                                 <button
+                                    type="button"
                                     onClick={() => setShowSalesCopyModal(false)}
                                     className="p-2 rounded-full hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition-colors"
                                 >

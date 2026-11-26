@@ -70,7 +70,7 @@ function MobileBottomDockInner() {
 
     const isCrmActive = pathname.startsWith("/dashboard/whatsapp")
     const isAsistenciaActive = pathname.startsWith("/dashboard/asistencia")
-    const isPricesActive = pathname.startsWith("/dashboard/matriz-precios") || pathname.startsWith("/dashboard/shop") || pathname.startsWith("/dashboard/precios-vendedor")
+    const isPricesActive = pathname.startsWith("/dashboard/matriz-precios") || pathname.startsWith("/dashboard/shop") || pathname.startsWith("/dashboard/precios-vendedor") || pathname.startsWith("/web/precios-vendedor")
     const isQuotesActive = pathname.startsWith("/dashboard/quotes")
     const isShopActive = pathname.startsWith("/dashboard/shop") || pathname === "/web"
     const isRadarActive = pathname.startsWith("/dashboard/map-prospecting")
