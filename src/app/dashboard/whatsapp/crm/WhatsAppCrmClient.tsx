@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useCallback, useRef } from "react"
 import { useSession } from "next-auth/react"
-import { 
-    MessageSquare, Send, Search, User, Phone, CheckCheck, 
+import {
+    MessageSquare, Send, Search, User, Phone, CheckCheck,
     Sparkles, Plus, ExternalLink, ShieldCheck, Tag, RefreshCw, ChevronLeft,
     Settings, Image as ImageIcon, ShoppingBag, Download, Check, Save, X, Globe, Mail, MapPin,
     Volume2, Mic, Film, FileText, Megaphone, Eye, Key, AlertCircle, Copy, Paperclip, Loader2,
-    UserCheck, UserPlus, Lock, Users, Filter, CheckCircle2, Flame, Bot, Zap, Bell, Camera, Upload, Palette, Trash2, RotateCcw
+    UserCheck, UserPlus, Lock, Users, Filter, CheckCircle2, Flame, Bot, Zap, Bell, Camera, Upload, Palette, Trash2, RotateCcw, Smile
 } from "lucide-react"
 
 interface ReferralData {
@@ -72,6 +72,29 @@ function formatPhoneNumber(phone: string = ''): string {
         return `+${clean.slice(0, 3)} ${clean.slice(3, 6)} ${clean.slice(6)}`;
     }
     return clean ? `+${clean}` : phone;
+}
+
+const WA_DOODLE_DARK_BG = `url("data:image/svg+xml,${encodeURIComponent(
+    `<svg xmlns='http://www.w3.org/2000/svg' width='280' height='280' viewBox='0 0 280 280' fill='none' stroke='%238696a0' stroke-width='1.2' stroke-opacity='0.065' stroke-linecap='round' stroke-linejoin='round'><path d='M28 40c8-10 24-4 22 9-1 9-12 14-20 9l-8 3 3-8c-2-4-1-9 3-13z'/><circle cx='115' cy='46' r='11'/><path d='M110 46l3 3 7-7'/><rect x='185' y='30' width='22' height='32' rx='4'/><line x1='193' y1='57' x2='199' y2='57'/><path d='M248 56c-6-6-6-15 0-21 5 2 9 7 9 13s-4 11-9 8z'/><path d='M55 118l14-14 8 8-14 14-11 3 3-11z'/><path d='M132 108c4-5 12-5 16 0 3 4 2 10-2 14l-14 12-14-12c-4-4-5-10-2-14 4-5 12-5 16 0z'/><circle cx='215' cy='118' r='13'/><circle cx='210' cy='115' r='1.5'/><circle cx='220' cy='115' r='1.5'/><path d='M209 122c3 3 9 3 12 0'/><path d='M32 195h26l-4 18H36l-4-18z'/><path d='M39 195v-4a6 6 0 0 1 12 0v4'/><path d='M115 190l18 9-18 9 4-9-4-9z'/><path d='M188 184a12 12 0 1 1-9 18l-7 2 2-7a12 12 0 0 1 14-13z'/><path d='M242 190l7-7a5 5 0 0 1 7 7l-11 11a3 3 0 0 1-4-4l9-9'/><circle cx='60' cy='252' r='10'/><path d='M60 246v6l4 2'/><path d='M145 244l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1 3-6z'/><path d='M218 242h20v16l-6-4h-14v-12z'/></svg>`
+)}")`;
+
+const WA_DOODLE_LIGHT_BG = `url("data:image/svg+xml,${encodeURIComponent(
+    `<svg xmlns='http://www.w3.org/2000/svg' width='280' height='280' viewBox='0 0 280 280' fill='none' stroke='%2354656f' stroke-width='1.2' stroke-opacity='0.09' stroke-linecap='round' stroke-linejoin='round'><path d='M28 40c8-10 24-4 22 9-1 9-12 14-20 9l-8 3 3-8c-2-4-1-9 3-13z'/><circle cx='115' cy='46' r='11'/><path d='M110 46l3 3 7-7'/><rect x='185' y='30' width='22' height='32' rx='4'/><line x1='193' y1='57' x2='199' y2='57'/><path d='M248 56c-6-6-6-15 0-21 5 2 9 7 9 13s-4 11-9 8z'/><path d='M55 118l14-14 8 8-14 14-11 3 3-11z'/><path d='M132 108c4-5 12-5 16 0 3 4 2 10-2 14l-14 12-14-12c-4-4-5-10-2-14 4-5 12-5 16 0z'/><circle cx='215' cy='118' r='13'/><circle cx='210' cy='115' r='1.5'/><circle cx='220' cy='115' r='1.5'/><path d='M209 122c3 3 9 3 12 0'/><path d='M32 195h26l-4 18H36l-4-18z'/><path d='M39 195v-4a6 6 0 0 1 12 0v4'/><path d='M115 190l18 9-18 9 4-9-4-9z'/><path d='M188 184a12 12 0 1 1-9 18l-7 2 2-7a12 12 0 0 1 14-13z'/><path d='M242 190l7-7a5 5 0 0 1 7 7l-11 11a3 3 0 0 1-4-4l9-9'/><circle cx='60' cy='252' r='10'/><path d='M60 246v6l4 2'/><path d='M145 244l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1 3-6z'/><path d='M218 242h20v16l-6-4h-14v-12z'/></svg>`
+)}")`;
+
+function WhatsAppLogoIcon({ className = "w-6 h-6" }: { className?: string }) {
+    return (
+        <svg viewBox="0 0 48 48" className={className} aria-hidden="true">
+            <path
+                fill="#25D366"
+                d="M24 4C12.95 4 4 12.95 4 24c0 3.53.92 6.84 2.53 9.72L4 44l10.56-2.48A19.9 19.9 0 0 0 24 44c11.05 0 20-8.95 20-20S35.05 4 24 4z"
+            />
+            <path
+                fill="#FFFFFF"
+                d="M34.26 29.59c-.56-.28-3.32-1.64-3.83-1.82-.51-.19-.89-.28-1.26.28-.38.56-1.45 1.82-1.78 2.2-.33.38-.65.42-1.21.14-.56-.28-2.36-.87-4.5-2.78-1.66-1.48-2.79-3.31-3.12-3.87-.33-.56-.03-.86.25-1.14.25-.25.56-.65.84-.98.28-.33.37-.56.56-.93.19-.38.09-.7-.05-.98-.14-.28-1.26-3.04-1.73-4.16-.45-1.09-.91-.94-1.26-.96-.33-.02-.7-.02-1.07-.02-.38 0-.98.14-1.49.7-.51.56-1.96 1.92-1.96 4.68s2.01 5.42 2.29 5.8c.28.37 3.95 6.03 9.57 8.46 1.34.58 2.38.92 3.19 1.18 1.34.43 2.56.37 3.53.22 1.08-.16 3.32-1.36 3.79-2.67.47-1.31.47-2.43.33-2.67-.14-.24-.52-.38-1.08-.66z"
+            />
+        </svg>
+    );
 }
 
 function getChatFullText(chat: Chat): string {
@@ -174,8 +197,8 @@ function parseMessageBody(rawBody: string = '', rawMediaUrl?: string | null, raw
 
     // 4. If message originated from an ad referral and cleanText is blank, supply descriptive text
     if (referral && !cleanText) {
-        cleanText = referral.headline 
-            ? `📢 Lead de Pauta: ${referral.headline}` 
+        cleanText = referral.headline
+            ? `📢 Lead de Pauta: ${referral.headline}`
             : '📢 Lead originado de Pauta de Meta';
     }
 
@@ -283,15 +306,16 @@ export default function WhatsAppCrmClient() {
         }
     }, [])
 
-    // 🎨 Sistema de Temas Visuales Prémium & Modernos del CRM
-    type CrmThemeId = 'cyber-emerald' | 'midnight-sapphire' | 'deep-slate' | 'amethyst-glass';
-    const [crmTheme, setCrmTheme] = useState<CrmThemeId>('cyber-emerald');
+    // 🎨 Sistema de Temas Visuales: WhatsApp Web Oficial por defecto + Temas CRM
+    type CrmThemeId = 'whatsapp-dark' | 'whatsapp-light' | 'cyber-emerald' | 'midnight-sapphire' | 'deep-slate' | 'amethyst-glass';
+    const [crmTheme, setCrmTheme] = useState<CrmThemeId>('whatsapp-dark');
     const [themeMenuOpen, setThemeMenuOpen] = useState(false);
+    const [isEmojiBarOpen, setIsEmojiBarOpen] = useState(false);
 
     useEffect(() => {
         try {
-            const saved = localStorage.getItem('atomic_crm_theme') as CrmThemeId;
-            if (saved && ['cyber-emerald', 'midnight-sapphire', 'deep-slate', 'amethyst-glass'].includes(saved)) {
+            const saved = localStorage.getItem('atomic_crm_theme_v2') as CrmThemeId;
+            if (saved && ['whatsapp-dark', 'whatsapp-light', 'cyber-emerald', 'midnight-sapphire', 'deep-slate', 'amethyst-glass'].includes(saved)) {
                 setCrmTheme(saved);
             }
         } catch (_) {}
@@ -300,12 +324,92 @@ export default function WhatsAppCrmClient() {
     const handleChangeTheme = (th: CrmThemeId) => {
         setCrmTheme(th);
         try {
-            localStorage.setItem('atomic_crm_theme', th);
+            localStorage.setItem('atomic_crm_theme_v2', th);
         } catch (_) {}
     };
 
     // Diccionario de configuración visual de temas
-    const THEMES_CONFIG = {
+    const THEMES_CONFIG: Record<CrmThemeId, {
+        name: string;
+        tag: string;
+        dot: string;
+        isLight?: boolean;
+        bgRoot: string;
+        headerBg: string;
+        sidebarBg: string;
+        tabsBg: string;
+        tabActive: string;
+        tabInactive: string;
+        searchBg: string;
+        chatCardActive: string;
+        chatCardHover: string;
+        chatMainBg: string;
+        chatHeaderBg: string;
+        messageIn: string;
+        messageOut: string;
+        bubbleOutHex: string;
+        bubbleInHex: string;
+        textPrimary: string;
+        textSecondary: string;
+        rowDivider: string;
+        accentColor: string;
+        inputBarBg: string;
+        inputFieldBg: string;
+    }> = {
+        'whatsapp-dark': {
+            name: 'WhatsApp Oscuro',
+            tag: 'Oficial Web 2026',
+            dot: 'bg-[#00a884]',
+            isLight: false,
+            bgRoot: 'bg-[#111b21]',
+            headerBg: 'bg-[#202c33] border-[#222e35]',
+            sidebarBg: 'bg-[#111b21] border-[#222e35]',
+            tabsBg: 'bg-[#111b21] border-[#222e35]',
+            tabActive: 'bg-[#0a332c] text-[#00a884] font-semibold',
+            tabInactive: 'bg-[#202c33] text-[#8696a0] hover:text-[#e9edef] hover:bg-[#2a3942]',
+            searchBg: 'bg-[#202c33] border-transparent focus-within:bg-[#202c33]',
+            chatCardActive: 'bg-[#2a3942]',
+            chatCardHover: 'hover:bg-[#202c33]',
+            chatMainBg: 'bg-[#0b141a]',
+            chatHeaderBg: 'bg-[#202c33] border-[#222e35]',
+            messageIn: 'bg-[#202c33] text-[#e9edef] shadow-[0_1px_0.5px_rgba(11,20,26,0.2)]',
+            messageOut: 'bg-[#005c4b] text-[#e9edef] shadow-[0_1px_0.5px_rgba(11,20,26,0.2)]',
+            bubbleOutHex: '#005c4b',
+            bubbleInHex: '#202c33',
+            textPrimary: 'text-[#e9edef]',
+            textSecondary: 'text-[#8696a0]',
+            rowDivider: 'border-[#222e35]',
+            accentColor: '#00a884',
+            inputBarBg: 'bg-[#202c33] border-[#222e35]',
+            inputFieldBg: 'bg-[#2a3942] text-[#e9edef] placeholder-[#8696a0]'
+        },
+        'whatsapp-light': {
+            name: 'WhatsApp Claro',
+            tag: 'Clásico Beige / Blanco',
+            dot: 'bg-[#25d366]',
+            isLight: true,
+            bgRoot: 'bg-[#f0f2f5]',
+            headerBg: 'bg-[#f0f2f5] border-[#d1d7db]',
+            sidebarBg: 'bg-white border-[#e9edef]',
+            tabsBg: 'bg-white border-[#e9edef]',
+            tabActive: 'bg-[#e7fce3] text-[#008069] font-semibold',
+            tabInactive: 'bg-[#f0f2f5] text-[#54656f] hover:bg-[#e9edef] hover:text-[#111b21]',
+            searchBg: 'bg-[#f0f2f5] border-transparent focus-within:bg-[#f0f2f5]',
+            chatCardActive: 'bg-[#f0f2f5]',
+            chatCardHover: 'hover:bg-[#f5f6f6]',
+            chatMainBg: 'bg-[#efeae2]',
+            chatHeaderBg: 'bg-[#f0f2f5] border-[#d1d7db]',
+            messageIn: 'bg-white text-[#111b21] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]',
+            messageOut: 'bg-[#d9fdd3] text-[#111b21] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]',
+            bubbleOutHex: '#d9fdd3',
+            bubbleInHex: '#ffffff',
+            textPrimary: 'text-[#111b21]',
+            textSecondary: 'text-[#667781]',
+            rowDivider: 'border-[#e9edef]',
+            accentColor: '#008069',
+            inputBarBg: 'bg-[#f0f2f5] border-[#d1d7db]',
+            inputFieldBg: 'bg-white text-[#111b21] placeholder-[#667781]'
+        },
         'cyber-emerald': {
             name: 'Cyber Emerald',
             tag: 'Moda Neo-Tech',
@@ -317,14 +421,20 @@ export default function WhatsAppCrmClient() {
             tabActive: 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black shadow-lg shadow-emerald-500/25',
             tabInactive: 'bg-slate-900/60 text-slate-300 hover:text-white hover:bg-slate-800/80 border border-slate-800/60',
             searchBg: 'bg-slate-900/70 border-slate-800 focus-within:border-emerald-500/50',
-            chatCardActive: 'bg-gradient-to-r from-emerald-950/40 via-teal-950/20 to-slate-900/60 border-l-4 border-l-emerald-400 border-b-slate-800/40 shadow-sm',
+            chatCardActive: 'bg-[#10232c]',
             chatCardHover: 'hover:bg-slate-900/50',
             chatMainBg: 'bg-[#060b10]',
             chatHeaderBg: 'bg-[#0b151f]/95 border-emerald-500/15 shadow-sm',
-            messageIn: 'bg-[#0e1b26]/90 border border-emerald-500/15 text-slate-100 shadow-sm',
-            messageOut: 'bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-md shadow-emerald-950/40',
+            messageIn: 'bg-[#0e1b26] text-[#e9edef] shadow-sm',
+            messageOut: 'bg-[#005c4b] text-[#e9edef] shadow-md',
+            bubbleOutHex: '#005c4b',
+            bubbleInHex: '#0e1b26',
+            textPrimary: 'text-slate-100',
+            textSecondary: 'text-slate-400',
+            rowDivider: 'border-slate-800/60',
             accentColor: '#10b981',
-            inputBarBg: 'bg-[#0b151f]/95 border-emerald-500/15'
+            inputBarBg: 'bg-[#0b151f]/95 border-emerald-500/15',
+            inputFieldBg: 'bg-slate-900/90 text-white placeholder-slate-400'
         },
         'midnight-sapphire': {
             name: 'Midnight Sapphire',
@@ -337,14 +447,20 @@ export default function WhatsAppCrmClient() {
             tabActive: 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black shadow-lg shadow-cyan-500/25',
             tabInactive: 'bg-slate-900/60 text-slate-300 hover:text-white hover:bg-slate-800/80 border border-slate-800/60',
             searchBg: 'bg-slate-900/70 border-slate-800 focus-within:border-cyan-500/50',
-            chatCardActive: 'bg-gradient-to-r from-cyan-950/40 via-blue-950/20 to-slate-900/60 border-l-4 border-l-cyan-400 border-b-slate-800/40 shadow-sm',
+            chatCardActive: 'bg-[#0f223d]',
             chatCardHover: 'hover:bg-slate-900/50',
             chatMainBg: 'bg-[#050b16]',
             chatHeaderBg: 'bg-[#081326]/95 border-cyan-500/20 shadow-sm',
-            messageIn: 'bg-[#0c1b33]/90 border border-cyan-500/15 text-slate-100 shadow-sm',
-            messageOut: 'bg-gradient-to-br from-cyan-600 to-blue-700 text-white shadow-md shadow-blue-950/40',
+            messageIn: 'bg-[#0c1b33] text-[#e9edef] shadow-sm',
+            messageOut: 'bg-[#0e4f70] text-[#e9edef] shadow-md',
+            bubbleOutHex: '#0e4f70',
+            bubbleInHex: '#0c1b33',
+            textPrimary: 'text-slate-100',
+            textSecondary: 'text-slate-400',
+            rowDivider: 'border-slate-800/60',
             accentColor: '#06b6d4',
-            inputBarBg: 'bg-[#081326]/95 border-cyan-500/20'
+            inputBarBg: 'bg-[#081326]/95 border-cyan-500/20',
+            inputFieldBg: 'bg-slate-900/90 text-white placeholder-slate-400'
         },
         'deep-slate': {
             name: 'Obsidian Minimal',
@@ -357,14 +473,20 @@ export default function WhatsAppCrmClient() {
             tabActive: 'bg-slate-100 text-slate-950 font-black shadow-md',
             tabInactive: 'bg-slate-900/60 text-slate-300 hover:text-white hover:bg-slate-800/80 border border-slate-800/60',
             searchBg: 'bg-slate-900/70 border-slate-800 focus-within:border-slate-500',
-            chatCardActive: 'bg-slate-800/60 border-l-4 border-l-slate-200 border-b-slate-800 shadow-sm',
+            chatCardActive: 'bg-[#1f242c]',
             chatCardHover: 'hover:bg-slate-800/30',
             chatMainBg: 'bg-[#090b0e]',
             chatHeaderBg: 'bg-[#111419]/95 border-slate-800 shadow-sm',
-            messageIn: 'bg-[#161a20]/90 border border-slate-800 text-slate-100 shadow-sm',
-            messageOut: 'bg-gradient-to-br from-slate-700 to-slate-800 text-white shadow-md',
+            messageIn: 'bg-[#161a20] text-[#e9edef] shadow-sm',
+            messageOut: 'bg-[#2b333f] text-[#e9edef] shadow-md',
+            bubbleOutHex: '#2b333f',
+            bubbleInHex: '#161a20',
+            textPrimary: 'text-slate-100',
+            textSecondary: 'text-slate-400',
+            rowDivider: 'border-slate-800/60',
             accentColor: '#cbd5e1',
-            inputBarBg: 'bg-[#111419]/95 border-slate-800'
+            inputBarBg: 'bg-[#111419]/95 border-slate-800',
+            inputFieldBg: 'bg-slate-900/90 text-white placeholder-slate-400'
         },
         'amethyst-glass': {
             name: 'Neon Amethyst',
@@ -377,18 +499,25 @@ export default function WhatsAppCrmClient() {
             tabActive: 'bg-gradient-to-r from-fuchsia-500 to-indigo-600 text-white font-black shadow-lg shadow-fuchsia-500/25',
             tabInactive: 'bg-slate-900/60 text-slate-300 hover:text-white hover:bg-slate-800/80 border border-slate-800/60',
             searchBg: 'bg-slate-900/70 border-slate-800 focus-within:border-fuchsia-500/50',
-            chatCardActive: 'bg-gradient-to-r from-fuchsia-950/40 via-purple-950/20 to-slate-900/60 border-l-4 border-l-fuchsia-400 border-b-slate-800/40 shadow-sm',
+            chatCardActive: 'bg-[#22133e]',
             chatCardHover: 'hover:bg-slate-900/50',
             chatMainBg: 'bg-[#090611]',
             chatHeaderBg: 'bg-[#120a22]/95 border-fuchsia-500/20 shadow-sm',
-            messageIn: 'bg-[#1a0f30]/90 border border-fuchsia-500/15 text-slate-100 shadow-sm',
-            messageOut: 'bg-gradient-to-br from-fuchsia-600 to-purple-700 text-white shadow-md shadow-purple-950/40',
+            messageIn: 'bg-[#1a0f30] text-[#e9edef] shadow-sm',
+            messageOut: 'bg-[#581c87] text-[#e9edef] shadow-md',
+            bubbleOutHex: '#581c87',
+            bubbleInHex: '#1a0f30',
+            textPrimary: 'text-slate-100',
+            textSecondary: 'text-slate-400',
+            rowDivider: 'border-slate-800/60',
             accentColor: '#d946ef',
-            inputBarBg: 'bg-[#120a22]/95 border-fuchsia-500/20'
+            inputBarBg: 'bg-[#120a22]/95 border-fuchsia-500/20',
+            inputFieldBg: 'bg-slate-900/90 text-white placeholder-slate-400'
         }
     };
 
-    const currentTheme = THEMES_CONFIG[crmTheme] || THEMES_CONFIG['cyber-emerald'];
+    const currentTheme = THEMES_CONFIG[crmTheme] || THEMES_CONFIG['whatsapp-dark'];
+    const isLightTheme = Boolean(currentTheme.isLight);
 
     // Papelera State
     const [trashCount, setTrashCount] = useState<number>(0);
@@ -699,11 +828,11 @@ export default function WhatsAppCrmClient() {
     const userNameUpper = ((session?.user as any)?.name || '').toUpperCase()
     const userEmailUpper = ((session?.user as any)?.email || '').toUpperCase()
     const isKevin = userNameUpper.includes('KEVIN') || userNameUpper.includes('KEVON') || userEmailUpper.includes('KEVIN') || userEmailUpper.includes('KEVON')
-    const canAssignLeads = 
+    const canAssignLeads =
         isKevin ||
-        userRole.includes('ADMIN') || 
-        userRole.includes('SUPERVISOR') || 
-        userRole.includes('COORDINATOR') || 
+        userRole.includes('ADMIN') ||
+        userRole.includes('SUPERVISOR') ||
+        userRole.includes('COORDINATOR') ||
         userRole.includes('COORDINADOR') ||
         userRole.includes('JEFE_TECNICO') ||
         userRole.includes('JEFE TECNICO') ||
@@ -740,7 +869,7 @@ export default function WhatsAppCrmClient() {
     const [activeSettingsTab, setActiveSettingsTab] = useState<'profile' | 'credentials' | 'catalog' | 'manual'>('credentials')
     const [settingsSaving, setSettingsSaving] = useState(false)
     const [settingsMessage, setSettingsMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
-    
+
     // WhatsApp Commerce & Catalog State
     const [catalogSettings, setCatalogSettings] = useState<{
         isCatalogVisible: boolean;
@@ -896,18 +1025,18 @@ export default function WhatsAppCrmClient() {
             const res = await fetch('/api/whatsapp/profile/sync', { method: 'POST' });
             const data = await res.json();
             if (res.ok && data.success) {
-                setSettingsMessage({ 
-                    type: 'success', 
-                    text: data.message || '¡Foto de perfil sincronizada con éxito en Meta WhatsApp Cloud API!' 
+                setSettingsMessage({
+                    type: 'success',
+                    text: data.message || '¡Foto de perfil sincronizada con éxito en Meta WhatsApp Cloud API!'
                 });
                 setAvatarKey(Date.now());
                 if (data.updatedProfile?.profile_picture_url) {
                     setProfileData(prev => ({ ...prev, profile_picture_url: data.updatedProfile.profile_picture_url }));
                 }
             } else {
-                setSettingsMessage({ 
-                    type: 'error', 
-                    text: data.error || 'Error al sincronizar foto con Meta Cloud API' 
+                setSettingsMessage({
+                    type: 'error',
+                    text: data.error || 'Error al sincronizar foto con Meta Cloud API'
                 });
             }
         } catch (err: any) {
@@ -959,7 +1088,7 @@ export default function WhatsAppCrmClient() {
 
                         const lastMsg = rawMessages[0];
                         const lastParsed = lastMsg ? parseMessageBody(lastMsg.body, lastMsg.mediaUrl, lastMsg.type) : null;
-                        
+
                         let lastMessageDisplay = 'Sin mensajes';
                         if (lastParsed) {
                             if (lastParsed.type === 'image') lastMessageDisplay = '📷 Imagen' + (lastParsed.cleanText ? ': ' + lastParsed.cleanText : '');
@@ -1079,7 +1208,7 @@ export default function WhatsAppCrmClient() {
         };
 
         const currentMsgCount = activeChat?.messages?.length || 0;
-        
+
         // If message count increased
         if (currentMsgCount > prevMessagesCountRef.current) {
             // Check if last message was inbound from client
@@ -1281,10 +1410,10 @@ export default function WhatsAppCrmClient() {
         const nextActive = !currentActive;
 
         // Actualización optimista inmediata en la UI
-        setChats(prev => prev.map(c => c.id === activeChat.id ? { 
-            ...c, 
-            isBotActive: nextActive, 
-            status: nextActive ? 'OPEN' : 'MANUAL' 
+        setChats(prev => prev.map(c => c.id === activeChat.id ? {
+            ...c,
+            isBotActive: nextActive,
+            status: nextActive ? 'OPEN' : 'MANUAL'
         } : c));
 
         try {
@@ -1300,20 +1429,20 @@ export default function WhatsAppCrmClient() {
             const data = await res.json();
             if (!res.ok) {
                 // Revertir en caso de error
-                setChats(prev => prev.map(c => c.id === activeChat.id ? { 
-                    ...c, 
-                    isBotActive: currentActive, 
-                    status: currentActive ? 'OPEN' : 'MANUAL' 
+                setChats(prev => prev.map(c => c.id === activeChat.id ? {
+                    ...c,
+                    isBotActive: currentActive,
+                    status: currentActive ? 'OPEN' : 'MANUAL'
                 } : c));
                 alert('⚠️ Error: ' + (data.error || 'No se pudo cambiar el estado del bot.'));
             }
         } catch (err) {
             console.error('Error toggling bot:', err);
             // Revertir
-            setChats(prev => prev.map(c => c.id === activeChat.id ? { 
-                ...c, 
-                isBotActive: currentActive, 
-                status: currentActive ? 'OPEN' : 'MANUAL' 
+            setChats(prev => prev.map(c => c.id === activeChat.id ? {
+                ...c,
+                isBotActive: currentActive,
+                status: currentActive ? 'OPEN' : 'MANUAL'
             } : c));
             alert('⚠️ Error de conexión al cambiar estado del bot.');
         } finally {
@@ -1377,9 +1506,9 @@ export default function WhatsAppCrmClient() {
             } else {
                 const errorData = await res.json();
                 const errText = errorData.error || '';
-                const isAuthError = errText.toLowerCase().includes('authenticat') || 
-                                    errText.toLowerCase().includes('token') || 
-                                    errText.toLowerCase().includes('oauth') || 
+                const isAuthError = errText.toLowerCase().includes('authenticat') ||
+                                    errText.toLowerCase().includes('token') ||
+                                    errText.toLowerCase().includes('oauth') ||
                                     errText.toLowerCase().includes('190') ||
                                     errText.toLowerCase().includes('expired');
 
@@ -1419,8 +1548,8 @@ export default function WhatsAppCrmClient() {
 
             const data = await res.json();
             if (res.ok) {
-                const feedbackText = data.metaPictureMessage 
-                    ? `¡Perfil y foto guardados! ${data.metaPictureMessage}` 
+                const feedbackText = data.metaPictureMessage
+                    ? `¡Perfil y foto guardados! ${data.metaPictureMessage}`
                     : '¡Perfil de WhatsApp actualizado exitosamente en Meta!';
                 setSettingsMessage({ type: 'success', text: feedbackText });
                 setAvatarKey(Date.now());
@@ -1573,7 +1702,7 @@ export default function WhatsAppCrmClient() {
 
         const failedMsg: any = activeChat.failedMessage;
         const meta = failedMsg?.retryMeta;
-        
+
         if (meta && typeof meta.remainingSec === 'number' && meta.remainingSec > 0) {
             setAutoRetryCountdown(meta.remainingSec);
         } else {
@@ -1755,7 +1884,7 @@ export default function WhatsAppCrmClient() {
         const q = searchQuery.toLowerCase().trim()
         if (!q) return true
         return (
-            c.name.toLowerCase().includes(q) || 
+            c.name.toLowerCase().includes(q) ||
             c.phone.includes(q) ||
             (c.ownerName && c.ownerName.toLowerCase().includes(q)) ||
             (c.adHeadline && c.adHeadline.toLowerCase().includes(q)) ||
@@ -1802,47 +1931,54 @@ export default function WhatsAppCrmClient() {
     }, [activeChatId, previewImageUrl, filteredChats, handleBackToChats, handleSelectChat]);
 
     return (
-        <div className={`w-full h-[calc(100vh-4rem)] ${currentTheme.bgRoot} text-slate-100 flex flex-col font-sans transition-colors duration-300 relative selection:bg-emerald-500 selection:text-white`}>
-            
-            {/* Header Superior del CRM (Ultra Moderno, Glassmorphism, Theme Picker) */}
-            <div className={`px-4 md:px-6 py-3 border-b ${currentTheme.headerBg} backdrop-blur-xl flex justify-between items-center shrink-0 z-20 shadow-sm`}>
-                <div className="flex items-center gap-3.5">
-                    <div className="relative flex items-center justify-center">
-                        <div className={`w-3 h-3 rounded-full ${currentTheme.dot} shadow-[0_0_12px_rgba(16,185,129,0.6)] animate-pulse`} />
-                    </div>
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <h1 className="text-base md:text-lg font-black text-white flex items-center gap-2 tracking-tight">
-                                ATOMIC CRM <span className="text-[10px] font-mono font-black bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 rounded-full">CLOUD 2026</span>
-                            </h1>
-                            <span className="hidden lg:inline-flex text-[10px] text-slate-400 font-mono items-center gap-1 bg-slate-900/60 px-2 py-0.5 rounded-lg border border-slate-800">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> Meta API Oficial
-                            </span>
-                        </div>
-                        <p className="text-[11px] text-slate-400 hidden sm:block">Centro de Inteligencia Comercial, Pautas Meta & Mensajería Directa</p>
+        <div className={`w-full h-[calc(100vh-4rem)] ${currentTheme.bgRoot} ${currentTheme.textPrimary} flex flex-col font-sans transition-colors duration-200 relative overflow-hidden selection:bg-[#00a884] selection:text-[#111b21]`}>
+
+            {/* Header Superior Estilo WhatsApp Desktop + Herramientas CRM */}
+            <div className={`px-3 sm:px-4 h-[52px] border-b ${currentTheme.headerBg} flex justify-between items-center shrink-0 z-20`}>
+                <div className="flex items-center gap-2.5 min-w-0">
+                    <WhatsAppLogoIcon className="w-7 h-7 shrink-0" />
+                    <div className="flex items-center gap-2 min-w-0">
+                        <h1 className={`text-[15px] font-semibold tracking-tight truncate ${currentTheme.textPrimary}`}>
+                            WhatsApp
+                        </h1>
+                        <span className={`hidden sm:inline-flex items-center gap-1.5 text-[10px] font-semibold px-2 py-0.5 rounded-full ${isLightTheme ? 'bg-[#e7fce3] text-[#008069]' : 'bg-[#00a884]/15 text-[#00a884]'}`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${currentTheme.dot}`} />
+                            ATOMIC Business
+                        </span>
+                        <span className={`hidden xl:inline-flex text-[10px] ${currentTheme.textSecondary} items-center gap-1`}>
+                            · Meta Cloud API
+                        </span>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2 md:gap-3">
-                    {/* Selector de Temas Visuales Prémium */}
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                    {/* Selector de Temas Visuales (WhatsApp Oscuro / Claro + Temas CRM) */}
                     <div className="relative">
                         <button
                             type="button"
                             onClick={() => setThemeMenuOpen(!themeMenuOpen)}
-                            className="px-3 py-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700/60 text-slate-200 transition-all text-xs flex items-center gap-1.5 font-bold cursor-pointer shadow-sm"
-                            title="Cambiar tema visual del CRM"
+                            className={`h-8 px-2.5 rounded-full border transition-all text-xs flex items-center gap-1.5 font-medium cursor-pointer ${
+                                isLightTheme
+                                    ? 'bg-white hover:bg-[#e9edef] border-[#d1d7db] text-[#54656f]'
+                                    : 'bg-[#2a3942] hover:bg-[#374751] border-[#374751] text-[#d1d7db]'
+                            }`}
+                            title="Cambiar tema visual"
                         >
-                            <Palette size={14} className="text-emerald-400" />
-                            <span className="hidden sm:inline font-mono">{currentTheme.name}</span>
+                            <Palette size={13} className="text-[#00a884]" />
+                            <span className="hidden md:inline">{currentTheme.name}</span>
                         </button>
 
                         {themeMenuOpen && (
-                            <div 
-                                className="absolute right-0 top-11 z-50 w-64 bg-slate-950/95 border border-slate-800/80 backdrop-blur-xl rounded-2xl p-2.5 shadow-2xl space-y-1.5 animate-in fade-in slide-in-from-top-2 duration-150"
+                            <div
+                                className={`absolute right-0 top-10 z-50 w-64 border rounded-xl p-2 shadow-2xl space-y-1 animate-in fade-in slide-in-from-top-2 duration-150 ${
+                                    isLightTheme ? 'bg-white border-[#d1d7db]' : 'bg-[#233138] border-[#374751]'
+                                }`}
                             >
-                                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1 border-b border-slate-800/60 flex items-center justify-between">
-                                    <span>Temas Visuales CRM</span>
-                                    <span className="text-[9px] text-emerald-400">Guardado Auto</span>
+                                <div className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-1 border-b flex items-center justify-between ${
+                                    isLightTheme ? 'text-[#54656f] border-[#e9edef]' : 'text-[#8696a0] border-[#2a3942]'
+                                }`}>
+                                    <span>Apariencia WhatsApp</span>
+                                    <span className="text-[9px] text-[#00a884]">Guardado</span>
                                 </div>
                                 {Object.entries(THEMES_CONFIG).map(([thId, th]) => (
                                     <button
@@ -1852,20 +1988,20 @@ export default function WhatsAppCrmClient() {
                                             handleChangeTheme(thId as CrmThemeId);
                                             setThemeMenuOpen(false);
                                         }}
-                                        className={`w-full p-2 rounded-xl text-left transition-all flex items-center justify-between text-xs cursor-pointer ${
-                                            crmTheme === thId 
-                                                ? 'bg-slate-800/90 text-white font-bold border border-slate-700' 
-                                                : 'text-slate-400 hover:text-white hover:bg-slate-900/80'
+                                        className={`w-full p-2 rounded-lg text-left transition-all flex items-center justify-between text-xs cursor-pointer ${
+                                            crmTheme === thId
+                                                ? (isLightTheme ? 'bg-[#f0f2f5] text-[#111b21] font-semibold' : 'bg-[#2a3942] text-[#e9edef] font-semibold')
+                                                : (isLightTheme ? 'text-[#54656f] hover:bg-[#f5f6f6]' : 'text-[#8696a0] hover:text-[#e9edef] hover:bg-[#2a3942]/60')
                                         }`}
                                     >
                                         <div className="flex items-center gap-2.5">
-                                            <span className={`w-3 h-3 rounded-full ${th.dot} shrink-0 shadow-sm`} />
+                                            <span className={`w-3 h-3 rounded-full ${th.dot} shrink-0`} />
                                             <div>
-                                                <div className="text-xs text-white leading-tight">{th.name}</div>
-                                                <div className="text-[10px] text-slate-400 leading-tight">{th.tag}</div>
+                                                <div className={`text-xs leading-tight ${isLightTheme ? 'text-[#111b21]' : 'text-[#e9edef]'}`}>{th.name}</div>
+                                                <div className={`text-[10px] leading-tight ${isLightTheme ? 'text-[#667781]' : 'text-[#8696a0]'}`}>{th.tag}</div>
                                             </div>
                                         </div>
-                                        {crmTheme === thId && <Check size={14} className="text-emerald-400" />}
+                                        {crmTheme === thId && <Check size={14} className="text-[#00a884]" />}
                                     </button>
                                 ))}
                             </div>
@@ -1875,49 +2011,65 @@ export default function WhatsAppCrmClient() {
                     {/* Bot Agente Karen: Jefa de Mensajería & Auditoría */}
                     <button
                         onClick={() => { setKarenModalOpen(true); fetchKarenAudit(); }}
-                        className="py-1 px-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-cyan-800/60 text-white transition-all text-xs flex items-center gap-2 cursor-pointer shadow-sm hover:border-cyan-500/60"
+                        className={`h-8 py-0.5 px-2.5 rounded-full border transition-all text-xs flex items-center gap-2 cursor-pointer ${
+                            isLightTheme
+                                ? 'bg-white hover:bg-[#e9edef] border-[#d1d7db] text-[#111b21]'
+                                : 'bg-[#2a3942] hover:bg-[#374751] border-[#374751] text-[#e9edef]'
+                        }`}
                         title="Abrir Auditoría & Control de Karen (Jefa de Mensajería)"
                     >
                         <div className="relative">
-                            <img 
-                                src={`/api/karen-avatar?t=${avatarKey}`} 
-                                alt="Karen" 
-                                className="w-7 h-7 rounded-full object-cover border border-cyan-400/80 shadow" 
+                            <img
+                                src={`/api/karen-avatar?t=${avatarKey}`}
+                                alt="Karen"
+                                className="w-6 h-6 rounded-full object-cover"
                             />
-                            <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-[#111b21] ${
+                            <div className={`absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 ${isLightTheme ? 'border-white' : 'border-[#202c33]'} ${
                                 karenAuditData?.karen?.mode === 'MANUAL' ? 'bg-rose-500' :
-                                karenAuditData?.karen?.mode === 'AWAITING_APPROVAL' ? 'bg-amber-400' : 'bg-emerald-400'
+                                karenAuditData?.karen?.mode === 'AWAITING_APPROVAL' ? 'bg-amber-400' : 'bg-[#25d366]'
                             }`} />
                         </div>
                         <div className="text-left hidden sm:block">
-                            <span className="font-bold text-xs text-cyan-300 block leading-tight">Karen</span>
-                            <span className="text-[9px] font-mono text-slate-400 block -mt-0.5">Jefa Mensajería</span>
+                            <span className="font-semibold text-xs block leading-tight">Karen</span>
                         </div>
                     </button>
 
                     {/* Botón Envío Masivo & IA Meta */}
                     <button
                         onClick={() => { setIsBroadcastModalOpen(true); fetchBroadcastData(); }}
-                        className="py-1.5 px-3 rounded-xl bg-gradient-to-r from-blue-600/30 to-cyan-600/30 hover:from-blue-600/50 hover:to-cyan-600/50 border border-cyan-500/40 text-cyan-200 hover:text-white transition-all text-xs flex items-center gap-1.5 cursor-pointer shadow-sm font-bold"
+                        className={`h-8 px-2.5 sm:px-3 rounded-full border transition-all text-xs flex items-center gap-1.5 cursor-pointer font-medium ${
+                            isLightTheme
+                                ? 'bg-white hover:bg-[#e9edef] border-[#d1d7db] text-[#008069]'
+                                : 'bg-[#2a3942] hover:bg-[#374751] border-[#374751] text-[#00a884]'
+                        }`}
                         title="Envío Masivo de Mensajes & Creador de Plantillas Aprobables por Meta"
                     >
-                        <Megaphone size={14} className="text-cyan-400" />
-                        <span className="hidden md:inline">Envío Masivo & IA Meta</span>
+                        <Megaphone size={14} />
+                        <span className="hidden lg:inline">Difusión</span>
                     </button>
 
                     <button
                         onClick={() => setIsSettingsModalOpen(true)}
-                        className="px-3 py-1.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-cyan-300 transition-colors text-xs flex items-center gap-1.5 font-bold cursor-pointer"
+                        className={`h-8 px-2.5 rounded-full border transition-colors text-xs flex items-center gap-1.5 font-medium cursor-pointer ${
+                            isLightTheme
+                                ? 'bg-white hover:bg-[#e9edef] border-[#d1d7db] text-[#54656f]'
+                                : 'bg-[#2a3942] hover:bg-[#374751] border-[#374751] text-[#aebac1] hover:text-white'
+                        }`}
+                        title="Ajustes & Token Meta Cloud API"
                     >
-                        <Settings size={14} /> <span className="hidden sm:inline">Ajustes & Token</span>
+                        <Settings size={14} /> <span className="hidden xl:inline">Ajustes</span>
                     </button>
 
                     <button
                         onClick={fetchConversations}
-                        className="p-2 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-white transition-colors text-xs flex items-center gap-1 font-mono cursor-pointer"
-                        title="Actualizar bandeja"
+                        className={`w-8 h-8 rounded-full border flex items-center justify-center transition-colors cursor-pointer ${
+                            isLightTheme
+                                ? 'bg-white hover:bg-[#e9edef] border-[#d1d7db] text-[#54656f]'
+                                : 'bg-[#2a3942] hover:bg-[#374751] border-[#374751] text-[#aebac1] hover:text-white'
+                        }`}
+                        title="Actualizar chats"
                     >
-                        <RefreshCw size={14} className={loading ? 'animate-spin text-emerald-400' : ''} /> <span className="hidden sm:inline">Actualizar</span>
+                        <RefreshCw size={14} className={loading ? 'animate-spin text-[#00a884]' : ''} />
                     </button>
 
                     {activeChat && (
@@ -1925,9 +2077,10 @@ export default function WhatsAppCrmClient() {
                             href={`https://wa.me/${activeChat.phone.replace(/\D/g, '')}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs px-3.5 py-1.5 rounded-xl transition-all shadow-md shadow-emerald-500/20 flex items-center gap-1.5 cursor-pointer"
+                            className="h-8 bg-[#00a884] hover:bg-[#06cf9c] text-[#111b21] font-semibold text-xs px-3 rounded-full transition-colors flex items-center gap-1.5 cursor-pointer"
+                            title="Abrir este número en WhatsApp Web oficial"
                         >
-                            <ExternalLink size={14} /> <span className="hidden md:inline">WhatsApp Web</span>
+                            <ExternalLink size={13} /> <span className="hidden md:inline">wa.me</span>
                         </a>
                     )}
                 </div>
@@ -1935,72 +2088,83 @@ export default function WhatsAppCrmClient() {
 
             {/* Main Chat Interface */}
             <div className="flex-1 flex overflow-hidden relative">
-                
-                {/* Left Sidebar: Chat List */}
-                <div className={`w-full md:w-[380px] lg:w-[420px] xl:w-[450px] border-r ${currentTheme.sidebarBg} flex flex-col shrink-0 transition-colors duration-200 backdrop-blur-md ${activeChatId ? 'hidden md:flex' : 'flex'}`}>
-                    
-                    {/* CRM View Tabs: Segmented Clean Bar */}
-                    <div className={`p-2.5 ${currentTheme.tabsBg} border-b border-slate-800/60 backdrop-blur-md`}>
-                        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+
+                {/* Left Sidebar: Chat List (WhatsApp Web Layout) */}
+                <div className={`w-full md:w-[375px] lg:w-[410px] xl:w-[430px] border-r ${currentTheme.sidebarBg} flex flex-col shrink-0 transition-colors duration-200 ${activeChatId ? 'hidden md:flex' : 'flex'}`}>
+
+                    {/* WhatsApp Sidebar Title Row */}
+                    <div className="px-4 pt-3 pb-1.5 flex items-center justify-between">
+                        <h2 className={`text-[21px] font-bold tracking-tight ${currentTheme.textPrimary}`}>
+                            Chats
+                        </h2>
+                        <span className={`text-[11px] font-medium ${currentTheme.textSecondary}`}>
+                            {filteredChats.length} {filteredChats.length === 1 ? 'chat' : 'chats'}
+                        </span>
+                    </div>
+
+                    {/* Search Bar Estilo WhatsApp Web (Pill Rectangular #202c33 / #f0f2f5) */}
+                    <div className="px-3 py-1.5">
+                        <div className={`relative flex items-center rounded-lg h-[36px] ${currentTheme.searchBg}`}>
+                            <Search size={15} className={`absolute left-3.5 ${currentTheme.textSecondary} pointer-events-none`} />
+                            <input
+                                ref={searchInputRef}
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder={
+                                    activeCrmTab === 'UNANSWERED' ? "Buscar en sin responder..." :
+                                    activeCrmTab === 'HOT_LEADS' ? "Buscar en alta intención..." :
+                                    activeCrmTab === 'ABSOLUTELY_ALL' ? "Buscar en toda la base..." :
+                                    activeCrmTab === 'MY_LEADS' ? "Buscar en mis chats..." :
+                                    activeCrmTab === 'PAUTAS' ? "Buscar en pautas Meta..." :
+                                    activeCrmTab === 'FAILED' ? "Buscar en fallos..." :
+                                    activeCrmTab === 'AUTO_REGISTER' ? "Buscar en empleo..." :
+                                    "Buscar un chat o iniciar uno nuevo ( / )"
+                                }
+                                className={`w-full bg-transparent pl-10 pr-12 py-1.5 text-[13px] focus:outline-none ${currentTheme.textPrimary} ${isLightTheme ? 'placeholder-[#667781]' : 'placeholder-[#8696a0]'}`}
+                            />
+                            {searchQuery ? (
+                                <button
+                                    type="button"
+                                    onClick={() => setSearchQuery('')}
+                                    className={`absolute right-2.5 p-1 rounded-full cursor-pointer ${currentTheme.textSecondary} hover:text-[#00a884]`}
+                                    title="Limpiar búsqueda"
+                                >
+                                    <X size={14} />
+                                </button>
+                            ) : (
+                                <kbd className={`absolute right-3 text-[10px] font-mono px-1.5 py-0.5 rounded pointer-events-none ${isLightTheme ? 'bg-white text-[#667781]' : 'bg-[#2a3942] text-[#8696a0]'}`}>
+                                    /
+                                </kbd>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* CRM View Tabs: Cápsulas redondeadas idénticas a los filtros de WhatsApp Web */}
+                    <div className={`px-3 py-1.5 ${currentTheme.tabsBg}`}>
+                        <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none">
                             {/* SIN RESPONDER */}
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('UNANSWERED')}
-                                className={`h-8 px-3 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ${
-                                    activeCrmTab === 'UNANSWERED' 
-                                        ? 'bg-amber-500 text-slate-950 font-black shadow-md shadow-amber-500/25' 
-                                        : unansweredCount > 0 
-                                        ? 'bg-amber-950/60 text-amber-300 border border-amber-600/50 hover:bg-amber-900/60' 
+                                className={`h-7 px-3 rounded-full text-[12px] transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                                    activeCrmTab === 'UNANSWERED'
+                                        ? currentTheme.tabActive
+                                        : unansweredCount > 0
+                                        ? (isLightTheme ? 'bg-amber-100 text-amber-800 font-medium' : 'bg-[#2b2210] text-amber-300 font-medium')
                                         : currentTheme.tabInactive
                                 }`}
                                 title="Mensajes del cliente esperando respuesta urgente"
                             >
-                                <Bell size={13} className={unansweredCount > 0 ? "animate-bounce text-amber-400" : ""} />
-                                <span>Sin Responder</span>
-                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
-                                    activeCrmTab === 'UNANSWERED' ? 'bg-black/30 text-black' : unansweredCount > 0 ? 'bg-amber-500 text-slate-950' : 'bg-slate-800 text-slate-400'
+                                <span>Sin responder</span>
+                                <span className={`text-[10px] px-1.5 rounded-full font-semibold ${
+                                    activeCrmTab === 'UNANSWERED'
+                                        ? (isLightTheme ? 'bg-[#008069] text-white' : 'bg-[#00a884] text-[#111b21]')
+                                        : unansweredCount > 0
+                                        ? 'bg-amber-500 text-black'
+                                        : (isLightTheme ? 'bg-black/10 text-[#54656f]' : 'bg-white/10 text-[#8696a0]')
                                 }`}>
                                     {unansweredCount}
-                                </span>
-                            </button>
-
-                            {/* ALTA INTENCIÓN */}
-                            <button
-                                type="button"
-                                onClick={() => setActiveCrmTab('HOT_LEADS')}
-                                className={`h-8 px-3 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ${
-                                    activeCrmTab === 'HOT_LEADS' 
-                                        ? 'bg-gradient-to-r from-orange-500 to-rose-500 text-white font-black shadow-md shadow-orange-500/25' 
-                                        : hotLeadsCount > 0 
-                                        ? 'bg-orange-950/60 text-orange-300 border border-orange-600/50 hover:bg-orange-900/60' 
-                                        : currentTheme.tabInactive
-                                }`}
-                                title="Clientes con alta intención de compra (precio, proforma, stock o cuenta)"
-                            >
-                                <Flame size={13} className={hotLeadsCount > 0 ? "text-orange-400" : ""} />
-                                <span>Alta Intención 🔥</span>
-                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
-                                    activeCrmTab === 'HOT_LEADS' ? 'bg-black/30 text-white' : hotLeadsCount > 0 ? 'bg-orange-500 text-slate-950' : 'bg-slate-800 text-slate-400'
-                                }`}>
-                                    {hotLeadsCount}
-                                </span>
-                            </button>
-
-                            {/* MIS CHATS */}
-                            <button
-                                type="button"
-                                onClick={() => setActiveCrmTab('MY_LEADS')}
-                                className={`h-8 px-3 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
-                                    activeCrmTab === 'MY_LEADS' ? currentTheme.tabActive : currentTheme.tabInactive
-                                }`}
-                                title="Mis Contactos y asignados"
-                            >
-                                <UserCheck size={13} />
-                                <span>Mis Chats</span>
-                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
-                                    activeCrmTab === 'MY_LEADS' ? 'bg-black/20 text-black' : 'bg-slate-800 text-slate-400'
-                                }`}>
-                                    {myLeadsCount}
                                 </span>
                             </button>
 
@@ -2008,114 +2172,115 @@ export default function WhatsAppCrmClient() {
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('ALL_WHATSAPP')}
-                                className={`h-8 px-3 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                                className={`h-7 px-3 rounded-full text-[12px] transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
                                     activeCrmTab === 'ALL_WHATSAPP' ? currentTheme.tabActive : currentTheme.tabInactive
                                 }`}
                                 title="Todos los chats entrantes"
                             >
-                                <MessageSquare size={13} />
                                 <span>Entrantes</span>
-                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
-                                    activeCrmTab === 'ALL_WHATSAPP' ? 'bg-black/20 text-black' : 'bg-slate-800 text-slate-400'
-                                }`}>
-                                    {allWhatsAppCount}
-                                </span>
+                                <span className={`text-[10px] opacity-80`}>{allWhatsAppCount}</span>
+                            </button>
+
+                            {/* ALTA INTENCIÓN */}
+                            <button
+                                type="button"
+                                onClick={() => setActiveCrmTab('HOT_LEADS')}
+                                className={`h-7 px-3 rounded-full text-[12px] transition-all flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                                    activeCrmTab === 'HOT_LEADS'
+                                        ? currentTheme.tabActive
+                                        : currentTheme.tabInactive
+                                }`}
+                                title="Clientes con alta intención de compra (precio, proforma, stock o cuenta)"
+                            >
+                                <Flame size={12} className={hotLeadsCount > 0 ? "text-orange-400" : ""} />
+                                <span>Alta intención</span>
+                                <span className="text-[10px] opacity-80">{hotLeadsCount}</span>
+                            </button>
+
+                            {/* MIS CHATS */}
+                            <button
+                                type="button"
+                                onClick={() => setActiveCrmTab('MY_LEADS')}
+                                className={`h-7 px-3 rounded-full text-[12px] transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                                    activeCrmTab === 'MY_LEADS' ? currentTheme.tabActive : currentTheme.tabInactive
+                                }`}
+                                title="Mis Contactos y asignados"
+                            >
+                                <span>Mis chats</span>
+                                <span className="text-[10px] opacity-80">{myLeadsCount}</span>
                             </button>
 
                             {/* PAUTAS META */}
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('PAUTAS')}
-                                className={`h-8 px-3 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                                className={`h-7 px-3 rounded-full text-[12px] transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
                                     activeCrmTab === 'PAUTAS' ? currentTheme.tabActive : currentTheme.tabInactive
                                 }`}
                                 title="Leads de Pautas Publicitarias Meta"
                             >
-                                <Megaphone size={13} />
                                 <span>Pautas</span>
-                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
-                                    activeCrmTab === 'PAUTAS' ? 'bg-black/20 text-white' : 'bg-slate-800 text-blue-300'
-                                }`}>
-                                    {pautasCount}
-                                </span>
+                                <span className="text-[10px] opacity-80">{pautasCount}</span>
                             </button>
 
                             {/* TODO ABSOLUTO */}
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('ABSOLUTELY_ALL')}
-                                className={`h-8 px-3 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                                className={`h-7 px-3 rounded-full text-[12px] transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
                                     activeCrmTab === 'ABSOLUTELY_ALL' ? currentTheme.tabActive : currentTheme.tabInactive
                                 }`}
                                 title="Ver absolutamente todos los registros históricos de la base de datos sin filtrar"
                             >
-                                <Globe size={13} />
-                                <span>Todo</span>
-                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
-                                    activeCrmTab === 'ABSOLUTELY_ALL' ? 'bg-black/20 text-black' : 'bg-slate-800 text-slate-400'
-                                }`}>
-                                    {absolutelyAllCount}
-                                </span>
+                                <span>Todos</span>
+                                <span className="text-[10px] opacity-80">{absolutelyAllCount}</span>
                             </button>
 
                             {/* FALLOS */}
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('FAILED')}
-                                className={`h-8 px-3 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
-                                    activeCrmTab === 'FAILED' ? 'bg-gradient-to-r from-rose-600 to-red-600 text-white font-black shadow-md' : failedCount > 0 ? 'bg-rose-950/60 text-rose-300 border border-rose-500/40' : currentTheme.tabInactive
+                                className={`h-7 px-3 rounded-full text-[12px] transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                                    activeCrmTab === 'FAILED' ? 'bg-rose-600 text-white font-semibold' : failedCount > 0 ? 'bg-rose-950/70 text-rose-300' : currentTheme.tabInactive
                                 }`}
                                 title="Chats con mensajes fallidos que necesitan reintento o rescate"
                             >
-                                <AlertCircle size={13} />
+                                <AlertCircle size={12} />
                                 <span>Fallos</span>
-                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
-                                    activeCrmTab === 'FAILED' ? 'bg-black/20 text-white' : failedCount > 0 ? 'bg-rose-600 text-white' : 'bg-slate-800 text-slate-400'
-                                }`}>
-                                    {failedCount}
-                                </span>
+                                <span className="text-[10px] opacity-90">{failedCount}</span>
                             </button>
 
                             {/* PAPELERA */}
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('TRASH')}
-                                className={`h-8 px-3 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
-                                    activeCrmTab === 'TRASH' ? 'bg-gradient-to-r from-red-600 to-rose-700 text-white font-black shadow-md' : trashCount > 0 ? 'bg-red-950/50 text-red-300 border border-red-500/30' : currentTheme.tabInactive
+                                className={`h-7 px-3 rounded-full text-[12px] transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                                    activeCrmTab === 'TRASH' ? 'bg-red-600 text-white font-semibold' : currentTheme.tabInactive
                                 }`}
                                 title="Papelera de reciclaje de chats eliminados"
                             >
-                                <Trash2 size={13} />
+                                <Trash2 size={12} />
                                 <span>Papelera</span>
-                                {trashCount > 0 && (
-                                    <span className="text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold bg-red-600 text-white">
-                                        {trashCount}
-                                    </span>
-                                )}
+                                {trashCount > 0 && <span className="text-[10px] font-semibold">{trashCount}</span>}
                             </button>
 
                             {/* EMPLEO */}
                             <button
                                 type="button"
                                 onClick={() => setActiveCrmTab('AUTO_REGISTER')}
-                                className={`h-8 px-3 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
+                                className={`h-7 px-3 rounded-full text-[12px] transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer ${
                                     activeCrmTab === 'AUTO_REGISTER' ? currentTheme.tabActive : currentTheme.tabInactive
                                 }`}
                                 title="Postulantes a Empleo y Registros"
                             >
-                                <Sparkles size={13} />
                                 <span>Empleo</span>
-                                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
-                                    activeCrmTab === 'AUTO_REGISTER' ? 'bg-black/20 text-black' : 'bg-slate-800 text-amber-400'
-                                }`}>
-                                    {autoRegisterCount}
-                                </span>
+                                <span className="text-[10px] opacity-80">{autoRegisterCount}</span>
                             </button>
                         </div>
                     </div>
 
-                    {/* Filtro por Categoría de Chat y Requerimiento Específico */}
-                    <div className={`px-3 py-2 border-b ${currentTheme.tabsBg} flex gap-1.5 overflow-x-auto shrink-0 scrollbar-none`}>
+                    {/* Filtro por Categoría de Chat (Sub-cápsulas limpias) */}
+                    <div className={`px-3 pb-2 border-b ${currentTheme.rowDivider} ${currentTheme.tabsBg} flex gap-1.5 overflow-x-auto shrink-0 scrollbar-none`}>
                         {([
                             { id: 'all', label: '✦ Todos' },
                             { id: 'residencial', label: '🏠 Residencial' },
@@ -2138,15 +2303,15 @@ export default function WhatsAppCrmClient() {
                                 <button
                                     key={cat.id}
                                     onClick={() => setActiveCategory(cat.id)}
-                                    className={`shrink-0 flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1 rounded-lg transition-all cursor-pointer border ${
+                                    className={`shrink-0 flex items-center gap-1 text-[10.5px] font-medium px-2.5 py-0.5 rounded-full transition-all cursor-pointer ${
                                         activeCategory === cat.id
-                                            ? 'bg-slate-100 text-slate-900 border-transparent shadow-sm'
-                                            : 'bg-slate-900/60 text-slate-400 border-slate-800 hover:text-slate-200 hover:bg-slate-800/50'
+                                            ? currentTheme.tabActive
+                                            : currentTheme.tabInactive
                                     }`}
                                 >
                                     <span>{cat.label}</span>
                                     {count > 0 && (
-                                        <span className={`text-[9px] px-1.5 py-0.2 rounded-full font-mono font-bold ${activeCategory === cat.id ? 'bg-slate-800 text-slate-100' : 'bg-slate-800 text-slate-400'}`}>
+                                        <span className="text-[9.5px] opacity-75 font-mono">
                                             {count}
                                         </span>
                                     )}
@@ -2155,59 +2320,21 @@ export default function WhatsAppCrmClient() {
                         })}
                     </div>
 
-                    {/* Search Bar con Atajo de Teclado [/] y Botón Limpiar */}
-                    <div className="p-2.5 border-b border-slate-800/60 bg-transparent">
-                        <div className="relative flex items-center">
-                            <Search size={14} className="absolute left-3 text-slate-400 pointer-events-none" />
-                            <input 
-                                ref={searchInputRef}
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder={
-                                    activeCrmTab === 'UNANSWERED' ? "Buscar en mensajes sin responder..." :
-                                    activeCrmTab === 'HOT_LEADS' ? "Buscar en leads de alta intención..." :
-                                    activeCrmTab === 'ABSOLUTELY_ALL' ? "Buscar en toda la base..." :
-                                    activeCrmTab === 'MY_LEADS' ? "Buscar en mis contactos..." :
-                                    activeCrmTab === 'PAUTAS' ? "Buscar en leads de pautas..." :
-                                    activeCrmTab === 'FAILED' ? "Buscar en chats con fallos..." :
-                                    activeCrmTab === 'AUTO_REGISTER' ? "Buscar en empleo..." :
-                                    "Buscar por nombre, teléfono o mensaje ( '/' )..."
-                                }
-                                className={`w-full ${currentTheme.searchBg} rounded-xl pl-9 pr-16 py-2 text-xs text-white placeholder-slate-400 focus:outline-none transition-all shadow-inner`}
-                            />
-                            {searchQuery ? (
-                                <button
-                                    type="button"
-                                    onClick={() => setSearchQuery('')}
-                                    className="absolute right-3 text-slate-400 hover:text-white p-0.5 rounded cursor-pointer"
-                                    title="Limpiar búsqueda"
-                                >
-                                    <X size={13} />
-                                </button>
-                            ) : (
-                                <kbd className="absolute right-3 text-[10px] font-mono text-slate-500 bg-slate-800/80 px-1.5 py-0.5 rounded border border-slate-700/60 pointer-events-none">
-                                    /
-                                </kbd>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Chat List Items: Diseño Calmo, Jerárquico y Elegante */}
-                    <div className="flex-1 overflow-y-auto bg-transparent p-2 space-y-1.5 scrollbar-thin">
+                    {/* Chat List Items: Filas planas full-width idénticas a WhatsApp Web */}
+                    <div className="flex-1 overflow-y-auto scrollbar-thin">
                         {loading && chats.length === 0 ? (
-                            <div className="p-8 text-center text-slate-400 text-xs font-mono">Cargando conversaciones...</div>
+                            <div className={`p-8 text-center text-xs ${currentTheme.textSecondary}`}>Cargando chats de WhatsApp...</div>
                         ) : filteredChats.length === 0 ? (
                             <div className="p-8 text-center space-y-2">
-                                <div className="w-10 h-10 rounded-2xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-center mx-auto text-slate-400">
+                                <div className={`w-11 h-11 rounded-full flex items-center justify-center mx-auto ${isLightTheme ? 'bg-[#f0f2f5] text-[#667781]' : 'bg-[#202c33] text-[#8696a0]'}`}>
                                     {activeCrmTab === 'MY_LEADS' ? <UserCheck size={20} /> : <MessageSquare size={20} />}
                                 </div>
-                                <p className="text-xs text-slate-300 font-bold">
-                                    {activeCrmTab === 'MY_LEADS' ? 'No tienes contactos asignados o respondidos aún' : 'No hay conversaciones registradas'}
+                                <p className={`text-xs font-semibold ${currentTheme.textPrimary}`}>
+                                    {activeCrmTab === 'MY_LEADS' ? 'No tienes contactos asignados o respondidos aún' : 'No se encontraron chats'}
                                 </p>
                                 {activeCrmTab === 'MY_LEADS' && (
-                                    <p className="text-[10px] text-slate-400 max-w-[200px] mx-auto">
-                                        Ve a la pestaña <strong>ENTRANTES</strong> para responder o asignarte una conversación.
+                                    <p className={`text-[11px] max-w-[220px] mx-auto ${currentTheme.textSecondary}`}>
+                                        Ve a la pestaña <strong>Entrantes</strong> para responder o asignarte una conversación.
                                     </p>
                                 )}
                             </div>
@@ -2218,42 +2345,33 @@ export default function WhatsAppCrmClient() {
                                 const unanswered = isUnanswered(chat);
                                 const hotLead = hasHighPurchaseIntent(chat);
                                 const botActive = (chat.isBotActive ?? chat.status !== 'MANUAL');
+                                const lastMsg = chat.messages && chat.messages.length > 0 ? chat.messages[chat.messages.length - 1] : null;
+                                const hasBadgeAlert = chat.unread > 0 || unanswered;
 
                                 return (
                                     <button
                                         key={chat.id}
                                         onClick={() => handleSelectChat(chat)}
-                                        className={`w-full p-3 text-left transition-all duration-150 flex items-start gap-3 cursor-pointer relative group rounded-xl border ${
-                                            isSelected 
-                                                ? `${currentTheme.chatCardActive} shadow-md` 
-                                                : chat.hasFailedMessage
-                                                ? 'bg-rose-950/25 hover:bg-rose-950/40 border-rose-900/50'
-                                                : unanswered
-                                                ? 'bg-amber-950/15 hover:bg-slate-800/60 border-amber-900/30'
-                                                : 'hover:bg-slate-800/40 border-slate-800/60 bg-slate-900/40'
+                                        className={`w-full pl-3.5 pr-3 text-left transition-colors duration-100 flex items-center gap-3 cursor-pointer relative group ${
+                                            isSelected
+                                                ? currentTheme.chatCardActive
+                                                : currentTheme.chatCardHover
                                         }`}
                                     >
-                                        {/* Indicador de selección lateral */}
-                                        {isSelected && (
-                                            <div className="absolute left-0 top-2 bottom-2 w-1 bg-gradient-to-b from-emerald-400 to-teal-400 rounded-r shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                                        )}
-
-                                        {/* Avatar con sub-indicador inteligente */}
-                                        <div className="relative shrink-0 mt-0.5">
-                                            <div className={`w-11 h-11 rounded-full flex items-center justify-center font-bold text-sm border overflow-hidden shadow-inner ${
+                                        {/* Avatar Circular WhatsApp (49px x 49px) */}
+                                        <div className="relative shrink-0 py-2.5">
+                                            <div className={`w-12 h-12 rounded-full flex items-center justify-center font-semibold text-base overflow-hidden ${
                                                 chat.hasFailedMessage
-                                                    ? 'bg-rose-950 border-rose-500/60 text-rose-200'
-                                                    : chat.isFromAd
-                                                    ? 'bg-blue-950 border-blue-500/60 text-blue-200'
-                                                    : isSelected
-                                                    ? 'bg-emerald-950 border-emerald-500/60 text-emerald-200'
-                                                    : 'bg-slate-800 border-slate-700/80 text-slate-200'
+                                                    ? 'bg-rose-900/70 text-rose-200'
+                                                    : isLightTheme
+                                                    ? 'bg-[#dfe5e7] text-[#54656f]'
+                                                    : 'bg-[#6a7175]/35 text-[#cfd7da]'
                                             }`}>
                                                 {chat.profilePic ? (
-                                                    <img 
-                                                        src={chat.profilePic} 
-                                                        alt={chat.name} 
-                                                        className="w-full h-full object-cover" 
+                                                    <img
+                                                        src={chat.profilePic}
+                                                        alt={chat.name}
+                                                        className="w-full h-full object-cover"
                                                         onError={(e) => {
                                                             (e.target as HTMLElement).style.display = 'none';
                                                         }}
@@ -2263,87 +2381,92 @@ export default function WhatsAppCrmClient() {
                                                 )}
                                             </div>
 
-                                            {/* Sub-badge de estado sobre avatar */}
+                                            {/* Indicador sutil de estado en la esquina */}
                                             {chat.hasFailedMessage ? (
-                                                <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-rose-600 border border-slate-950 flex items-center justify-center text-[9px] shadow" title="Fallo de Envío">
-                                                    ⚠️
-                                                </span>
-                                            ) : unanswered ? (
-                                                <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-amber-400 border border-slate-950 shadow animate-pulse" title="Esperando respuesta" />
-                                            ) : chat.isFromAd ? (
-                                                <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-blue-600 border border-slate-950 flex items-center justify-center text-[8px] text-white shadow" title="Lead de Pauta">
-                                                    📢
+                                                <span className="absolute bottom-2.5 right-0 w-4 h-4 rounded-full bg-rose-600 border-2 border-[#111b21] flex items-center justify-center text-[8px]" title="Fallo de Envío">
+                                                    !
                                                 </span>
                                             ) : botActive ? (
-                                                <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border border-slate-950 shadow" title="Bot Activo" />
+                                                <span className={`absolute bottom-2.5 right-0 w-3 h-3 rounded-full bg-[#25d366] border-2 ${isLightTheme ? 'border-white' : 'border-[#111b21]'}`} title="Bot IA Activo" />
                                             ) : null}
                                         </div>
 
-                                        {/* Cuerpo de la Tarjeta (3 filas limpias, nunca saturadas) */}
-                                        <div className="flex-1 min-w-0">
-                                            {/* Fila 1: Nombre + Categoría Temática + Hora */}
-                                            <div className="flex items-center justify-between gap-1.5 mb-1">
-                                                <h3 className={`font-semibold text-xs md:text-sm truncate ${isSelected ? 'text-white font-bold' : 'text-slate-100'}`}>
+                                        {/* Contenido del chat con separador inferior indentado estilo WhatsApp */}
+                                        <div className={`flex-1 min-w-0 py-2.5 border-b ${currentTheme.rowDivider}`}>
+                                            {/* Fila 1: Nombre del contacto + Hora (verde WhatsApp si sin leer) */}
+                                            <div className="flex items-center justify-between gap-2 mb-0.5">
+                                                <h3 className={`text-[15px] truncate leading-tight ${
+                                                    hasBadgeAlert ? `${currentTheme.textPrimary} font-semibold` : `${currentTheme.textPrimary} font-normal`
+                                                }`}>
                                                     {chat.name}
                                                 </h3>
-                                                <div className="flex items-center gap-1.5 shrink-0">
-                                                    {cat === 'residencial' && <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-950/70 text-emerald-300 border border-emerald-600/30">🏠 Residencial</span>}
-                                                    {cat === 'empresarial' && <span className="text-[9px] px-1.5 py-0.2 rounded bg-cyan-950/70 text-cyan-300 border border-cyan-600/30">🏢 Empresa</span>}
-                                                    {cat === 'consolas' && <span className="text-[9px] px-1.5 py-0.2 rounded bg-indigo-950/70 text-indigo-300 border border-indigo-600/30">🎮 Consolas</span>}
-                                                    {cat === 'postulante' && <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-950/70 text-amber-300 border border-amber-600/30">💼 Empleo</span>}
-                                                    {cat === 'soporte' && <span className="text-[9px] px-1.5 py-0.2 rounded bg-purple-950/70 text-purple-300 border border-purple-600/30">🔧 Soporte</span>}
-                                                    {cat === 'envios' && <span className="text-[9px] px-1.5 py-0.2 rounded bg-blue-950/70 text-blue-300 border border-blue-600/30">📦 Envíos</span>}
-                                                    {cat === 'sin_especificar' && <span className="text-[9px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-400 border border-slate-700/40">❓ Consulta</span>}
-                                                    <span className="text-[10px] font-mono text-slate-400">{chat.time}</span>
-                                                </div>
+                                                <span className={`text-[11.5px] shrink-0 ${
+                                                    hasBadgeAlert
+                                                        ? (isLightTheme ? 'text-[#00a884] font-semibold' : 'text-[#00a884] font-semibold')
+                                                        : currentTheme.textSecondary
+                                                }`}>
+                                                    {chat.time}
+                                                </span>
                                             </div>
 
-                                            {/* Fila 2: Teléfono destacado + Snippet del último mensaje + Badge no leídos */}
-                                            <div className="flex items-center justify-between gap-2 text-xs mb-1.5">
-                                                <p className="text-[11px] text-slate-400 truncate flex-1 leading-snug">
-                                                    <span className="font-mono text-emerald-400/90 font-medium mr-1.5">
-                                                        {formatPhoneNumber(chat.phone)}:
+                                            {/* Fila 2: Check doble azul WhatsApp + Teléfono + Preview + Badge circular verde #00a884 */}
+                                            <div className="flex items-center justify-between gap-2 mb-1">
+                                                <div className={`text-[13px] truncate flex-1 flex items-center gap-1 leading-snug ${currentTheme.textSecondary}`}>
+                                                    {lastMsg?.sender === 'me' && !chat.hasFailedMessage && (
+                                                        <CheckCheck size={15} className="text-[#53bdeb] shrink-0" />
+                                                    )}
+                                                    {chat.hasFailedMessage && (
+                                                        <AlertCircle size={13} className="text-rose-400 shrink-0" />
+                                                    )}
+                                                    <span className="truncate">
+                                                        <span className="font-mono text-[11px] opacity-80 mr-1">{formatPhoneNumber(chat.phone)} ·</span>
+                                                        {chat.lastMessage || 'Sin mensajes'}
                                                     </span>
-                                                    <span>{chat.lastMessage || 'Sin mensajes'}</span>
-                                                </p>
-                                                {chat.unread > 0 && (
-                                                    <span className="w-4 h-4 rounded-full bg-emerald-500 text-slate-950 font-bold text-[9px] flex items-center justify-center shrink-0 shadow">
+                                                </div>
+                                                {chat.unread > 0 ? (
+                                                    <span className="min-w-[20px] h-5 px-1.5 rounded-full bg-[#00a884] text-[#111b21] font-semibold text-[11px] flex items-center justify-center shrink-0">
                                                         {chat.unread}
                                                     </span>
-                                                )}
+                                                ) : unanswered ? (
+                                                    <span className="w-2.5 h-2.5 rounded-full bg-[#00a884] shrink-0" title="Sin responder" />
+                                                ) : null}
                                             </div>
 
-                                            {/* Fila 3: Bandeja de Etiquetas Elegante (Sin saltos de línea caóticos) */}
-                                            <div className="flex items-center gap-1.5 flex-nowrap overflow-x-hidden text-[9px]">
-                                                {unanswered ? (
-                                                    <span className="px-1.5 py-0.5 rounded font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 shrink-0 flex items-center gap-0.5 animate-pulse">
-                                                        ⏳ Sin Responder
+                                            {/* Fila 3: Etiquetas CRM discretas y compactas */}
+                                            <div className="flex items-center gap-1.5 flex-nowrap overflow-x-hidden text-[10px]">
+                                                {unanswered && (
+                                                    <span className={`px-1.5 py-0.2 rounded font-medium shrink-0 ${isLightTheme ? 'bg-amber-100 text-amber-800' : 'bg-amber-500/15 text-amber-300'}`}>
+                                                        Sin Responder
                                                     </span>
-                                                ) : hotLead ? (
-                                                    <span className="px-1.5 py-0.5 rounded font-bold bg-orange-500/20 text-orange-300 border border-orange-500/40 shrink-0 flex items-center gap-0.5">
+                                                )}
+                                                {hotLead && (
+                                                    <span className={`px-1.5 py-0.2 rounded font-medium shrink-0 ${isLightTheme ? 'bg-orange-100 text-orange-800' : 'bg-orange-500/15 text-orange-300'}`}>
                                                         🔥 Alta Intención
                                                     </span>
-                                                ) : chat.hasFailedMessage ? (
-                                                    <span className="px-1.5 py-0.5 rounded font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40 shrink-0 flex items-center gap-0.5">
-                                                        ⚠️ Falló Envío
+                                                )}
+                                                {cat !== 'general' && (
+                                                    <span className={`px-1.5 py-0.2 rounded shrink-0 ${isLightTheme ? 'bg-[#f0f2f5] text-[#54656f]' : 'bg-[#202c33] text-[#8696a0]'}`}>
+                                                        {cat === 'residencial' ? '🏠 Residencial' :
+                                                         cat === 'empresarial' ? '🏢 Empresa' :
+                                                         cat === 'consolas' ? '🎮 Consolas' :
+                                                         cat === 'postulante' ? '💼 Empleo' :
+                                                         cat === 'soporte' ? '🔧 Soporte' :
+                                                         cat === 'envios' ? '📦 Envíos' : '❓ Consulta'}
                                                     </span>
-                                                ) : null}
-
+                                                )}
                                                 {chat.isFromAd && (
-                                                    <span className="px-1.5 py-0.5 rounded font-medium bg-blue-500/15 text-blue-300 border border-blue-500/30 truncate max-w-[110px] shrink-0" title={chat.adHeadline || 'Pauta Meta'}>
+                                                    <span className={`px-1.5 py-0.2 rounded truncate max-w-[90px] shrink-0 ${isLightTheme ? 'bg-blue-50 text-blue-700' : 'bg-[#182229] text-[#53bdeb]'}`} title={chat.adHeadline || 'Pauta Meta'}>
                                                         📢 {chat.adHeadline || 'Pauta'}
                                                     </span>
                                                 )}
-
-                                                <span className={`px-1.5 py-0.5 rounded font-medium border shrink-0 flex items-center gap-0.5 ${
-                                                    botActive 
-                                                        ? 'bg-emerald-950/60 text-emerald-300 border-emerald-600/30' 
-                                                        : 'bg-slate-800/80 text-slate-400 border-slate-700/40'
+                                                <span className={`px-1.5 py-0.2 rounded shrink-0 flex items-center gap-0.5 ${
+                                                    botActive
+                                                        ? (isLightTheme ? 'text-[#008069]' : 'text-[#00a884]')
+                                                        : currentTheme.textSecondary
                                                 }`}>
                                                     <Bot size={9} />
                                                     <span>{botActive ? 'Bot' : 'Manual'}</span>
                                                 </span>
-
                                                 <span
                                                     onClick={(e) => {
                                                         if (!canAssignLeads) return;
@@ -2352,15 +2475,15 @@ export default function WhatsAppCrmClient() {
                                                         setAdvisorInput(chat.ownerName || "");
                                                         setAssignModalOpen(true);
                                                     }}
-                                                    className={`ml-auto px-1.5 py-0.5 rounded font-medium border shrink-0 flex items-center gap-1 transition-colors ${
+                                                    className={`ml-auto px-1.5 py-0.2 rounded shrink-0 flex items-center gap-1 transition-colors ${
                                                         chat.ownerName
-                                                            ? 'bg-cyan-950/60 text-cyan-300 border-cyan-700/40 hover:bg-cyan-900/60'
-                                                            : 'bg-slate-800/80 text-slate-400 border-slate-700/40 hover:text-cyan-300'
-                                                    } ${canAssignLeads ? 'cursor-pointer' : ''}`}
+                                                            ? (isLightTheme ? 'bg-[#e7fce3] text-[#008069]' : 'bg-[#202c33] text-[#53bdeb]')
+                                                            : currentTheme.textSecondary
+                                                    } ${canAssignLeads ? 'cursor-pointer hover:underline' : ''}`}
                                                     title={canAssignLeads ? "Clic para asignar o cambiar asesor" : undefined}
                                                 >
                                                     <UserCheck size={9} />
-                                                    <span className="truncate max-w-[70px]">
+                                                    <span className="truncate max-w-[65px]">
                                                         {chat.ownerName ? chat.ownerName.split(' ')[0] : 'Libre'}
                                                     </span>
                                                 </span>
@@ -2373,55 +2496,65 @@ export default function WhatsAppCrmClient() {
                     </div>
                 </div>
 
-                {/* Right Main Chat Area */}
-                <div 
-                    onTouchStart={handleTouchStart} 
+                {/* Right Main Chat Area (WhatsApp Web Canvas + Doodle Wallpaper) */}
+                <div
+                    onTouchStart={handleTouchStart}
                     onTouchEnd={handleTouchEnd}
-                    className={`flex-1 flex flex-col ${currentTheme.chatMainBg} transition-colors duration-200 ${!activeChatId ? 'hidden md:flex' : 'flex'}`}
+                    className={`flex-1 flex flex-col ${currentTheme.chatMainBg} relative overflow-hidden transition-colors duration-200 ${!activeChatId ? 'hidden md:flex' : 'flex'}`}
                 >
-                    
+                    {/* Fondo Wallpaper Oficial con Doodles de WhatsApp */}
+                    <div
+                        className="absolute inset-0 pointer-events-none z-0"
+                        style={{
+                            backgroundImage: isLightTheme ? WA_DOODLE_LIGHT_BG : WA_DOODLE_DARK_BG,
+                            backgroundRepeat: 'repeat',
+                            backgroundSize: '280px 280px',
+                        }}
+                    />
+
                     {activeChat ? (
                         <>
-                            {/* Chat Header: Estructurado en 2 Niveles Claros (Identidad + Barra de Acciones) */}
-                            <div className={`px-4 py-3 md:px-6 md:py-3.5 border-b ${currentTheme.chatHeaderBg} backdrop-blur-xl flex flex-col gap-2 shrink-0 shadow-sm`}>
-                                
-                                {/* Nivel Superior: Identidad, Nombre y Acciones Principales */}
-                                <div className="flex items-center justify-between gap-3">
-                                    <div className="flex items-center gap-3 min-w-0">
+                            {/* Chat Header Estilo WhatsApp Web (#202c33 / #f0f2f5) + Barra CRM */}
+                            <div className={`relative z-10 px-3 sm:px-4 py-2 border-b ${currentTheme.chatHeaderBg} flex flex-col gap-1.5 shrink-0`}>
+
+                                {/* Nivel Superior: Avatar, Nombre + Subtítulo Teléfono, Acciones */}
+                                <div className="flex items-center justify-between gap-2">
+                                    <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
                                         {/* Botón Volver (Móvil / Esc) */}
-                                        <button 
+                                        <button
                                             type="button"
-                                            onClick={handleBackToChats} 
-                                            className="group md:hidden flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-800/90 text-slate-200 hover:text-white border border-slate-700 text-xs font-bold shrink-0 shadow-sm"
+                                            onClick={handleBackToChats}
+                                            className={`md:hidden flex items-center gap-0.5 p-1.5 rounded-full shrink-0 cursor-pointer ${
+                                                isLightTheme ? 'text-[#54656f] hover:bg-[#e9edef]' : 'text-[#aebac1] hover:bg-[#2a3942]'
+                                            }`}
                                             title="Volver a la lista de chats (Esc)"
                                         >
-                                            <ChevronLeft size={16} className="text-emerald-400" />
-                                            <span>Atrás</span>
+                                            <ChevronLeft size={20} />
                                         </button>
-                                        
-                                        {/* Avatar con Zoom */}
+
+                                        {/* Avatar Circular WhatsApp 40px */}
                                         <div className="relative shrink-0">
-                                            <div 
+                                            <div
                                                 onClick={() => {
                                                     if (activeChat.profilePic) {
                                                         setPreviewImageUrl(activeChat.profilePic);
                                                     }
                                                 }}
-                                                className={`w-11 h-11 md:w-12 md:h-12 rounded-full flex items-center justify-center font-black text-base md:text-lg border overflow-hidden ${
-                                                    activeChat.profilePic ? 'cursor-zoom-in hover:opacity-90 ring-2 ring-emerald-500/40' : ''
+                                                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm overflow-hidden ${
+                                                    activeChat.profilePic ? 'cursor-zoom-in hover:opacity-90' : ''
                                                 } ${
-                                                    activeChat.hasFailedMessage 
-                                                        ? 'bg-rose-950 border-rose-500 text-rose-300' 
-                                                        : activeChat.isFromAd
-                                                        ? 'bg-blue-950 border-blue-500 text-cyan-300'
-                                                        : 'bg-emerald-950 border-emerald-500 text-emerald-300'
+                                                    activeChat.hasFailedMessage
+                                                        ? 'bg-rose-900/80 text-rose-200'
+                                                        : isLightTheme
+                                                        ? 'bg-[#dfe5e7] text-[#54656f]'
+                                                        : 'bg-[#6a7175]/40 text-[#e9edef]'
                                                 }`}
                                                 title={activeChat.profilePic ? "Clic para ampliar foto de perfil" : activeChat.name}
                                             >
                                                 {activeChat.profilePic ? (
-                                                    <img 
-                                                        src={activeChat.profilePic} 
-                                                        alt={activeChat.name} 
+                                                    <img
+                                                        src={activeChat.profilePic}
+                                                        alt={activeChat.name}
                                                         className="w-full h-full object-cover"
                                                         onError={(e) => {
                                                             (e.target as HTMLElement).style.display = 'none';
@@ -2432,46 +2565,80 @@ export default function WhatsAppCrmClient() {
                                                 )}
                                             </div>
                                             {activeChat.hasFailedMessage ? (
-                                                <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-rose-600 border border-slate-900 flex items-center justify-center text-[9px]" title="Fallo de Envío">
-                                                    ⚠️
+                                                <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-rose-600 border-2 border-[#202c33] flex items-center justify-center text-[8px] text-white" title="Fallo de Envío">
+                                                    !
                                                 </span>
                                             ) : activeChat.isFromAd ? (
-                                                <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-blue-600 border border-slate-900 flex items-center justify-center text-[8px] text-white" title="Lead de Pauta">
+                                                <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-[#00a884] border-2 border-[#202c33] flex items-center justify-center text-[8px]" title="Lead de Pauta">
                                                     📢
                                                 </span>
                                             ) : null}
                                         </div>
 
-                                        {/* Nombre del Contacto */}
+                                        {/* Nombre del Contacto + Teléfono/Estado estilo WhatsApp */}
                                         <div className="min-w-0">
-                                            <h2 className="text-base md:text-lg font-black text-white tracking-tight truncate flex items-center gap-2">
-                                                <span>{activeChat.name}</span>
+                                            <div className="flex items-center gap-1.5">
+                                                <h2 className={`text-[15px] font-medium truncate ${currentTheme.textPrimary}`}>
+                                                    {activeChat.name}
+                                                </h2>
                                                 {activeChat.hasFailedMessage && (
-                                                    <span className="bg-rose-950 text-rose-300 border border-rose-500/60 text-[9px] font-black px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0">
-                                                        <AlertCircle size={10} className="text-rose-400" /> FALLO EN ENVÍO
+                                                    <span className="bg-rose-600/20 text-rose-400 text-[9px] font-semibold px-1.5 py-0.5 rounded-full shrink-0">
+                                                        Fallo envío
                                                     </span>
                                                 )}
                                                 {activeChat.isFromAd && (
-                                                    <span className="bg-blue-950 text-cyan-300 border border-blue-500/60 text-[9px] font-black px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0">
-                                                        <Megaphone size={10} className="text-cyan-400" /> PAUTA ADS
+                                                    <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full shrink-0 ${
+                                                        isLightTheme ? 'bg-blue-100 text-blue-700' : 'bg-[#182229] text-[#53bdeb]'
+                                                    }`}>
+                                                        Pauta Meta
                                                     </span>
                                                 )}
-                                            </h2>
+                                            </div>
+                                            <div className={`text-[11.5px] flex items-center gap-2 truncate ${currentTheme.textSecondary}`}>
+                                                <span className="font-mono">{formatPhoneNumber(activeChat.phone)}</span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleCopyPhone(activeChat.phone)}
+                                                    className="hover:text-[#00a884] transition-colors cursor-pointer inline-flex items-center"
+                                                    title="Copiar número"
+                                                >
+                                                    {copiedPhone ? <Check size={11} className="text-[#00a884]" /> : <Copy size={11} />}
+                                                </button>
+                                                <a
+                                                    href={`tel:${activeChat.phone.replace(/\D/g, "")}`}
+                                                    className="hover:text-[#00a884] transition-colors inline-flex items-center"
+                                                    title="Llamar teléfono"
+                                                >
+                                                    <Phone size={11} />
+                                                </a>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const url = prompt('Ingresa la URL de la foto de perfil para este contacto:', activeChat.profilePic || '');
+                                                        if (url !== null) {
+                                                            handleSaveContactPhoto(activeChat.phone, url);
+                                                        }
+                                                    }}
+                                                    className="hover:text-[#00a884] transition-colors inline-flex items-center cursor-pointer"
+                                                    title="Actualizar foto de perfil"
+                                                >
+                                                    <Camera size={11} />
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    {/* Toolbar de Acciones Principales */}
-                                    <div className="flex items-center gap-2 shrink-0">
-                                        {/* Auto-reintento si falló */}
+                                    {/* Toolbar de Acciones WhatsApp + CRM */}
+                                    <div className="flex items-center gap-1.5 shrink-0">
                                         {activeChat.hasFailedMessage && (
                                             <button
                                                 onClick={() => handleRetryFailedMessage(activeChat.failedMessage?.id, false)}
                                                 disabled={isRetrying}
-                                                className="bg-amber-600 hover:bg-amber-500 text-black font-black text-xs px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 shadow-sm"
+                                                className="h-8 bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs px-2.5 rounded-full transition-all flex items-center gap-1 cursor-pointer disabled:opacity-50"
                                                 title="Motor de reintento inteligente activo"
                                             >
                                                 {isRetrying ? <Loader2 size={13} className="animate-spin" /> : <RefreshCw size={13} />}
-                                                <span className="hidden sm:inline">{isRetrying ? 'Reintentando...' : `Reintento en ${autoRetryCountdown}s`}</span>
+                                                <span className="hidden sm:inline">{isRetrying ? 'Reintentando...' : `${autoRetryCountdown}s`}</span>
                                             </button>
                                         )}
 
@@ -2479,10 +2646,10 @@ export default function WhatsAppCrmClient() {
                                         <button
                                             onClick={handleToggleChatBot}
                                             disabled={togglingBot}
-                                            className={`font-bold text-xs px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm border ${
+                                            className={`h-8 font-medium text-xs px-2.5 rounded-full transition-all flex items-center gap-1.5 cursor-pointer border ${
                                                 (activeChat.isBotActive ?? activeChat.status !== 'MANUAL')
-                                                    ? 'bg-emerald-950/80 hover:bg-emerald-900 border-emerald-500/60 text-emerald-300'
-                                                    : 'bg-rose-950/80 hover:bg-rose-900 border-rose-500/60 text-rose-300'
+                                                    ? (isLightTheme ? 'bg-[#e7fce3] border-[#00a884]/40 text-[#008069]' : 'bg-[#0a332c] border-[#00a884]/40 text-[#00a884]')
+                                                    : (isLightTheme ? 'bg-rose-50 border-rose-200 text-rose-700' : 'bg-rose-950/60 border-rose-500/40 text-rose-300')
                                             }`}
                                             title={(activeChat.isBotActive ?? activeChat.status !== 'MANUAL')
                                                 ? 'El Bot IA está ACTIVO para este chat. Haz clic para pausarlo y tomar atención manual.'
@@ -2491,20 +2658,24 @@ export default function WhatsAppCrmClient() {
                                             {togglingBot ? (
                                                 <Loader2 size={13} className="animate-spin" />
                                             ) : (
-                                                <Bot size={13} className={(activeChat.isBotActive ?? activeChat.status !== 'MANUAL') ? 'text-emerald-400' : 'text-rose-400'} />
+                                                <Bot size={13} />
                                             )}
                                             <span className="hidden sm:inline">
-                                                {(activeChat.isBotActive ?? activeChat.status !== 'MANUAL') ? 'Bot: ON' : 'Bot: OFF (Manual)'}
+                                                {(activeChat.isBotActive ?? activeChat.status !== 'MANUAL') ? 'Bot ON' : 'Manual'}
                                             </span>
                                         </button>
 
                                         {/* Reactivar con Disculpa */}
                                         <button
                                             onClick={handleOpenReengageModal}
-                                            className="bg-slate-900/80 hover:bg-slate-800 border border-cyan-500/50 text-cyan-300 hover:text-white font-bold text-xs px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+                                            className={`h-8 font-medium text-xs px-2.5 rounded-full transition-all flex items-center gap-1.5 cursor-pointer border ${
+                                                isLightTheme
+                                                    ? 'bg-white hover:bg-[#e9edef] border-[#d1d7db] text-[#54656f]'
+                                                    : 'bg-[#2a3942] hover:bg-[#374751] border-[#374751] text-[#d1d7db]'
+                                            }`}
                                             title="Reactivar chat con disculpa personalizada según el artículo consultado"
                                         >
-                                            <Sparkles size={13} className="text-cyan-400" />
+                                            <Sparkles size={13} className="text-[#00a884]" />
                                             <span className="hidden lg:inline">Reactivar</span>
                                         </button>
 
@@ -2513,7 +2684,7 @@ export default function WhatsAppCrmClient() {
                                             href={`https://wa.me/${activeChat.phone.replace(/\D/g, '')}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+                                            className="h-8 bg-[#00a884] hover:bg-[#06cf9c] text-[#111b21] font-semibold text-xs px-2.5 rounded-full transition-colors flex items-center gap-1 cursor-pointer"
                                             title="Abrir en WhatsApp Web oficial"
                                         >
                                             <ExternalLink size={13} />
@@ -2525,7 +2696,7 @@ export default function WhatsAppCrmClient() {
                                             <>
                                                 <button
                                                     onClick={() => handleRestoreChat()}
-                                                    className="bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/60 text-emerald-300 font-bold text-xs px-2.5 py-1.5 rounded-xl transition-all flex items-center gap-1 cursor-pointer"
+                                                    className="h-8 bg-[#00a884] hover:bg-[#06cf9c] text-[#111b21] font-semibold text-xs px-2.5 rounded-full transition-all flex items-center gap-1 cursor-pointer"
                                                     title="Restaurar chat a la bandeja activa"
                                                 >
                                                     <RotateCcw size={13} />
@@ -2533,65 +2704,34 @@ export default function WhatsAppCrmClient() {
                                                 </button>
                                                 <button
                                                     onClick={() => handlePermanentDeleteChat()}
-                                                    className="bg-red-950/80 hover:bg-red-900 border border-red-500/60 text-red-300 font-bold text-xs px-2.5 py-1.5 rounded-xl transition-all flex items-center gap-1 cursor-pointer"
+                                                    className="w-8 h-8 bg-red-600/20 hover:bg-red-600/40 text-red-400 rounded-full flex items-center justify-center transition-all cursor-pointer"
                                                     title="Eliminar definitivamente este chat"
                                                 >
-                                                    <Trash2 size={13} />
+                                                    <Trash2 size={14} />
                                                 </button>
                                             </>
                                         ) : (
                                             <button
                                                 onClick={() => handleTrashChat()}
-                                                className="bg-slate-900/60 hover:bg-red-950/60 border border-slate-700/60 hover:border-red-500/50 text-slate-400 hover:text-red-300 font-bold text-xs p-1.5 rounded-xl transition-all cursor-pointer"
+                                                className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
+                                                    isLightTheme
+                                                        ? 'text-[#54656f] hover:bg-rose-50 hover:text-rose-600'
+                                                        : 'text-[#8696a0] hover:bg-[#2a3942] hover:text-rose-400'
+                                                }`}
                                                 title="Mover este chat a la papelera"
                                             >
-                                                <Trash2 size={14} />
+                                                <Trash2 size={15} />
                                             </button>
                                         )}
                                     </div>
                                 </div>
 
-                                {/* Nivel Inferior: Teléfono, Atributos de Clasificación y Asignación */}
-                                <div className="flex items-center justify-between gap-2 flex-wrap pt-1 border-t border-slate-800/40">
-                                    <div className="flex items-center gap-2 flex-wrap">
-                                        {/* Teléfono con Copiar & Llamar */}
-                                        <div className="inline-flex items-center gap-1.5 bg-slate-900/90 border border-emerald-500/30 px-2.5 py-0.5 rounded-lg">
-                                            <Phone size={12} className="text-emerald-400" />
-                                            <span className="text-xs font-mono font-bold text-emerald-300">
-                                                {formatPhoneNumber(activeChat.phone)}
-                                            </span>
-                                            <button
-                                                type="button"
-                                                onClick={() => handleCopyPhone(activeChat.phone)}
-                                                className="p-0.5 rounded hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
-                                                title="Copiar número"
-                                            >
-                                                {copiedPhone ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
-                                            </button>
-                                            <a
-                                                href={`tel:${activeChat.phone.replace(/\D/g, "")}`}
-                                                className="text-slate-400 hover:text-emerald-300 p-0.5 rounded hover:bg-white/10 transition-colors"
-                                                title="Llamar teléfono"
-                                            >
-                                                <Phone size={12} />
-                                            </a>
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    const url = prompt('Ingresa la URL de la foto de perfil para este contacto:', activeChat.profilePic || '');
-                                                    if (url !== null) {
-                                                        handleSaveContactPhoto(activeChat.phone, url);
-                                                    }
-                                                }}
-                                                className="text-slate-400 hover:text-cyan-300 p-0.5 rounded hover:bg-white/10 transition-colors text-xs flex items-center gap-0.5"
-                                                title="Actualizar foto de perfil"
-                                            >
-                                                <Camera size={12} />
-                                            </button>
-                                        </div>
-
-                                        {/* Categoría */}
-                                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-slate-800/80 text-slate-300 border border-slate-700/60">
+                                {/* Nivel Inferior Discreto: Categoría, Estado y Asesor */}
+                                <div className={`flex items-center justify-between gap-2 flex-wrap pt-1.5 border-t ${currentTheme.rowDivider}`}>
+                                    <div className="flex items-center gap-1.5 flex-wrap">
+                                        <span className={`text-[10.5px] font-medium px-2 py-0.5 rounded-full ${
+                                            isLightTheme ? 'bg-white text-[#54656f] border border-[#d1d7db]' : 'bg-[#111b21] text-[#aebac1]'
+                                        }`}>
                                             {categorizarChat(activeChat) === 'residencial' ? '🏠 Residencial' :
                                              categorizarChat(activeChat) === 'empresarial' ? '🏢 Empresarial' :
                                              categorizarChat(activeChat) === 'consolas' ? '🎮 Consolas' :
@@ -2601,14 +2741,17 @@ export default function WhatsAppCrmClient() {
                                              categorizarChat(activeChat) === 'sin_especificar' ? '❓ Sin Especificar' : '💬 General'}
                                         </span>
 
-                                        {/* Sin responder o Alta Intención */}
                                         {isUnanswered(activeChat) && (
-                                            <span className="bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-lg text-[10px] font-bold animate-pulse">
+                                            <span className={`px-2 py-0.5 rounded-full text-[10.5px] font-medium ${
+                                                isLightTheme ? 'bg-amber-100 text-amber-800' : 'bg-amber-500/15 text-amber-300'
+                                            }`}>
                                                 ⏳ Esperando respuesta
                                             </span>
                                         )}
                                         {hasHighPurchaseIntent(activeChat) && (
-                                            <span className="bg-orange-500/20 text-orange-300 border border-orange-500/40 px-2 py-0.5 rounded-lg text-[10px] font-bold">
+                                            <span className={`px-2 py-0.5 rounded-full text-[10.5px] font-medium ${
+                                                isLightTheme ? 'bg-orange-100 text-orange-800' : 'bg-orange-500/15 text-orange-300'
+                                            }`}>
                                                 🔥 Alta Intención
                                             </span>
                                         )}
@@ -2616,7 +2759,7 @@ export default function WhatsAppCrmClient() {
 
                                     {/* Estado de Asignación de Asesor */}
                                     <div className="flex items-center gap-1.5">
-                                        <span className="text-[10px] text-slate-400 font-mono">Asesor:</span>
+                                        <span className={`text-[10.5px] ${currentTheme.textSecondary}`}>Asesor:</span>
                                         {activeChat.ownerName ? (
                                             <button
                                                 onClick={() => {
@@ -2625,7 +2768,9 @@ export default function WhatsAppCrmClient() {
                                                     setAdvisorInput(activeChat.ownerName || "");
                                                     setAssignModalOpen(true);
                                                 }}
-                                                className={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-lg bg-cyan-950/80 text-cyan-300 border border-cyan-700/50 ${canAssignLeads ? 'hover:bg-cyan-900/80 cursor-pointer' : ''}`}
+                                                className={`inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-0.5 rounded-full ${
+                                                    isLightTheme ? 'bg-[#e7fce3] text-[#008069]' : 'bg-[#111b21] text-[#53bdeb]'
+                                                } ${canAssignLeads ? 'hover:opacity-80 cursor-pointer' : ''}`}
                                                 title={canAssignLeads ? "Clic para reasignar asesor" : undefined}
                                             >
                                                 <UserCheck size={11} />
@@ -2638,39 +2783,53 @@ export default function WhatsAppCrmClient() {
                                                     setAdvisorInput("");
                                                     setAssignModalOpen(true);
                                                 }}
-                                                className="inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-lg bg-amber-950/80 text-amber-300 border border-amber-700/50 hover:bg-amber-900/80 cursor-pointer"
+                                                className={`inline-flex items-center gap-1 text-[11px] font-medium px-2.5 py-0.5 rounded-full cursor-pointer ${
+                                                    isLightTheme ? 'bg-amber-100 text-amber-800 hover:bg-amber-200' : 'bg-amber-500/15 text-amber-300 hover:bg-amber-500/25'
+                                                }`}
                                                 title="Asignar asesor a este chat"
                                             >
                                                 <UserPlus size={11} />
-                                                <span>⚡ Sin Asignar</span>
+                                                <span>Asignar asesor</span>
                                             </button>
                                         )}
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Chat Messages */}
-                            <div ref={messagesContainerRef} className={`flex-1 p-4 md:p-6 overflow-y-auto space-y-4 scroll-smooth ${currentTheme.chatMainBg}`}>
-                                
+                            {/* Chat Messages Stream con Doodle Canvas */}
+                            <div ref={messagesContainerRef} className="relative z-10 flex-1 px-3 sm:px-8 md:px-12 lg:px-16 py-4 overflow-y-auto space-y-1.5 scroll-smooth">
+
+                                {/* Burbuja de Sistema Oficial WhatsApp (Cifrado / Cloud API) */}
+                                <div className="flex justify-center mb-3">
+                                    <div className={`px-3.5 py-1.5 rounded-lg text-[11px] text-center max-w-md shadow-sm flex items-center gap-1.5 ${
+                                        isLightTheme
+                                            ? 'bg-[#ffeecd] text-[#54656f]'
+                                            : 'bg-[#182229] text-[#ffd279]'
+                                    }`}>
+                                        <Lock size={11} className="shrink-0" />
+                                        <span>Mensajes gestionados con WhatsApp Cloud API Oficial · ATOMIC Business</span>
+                                    </div>
+                                </div>
+
                                 {/* 🗑️ BANNER DE CHAT EN PAPELERA */}
                                 {activeChat.status === 'TRASH' && (
-                                    <div className="p-3.5 bg-red-950/40 border border-red-500/50 rounded-xl flex items-center justify-between gap-3 text-red-200 text-xs">
+                                    <div className="p-3 bg-red-950/70 border border-red-500/50 rounded-xl flex items-center justify-between gap-3 text-red-100 text-xs mb-3 backdrop-blur-sm">
                                         <div className="flex items-center gap-2">
-                                            <Trash2 size={16} className="text-red-400 shrink-0" />
+                                            <Trash2 size={15} className="text-red-400 shrink-0" />
                                             <span>
-                                                <strong>Chat en Papelera de Reciclaje:</strong> El bot automático está pausado. Puedes restaurarlo para reactivarlo o eliminarlo permanentemente.
+                                                <strong>Chat en Papelera:</strong> El bot automático está pausado. Restáuralo para continuar.
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-2 shrink-0">
                                             <button
                                                 onClick={() => handleRestoreChat()}
-                                                className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold text-xs flex items-center gap-1"
+                                                className="px-2.5 py-1 bg-[#00a884] hover:bg-[#06cf9c] text-[#111b21] rounded-lg font-semibold text-xs flex items-center gap-1 cursor-pointer"
                                             >
                                                 <RotateCcw size={12} /> Restaurar
                                             </button>
                                             <button
                                                 onClick={() => handlePermanentDeleteChat()}
-                                                className="px-2.5 py-1 bg-red-700 hover:bg-red-600 text-white rounded-lg font-bold text-xs flex items-center gap-1"
+                                                className="px-2.5 py-1 bg-red-700 hover:bg-red-600 text-white rounded-lg font-semibold text-xs flex items-center gap-1 cursor-pointer"
                                             >
                                                 <Trash2 size={12} /> Eliminar
                                             </button>
@@ -2680,65 +2839,59 @@ export default function WhatsAppCrmClient() {
 
                                 {/* ⚠️ BANNER DE ALERTA DE FALLO EN EL ENVÍO & MOTOR DE REINTENTO INTELIGENTE */}
                                 {activeChat.hasFailedMessage && (
-                                    <div className="p-4 bg-[#1f1610] border border-amber-500/60 rounded-xl space-y-3 text-white">
+                                    <div className="p-3.5 bg-[#1f1610]/95 border border-amber-500/50 rounded-xl space-y-2.5 text-white mb-3 shadow-md">
                                         <div className="flex items-start justify-between gap-3 flex-wrap sm:flex-nowrap">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-300 shrink-0">
-                                                    <RefreshCw size={20} className={isRetrying ? "animate-spin text-amber-300" : "text-amber-400"} />
+                                            <div className="flex items-center gap-2.5">
+                                                <div className="w-9 h-9 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-300 shrink-0">
+                                                    <RefreshCw size={17} className={isRetrying ? "animate-spin text-amber-300" : "text-amber-400"} />
                                                 </div>
                                                 <div>
                                                     <div className="flex items-center gap-2 flex-wrap">
-                                                        <h3 className="text-sm md:text-base font-black text-amber-200 uppercase tracking-wide">
-                                                            🤖 Motor de Reintento Inteligente Activo
+                                                        <h3 className="text-xs sm:text-sm font-bold text-amber-200">
+                                                            Motor de Reintento Inteligente Activo
                                                         </h3>
-                                                        <span className="text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-full flex items-center gap-1">
-                                                            {isRetrying ? (
-                                                                <>⚡ Conectando con Meta...</>
-                                                            ) : (
-                                                                <>⏱️ Auto-reintento en {autoRetryCountdown}s</>
-                                                            )}
+                                                        <span className="text-[10px] font-mono bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full">
+                                                            {isRetrying ? '⚡ Conectando con Meta...' : `⏱️ Auto-reintento en ${autoRetryCountdown}s`}
                                                         </span>
                                                     </div>
-                                                    <p className="text-xs text-slate-300 leading-relaxed mt-0.5">
-                                                        Meta rechazó o demoró la entrega. El sistema reintentará automáticamente con pausas inteligentes hasta reportar el envío correcto.
+                                                    <p className="text-[11px] text-slate-300 mt-0.5">
+                                                        Meta rechazó o demoró la entrega. Reintentando automáticamente.
                                                     </p>
                                                 </div>
                                             </div>
                                         </div>
 
                                         {activeChat.failedMessage?.errorMessage && (
-                                            <div className="p-2.5 bg-[#111b21] border border-amber-500/40 rounded-xl text-xs font-mono text-amber-300 flex items-start justify-between gap-2">
+                                            <div className="p-2 bg-[#111b21] border border-amber-500/30 rounded-lg text-[11px] font-mono text-amber-300 flex items-start justify-between gap-2">
                                                 <div>
-                                                    <strong className="text-amber-200">Motivo reportado:</strong> {activeChat.failedMessage.errorMessage}
+                                                    <strong className="text-amber-200">Motivo:</strong> {activeChat.failedMessage.errorMessage}
                                                 </div>
-                                                <span className="text-[10px] text-slate-400 shrink-0">Bucle Inteligente ON</span>
                                             </div>
                                         )}
 
-                                        <div className="flex flex-wrap items-center gap-2 pt-1">
+                                        <div className="flex flex-wrap items-center gap-2">
                                             <button
                                                 onClick={() => handleRetryFailedMessage(activeChat.failedMessage?.id, false)}
                                                 disabled={isRetrying}
-                                                className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-black text-xs transition-all flex items-center gap-2 shadow-sm cursor-pointer disabled:opacity-50"
-                                                title="Forzar reintento inmediato sin esperar el temporizador"
+                                                className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                                             >
-                                                {isRetrying ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
-                                                <span>⚡ Reintentar Envío Ahora</span>
+                                                {isRetrying ? <Loader2 size={13} className="animate-spin" /> : <RefreshCw size={13} />}
+                                                <span>Reintentar Ahora</span>
                                             </button>
 
                                             <button
                                                 onClick={handleResuscitateChat}
                                                 disabled={isRetrying}
-                                                className="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-black text-xs transition-all flex items-center gap-2 shadow-sm cursor-pointer disabled:opacity-50"
+                                                className="px-3 py-1.5 rounded-lg bg-[#00a884] hover:bg-[#06cf9c] text-[#111b21] font-semibold text-xs transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                                             >
-                                                {isRetrying ? <Loader2 size={14} className="animate-spin" /> : <Bot size={14} />}
-                                                <span>🤖 Resucitar Chat con IA</span>
+                                                {isRetrying ? <Loader2 size={13} className="animate-spin" /> : <Bot size={13} />}
+                                                <span>Resucitar con IA</span>
                                             </button>
 
                                             <button
                                                 onClick={() => handleSendTemplateWindow('hello_world')}
                                                 disabled={isRetrying}
-                                                className="px-3.5 py-2 rounded-xl bg-[#202c33] hover:bg-[#2a3942] text-slate-200 font-bold text-xs transition-all flex items-center gap-1.5 border border-[#2a3942] cursor-pointer"
+                                                className="px-3 py-1.5 rounded-lg bg-[#202c33] hover:bg-[#2a3942] text-slate-200 font-medium text-xs transition-all flex items-center gap-1.5 cursor-pointer"
                                                 title="Si la ventana de 24 horas de Meta expiró, envía una plantilla oficial para reabrirla"
                                             >
                                                 <span>📲 Reabrir Ventana 24h</span>
@@ -2746,435 +2899,534 @@ export default function WhatsAppCrmClient() {
                                         </div>
 
                                         {retrySuccessMsg && (
-                                            <div className="p-2.5 rounded-xl bg-[#0f291e] border border-emerald-500/60 text-xs font-bold text-emerald-300 shadow">
+                                            <div className="p-2 rounded-lg bg-[#0a332c] text-xs font-medium text-[#00a884]">
                                                 {retrySuccessMsg}
                                             </div>
                                         )}
                                     </div>
                                 )}
+
                                 {/* 📢 BANNER DESTACADO DE PAUTA PUBLICITARIA SI EL LEAD PROVIENE DE ANUNCIO */}
                                 {activeChat.isFromAd && (
-                                    <div className="p-3.5 bg-[#0e1d2c] border border-cyan-500/50 rounded-xl space-y-2 text-white">
-                                        <div className="flex items-center justify-between border-b border-cyan-500/30 pb-2">
-                                            <div className="flex items-center gap-2">
-                                                <div className="p-1.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-400/40">
-                                                    <Megaphone size={14} />
-                                                </div>
-                                                <span className="text-[11px] font-black text-cyan-300 uppercase tracking-wider">
-                                                    LEAD ORIGINADO DE PAUTA FACEBOOK / INSTAGRAM ADS
-                                                </span>
+                                    <div className="flex justify-center mb-3">
+                                        <div className={`px-3.5 py-2 rounded-xl text-xs flex items-center gap-2.5 shadow-sm max-w-xl ${
+                                            isLightTheme
+                                                ? 'bg-white/95 border border-[#d1d7db] text-[#111b21]'
+                                                : 'bg-[#182229]/95 border border-[#2a3942] text-[#e9edef]'
+                                        }`}>
+                                            <div className="p-1.5 rounded-full bg-[#00a884]/15 text-[#00a884] shrink-0">
+                                                <Megaphone size={13} />
                                             </div>
-                                            <span className="text-[9px] font-mono bg-cyan-600/30 text-cyan-200 border border-cyan-400/40 px-2 py-0.5 rounded-full font-bold">
-                                                Atribución Meta
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center justify-between gap-3 text-xs">
-                                            <p className="font-bold text-white text-xs">
-                                                {activeChat.adHeadline ? `Campaña: "${activeChat.adHeadline}"` : 'Campaña Click-to-WhatsApp en vivo'}
-                                            </p>
+                                            <div className="min-w-0">
+                                                <span className="text-[10px] font-semibold uppercase tracking-wide text-[#00a884] block">
+                                                    Lead de Pauta Facebook / Instagram Ads
+                                                </span>
+                                                <p className="text-[11.5px] font-medium truncate">
+                                                    {activeChat.adHeadline ? `Campaña: "${activeChat.adHeadline}"` : 'Campaña Click-to-WhatsApp en vivo'}
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                 )}
 
                                 {activeChat.messages.length === 0 ? (
-                                    <div className="text-center text-slate-500 text-xs py-10">No hay mensajes en este chat.</div>
+                                    <div className={`text-center text-xs py-10 ${currentTheme.textSecondary}`}>No hay mensajes en este chat.</div>
                                 ) : (
-                                    activeChat.messages.map(msg => (
-                                        <div 
-                                            key={msg.id}
-                                            className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}
-                                        >
-                                            <div className={`max-w-[85%] sm:max-w-[75%] rounded-2xl p-3.5 text-xs space-y-2.5 ${
-                                                msg.sender === 'me'
-                                                    ? 'bg-[#005c4b] text-[#e9edef] rounded-tr-none shadow-md'
-                                                    : 'bg-[#202c33] text-[#e9edef] border border-[#2a3942] rounded-tl-none shadow-md'
-                                            }`}>
-                                                
-                                                {/* 📢 PREVIEW CARD: ATRIBUCIÓN DE ANUNCIO FACEBOOK ADS (CLICK TO WHATSAPP) */}
-                                                {msg.referral && (
-                                                    <div className="p-3 bg-[#0a1829] border border-cyan-500/50 rounded-xl space-y-2 text-white shadow-sm">
-                                                        <div className="flex items-center justify-between border-b border-cyan-500/30 pb-1.5">
-                                                            <span className="flex items-center gap-1.5 text-[10px] font-black tracking-wider text-cyan-300 uppercase">
-                                                                <Megaphone size={12} className="text-cyan-400" /> ANUNCIO DE ORIGEN · {msg.referral.sourceType === 'ad' ? 'FACEBOOK ADS' : 'POST META'}
-                                                            </span>
-                                                            {msg.referral.sourceId && (
-                                                                <span className="text-[9px] font-mono text-cyan-300/80">
-                                                                    ID: {msg.referral.sourceId}
-                                                                </span>
-                                                            )}
-                                                        </div>
+                                    activeChat.messages.map((msg, msgIdx) => {
+                                        const isMe = msg.sender === 'me';
+                                        const prevMsg = msgIdx > 0 ? activeChat.messages[msgIdx - 1] : null;
+                                        const showTail = !prevMsg || prevMsg.sender !== msg.sender;
 
-                                                        <div className="flex gap-2.5 items-start">
-                                                            {(msg.referral.thumbnailUrl || msg.referral.imageUrl) ? (
-                                                                <img 
-                                                                    src={msg.referral.thumbnailUrl || msg.referral.imageUrl} 
-                                                                    alt="Miniatura del Anuncio" 
-                                                                    referrerPolicy="no-referrer"
-                                                                    onError={(e) => {
-                                                                        (e.target as HTMLElement).style.display = 'none';
-                                                                    }}
-                                                                    className="w-16 h-16 rounded-lg object-cover border border-blue-400/40 shrink-0 bg-slate-900 shadow"
-                                                                />
-                                                            ) : (
-                                                                <div className="w-12 h-12 rounded-lg bg-blue-900/50 border border-blue-400/30 flex items-center justify-center shrink-0 text-cyan-300">
-                                                                    <Megaphone size={18} />
-                                                                </div>
-                                                            )}
-                                                            <div className="min-w-0 flex-1">
-                                                                <h4 className="font-black text-xs text-white leading-snug">
-                                                                    {msg.referral.headline || 'Campaña Publicitaria de Meta'}
-                                                                </h4>
-                                                                {msg.referral.body ? (
-                                                                    <p className="text-[10px] text-slate-300 line-clamp-2 mt-0.5">
-                                                                        {msg.referral.body}
-                                                                    </p>
-                                                                ) : (
-                                                                    <p className="text-[10px] text-blue-300/80 italic mt-0.5">
-                                                                        Lead captado vía Click-to-WhatsApp
-                                                                    </p>
+                                        return (
+                                            <div
+                                                key={msg.id}
+                                                className={`flex ${isMe ? 'justify-end' : 'justify-start'} ${showTail ? 'mt-2' : 'mt-0.5'}`}
+                                            >
+                                                <div className={`relative max-w-[86%] sm:max-w-[74%] lg:max-w-[66%] rounded-lg px-2.5 pt-1.5 pb-1.5 text-[13.5px] leading-[19px] space-y-1.5 ${
+                                                    isMe
+                                                        ? `${currentTheme.messageOut} ${showTail ? 'rounded-tr-none' : ''}`
+                                                        : `${currentTheme.messageIn} ${showTail ? 'rounded-tl-none' : ''}`
+                                                }`}>
+                                                    {/* Cola triangular auténtica de burbuja WhatsApp */}
+                                                    {showTail && (
+                                                        <svg
+                                                            viewBox="0 0 8 13"
+                                                            width="8"
+                                                            height="13"
+                                                            className={`absolute top-0 ${isMe ? '-right-[7px]' : '-left-[7px] -scale-x-100'}`}
+                                                            style={{ color: isMe ? currentTheme.bubbleOutHex : currentTheme.bubbleInHex }}
+                                                            aria-hidden="true"
+                                                        >
+                                                            <path
+                                                                opacity="0.13"
+                                                                fill="#000000"
+                                                                d="M5.188 1H0v11.193l6.467-8.625C7.526 2.156 6.958 1 5.188 1z"
+                                                            />
+                                                            <path
+                                                                fill="currentColor"
+                                                                d="M5.188 0H0v11.193l6.467-8.625C7.526 1.156 6.958 0 5.188 0z"
+                                                            />
+                                                        </svg>
+                                                    )}
+
+                                                    {/* 📢 PREVIEW CARD: ATRIBUCIÓN DE ANUNCIO FACEBOOK ADS */}
+                                                    {msg.referral && (
+                                                        <div className={`p-2.5 rounded-lg space-y-1.5 ${
+                                                            isLightTheme ? 'bg-black/5 text-[#111b21]' : 'bg-black/25 text-[#e9edef]'
+                                                        }`}>
+                                                            <div className="flex items-center justify-between border-b border-white/10 pb-1">
+                                                                <span className="flex items-center gap-1 text-[10px] font-semibold tracking-wide text-[#00a884] uppercase">
+                                                                    <Megaphone size={11} /> {msg.referral.sourceType === 'ad' ? 'Anuncio Facebook Ads' : 'Post Meta'}
+                                                                </span>
+                                                                {msg.referral.sourceId && (
+                                                                    <span className="text-[9px] font-mono opacity-70">
+                                                                        ID: {msg.referral.sourceId}
+                                                                    </span>
                                                                 )}
                                                             </div>
+
+                                                            <div className="flex gap-2.5 items-start">
+                                                                {(msg.referral.thumbnailUrl || msg.referral.imageUrl) ? (
+                                                                    <img
+                                                                        src={msg.referral.thumbnailUrl || msg.referral.imageUrl}
+                                                                        alt="Miniatura del Anuncio"
+                                                                        referrerPolicy="no-referrer"
+                                                                        onError={(e) => {
+                                                                            (e.target as HTMLElement).style.display = 'none';
+                                                                        }}
+                                                                        className="w-14 h-14 rounded-md object-cover shrink-0 bg-black/20"
+                                                                    />
+                                                                ) : (
+                                                                    <div className="w-11 h-11 rounded-md bg-[#00a884]/15 flex items-center justify-center shrink-0 text-[#00a884]">
+                                                                        <Megaphone size={16} />
+                                                                    </div>
+                                                                )}
+                                                                <div className="min-w-0 flex-1">
+                                                                    <h4 className="font-semibold text-xs leading-snug">
+                                                                        {msg.referral.headline || 'Campaña Publicitaria de Meta'}
+                                                                    </h4>
+                                                                    <p className="text-[11px] opacity-80 line-clamp-2 mt-0.5">
+                                                                        {msg.referral.body || 'Lead captado vía Click-to-WhatsApp'}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+
+                                                            {msg.referral.sourceUrl && (
+                                                                <a
+                                                                    href={msg.referral.sourceUrl}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="inline-flex items-center gap-1 text-[10.5px] font-medium text-[#53bdeb] hover:underline pt-0.5"
+                                                                >
+                                                                    <span>Ver anuncio</span> <ExternalLink size={10} />
+                                                                </a>
+                                                            )}
                                                         </div>
+                                                    )}
 
-                                                        {msg.referral.sourceUrl && (
-                                                            <a 
-                                                                href={msg.referral.sourceUrl} 
-                                                                target="_blank" 
-                                                                rel="noopener noreferrer"
-                                                                className="inline-flex items-center gap-1 text-[10px] font-bold text-cyan-300 hover:text-cyan-100 hover:underline pt-1"
-                                                            >
-                                                                <span>🔗 Ver Anuncio en Facebook</span> <ExternalLink size={10} />
-                                                            </a>
-                                                        )}
-                                                    </div>
-                                                )}
-
-                                                {/* 📷 IMAGEN ADJUNTA */}
-                                                {msg.type === 'image' && msg.mediaUrl && (
-                                                    <div className="space-y-1.5">
-                                                        <div 
+                                                    {/* 📷 IMAGEN ADJUNTA */}
+                                                    {msg.type === 'image' && msg.mediaUrl && (
+                                                        <div
                                                             onClick={() => setPreviewImageUrl(msg.mediaUrl || null)}
-                                                            className="relative rounded-xl overflow-hidden cursor-pointer group bg-black/40 border border-white/10"
+                                                            className="relative rounded-md overflow-hidden cursor-pointer group bg-black/20"
                                                         >
-                                                            <img 
-                                                                src={msg.mediaUrl} 
-                                                                alt="Imagen enviada por cliente" 
-                                                                className="max-h-72 w-full object-contain group-hover:scale-102 transition-transform duration-300"
+                                                            <img
+                                                                src={msg.mediaUrl}
+                                                                alt="Imagen enviada por cliente"
+                                                                className="max-h-72 w-full object-contain group-hover:scale-[1.01] transition-transform duration-200"
                                                                 loading="lazy"
                                                             />
-                                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                                                                <span className="bg-black/70 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-lg">
-                                                                    <Eye size={12} /> Ver en grande
+                                                            <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                                <span className="bg-black/75 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full flex items-center gap-1">
+                                                                    <Eye size={12} /> Ver imagen
                                                                 </span>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                )}
+                                                    )}
 
-                                                {/* 🎤 AUDIO / NOTA DE VOZ */}
-                                                {msg.type === 'audio' && msg.mediaUrl && (
-                                                    <div className="p-3 bg-black/50 border border-white/10 rounded-xl space-y-2">
-                                                        <div className="flex items-center justify-between text-[10px] font-bold text-emerald-400">
-                                                            <div className="flex items-center gap-1.5">
-                                                                <Mic size={14} />
-                                                                <span>Nota de Voz de WhatsApp</span>
-                                                            </div>
-                                                            <a 
-                                                                href={msg.mediaUrl} 
-                                                                target="_blank" 
-                                                                rel="noopener noreferrer"
-                                                                className="text-slate-400 hover:text-emerald-400 transition-colors p-1 rounded hover:bg-white/5 flex items-center gap-1"
-                                                                title="Descargar audio"
-                                                            >
-                                                                <Download size={12} />
-                                                            </a>
-                                                        </div>
-                                                        <audio 
-                                                            controls 
-                                                            className="w-full h-9 rounded-lg accent-emerald-500"
-                                                            preload="metadata"
-                                                        >
-                                                            <source src={msg.mediaUrl} type="audio/ogg; codecs=opus" />
-                                                            <source src={msg.mediaUrl} type="audio/aac" />
-                                                            <source src={msg.mediaUrl} type="audio/mpeg" />
-                                                            Tu navegador no soporta reproducción directa de audio.
-                                                        </audio>
-                                                    </div>
-                                                )}
-
-                                                {/* 🎬 VIDEO INTERACTIVO CON REPRODUCTOR Y LIGHTBOX */}
-                                                {msg.type === 'video' && msg.mediaUrl && (
-                                                    <div className="space-y-2">
-                                                        {failedMedia[msg.id] ? (
-                                                            <div className="p-3 bg-amber-950/80 border border-amber-500/50 rounded-xl space-y-2 text-amber-200">
-                                                                <div className="flex items-center gap-2 text-xs font-bold text-amber-300">
-                                                                    <AlertCircle size={15} />
-                                                                    <span>Video no disponible · Token no configurado o expirado</span>
+                                                    {/* 🎤 AUDIO / NOTA DE VOZ */}
+                                                    {msg.type === 'audio' && msg.mediaUrl && (
+                                                        <div className={`p-2 rounded-md space-y-1.5 min-w-[230px] ${
+                                                            isLightTheme ? 'bg-black/5' : 'bg-black/25'
+                                                        }`}>
+                                                            <div className="flex items-center justify-between text-[10px] font-medium text-[#00a884]">
+                                                                <div className="flex items-center gap-1.5">
+                                                                    <Mic size={13} />
+                                                                    <span>Mensaje de voz</span>
                                                                 </div>
-                                                                <p className="text-[10px] text-slate-300 leading-relaxed">
-                                                                    Meta requiere un <strong>Token Permanente</strong> activo para descargar videos entrantes.
-                                                                </p>
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => {
-                                                                        setActiveSettingsTab('credentials');
-                                                                        setIsSettingsModalOpen(true);
-                                                                    }}
-                                                                    className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-black font-black text-[10px] uppercase rounded-lg transition-all flex items-center gap-1.5 cursor-pointer shadow"
+                                                                <a
+                                                                    href={msg.mediaUrl}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="opacity-70 hover:opacity-100 p-0.5 rounded flex items-center"
+                                                                    title="Descargar audio"
                                                                 >
-                                                                    <Key size={12} /> Configurar Token Permanente
-                                                                </button>
+                                                                    <Download size={12} />
+                                                                </a>
                                                             </div>
-                                                        ) : (
-                                                            <>
-                                                                <div className="relative rounded-xl overflow-hidden border border-white/15 bg-black group">
-                                                                    <video 
-                                                                        controls 
-                                                                        playsInline
-                                                                        preload="metadata"
-                                                                        src={msg.mediaUrl} 
-                                                                        onError={() => setFailedMedia(prev => ({ ...prev, [msg.id]: true }))}
-                                                                        className="max-h-72 w-full object-contain bg-black"
-                                                                    />
-                                                                </div>
-                                                                <div className="flex items-center gap-2 pt-1">
-                                                                    <button 
+                                                            <audio
+                                                                controls
+                                                                className="w-full h-8 rounded accent-[#00a884]"
+                                                                preload="metadata"
+                                                            >
+                                                                <source src={msg.mediaUrl} type="audio/ogg; codecs=opus" />
+                                                                <source src={msg.mediaUrl} type="audio/aac" />
+                                                                <source src={msg.mediaUrl} type="audio/mpeg" />
+                                                                Tu navegador no soporta reproducción directa de audio.
+                                                            </audio>
+                                                        </div>
+                                                    )}
+
+                                                    {/* 🎬 VIDEO INTERACTIVO CON REPRODUCTOR Y LIGHTBOX */}
+                                                    {msg.type === 'video' && msg.mediaUrl && (
+                                                        <div className="space-y-1.5">
+                                                            {failedMedia[msg.id] ? (
+                                                                <div className="p-2.5 bg-amber-950/80 border border-amber-500/40 rounded-lg space-y-1.5 text-amber-200">
+                                                                    <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-300">
+                                                                        <AlertCircle size={14} />
+                                                                        <span>Video no disponible · Token expirado</span>
+                                                                    </div>
+                                                                    <button
                                                                         type="button"
-                                                                        onClick={() => setPreviewVideoUrl(msg.mediaUrl || null)}
-                                                                        className="flex-1 py-1.5 px-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-[11px] rounded-lg flex items-center justify-center gap-1.5 transition-all shadow cursor-pointer"
+                                                                        onClick={() => {
+                                                                            setActiveSettingsTab('credentials');
+                                                                            setIsSettingsModalOpen(true);
+                                                                        }}
+                                                                        className="px-2.5 py-1 bg-amber-500 hover:bg-amber-400 text-black font-semibold text-[10px] rounded-md transition-all flex items-center gap-1 cursor-pointer"
                                                                     >
-                                                                        <Film size={13} /> <span>Pantalla Completa</span>
+                                                                        <Key size={11} /> Configurar Token
                                                                     </button>
-                                                                    <a 
-                                                                        href={msg.mediaUrl} 
-                                                                        target="_blank" 
-                                                                        rel="noopener noreferrer"
-                                                                        className="py-1.5 px-3 bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold text-[11px] rounded-lg flex items-center justify-center gap-1 transition-all shadow cursor-pointer"
-                                                                        title="Descargar video original"
-                                                                    >
-                                                                        <Download size={13} />
-                                                                    </a>
                                                                 </div>
-                                                            </>
-                                                        )}
-                                                    </div>
-                                                )}
-
-                                                {/* 📄 DOCUMENTO */}
-                                                {msg.type === 'document' && msg.mediaUrl && (
-                                                    <a 
-                                                        href={msg.mediaUrl} 
-                                                        target="_blank" 
-                                                        rel="noopener noreferrer"
-                                                        className="p-3 bg-black/40 hover:bg-black/60 border border-white/15 rounded-xl flex items-center justify-between gap-3 transition-colors text-white"
-                                                    >
-                                                        <div className="flex items-center gap-2.5 min-w-0">
-                                                            <FileText size={20} className="text-cyan-400 shrink-0" />
-                                                            <div className="min-w-0">
-                                                                <span className="font-bold text-xs truncate block">{msg.text || 'Documento adjunto'}</span>
-                                                                <span className="text-[10px] text-slate-400">Clic para descargar / abrir</span>
-                                                            </div>
+                                                            ) : (
+                                                                <>
+                                                                    <div className="relative rounded-md overflow-hidden bg-black group">
+                                                                        <video
+                                                                            controls
+                                                                            playsInline
+                                                                            preload="metadata"
+                                                                            src={msg.mediaUrl}
+                                                                            onError={() => setFailedMedia(prev => ({ ...prev, [msg.id]: true }))}
+                                                                            className="max-h-72 w-full object-contain bg-black"
+                                                                        />
+                                                                    </div>
+                                                                    <div className="flex items-center gap-1.5">
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => setPreviewVideoUrl(msg.mediaUrl || null)}
+                                                                            className="flex-1 py-1 px-2.5 bg-black/25 hover:bg-black/40 text-xs font-medium rounded-md flex items-center justify-center gap-1 transition-all cursor-pointer"
+                                                                        >
+                                                                            <Film size={12} /> <span>Ampliar video</span>
+                                                                        </button>
+                                                                        <a
+                                                                            href={msg.mediaUrl}
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer"
+                                                                            className="py-1 px-2.5 bg-black/25 hover:bg-black/40 rounded-md flex items-center justify-center transition-all cursor-pointer"
+                                                                            title="Descargar video original"
+                                                                        >
+                                                                            <Download size={12} />
+                                                                        </a>
+                                                                    </div>
+                                                                </>
+                                                            )}
                                                         </div>
-                                                        <Download size={16} className="text-slate-400 shrink-0" />
-                                                    </a>
-                                                )}
+                                                    )}
 
-                                                {/* TEXTO DEL MENSAJE (O CAPTION O FALLBACK) */}
-                                                {msg.text && msg.type !== 'document' ? (
-                                                    <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>
-                                                ) : !msg.mediaUrl && !msg.referral ? (
-                                                    <p className="leading-relaxed text-slate-300 italic">👋 Cliente inició conversación</p>
-                                                ) : null}
-
-                                                {/* ⚠️ ALERTA INLINE Y REINTENTO SI EL MENSAJE FALLÓ */}
-                                                {msg.status === 'FAILED' && (
-                                                    <div className="mt-2 p-2.5 bg-[#3b1219] border border-rose-500/60 rounded-xl flex items-center justify-between gap-2 text-rose-200 shadow-sm">
-                                                        <div className="flex items-center gap-1.5 text-[11px] font-bold">
-                                                            <AlertCircle size={14} className="text-rose-400 shrink-0" />
-                                                            <span>
-                                                                Fallo temporal · Auto-reintentando en {autoRetryCountdown}s
-                                                            </span>
-                                                        </div>
-                                                        <button
-                                                            onClick={() => handleRetryFailedMessage(msg.id, false)}
-                                                            disabled={isRetrying}
-                                                            className="px-2.5 py-1 bg-amber-500 hover:bg-amber-400 text-black text-[10px] font-black rounded-lg transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50"
-                                                            title="Reintentar este mensaje ahora"
+                                                    {/* 📄 DOCUMENTO */}
+                                                    {msg.type === 'document' && msg.mediaUrl && (
+                                                        <a
+                                                            href={msg.mediaUrl}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className={`p-2.5 rounded-md flex items-center justify-between gap-3 transition-colors ${
+                                                                isLightTheme ? 'bg-black/5 hover:bg-black/10' : 'bg-black/25 hover:bg-black/35'
+                                                            }`}
                                                         >
-                                                            <RefreshCw size={11} className={isRetrying ? 'animate-spin' : ''} />
-                                                            <span>Reintentar ya</span>
-                                                        </button>
-                                                    </div>
-                                                )}
+                                                            <div className="flex items-center gap-2.5 min-w-0">
+                                                                <FileText size={20} className="text-[#00a884] shrink-0" />
+                                                                <div className="min-w-0">
+                                                                    <span className="font-medium text-xs truncate block">{msg.text || 'Documento adjunto'}</span>
+                                                                    <span className="text-[10px] opacity-70">Clic para abrir / descargar</span>
+                                                                </div>
+                                                            </div>
+                                                            <Download size={15} className="opacity-70 shrink-0" />
+                                                        </a>
+                                                    )}
 
-                                                {/* TIMESTAMP & STATUS */}
-                                                <div className={`text-[9px] font-mono flex items-center justify-end gap-1.5 ${
-                                                    msg.status === 'FAILED' ? 'text-rose-400 font-bold' : msg.sender === 'me' ? 'text-emerald-200' : 'text-slate-400'
-                                                }`}>
-                                                    <span>{msg.time}</span>
-                                                    {msg.status === 'FAILED' ? (
-                                                        <span className="flex items-center gap-0.5 text-rose-400 font-black text-[9px] bg-rose-950/80 px-1.5 py-0.2 rounded border border-rose-500/30">
-                                                            <AlertCircle size={10} /> Falló
-                                                        </span>
-                                                    ) : msg.sender === 'me' ? (
-                                                        <CheckCheck size={12} />
+                                                    {/* TEXTO DEL MENSAJE (O CAPTION O FALLBACK) */}
+                                                    {msg.text && msg.type !== 'document' ? (
+                                                        <p className="whitespace-pre-wrap break-words">{msg.text}</p>
+                                                    ) : !msg.mediaUrl && !msg.referral ? (
+                                                        <p className="opacity-75 italic">👋 Cliente inició conversación</p>
                                                     ) : null}
-                                                </div>
 
+                                                    {/* ⚠️ ALERTA INLINE Y REINTENTO SI EL MENSAJE FALLÓ */}
+                                                    {msg.status === 'FAILED' && (
+                                                        <div className="mt-1.5 p-2 bg-[#3b1219] border border-rose-500/50 rounded-md flex items-center justify-between gap-2 text-rose-200">
+                                                            <div className="flex items-center gap-1.5 text-[10.5px] font-semibold">
+                                                                <AlertCircle size={13} className="text-rose-400 shrink-0" />
+                                                                <span>Reintentando en {autoRetryCountdown}s</span>
+                                                            </div>
+                                                            <button
+                                                                onClick={() => handleRetryFailedMessage(msg.id, false)}
+                                                                disabled={isRetrying}
+                                                                className="px-2 py-0.5 bg-amber-500 hover:bg-amber-400 text-black text-[10px] font-semibold rounded transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                                                                title="Reintentar este mensaje ahora"
+                                                            >
+                                                                <RefreshCw size={10} className={isRetrying ? 'animate-spin' : ''} />
+                                                                <span>Reintentar ya</span>
+                                                            </button>
+                                                        </div>
+                                                    )}
+
+                                                    {/* TIMESTAMP & DOBLE CHECK AZUL OFICIAL WHATSAPP */}
+                                                    <div className={`text-[10.5px] flex items-center justify-end gap-1 leading-none pt-0.5 ${
+                                                        msg.status === 'FAILED'
+                                                            ? 'text-rose-400 font-semibold'
+                                                            : isLightTheme
+                                                            ? 'text-[#667781]'
+                                                            : isMe
+                                                            ? 'text-[#ffffff99]'
+                                                            : 'text-[#8696a0]'
+                                                    }`}>
+                                                        <span>{msg.time}</span>
+                                                        {msg.status === 'FAILED' ? (
+                                                            <AlertCircle size={11} className="text-rose-400" />
+                                                        ) : isMe ? (
+                                                            <CheckCheck size={14} className="text-[#53bdeb]" />
+                                                        ) : null}
+                                                    </div>
+
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))
+                                        );
+                                    })
                                 )}
                                 <div ref={messagesEndRef} />
                             </div>
 
                             {/* Attachment Preview Chip */}
                             {pendingAttachment && (
-                                <div className="px-4 py-2 bg-[#111b21] border-t border-[#2a3942] flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
+                                <div className={`relative z-10 px-4 py-2 border-t flex items-center justify-between ${currentTheme.inputBarBg}`}>
+                                    <div className="flex items-center gap-2.5">
                                         {pendingAttachment.mediaType === 'image' ? (
-                                            <img src={pendingAttachment.url} alt="Adjunto" className="w-9 h-9 rounded-lg object-cover border border-[#00a884]/40" />
+                                            <img src={pendingAttachment.url} alt="Adjunto" className="w-10 h-10 rounded-lg object-cover border border-[#00a884]/40" />
                                         ) : (
-                                            <div className="w-9 h-9 rounded-lg bg-[#00a884]/10 border border-[#00a884]/30 flex items-center justify-center text-[#25d366]">
+                                            <div className="w-10 h-10 rounded-lg bg-[#00a884]/15 flex items-center justify-center text-[#00a884]">
                                                 <FileText size={18} />
                                             </div>
                                         )}
                                         <div>
-                                            <p className="text-xs font-bold text-white truncate max-w-[200px]">{pendingAttachment.filename}</p>
-                                            <p className="text-[10px] text-[#25d366] font-semibold uppercase">{pendingAttachment.mediaType}</p>
+                                            <p className={`text-xs font-medium truncate max-w-[220px] ${currentTheme.textPrimary}`}>{pendingAttachment.filename}</p>
+                                            <p className="text-[10px] text-[#00a884] font-semibold uppercase">{pendingAttachment.mediaType}</p>
                                         </div>
                                     </div>
                                     <button
                                         onClick={() => setPendingAttachment(null)}
-                                        className="p-1.5 rounded-lg hover:bg-[#202c33] text-slate-400 hover:text-rose-400 transition-colors"
+                                        className={`p-1.5 rounded-full transition-colors cursor-pointer ${
+                                            isLightTheme ? 'text-[#54656f] hover:bg-black/5 hover:text-rose-600' : 'text-[#8696a0] hover:bg-[#2a3942] hover:text-rose-400'
+                                        }`}
                                         title="Quitar archivo"
+                                    >
+                                        <X size={15} />
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Barra rápida de emojis estilo WhatsApp Web */}
+                            {isEmojiBarOpen && (
+                                <div className={`relative z-10 px-4 py-2 border-t flex items-center gap-1.5 overflow-x-auto scrollbar-none ${currentTheme.inputBarBg}`}>
+                                    {['😊', '👋', '✅', '📦', '⚡', '🙏', '👍', '📍', '💳', '🔥', '🎉', '💬'].map((em) => (
+                                        <button
+                                            key={em}
+                                            type="button"
+                                            onClick={() => setInputText((prev) => `${prev}${em}`)}
+                                            className={`w-8 h-8 rounded-full text-base flex items-center justify-center shrink-0 transition-transform hover:scale-110 cursor-pointer ${
+                                                isLightTheme ? 'hover:bg-black/5' : 'hover:bg-[#2a3942]'
+                                            }`}
+                                        >
+                                            {em}
+                                        </button>
+                                    ))}
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsEmojiBarOpen(false)}
+                                        className={`ml-auto p-1 rounded-full cursor-pointer ${currentTheme.textSecondary}`}
+                                        title="Cerrar emojis"
                                     >
                                         <X size={14} />
                                     </button>
                                 </div>
                             )}
 
-                            {/* Chat Input Bar */}
-                            <div className={`p-3.5 border-t ${currentTheme.inputBarBg} backdrop-blur-xl flex items-center gap-2.5 shrink-0`}>
-                                <input 
-                                    type="file" 
-                                    ref={fileInputRef} 
-                                    onChange={handleFileSelect} 
-                                    className="hidden" 
+                            {/* Chat Input Bar Idéntica a WhatsApp Web */}
+                            <div className={`relative z-10 px-2.5 sm:px-4 py-2 border-t ${currentTheme.inputBarBg} flex items-center gap-1 sm:gap-2 shrink-0`}>
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    onChange={handleFileSelect}
+                                    className="hidden"
                                     accept="image/*,video/*,audio/*,.pdf,.doc,.docx"
                                 />
                                 <button
                                     type="button"
+                                    onClick={() => setIsEmojiBarOpen((prev) => !prev)}
+                                    className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors cursor-pointer shrink-0 ${
+                                        isEmojiBarOpen
+                                            ? 'text-[#00a884] bg-[#00a884]/10'
+                                            : isLightTheme
+                                            ? 'text-[#54656f] hover:bg-black/5'
+                                            : 'text-[#8696a0] hover:text-[#e9edef] hover:bg-[#2a3942]'
+                                    }`}
+                                    title="Insertar emoji"
+                                >
+                                    <Smile size={20} />
+                                </button>
+                                <button
+                                    type="button"
                                     onClick={() => fileInputRef.current?.click()}
                                     disabled={isUploadingAttachment}
-                                    className="p-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700/70 text-slate-300 hover:text-white transition-all cursor-pointer disabled:opacity-40"
+                                    className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors cursor-pointer disabled:opacity-40 shrink-0 ${
+                                        isLightTheme
+                                            ? 'text-[#54656f] hover:bg-black/5'
+                                            : 'text-[#8696a0] hover:text-[#e9edef] hover:bg-[#2a3942]'
+                                    }`}
                                     title="Adjuntar imagen, audio o documento"
                                 >
-                                    {isUploadingAttachment ? <Loader2 size={16} className="animate-spin text-cyan-400" /> : <Paperclip size={16} />}
+                                    {isUploadingAttachment ? <Loader2 size={18} className="animate-spin text-[#00a884]" /> : <Paperclip size={19} />}
                                 </button>
                                 <button
                                     type="button"
                                     onClick={handleSendCatalogToClient}
                                     disabled={sendingCatalog}
-                                    className="p-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700/70 text-slate-300 hover:text-emerald-400 transition-all cursor-pointer disabled:opacity-40 group"
+                                    className={`w-9 h-9 rounded-full flex items-center justify-center transition-colors cursor-pointer disabled:opacity-40 shrink-0 ${
+                                        isLightTheme
+                                            ? 'text-[#54656f] hover:text-[#008069] hover:bg-black/5'
+                                            : 'text-[#8696a0] hover:text-[#00a884] hover:bg-[#2a3942]'
+                                    }`}
                                     title="Enviar Catálogo Oficial de Productos a este cliente por WhatsApp"
                                 >
-                                    {sendingCatalog ? <Loader2 size={16} className="animate-spin text-cyan-400" /> : <ShoppingBag size={16} className="group-hover:scale-110 transition-transform" />}
+                                    {sendingCatalog ? <Loader2 size={18} className="animate-spin text-[#00a884]" /> : <ShoppingBag size={18} />}
                                 </button>
                                 <input
                                     type="text"
                                     value={inputText}
                                     onChange={(e) => setInputText(e.target.value)}
                                     onKeyDown={(e) => {
-                                        if (e.key === 'Enter') handleSendMessage();
+                                        if (e.key === 'Enter') {
+                                            setIsEmojiBarOpen(false);
+                                            handleSendMessage();
+                                        }
                                     }}
                                     placeholder={
-                                        pendingAttachment 
-                                            ? "Añadir un pie de foto / mensaje..." 
-                                            : (!activeChat.ownerName 
-                                                ? "Escribe tu mensaje (se te asignará automáticamente al enviar)..." 
-                                                : "Escribe tu mensaje a través de WhatsApp API...")
+                                        pendingAttachment
+                                            ? "Añadir un comentario..."
+                                            : (!activeChat.ownerName
+                                                ? "Escribe un mensaje (se te asignará al enviar)..."
+                                                : "Escribe un mensaje")
                                     }
-                                    className={`flex-1 bg-slate-900/80 border border-slate-700/80 focus:border-emerald-500/60 rounded-xl px-4 py-2.5 text-xs text-white placeholder-slate-400 focus:outline-none shadow-inner transition-all`}
+                                    className={`flex-1 ${currentTheme.inputFieldBg} rounded-lg px-3.5 py-2.5 text-[14px] focus:outline-none transition-colors`}
                                 />
                                 <button
-                                    onClick={handleSendMessage}
+                                    onClick={() => {
+                                        setIsEmojiBarOpen(false);
+                                        handleSendMessage();
+                                    }}
                                     disabled={(!inputText.trim() && !pendingAttachment) || isUploadingAttachment}
-                                    className="p-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 disabled:opacity-30 text-slate-950 font-black transition-all shadow-lg shadow-emerald-500/20 cursor-pointer"
+                                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all cursor-pointer shrink-0 ${
+                                        (inputText.trim() || pendingAttachment) && !isUploadingAttachment
+                                            ? 'bg-[#00a884] hover:bg-[#06cf9c] text-[#111b21] shadow-sm'
+                                            : (isLightTheme ? 'text-[#54656f] opacity-50' : 'text-[#8696a0] opacity-50')
+                                    }`}
                                     title="Enviar mensaje"
                                 >
-                                    <Send size={16} />
+                                    <Send size={18} />
                                 </button>
                             </div>
                         </>
                     ) : (
-                        <div className="flex-1 flex flex-col items-center justify-center p-6 text-center max-w-2xl mx-auto space-y-6">
-                            <div className="relative">
-                                <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-emerald-500/20 via-teal-500/20 to-cyan-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-xl shadow-emerald-950/30">
-                                    <MessageSquare size={32} />
+                        <div className="relative z-10 flex-1 flex flex-col items-center justify-center p-6 text-center max-w-2xl mx-auto space-y-6">
+                            <div className="relative flex flex-col items-center">
+                                <div className={`w-20 h-20 rounded-full flex items-center justify-center shadow-sm mb-3 ${
+                                    isLightTheme ? 'bg-white border border-[#d1d7db]' : 'bg-[#202c33] border border-[#2a3942]'
+                                }`}>
+                                    <WhatsAppLogoIcon className="w-11 h-11" />
                                 </div>
-                                <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 border-2 border-[#0b141a] flex items-center justify-center text-[10px] font-black text-black">
-                                    ✓
-                                </span>
                             </div>
 
-                            <div className="space-y-1">
-                                <h3 className="text-lg md:text-xl font-black text-white tracking-tight">
-                                    Centro de Mensajería & CRM Cloud
+                            <div className="space-y-1.5">
+                                <h3 className={`text-2xl font-light tracking-tight ${currentTheme.textPrimary}`}>
+                                    WhatsApp Business · ATOMIC
                                 </h3>
-                                <p className="text-xs text-slate-400 max-w-md mx-auto">
-                                    Selecciona un chat del panel lateral o usa los filtros rápidos inteligentes para gestionar leads, cotizaciones y pedidos.
+                                <p className={`text-[13px] max-w-md mx-auto leading-relaxed ${currentTheme.textSecondary}`}>
+                                    Envía y recibe mensajes al instante, gestiona pautas de Meta Ads y atiende clientes desde una interfaz oficial sincronizada.
                                 </p>
                             </div>
 
                             {/* Tarjetas de Métricas Rápidas en Vivo */}
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 w-full">
-                                <div 
+                                <div
                                     onClick={() => setActiveCrmTab('UNANSWERED')}
-                                    className="p-3 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-amber-500/50 transition-all cursor-pointer text-left group"
+                                    className={`p-3 rounded-xl border transition-all cursor-pointer text-left group ${
+                                        isLightTheme
+                                            ? 'bg-white/95 border-[#d1d7db] hover:border-amber-400'
+                                            : 'bg-[#202c33]/95 border-[#2a3942] hover:border-amber-500/50'
+                                    }`}
                                 >
                                     <div className="flex items-center justify-between text-amber-400 mb-1">
                                         <Bell size={14} />
-                                        <span className="text-[10px] font-mono text-slate-500 group-hover:text-amber-400">Filtrar</span>
+                                        <span className={`text-[10px] font-mono ${currentTheme.textSecondary} group-hover:text-amber-400`}>Ver</span>
                                     </div>
-                                    <div className="text-xl font-black text-white">{unansweredCount}</div>
-                                    <div className="text-[10px] font-bold text-slate-400">Sin Responder</div>
+                                    <div className={`text-xl font-semibold ${currentTheme.textPrimary}`}>{unansweredCount}</div>
+                                    <div className={`text-[11px] ${currentTheme.textSecondary}`}>Sin responder</div>
                                 </div>
 
-                                <div 
+                                <div
                                     onClick={() => setActiveCrmTab('HOT_LEADS')}
-                                    className="p-3 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-orange-500/50 transition-all cursor-pointer text-left group"
+                                    className={`p-3 rounded-xl border transition-all cursor-pointer text-left group ${
+                                        isLightTheme
+                                            ? 'bg-white/95 border-[#d1d7db] hover:border-orange-400'
+                                            : 'bg-[#202c33]/95 border-[#2a3942] hover:border-orange-500/50'
+                                    }`}
                                 >
                                     <div className="flex items-center justify-between text-orange-400 mb-1">
                                         <Flame size={14} />
-                                        <span className="text-[10px] font-mono text-slate-500 group-hover:text-orange-400">Filtrar</span>
+                                        <span className={`text-[10px] font-mono ${currentTheme.textSecondary} group-hover:text-orange-400`}>Ver</span>
                                     </div>
-                                    <div className="text-xl font-black text-white">{hotLeadsCount}</div>
-                                    <div className="text-[10px] font-bold text-slate-400">Alta Intención 🔥</div>
+                                    <div className={`text-xl font-semibold ${currentTheme.textPrimary}`}>{hotLeadsCount}</div>
+                                    <div className={`text-[11px] ${currentTheme.textSecondary}`}>Alta intención</div>
                                 </div>
 
-                                <div 
+                                <div
                                     onClick={() => setActiveCrmTab('PAUTAS')}
-                                    className="p-3 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-cyan-500/50 transition-all cursor-pointer text-left group"
+                                    className={`p-3 rounded-xl border transition-all cursor-pointer text-left group ${
+                                        isLightTheme
+                                            ? 'bg-white/95 border-[#d1d7db] hover:border-[#00a884]'
+                                            : 'bg-[#202c33]/95 border-[#2a3942] hover:border-[#53bdeb]/50'
+                                    }`}
                                 >
-                                    <div className="flex items-center justify-between text-cyan-400 mb-1">
+                                    <div className="flex items-center justify-between text-[#53bdeb] mb-1">
                                         <Megaphone size={14} />
-                                        <span className="text-[10px] font-mono text-slate-500 group-hover:text-cyan-400">Filtrar</span>
+                                        <span className={`text-[10px] font-mono ${currentTheme.textSecondary} group-hover:text-[#53bdeb]`}>Ver</span>
                                     </div>
-                                    <div className="text-xl font-black text-white">{pautasCount}</div>
-                                    <div className="text-[10px] font-bold text-slate-400">Leads Meta Ads</div>
+                                    <div className={`text-xl font-semibold ${currentTheme.textPrimary}`}>{pautasCount}</div>
+                                    <div className={`text-[11px] ${currentTheme.textSecondary}`}>Pautas Meta</div>
                                 </div>
 
-                                <div 
+                                <div
                                     onClick={() => setActiveCrmTab('MY_LEADS')}
-                                    className="p-3 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-emerald-500/50 transition-all cursor-pointer text-left group"
+                                    className={`p-3 rounded-xl border transition-all cursor-pointer text-left group ${
+                                        isLightTheme
+                                            ? 'bg-white/95 border-[#d1d7db] hover:border-[#00a884]'
+                                            : 'bg-[#202c33]/95 border-[#2a3942] hover:border-[#00a884]/60'
+                                    }`}
                                 >
-                                    <div className="flex items-center justify-between text-emerald-400 mb-1">
+                                    <div className="flex items-center justify-between text-[#00a884] mb-1">
                                         <UserCheck size={14} />
-                                        <span className="text-[10px] font-mono text-slate-500 group-hover:text-emerald-400">Filtrar</span>
+                                        <span className={`text-[10px] font-mono ${currentTheme.textSecondary} group-hover:text-[#00a884]`}>Ver</span>
                                     </div>
-                                    <div className="text-xl font-black text-white">{myLeadsCount}</div>
-                                    <div className="text-[10px] font-bold text-slate-400">Mis Contactos</div>
+                                    <div className={`text-xl font-semibold ${currentTheme.textPrimary}`}>{myLeadsCount}</div>
+                                    <div className={`text-[11px] ${currentTheme.textSecondary}`}>Mis chats</div>
                                 </div>
                             </div>
 
@@ -3183,26 +3435,31 @@ export default function WhatsAppCrmClient() {
                                 <button
                                     type="button"
                                     onClick={() => handleSelectChat(filteredChats[0])}
-                                    className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs transition-all shadow-lg shadow-emerald-500/25 flex items-center gap-2 cursor-pointer hover:scale-[1.02]"
+                                    className="px-5 py-2.5 rounded-full bg-[#00a884] hover:bg-[#06cf9c] text-[#111b21] font-semibold text-xs transition-all shadow-sm flex items-center gap-2 cursor-pointer"
                                 >
-                                    <Zap size={15} /> <span>Abrir primer chat de la lista: {filteredChats[0].name}</span>
+                                    <Zap size={14} /> <span>Abrir chat: {filteredChats[0].name}</span>
                                 </button>
                             )}
 
-                            {/* Cheat-Sheet de Atajos de Teclado Superhuman */}
-                            <div className="pt-4 border-t border-slate-800/60 w-full flex items-center justify-center gap-6 text-[11px] text-slate-400 font-mono flex-wrap">
-                                <span className="flex items-center gap-1.5">
-                                    <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700 font-bold">Esc</kbd>
-                                    <span>Volver / Deseleccionar</span>
-                                </span>
-                                <span className="flex items-center gap-1.5">
-                                    <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700 font-bold">/</kbd>
-                                    <span>Buscar contactos</span>
-                                </span>
-                                <span className="flex items-center gap-1.5">
-                                    <kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700 font-bold">Alt + ↑/↓</kbd>
-                                    <span>Navegar chats</span>
-                                </span>
+                            {/* Cheat-Sheet de Atajos + Sello Oficial WhatsApp */}
+                            <div className={`pt-4 border-t ${currentTheme.rowDivider} w-full space-y-2.5`}>
+                                <div className={`flex items-center justify-center gap-5 text-[11px] font-mono flex-wrap ${currentTheme.textSecondary}`}>
+                                    <span className="flex items-center gap-1.5">
+                                        <kbd className={`px-1.5 py-0.5 rounded font-semibold ${isLightTheme ? 'bg-white border border-[#d1d7db] text-[#111b21]' : 'bg-[#202c33] border border-[#2a3942] text-[#e9edef]'}`}>Esc</kbd>
+                                        <span>Volver</span>
+                                    </span>
+                                    <span className="flex items-center gap-1.5">
+                                        <kbd className={`px-1.5 py-0.5 rounded font-semibold ${isLightTheme ? 'bg-white border border-[#d1d7db] text-[#111b21]' : 'bg-[#202c33] border border-[#2a3942] text-[#e9edef]'}`}>/</kbd>
+                                        <span>Buscar</span>
+                                    </span>
+                                    <span className="flex items-center gap-1.5">
+                                        <kbd className={`px-1.5 py-0.5 rounded font-semibold ${isLightTheme ? 'bg-white border border-[#d1d7db] text-[#111b21]' : 'bg-[#202c33] border border-[#2a3942] text-[#e9edef]'}`}>Alt + ↑/↓</kbd>
+                                        <span>Navegar chats</span>
+                                    </span>
+                                </div>
+                                <p className={`text-[11px] flex items-center justify-center gap-1.5 ${currentTheme.textSecondary}`}>
+                                    <Lock size={11} /> Conectado de forma segura mediante Meta Cloud API Oficial
+                                </p>
                             </div>
                         </div>
                     )}
@@ -3215,7 +3472,7 @@ export default function WhatsAppCrmClient() {
             {/* 🔍 MODAL: LIGHTBOX / ZOOM DE IMAGEN                           */}
             {/* ═════════════════════════════════════════════════════════════ */}
             {previewImageUrl && (
-                <div 
+                <div
                     onClick={() => setPreviewImageUrl(null)}
                     className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer"
                 >
@@ -3226,14 +3483,14 @@ export default function WhatsAppCrmClient() {
                         >
                             <X size={16} /> Cerrar vista previa
                         </button>
-                        <img 
-                            src={previewImageUrl} 
-                            alt="Vista previa en alta resolución" 
+                        <img
+                            src={previewImageUrl}
+                            alt="Vista previa en alta resolución"
                             className="max-h-[85vh] w-auto object-contain rounded-xl border border-white/20 shadow-2xl"
                         />
-                        <a 
-                            href={previewImageUrl} 
-                            target="_blank" 
+                        <a
+                            href={previewImageUrl}
+                            target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
                             className="mt-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg"
@@ -3248,12 +3505,12 @@ export default function WhatsAppCrmClient() {
             {/* 🎬 MODAL: LIGHTBOX / REPRODUCTOR DE VIDEO EN ALTA DEFINICIÓN  */}
             {/* ═════════════════════════════════════════════════════════════ */}
             {previewVideoUrl && (
-                <div 
+                <div
                     onClick={() => setPreviewVideoUrl(null)}
                     className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer"
                 >
-                    <div 
-                        onClick={(e) => e.stopPropagation()} 
+                    <div
+                        onClick={(e) => e.stopPropagation()}
                         className="relative max-w-4xl max-h-[90vh] w-full flex flex-col items-center cursor-default"
                     >
                         <button
@@ -3262,25 +3519,25 @@ export default function WhatsAppCrmClient() {
                         >
                             <X size={16} /> Cerrar reproductor
                         </button>
-                        <video 
-                            controls 
-                            autoPlay 
+                        <video
+                            controls
+                            autoPlay
                             playsInline
-                            src={previewVideoUrl} 
+                            src={previewVideoUrl}
                             className="max-h-[75vh] w-full object-contain rounded-2xl border border-cyan-500/30 shadow-2xl bg-black"
                         />
                         <div className="mt-3 flex items-center gap-3">
-                            <a 
-                                href={previewVideoUrl} 
-                                target="_blank" 
+                            <a
+                                href={previewVideoUrl}
+                                target="_blank"
                                 rel="noopener noreferrer"
                                 className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg"
                             >
                                 <Download size={14} /> Descargar Video MP4
                             </a>
-                            <a 
-                                href={previewVideoUrl} 
-                                target="_blank" 
+                            <a
+                                href={previewVideoUrl}
+                                target="_blank"
                                 rel="noopener noreferrer"
                                 className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-2 border border-slate-700 shadow-lg"
                             >
@@ -3298,7 +3555,7 @@ export default function WhatsAppCrmClient() {
             {isBroadcastModalOpen && (
                 <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4">
                     <div className="bg-[#0b131f] border border-cyan-500/40 rounded-3xl max-w-4xl w-full p-5 sm:p-7 max-h-[92vh] overflow-y-auto relative animate-in fade-in zoom-in duration-200 shadow-2xl">
-                        
+
                         {/* Cabecera del Modal */}
                         <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
                             <div className="flex items-center gap-3">
@@ -3677,19 +3934,19 @@ export default function WhatsAppCrmClient() {
 
             {isSettingsModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-3">
-                    <div 
+                    <div
                         onClick={() => {
                             setIsSettingsModalOpen(false);
                             setIsCredentialsUnlocked(false);
                             setCredentialsPinInput('');
                             setCredentialsPinError(false);
                             setSettingsMessage(null);
-                        }} 
+                        }}
                         className="absolute inset-0 bg-black/80 backdrop-blur-sm"
                     />
 
                     <div className="relative z-10 w-full max-w-2xl bg-slate-900 text-white rounded-2xl p-5 md:p-6 shadow-2xl border border-slate-700 max-h-[90vh] overflow-y-auto space-y-4">
-                        
+
                         <div className="flex items-center justify-between pb-3 border-b border-slate-800">
                             <div className="flex items-center gap-2">
                                 <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
@@ -3760,8 +4017,8 @@ export default function WhatsAppCrmClient() {
 
                         {settingsMessage && (
                             <div className={`p-3 rounded-xl text-xs font-bold flex items-center gap-2 ${
-                                settingsMessage.type === 'success' 
-                                    ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-500/30' 
+                                settingsMessage.type === 'success'
+                                    ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-500/30'
                                     : 'bg-red-950/80 text-red-300 border border-red-500/30'
                             }`}>
                                 {settingsMessage.type === 'success' ? <Check size={16} /> : <X size={16} />}
@@ -3791,9 +4048,9 @@ export default function WhatsAppCrmClient() {
                                     <div className="flex flex-col sm:flex-row items-center gap-4 pt-1">
                                         <div className="relative group shrink-0">
                                             <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-cyan-400 shadow-md shadow-cyan-950/60 bg-slate-950 flex items-center justify-center">
-                                                <img 
-                                                    src={photoPreview || profileData.profile_picture_url || `/api/whatsapp-avatar?t=${avatarKey}`} 
-                                                    alt="WhatsApp Profile Preview" 
+                                                <img
+                                                    src={photoPreview || profileData.profile_picture_url || `/api/whatsapp-avatar?t=${avatarKey}`}
+                                                    alt="WhatsApp Profile Preview"
                                                     className="w-full h-full object-cover"
                                                     onError={(e) => {
                                                         (e.target as HTMLImageElement).src = `/api/whatsapp-avatar?t=${avatarKey}`;
@@ -3812,12 +4069,12 @@ export default function WhatsAppCrmClient() {
                                         </div>
 
                                         <div className="flex-1 space-y-2 w-full">
-                                            <input 
-                                                type="file" 
-                                                ref={photoFileInputRef} 
-                                                onChange={handlePhotoFileChange} 
-                                                accept="image/png,image/jpeg,image/webp" 
-                                                className="hidden" 
+                                            <input
+                                                type="file"
+                                                ref={photoFileInputRef}
+                                                onChange={handlePhotoFileChange}
+                                                accept="image/png,image/jpeg,image/webp"
+                                                className="hidden"
                                             />
                                             <div className="flex flex-wrap items-center gap-2">
                                                 <button
@@ -3855,7 +4112,7 @@ export default function WhatsAppCrmClient() {
 
                                             <div>
                                                 <label className="block text-[10px] text-slate-400 mb-0.5 font-medium">O especificar URL directa de imagen:</label>
-                                                <input 
+                                                <input
                                                     type="url"
                                                     value={profileData.profile_picture_url}
                                                     onChange={(e) => {
@@ -3873,7 +4130,7 @@ export default function WhatsAppCrmClient() {
                                 <div className="space-y-3 bg-slate-950 p-4 rounded-xl border border-slate-800">
                                     <div>
                                         <label className="block text-[11px] text-slate-400 mb-1 font-medium">Estado / Eslogan Corto:</label>
-                                        <input 
+                                        <input
                                             type="text"
                                             value={profileData.about}
                                             onChange={(e) => setProfileData({ ...profileData, about: e.target.value })}
@@ -3884,7 +4141,7 @@ export default function WhatsAppCrmClient() {
 
                                     <div>
                                         <label className="block text-[11px] text-slate-400 mb-1 font-medium">Descripción Completa de la Empresa:</label>
-                                        <textarea 
+                                        <textarea
                                             rows={2}
                                             value={profileData.description}
                                             onChange={(e) => setProfileData({ ...profileData, description: e.target.value })}
@@ -3896,7 +4153,7 @@ export default function WhatsAppCrmClient() {
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                         <div>
                                             <label className="block text-[11px] text-slate-400 mb-1 font-medium">Correo de Ventas:</label>
-                                            <input 
+                                            <input
                                                 type="email"
                                                 value={profileData.email}
                                                 onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
@@ -3906,7 +4163,7 @@ export default function WhatsAppCrmClient() {
                                         </div>
                                         <div>
                                             <label className="block text-[11px] text-slate-400 mb-1 font-medium">Sitio Web Oficial:</label>
-                                            <input 
+                                            <input
                                                 type="text"
                                                 value={profileData.websites}
                                                 onChange={(e) => setProfileData({ ...profileData, websites: e.target.value })}
@@ -3918,7 +4175,7 @@ export default function WhatsAppCrmClient() {
 
                                     <div>
                                         <label className="block text-[11px] text-slate-400 mb-1 font-medium">Dirección Física:</label>
-                                        <input 
+                                        <input
                                             type="text"
                                             value={profileData.address}
                                             onChange={(e) => setProfileData({ ...profileData, address: e.target.value })}
@@ -3956,7 +4213,7 @@ export default function WhatsAppCrmClient() {
                                         </div>
 
                                         <div className="space-y-2">
-                                            <input 
+                                            <input
                                                 type="password"
                                                 value={credentialsPinInput}
                                                 onChange={(e) => {
@@ -4007,7 +4264,7 @@ export default function WhatsAppCrmClient() {
                                             <label className="block text-[11px] text-slate-300 font-bold mb-1">
                                                 📱 WHATSAPP PHONE NUMBER ID:
                                             </label>
-                                            <input 
+                                            <input
                                                 type="text"
                                                 value={credPhoneId}
                                                 onChange={(e) => setCredPhoneId(e.target.value)}
@@ -4020,7 +4277,7 @@ export default function WhatsAppCrmClient() {
                                             <label className="block text-[11px] text-slate-300 font-bold mb-1">
                                                 🔑 WHATSAPP ACCESS TOKEN (Bearer Token):
                                             </label>
-                                            <textarea 
+                                            <textarea
                                                 rows={3}
                                                 value={credToken}
                                                 onChange={(e) => setCredToken(e.target.value)}
@@ -4173,7 +4430,7 @@ export default function WhatsAppCrmClient() {
                                             <span className="text-[10px] font-mono text-slate-500">Facebook Business Manager</span>
                                         </label>
                                         <div className="flex gap-2">
-                                            <input 
+                                            <input
                                                 type="text"
                                                 value={catalogSettings.catalogId}
                                                 onChange={(e) => setCatalogSettings(prev => ({ ...prev, catalogId: e.target.value }))}
@@ -4219,9 +4476,9 @@ export default function WhatsAppCrmClient() {
                                             URL del Feed CSV para Meta Commerce Manager:
                                         </label>
                                         <div className="flex items-center gap-2">
-                                            <input 
-                                                type="text" 
-                                                readOnly 
+                                            <input
+                                                type="text"
+                                                readOnly
                                                 value={catalogSettings.feedUrl}
                                                 className="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs font-mono text-cyan-300 select-all"
                                             />
@@ -4338,8 +4595,8 @@ export default function WhatsAppCrmClient() {
             {/* ═════════════════════════════════════════════════════════════ */}
             {isReengageModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div 
-                        onClick={() => setIsReengageModalOpen(false)} 
+                    <div
+                        onClick={() => setIsReengageModalOpen(false)}
                         className="absolute inset-0 bg-black/80 backdrop-blur-sm"
                     />
                     <div className="relative z-10 bg-[#111b21] border border-[#2a3942] rounded-2xl max-w-xl w-full p-5 shadow-2xl text-white space-y-4">
@@ -4467,8 +4724,8 @@ export default function WhatsAppCrmClient() {
             )}
             {assignModalOpen && chatToAssign && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div 
-                        onClick={() => setAssignModalOpen(false)} 
+                    <div
+                        onClick={() => setAssignModalOpen(false)}
                         className="absolute inset-0 bg-black/80 backdrop-blur-sm"
                     />
                     <div className="relative z-10 w-full max-w-md bg-slate-900 border border-slate-700 rounded-3xl p-6 shadow-2xl space-y-4 text-white">
@@ -4477,7 +4734,7 @@ export default function WhatsAppCrmClient() {
                                 <UserCheck size={18} />
                                 <span>Asignar Asesor para Atención</span>
                             </div>
-                            <button 
+                            <button
                                 onClick={() => setAssignModalOpen(false)}
                                 className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer"
                             >
@@ -4570,15 +4827,15 @@ export default function WhatsAppCrmClient() {
             {karenModalOpen && (
                 <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 md:p-6 animate-in fade-in duration-200">
                     <div className="bg-slate-950 border border-cyan-500/30 rounded-3xl w-full max-w-4xl max-h-[92vh] flex flex-col shadow-[0_0_50px_rgba(6,182,212,0.25)] overflow-hidden">
-                        
+
                         {/* Header */}
                         <div className="p-4 md:p-6 bg-gradient-to-r from-slate-950 via-cyan-950/40 to-slate-950 border-b border-cyan-500/20 flex items-center justify-between">
                             <div className="flex items-center gap-3.5">
                                 <div className="relative group">
-                                    <img 
-                                        src={`/api/karen-avatar?t=${avatarKey}`} 
-                                        alt="Karen" 
-                                        className="w-14 h-14 rounded-2xl object-cover border-2 border-cyan-400 shadow-lg shadow-cyan-950/50" 
+                                    <img
+                                        src={`/api/karen-avatar?t=${avatarKey}`}
+                                        alt="Karen"
+                                        className="w-14 h-14 rounded-2xl object-cover border-2 border-cyan-400 shadow-lg shadow-cyan-950/50"
                                     />
                                     <button
                                         type="button"
@@ -4606,7 +4863,7 @@ export default function WhatsAppCrmClient() {
                                 </div>
                             </div>
 
-                            <button 
+                            <button
                                 onClick={() => setKarenModalOpen(false)}
                                 className="p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 transition-colors cursor-pointer"
                             >
@@ -4616,7 +4873,7 @@ export default function WhatsAppCrmClient() {
 
                         {/* Body Container */}
                         <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-5">
-                            
+
                             {/* Semáforo de Control */}
                             <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
                                 <div className="flex items-center justify-between flex-wrap gap-2">
@@ -4745,15 +5002,15 @@ export default function WhatsAppCrmClient() {
                                 {/* Chat Logs */}
                                 <div className="h-52 overflow-y-auto bg-slate-950/70 rounded-xl p-3 space-y-2.5 border border-slate-800/80">
                                     {karenChatLog.map((log, idx) => (
-                                        <div 
-                                            key={idx} 
+                                        <div
+                                            key={idx}
                                             className={`flex gap-2.5 ${log.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                                         >
                                             {log.sender === 'karen' && (
-                                                <img 
-                                                    src={`/api/karen-avatar?t=${avatarKey}`} 
-                                                    alt="Karen" 
-                                                    className="w-6 h-6 rounded-full object-cover shrink-0 mt-0.5 border border-cyan-400" 
+                                                <img
+                                                    src={`/api/karen-avatar?t=${avatarKey}`}
+                                                    alt="Karen"
+                                                    className="w-6 h-6 rounded-full object-cover shrink-0 mt-0.5 border border-cyan-400"
                                                 />
                                             )}
                                             <div className={`p-2.5 rounded-2xl max-w-[85%] text-xs leading-relaxed ${
@@ -4820,14 +5077,14 @@ export default function WhatsAppCrmClient() {
                                 </div>
 
                                 {/* Form Input */}
-                                <form 
+                                <form
                                     onSubmit={(e) => {
                                         e.preventDefault()
                                         handleKarenCommand(karenChatInput)
                                     }}
                                     className="flex gap-2"
                                 >
-                                    <input 
+                                    <input
                                         type="text"
                                         value={karenChatInput}
                                         onChange={(e) => setKarenChatInput(e.target.value)}
@@ -4853,7 +5110,7 @@ export default function WhatsAppCrmClient() {
             {/* BOTÓN FLOTANTE KAREN: JEFA DE MENSAJERÍA & AUDITORÍA EN VIVO */}
             <div className="fixed bottom-6 right-6 z-40 flex items-center gap-3">
                 {/* Badge informativo / Tooltip visible */}
-                <div 
+                <div
                     onClick={() => { setKarenModalOpen(true); fetchKarenAudit(); }}
                     className="hidden sm:flex items-center gap-2 bg-slate-950/90 border border-cyan-500/40 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-[0_0_20px_rgba(6,182,212,0.3)] cursor-pointer hover:border-cyan-400 transition-all hover:scale-105"
                 >
@@ -4880,13 +5137,13 @@ export default function WhatsAppCrmClient() {
                     title="Abrir Asistente Karen (Jefa de Mensajería & Auditoría)"
                 >
                     <div className="w-13 h-13 sm:w-15 sm:h-15 rounded-full overflow-hidden border border-cyan-500/50">
-                        <img 
-                            src={`/api/karen-avatar?t=${avatarKey}`} 
-                            alt="Karen Jefa de Mensajería" 
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" 
+                        <img
+                            src={`/api/karen-avatar?t=${avatarKey}`}
+                            alt="Karen Jefa de Mensajería"
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                         />
                     </div>
-                    
+
                     {/* Indicador de Estado Semáforo */}
                     <span className={`absolute bottom-0.5 right-0.5 w-4 h-4 rounded-full border-2 border-slate-950 shadow-md ${
                         karenAuditData?.karen?.mode === 'MANUAL' ? 'bg-rose-500' :
