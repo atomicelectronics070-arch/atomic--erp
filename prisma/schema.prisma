@@ -922,3 +922,104 @@ model NfcCampaignPost {
   errorMessage   String?  // Error message if posting failed
   createdAt      DateTime @default(now())
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FLASH MODULE — Gestión de Asesores para Editora (Stefi)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model FlashAdvisor {
+  id          String   @id @default(cuid())
+  firstName   String
+  lastName    String
+  phone       String?
+  startDate   DateTime?
+  jobRole     String?  // Puesto / cargo
+  category    String?  // Categoría Suicide Squad
+  objective   String?  @db.Text // Objetivo libre
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  publicationAssignments FlashPublicationAssignment[]
+  phoneAssignments       FlashPhoneAssignment[]
+}
+
+// Asignación de publicaciones a un asesor (Toggle 1: Publicaciones Asignadas)
+model FlashPublicationAssignment {
+  id             String   @id @default(cuid())
+  advisorId      String
+  topicTitle     String?  // Tema / grupo de anuncios
+  imageCount     Int      @default(1)       // Cantidad seleccionada (1,3,5,custom)
+  observations   String?  @db.Text
+  documentUrl    String?  // Excel / Doc adjunto
+  documentName   String?
+  status         String   @default("DRAFT") // DRAFT | ACTIVE | DONE
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  advisor        FlashAdvisor              @relation(fields: [advisorId], references: [id], onDelete: Cascade)
+  publicationImages FlashPublicationImage[]
+  evidenceSlots     FlashEvidenceSlot[]
+
+  @@index([advisorId])
+}
+
+// Imágenes que Stefi sube (los anuncios que ella diseñó)
+model FlashPublicationImage {
+  id           String   @id @default(cuid())
+  assignmentId String
+  url          String
+  fileName     String?
+  slotIndex    Int      @default(0) // posición 0-based
+  createdAt    DateTime @default(now())
+
+  assignment   FlashPublicationAssignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+
+  @@index([assignmentId])
+}
+
+// Capturas de pantalla de evidencia que el asesor mandó el anuncio
+model FlashEvidenceSlot {
+  id           String   @id @default(cuid())
+  assignmentId String
+  slotIndex    Int      @default(0)
+  screenshotUrl String?
+  uploadedAt   DateTime?
+  createdAt    DateTime @default(now())
+
+  assignment   FlashPublicationAssignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+
+  @@index([assignmentId])
+}
+
+// Asignación de números de teléfono (Toggle 2: Números de Teléfono)
+model FlashPhoneAssignment {
+  id         String   @id @default(cuid())
+  advisorId  String
+  phoneCount Int      @default(3) // 3, 5, 10 o personalizado
+  status     String   @default("ACTIVE") // ACTIVE | DONE
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  advisor    FlashAdvisor       @relation(fields: [advisorId], references: [id], onDelete: Cascade)
+  contacts   FlashPhoneContact[]
+
+  @@index([advisorId])
+}
+
+// Cada número de teléfono asignado con su propuesta
+model FlashPhoneContact {
+  id           String   @id @default(cuid())
+  assignmentId String
+  slotIndex    Int      @default(0)
+  clientName   String?
+  phone        String?
+  propuesta    String?  // PROMOCION | BRANDING | RETARGETING
+  screenshotUrl String? // Evidencia de envío
+  sentAt       DateTime?
+  createdAt    DateTime @default(now())
+
+  assignment   FlashPhoneAssignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+
+  @@index([assignmentId])
+}

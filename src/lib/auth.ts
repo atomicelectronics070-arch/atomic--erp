@@ -36,6 +36,7 @@ const ATOMIC_DEFAULT_ACCOUNTS: Record<string, { name: string; role: string; area
     "nuryvelasco2005@gmail.com":          { name: "Nury Velasco",                   role: "SALESPERSON", area: "Ventas" },
     "nuryv156@gmail.com":                 { name: "Nury Velasco",                   role: "SALESPERSON", area: "Ventas" },
     "stefy@atomicedicion.com":            { name: "Stefy (Edición & Media)",        role: "USER",        area: "Media" },
+    "stefy14nathy@gmail.com":             { name: "Stefy (Edición & Media)",        role: "USER",        area: "Media" },
     "patriciomirandayanez@gmail.com":     { name: "Patricio Esteban Miranda",       role: "SALESPERSON", area: "Ventas" },
 }
 
@@ -54,6 +55,7 @@ const NAMED_PASSWORDS: Record<string, string> = {
     "nuryvelasco2005@gmail.com":          "NuryVentas2026",
     "nuryv156@gmail.com":                 "NuryVentas2026",
     "stefy@atomicedicion.com":            "StefyEdicion2026",
+    "stefy14nathy@gmail.com":             "StefyEdicion2026",
 }
 
 export const authOptions: NextAuthOptions = {

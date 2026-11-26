@@ -15,6 +15,7 @@ import {
 } from "recharts"
 import RutaDelDiaWorkspace from "@/components/tools/RutaDelDiaWorkspace"
 import EquipoAsistenciasView from "@/components/coordinacion/EquipoAsistenciasView"
+import BancoImagenesFlash from "@/components/flash/BancoImagenesFlash"
 
 // ─────────────────────────────────────────────────────────────────────────────
 // TYPES
@@ -169,7 +170,7 @@ export default function SupervisionClient({ session }: { session: any }) {
     const [todayAttendance, setTodayAttendance] = useState<AttendanceRecord | null>(null)
 
     // ── MODAL STATE ──────────────────────────────────────────────────────────
-    const [activeTab, setActiveTab] = useState<"asistencia"|"asistencia_equipo"|"auditoria"|"ciclos"|"tareas"|"crm"|"ruta_dia">("asistencia")
+    const [activeTab, setActiveTab] = useState<"asistencia"|"asistencia_equipo"|"auditoria"|"ciclos"|"tareas"|"crm"|"ruta_dia"|"banco_flash">("asistencia")
     const [checkModal, setCheckModal] = useState<"personal"|"empresa"|"marketing"|null>(null)
     const [addCycleOpen, setAddCycleOpen] = useState(false)
     const [sendTaskOpen, setSendTaskOpen] = useState(false)
@@ -495,7 +496,7 @@ export default function SupervisionClient({ session }: { session: any }) {
 
             {/* ── TABS ────────────────────────────────────────────────── */}
             <div className="flex items-center gap-1 bg-slate-900/80 border border-slate-800 rounded-2xl p-1 overflow-x-auto">
-                {(["asistencia", "asistencia_equipo", "auditoria", "ciclos", "tareas", "crm", "ruta_dia"] as const).map(tab => {
+                {(["asistencia", "asistencia_equipo", "auditoria", "ciclos", "tareas", "crm", "ruta_dia", "banco_flash"] as const).map(tab => {
                     const labels: Record<string, string> = {
                         asistencia: "📊 Asistencia & Plano",
                         asistencia_equipo: "👥 Asistencias de Equipo (30 Días)",
@@ -503,7 +504,8 @@ export default function SupervisionClient({ session }: { session: any }) {
                         ciclos: "⏱️ Ciclos Laborales",
                         tareas: "📋 Pendientes Dirigidos",
                         crm: "👥 Clientes & CRM",
-                        ruta_dia: "🗺️ Rutas del Día & Cuadrillas"
+                        ruta_dia: "🗺️ Rutas del Día & Cuadrillas",
+                        banco_flash: "🖼️ Banco Flash (Stefi)"
                     }
                     return (
                         <button
@@ -948,6 +950,12 @@ export default function SupervisionClient({ session }: { session: any }) {
                         <div className="rounded-3xl border border-slate-800 bg-[#040714] overflow-hidden min-h-[750px]">
                             <RutaDelDiaWorkspace embedded={true} isOpen={true} />
                         </div>
+                    </motion.div>
+                )}
+
+                {activeTab === "banco_flash" && (
+                    <motion.div key="banco_flash" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-4">
+                        <BancoImagenesFlash />
                     </motion.div>
                 )}
             </AnimatePresence>

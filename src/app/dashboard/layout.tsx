@@ -249,6 +249,9 @@ export default function DashboardLayout({
                     <GlassNavItem href="/web/precios-vendedor" icon={<Tag size={18} strokeWidth={1.8} />} label="Portal Precios Vendedor" isActive={pathname.startsWith('/web/precios-vendedor') || pathname.startsWith('/dashboard/precios-vendedor')} />
                     <GlassNavItem href="/dashboard/contactos-historicos" icon={<Users size={18} strokeWidth={1.8} />} label="Contactos Históricos" isActive={pathname.startsWith('/dashboard/contactos-historicos')} />
                     <GlassNavItem href="/dashboard/scanner" icon={<Scan size={18} strokeWidth={1.8} />} label="Escáner Códigos" isActive={pathname.startsWith('/dashboard/scanner')} />
+                    {isStefyOrCris && (
+                        <GlassNavItem href="/dashboard/flash" icon={<Flame size={18} strokeWidth={1.8} />} label="Flash Studio (Edición)" isActive={pathname.startsWith('/dashboard/flash')} />
+                    )}
                     
                     {/* Solo Administrativos / Coordinación (Propietario, Admin, Juan Guzman, Cris Rivera, Software) */}
                     {(isAdministrative || canAccessCrm) && (
