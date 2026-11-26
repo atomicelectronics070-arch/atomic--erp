@@ -1,11 +1,10 @@
 "use client"
 
-import React, { useState } from "react"
+import React from "react"
 import Link from "next/link"
 import { useSession } from "next-auth/react"
-import { motion, AnimatePresence } from "framer-motion"
 import {
-  ShieldCheck, ArrowUpRight, Copy, Phone,
+  ShieldCheck, ArrowUpRight, Phone,
   Sparkles, Globe, Building2, Zap, CheckCircle2,
   MessageSquare, Users, ArrowRight, Video,
   Play, ExternalLink, BadgeCheck
@@ -14,35 +13,9 @@ import {
 export default function EquipoClient() {
   const { data: session } = useSession()
   const isRegistered = Boolean(session?.user)
-  const [toastMessage, setToastMessage] = useState<string | null>(null)
-
-  const showToast = (msg: string) => {
-    setToastMessage(msg)
-    setTimeout(() => setToastMessage(null), 2400)
-  }
-
-  const handleCopy = (text: string, label: string) => {
-    navigator.clipboard.writeText(text)
-    showToast(`${label} copiado`)
-  }
 
   return (
     <div className="min-h-screen bg-[#09090b] text-zinc-100 font-sans selection:bg-zinc-800 selection:text-white pb-28">
-
-      {/* ── TOAST NOTIFICATION ── */}
-      <AnimatePresence>
-        {toastMessage && (
-          <motion.div
-            initial={{ opacity: 0, y: -16, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, y: -16, scale: 0.98 }}
-            className="fixed top-5 inset-x-0 mx-auto w-fit max-w-sm z-50 px-4 py-2.5 rounded-full bg-zinc-900/95 border border-white/15 text-white font-medium text-xs shadow-2xl backdrop-blur-xl flex items-center gap-2.5"
-          >
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span>{toastMessage}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* ── TOP HEADER BAR ── */}
       <header className="sticky top-0 z-40 bg-zinc-950/85 backdrop-blur-2xl border-b border-white/[0.08]">
@@ -135,39 +108,21 @@ export default function EquipoClient() {
                 </p>
               </div>
 
-              {/* Identification & Direct Official Bank Account */}
+              {/* Executive Specialization & Direct Contact */}
               <div className="p-4 rounded-2xl bg-zinc-950/80 border border-white/[0.08] space-y-2.5 font-mono text-xs">
-                <div className="flex items-center justify-between pb-2 border-b border-white/[0.06]">
-                  <span className="text-[10px] uppercase text-zinc-400">Identificación / Cédula</span>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-zinc-200 font-bold">1709540478</span>
-                    <button
-                      onClick={() => handleCopy("1709540478", "Cédula Santiago Guzmán")}
-                      className="p-1 rounded text-zinc-400 hover:text-white hover:bg-white/10"
-                      title="Copiar cédula"
-                    >
-                      <Copy size={12} />
-                    </button>
-                  </div>
+                <div className="flex items-center justify-between gap-3 pb-2 border-b border-white/[0.06]">
+                  <span className="text-[10px] uppercase text-zinc-400">Especialidad</span>
+                  <span className="text-zinc-200 font-bold text-right">Software a Medida, IA &amp; Operaciones</span>
                 </div>
 
-                <div className="flex items-center justify-between pb-2 border-b border-white/[0.06]">
-                  <span className="text-[10px] uppercase text-zinc-400">Cuenta Bancaria Oficial</span>
-                  <span className="text-amber-400 font-bold">Banco Pichincha (Ahorros) · 2206020091</span>
+                <div className="flex items-center justify-between gap-3 pb-2 border-b border-white/[0.06]">
+                  <span className="text-[10px] uppercase text-zinc-400">Sede &amp; Cobertura</span>
+                  <span className="text-cyan-300 font-bold text-right">Quito Norte · 24 Provincias</span>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] uppercase text-zinc-400">Correo para Transferencias</span>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-cyan-300 font-bold">sguzmanpal@yahoo.com</span>
-                    <button
-                      onClick={() => handleCopy("sguzmanpal@yahoo.com", "Correo para transferencias")}
-                      className="p-1 rounded text-zinc-400 hover:text-white hover:bg-white/10"
-                      title="Copiar correo"
-                    >
-                      <Copy size={12} />
-                    </button>
-                  </div>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-[10px] uppercase text-zinc-400">Línea Directa</span>
+                  <span className="text-emerald-300 font-bold">+593 98 031 9050</span>
                 </div>
               </div>
             </div>
@@ -242,30 +197,21 @@ export default function EquipoClient() {
                 </p>
               </div>
 
-              {/* Identification & Direct Official Bank Account */}
+              {/* Executive Specialization & Commercial Channel */}
               <div className="p-4 rounded-2xl bg-zinc-950/80 border border-white/[0.08] space-y-2.5 font-mono text-xs">
-                <div className="flex items-center justify-between pb-2 border-b border-white/[0.06]">
-                  <span className="text-[10px] uppercase text-zinc-400">Identificación / Cédula</span>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-zinc-200 font-bold">1751940212</span>
-                    <button
-                      onClick={() => handleCopy("1751940212", "Cédula Juan Pablo Guzmán")}
-                      className="p-1 rounded text-zinc-400 hover:text-white hover:bg-white/10"
-                      title="Copiar cédula"
-                    >
-                      <Copy size={12} />
-                    </button>
-                  </div>
+                <div className="flex items-center justify-between gap-3 pb-2 border-b border-white/[0.06]">
+                  <span className="text-[10px] uppercase text-zinc-400">Especialidad</span>
+                  <span className="text-zinc-200 font-bold text-right">Importación Directa &amp; I+D Hardware</span>
                 </div>
 
-                <div className="flex items-center justify-between pb-2 border-b border-white/[0.06]">
-                  <span className="text-[10px] uppercase text-zinc-400">Cuenta Bancaria Oficial</span>
-                  <span className="text-rose-400 font-bold">Banco Guayaquil (Ahorros) · 0124465041</span>
+                <div className="flex items-center justify-between gap-3 pb-2 border-b border-white/[0.06]">
+                  <span className="text-[10px] uppercase text-zinc-400">División</span>
+                  <span className="text-amber-300 font-bold text-right">Canales B2B &amp; Laboratorio Técnico</span>
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-3">
                   <span className="text-[10px] uppercase text-zinc-400">Canal Comercial CRM</span>
-                  <span className="text-amber-300 font-bold">+593 98 947 6556</span>
+                  <span className="text-emerald-300 font-bold">+593 98 947 6556</span>
                 </div>
               </div>
             </div>
@@ -391,9 +337,9 @@ export default function EquipoClient() {
             <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
               <Building2 size={18} />
             </div>
-            <h3 className="text-sm font-bold text-white">Cuentas Bancarias a Nombre de los Directivos</h3>
+            <h3 className="text-sm font-bold text-white">Dirección &amp; Respaldo Institucional</h3>
             <p className="text-xs text-zinc-400 leading-relaxed">
-              Depósitos y transferencias 100% transparentes respaldados por los fundadores de la empresa con RUC y cédula verificable.
+              Atención directa por los fundadores y equipo de ingeniería en cada proyecto, con facturación electrónica SRI y asesoría continua.
             </p>
           </div>
 
