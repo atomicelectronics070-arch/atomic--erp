@@ -2,7 +2,7 @@
 
 import React from "react"
 import Link from "next/link"
-import { ArrowRight, ShieldCheck, Zap, Cpu, Building2, Lock, Radio, Home, Smartphone } from "lucide-react"
+import { ArrowRight, ShieldCheck, Zap, Cpu, Building2, Lock, Bot, Sparkles, MessageSquare, Mic, Home, Smartphone } from "lucide-react"
 
 export default function FuturisticParallaxSection() {
     return (
@@ -173,22 +173,74 @@ export default function FuturisticParallaxSection() {
                     </div>
                 </section>
 
-                {/* ── SECCIÓN 2: PARALLAX BG (HQ QUITO COMANDO TECNOLÓGICO) ── */}
+                {/* ── SECCIÓN 2: PARALLAX BG (SOFTWARE A MEDIDA & AGENTES DE IA POR VOZ O TEXTO) ── */}
                 <section className="parallax-section parallax-window-1">
                     <div className="parallax-overlay" />
                     
-                    <div className="relative z-10 p-6 max-w-2xl mx-auto">
-                        <div className="inline-block px-7 py-4 rounded-3xl bg-[#08090f]/85 border border-blue-400/40 backdrop-blur-md shadow-2xl">
-                            <div className="flex items-center justify-center gap-2 text-blue-300 text-xs font-mono font-bold uppercase tracking-widest mb-1.5">
-                                <Radio size={14} className="animate-pulse" />
-                                <span>Centro de Mando Operativo</span>
+                    <div className="relative z-10 px-4 py-6 max-w-5xl mx-auto w-full">
+                        <div className="rounded-3xl bg-[#08090f]/78 border border-blue-400/35 backdrop-blur-md shadow-[0_25px_70px_rgba(2,6,23,0.85)] px-6 sm:px-10 py-7 sm:py-8 space-y-5">
+                            <div className="inline-flex items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/15 border border-blue-400/35 text-blue-300 text-xs font-mono font-bold uppercase tracking-widest">
+                                <Bot size={14} className="text-blue-400 animate-pulse" />
+                                <span>Software de Administración a Medida • Agentes IA</span>
                             </div>
-                            <h3 className="text-xl sm:text-3xl font-black text-white uppercase tracking-tight font-heading">
-                                Seguridad Perimetral & Redes Críticas
-                            </h3>
-                            <p className="text-xs text-slate-300 mt-1 max-w-md mx-auto">
-                                Sede central en Quito Norte (El Labrador) con cobertura y despacho técnico a las 24 provincias del Ecuador.
-                            </p>
+
+                            <div className="space-y-2.5">
+                                <h3 className="text-2xl sm:text-4xl font-black text-white uppercase tracking-tight font-heading leading-tight">
+                                    Olvídate de los Sistemas ERP Tradicionales
+                                </h3>
+                                <p className="text-xs sm:text-sm text-slate-200 max-w-3xl mx-auto leading-relaxed">
+                                    Diseñamos software de administración totalmente a tu medida con agentes de Inteligencia Artificial que ejecutan tu operación diaria por ti —ventas, inventario, cobros y reportes— mediante comandos naturales de <strong className="text-cyan-300">voz o texto</strong>.
+                                </p>
+                            </div>
+
+                            {/* 3 Pilares estructurados de operación IA */}
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-1 text-left">
+                                <div className="p-4 rounded-2xl bg-white/[0.05] border border-white/10 hover:border-cyan-400/45 transition-all space-y-1.5">
+                                    <div className="flex items-center gap-2 text-cyan-300 text-xs font-mono font-bold uppercase tracking-wider">
+                                        <Mic size={14} />
+                                        <MessageSquare size={14} />
+                                        <span>Voz o Texto</span>
+                                    </div>
+                                    <p className="text-white font-bold text-xs sm:text-sm">Control Conversacional Directo</p>
+                                    <p className="text-slate-300 text-[11px] sm:text-xs leading-relaxed">
+                                        Habla o escribe lo que necesitas y el sistema registra, consulta y responde al instante sin menús complejos.
+                                    </p>
+                                </div>
+
+                                <div className="p-4 rounded-2xl bg-white/[0.05] border border-white/10 hover:border-blue-400/45 transition-all space-y-1.5">
+                                    <div className="flex items-center gap-2 text-blue-300 text-xs font-mono font-bold uppercase tracking-wider">
+                                        <Bot size={14} />
+                                        <span>Gestión Autónoma</span>
+                                    </div>
+                                    <p className="text-white font-bold text-xs sm:text-sm">Agentes que Trabajan por Ti</p>
+                                    <p className="text-slate-300 text-[11px] sm:text-xs leading-relaxed">
+                                        Cotizaciones, facturación, control de stock y seguimiento de clientes automatizados 24/7.
+                                    </p>
+                                </div>
+
+                                <div className="p-4 rounded-2xl bg-white/[0.05] border border-white/10 hover:border-emerald-400/45 transition-all space-y-1.5">
+                                    <div className="flex items-center gap-2 text-emerald-300 text-xs font-mono font-bold uppercase tracking-wider">
+                                        <Sparkles size={14} />
+                                        <span>100% Exclusivo</span>
+                                    </div>
+                                    <p className="text-white font-bold text-xs sm:text-sm">Diseño Totalmente a Medida</p>
+                                    <p className="text-slate-300 text-[11px] sm:text-xs leading-relaxed">
+                                        Cada flujo se adapta a la lógica real de tu empresa, sin forzarte a usar plantillas ERP genéricas.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="pt-1 flex flex-wrap items-center justify-center gap-3">
+                                <a
+                                    href={`https://wa.me/593969043453?text=${encodeURIComponent("Hola ATOMIC! Deseo diseñar un software administrativo a medida con agentes de IA por voz y texto para mi empresa.")}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="px-6 py-2.5 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg shadow-blue-600/30 inline-flex items-center gap-2"
+                                >
+                                    <span>Diseñar Mi Agente IA a Medida</span>
+                                    <ArrowRight size={14} />
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </section>
