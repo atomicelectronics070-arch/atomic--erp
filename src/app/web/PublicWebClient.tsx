@@ -4580,31 +4580,88 @@ export default function PublicWebClient({
       {/* ═══════════ RELOCATED: FUTURISTIC PARALLAX BANNER (RIGHT AFTER OFERTAS, BEFORE CATEGORIAS) ═══════════ */}
       <FuturisticParallaxSection />
 
-      {/* ═══════════ CATEGORÍAS — LARGE PRO CARDS WITH DEEP DARK SHADOW BACKDROP ═══════════ */}
-      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-16 scroll-mt-24 relative" id="categorias-seccion">
-        
-        {/* Deep ambient dark shadow backdrop behind the category zone */}
-        <div className="rounded-[40px] bg-gradient-to-b from-[#060813] via-[#090d1c] to-[#04060f] p-6 sm:p-12 border border-white/10 shadow-[0_25px_80px_rgba(0,0,0,0.8)] relative overflow-hidden">
-          
-          {/* Subtle background glow */}
-          <div className="absolute top-0 inset-x-0 h-96 bg-[radial-gradient(ellipse_at_top,_rgba(59,130,246,0.18),_transparent_70%)] pointer-events-none" />
+      {/* ═══════════ CATEGORÍAS — WIDE ARCHITECTURAL SHOWCASE WITH STRUCTURED ANIMATED SHADOWS ═══════════ */}
+      <section className="w-full max-w-[1920px] mx-auto px-3 sm:px-6 lg:px-10 xl:px-14 py-14 sm:py-20 scroll-mt-24 relative overflow-x-clip" id="categorias-seccion">
 
-          {/* Section Header */}
-          <div className="text-center max-w-3xl mx-auto mb-14 relative z-10">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/15 border border-blue-400/30 text-xs font-bold text-blue-300 mb-4 shadow-inner">
-              <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
-              <span className="font-heading uppercase tracking-wider text-[11px] font-mono">Divisiones Especializadas Oficiales</span>
+        {/* Outer structured ambient shadow pedestal (clearly visible behind the dark frame on light canvas) */}
+        <div className="relative isolate">
+          {/* Layer 1: Breathing deep architectural drop-shadow silhouette */}
+          <motion.div
+            aria-hidden="true"
+            animate={{ scale: [0.988, 1.014, 0.988], opacity: [0.68, 0.94, 0.68] }}
+            transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut" }}
+            className="pointer-events-none absolute -inset-x-3 -inset-y-3 sm:-inset-x-7 sm:-inset-y-6 rounded-[48px] bg-gradient-to-r from-slate-950/60 via-blue-950/55 to-slate-950/60 blur-2xl z-0"
+          />
+
+          {/* Layer 2: Structured sweeping lateral shadow wave behind edges */}
+          <motion.div
+            aria-hidden="true"
+            animate={{ x: ["-6%", "6%", "-6%"], opacity: [0.45, 0.85, 0.45] }}
+            transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+            className="pointer-events-none absolute -inset-x-4 top-6 -bottom-6 rounded-[44px] bg-[radial-gradient(ellipse_at_center,_rgba(15,23,42,0.55)_0%,_rgba(30,58,138,0.28)_45%,_transparent_75%)] blur-xl z-0"
+          />
+
+          {/* Layer 3: Precision architectural offset shadow frame */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -inset-2 sm:-inset-3 rounded-[44px] border border-slate-900/15 bg-slate-950/15 shadow-[0_35px_95px_-15px_rgba(2,6,23,0.75)] z-0"
+          />
+
+          {/* Deep dark monolith container */}
+          <div className="relative z-10 rounded-[34px] sm:rounded-[42px] bg-gradient-to-b from-[#060813] via-[#090d1c] to-[#04060f] p-5 sm:p-10 lg:p-12 xl:px-14 xl:py-14 border border-white/15 shadow-[0_30px_95px_rgba(2,6,23,0.88)] overflow-hidden">
+
+            {/* Interior structured engineering grid pattern */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 opacity-[0.16]"
+              style={{
+                backgroundImage:
+                  "linear-gradient(to right, rgba(148,163,184,0.24) 1px, transparent 1px), linear-gradient(to bottom, rgba(148,163,184,0.24) 1px, transparent 1px)",
+                backgroundSize: "56px 56px",
+                maskImage: "radial-gradient(ellipse 85% 75% at 50% 45%, black 35%, transparent 100%)",
+                WebkitMaskImage: "radial-gradient(ellipse 85% 75% at 50% 45%, black 35%, transparent 100%)",
+              }}
+            />
+
+            {/* Interior structured counter-orbiting depth shadows behind cards */}
+            <motion.div
+              aria-hidden="true"
+              animate={{ x: ["-10%", "14%", "-10%"], y: ["-4%", "8%", "-4%"], opacity: [0.55, 0.85, 0.55] }}
+              transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+              className="pointer-events-none absolute -top-24 left-[6%] w-[520px] h-[420px] rounded-full bg-[radial-gradient(circle,_rgba(37,99,235,0.28)_0%,_rgba(15,23,42,0.55)_52%,_transparent_75%)] blur-[72px]"
+            />
+            <motion.div
+              aria-hidden="true"
+              animate={{ x: ["10%", "-14%", "10%"], y: ["6%", "-6%", "6%"], opacity: [0.45, 0.78, 0.45] }}
+              transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+              className="pointer-events-none absolute -bottom-24 right-[6%] w-[560px] h-[440px] rounded-full bg-[radial-gradient(circle,_rgba(6,182,212,0.22)_0%,_rgba(30,41,59,0.55)_55%,_transparent_75%)] blur-[80px]"
+            />
+            <motion.div
+              aria-hidden="true"
+              animate={{ x: ["-35%", "115%"] }}
+              transition={{ duration: 11, repeat: Infinity, ease: "linear" }}
+              className="pointer-events-none absolute inset-y-0 w-72 bg-gradient-to-r from-transparent via-blue-500/[0.08] to-transparent skew-x-[-18deg]"
+            />
+
+            {/* Top soft architectural horizon shadow */}
+            <div className="absolute top-0 inset-x-0 h-80 bg-[radial-gradient(ellipse_at_top,_rgba(59,130,246,0.2),_transparent_72%)] pointer-events-none" />
+
+            {/* Section Header */}
+            <div className="text-center max-w-4xl mx-auto mb-12 lg:mb-14 relative z-10">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/15 border border-blue-400/30 text-xs font-bold text-blue-300 mb-4 shadow-inner">
+                <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+                <span className="font-heading uppercase tracking-wider text-[11px] font-mono">Divisiones Especializadas Oficiales</span>
+              </div>
+              <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight text-white font-heading mb-3">
+                CATEGORÍAS DE ESPECIALIZACIÓN
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-3xl mx-auto">
+                Nuestras 9 divisiones principales en tecnología residencial, electrónica mayorista, línea de hogar, computación, software y automatización pesada con respaldo y garantía directa.
+              </p>
             </div>
-            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black uppercase tracking-tight text-white font-heading mb-3">
-              CATEGORÍAS DE ESPECIALIZACIÓN
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-2xl mx-auto">
-              Nuestras 8 divisiones principales en tecnología residencial, electrónica mayorista, línea de hogar, computación y automatización pesada con respaldo y garantía directa.
-            </p>
-          </div>
 
-          {/* 8 CATEGORY CARDS GRID — 2 COLUMNS, EXPANDED & PROMINENT */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 relative z-10">
+            {/* 9 CATEGORY CARDS GRID — EXPANDED HORIZONTAL 3-COLUMN SHOWCASE ON DESKTOP */}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-7 lg:gap-8 xl:gap-9 sm:pl-4 relative z-10">
             {[
               {
                 id: 'cat-residencial',
@@ -4694,77 +4751,82 @@ export default function PublicWebClient({
                 query: 'software',
               },
             ].map((c: any) => (
-              <div
-                key={c.id}
-                className="relative flex flex-col sm:flex-row items-center bg-white border border-slate-200/90 hover:border-blue-400 rounded-3xl p-7 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.35)] hover:shadow-[0_25px_65px_rgba(59,130,246,0.3)] transition-all duration-300 group"
-              >
-                {/* Large Floating offset image */}
-                <div className="relative shrink-0 w-full sm:w-56 h-56 sm:h-60 -mt-8 sm:mt-0 sm:-ml-12 rounded-2xl overflow-hidden shadow-2xl border border-slate-300 bg-slate-100">
-                  <img
-                    src={c.image}
-                    alt={c.title}
-                    className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
-                  />
-                  <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-slate-950/85 backdrop-blur-md border border-white/20 text-[10px] font-mono font-bold text-white uppercase tracking-wider shadow">
-                    {c.badge}
+              <div key={c.id} className="relative group isolate">
+                {/* Structured rear depth shadow per card */}
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -inset-1.5 rounded-[28px] bg-gradient-to-br from-blue-500/25 via-slate-950/75 to-cyan-400/20 blur-lg opacity-60 group-hover:opacity-100 transition-opacity duration-500 z-0"
+                />
+                <div className="relative z-10 h-full flex flex-col sm:flex-row items-center bg-white border border-slate-200/90 hover:border-blue-400 rounded-3xl p-5 sm:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.45)] hover:shadow-[0_25px_65px_rgba(59,130,246,0.35)] transition-all duration-300">
+                  {/* Large Floating offset image */}
+                  <div className="relative shrink-0 w-full sm:w-44 lg:w-48 h-48 sm:h-52 -mt-6 sm:mt-0 sm:-ml-8 rounded-2xl overflow-hidden shadow-2xl border border-slate-300 bg-slate-100">
+                    <img
+                      src={c.image}
+                      alt={c.title}
+                      className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
+                    />
+                    <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-slate-950/85 backdrop-blur-md border border-white/20 text-[10px] font-mono font-bold text-white uppercase tracking-wider shadow">
+                      {c.badge}
+                    </div>
                   </div>
-                </div>
 
-                {/* Expanded Card content */}
-                <div className="flex flex-col pt-6 sm:pt-0 sm:pl-7 text-center sm:text-left flex-grow">
-                  <h3 className="text-xl sm:text-2xl font-black text-slate-950 font-heading tracking-tight leading-tight group-hover:text-blue-600 transition-colors uppercase">
-                    {c.title}
-                  </h3>
-                  <p className="text-xs font-bold text-blue-600 mt-1 mb-2 font-mono tracking-wider uppercase">
-                    {c.subtitle}
-                  </p>
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-6 line-clamp-3">
-                    {c.description}
-                  </p>
+                  {/* Expanded Card content */}
+                  <div className="flex flex-col pt-5 sm:pt-0 sm:pl-5 text-center sm:text-left flex-grow min-w-0">
+                    <h3 className="text-lg sm:text-xl font-black text-slate-950 font-heading tracking-tight leading-tight group-hover:text-blue-600 transition-colors uppercase">
+                      {c.title}
+                    </h3>
+                    <p className="text-[11px] font-bold text-blue-600 mt-1 mb-2 font-mono tracking-wider uppercase">
+                      {c.subtitle}
+                    </p>
+                    <p className="text-xs sm:text-[13px] text-slate-600 leading-relaxed mb-5 line-clamp-3">
+                      {c.description}
+                    </p>
 
-                  {/* Actions */}
-                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 mt-auto">
-                    {c.id === 'cat-residencial' ? (
-                      <Link
-                        href="/web/cerraduras-smart"
-                        className="px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-black font-heading transition-all shadow-md hover:scale-105 flex items-center gap-1.5"
+                    {/* Actions */}
+                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-auto">
+                      {c.id === 'cat-residencial' ? (
+                        <Link
+                          href="/web/cerraduras-smart"
+                          className="px-4 py-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-black font-heading transition-all shadow-md hover:scale-105 flex items-center gap-1.5"
+                        >
+                          <Wrench size={13} />
+                          <span>Kits + Instalación</span>
+                        </Link>
+                      ) : c.href ? (
+                        <Link
+                          href={c.href}
+                          className="px-4 py-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold font-heading transition-all shadow-md hover:scale-105 flex items-center gap-1.5"
+                        >
+                          <span>Ver Catálogo</span>
+                          <span>→</span>
+                        </Link>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            setSearchQuery(c.query);
+                            document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' });
+                          }}
+                          className="px-4 py-2 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold font-heading transition-all shadow-md hover:scale-105 cursor-pointer"
+                        >
+                          Ver Catálogo
+                        </button>
+                      )}
+                      <a
+                        href={`https://wa.me/593969043453?text=${encodeURIComponent(`Hola ATOMIC! Deseo información y cotización sobre la categoría: ${c.title}`)}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-4 py-2 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black font-heading transition-all shadow-md hover:scale-105"
                       >
-                        <Wrench size={13} />
-                        <span>Kits + Instalación</span>
-                      </Link>
-                    ) : c.href ? (
-                      <Link
-                        href={c.href}
-                        className="px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold font-heading transition-all shadow-md hover:scale-105 flex items-center gap-1.5"
-                      >
-                        <span>Ver Catálogo</span>
-                        <span>→</span>
-                      </Link>
-                    ) : (
-                      <button
-                        onClick={() => {
-                          setSearchQuery(c.query);
-                          document.getElementById('productos')?.scrollIntoView({ behavior: 'smooth' });
-                        }}
-                        className="px-5 py-2.5 rounded-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold font-heading transition-all shadow-md hover:scale-105 cursor-pointer"
-                      >
-                        Ver Catálogo
-                      </button>
-                    )}
-                    <a
-                      href={`https://wa.me/593969043453?text=${encodeURIComponent(`Hola ATOMIC! Deseo información y cotización sobre la categoría: ${c.title}`)}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black font-heading transition-all shadow-md hover:scale-105"
-                    >
-                      💬 WhatsApp
-                    </a>
+                        💬 WhatsApp
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
             ))}
-          </div>
+            </div>
 
+          </div>
         </div>
       </section>
 
