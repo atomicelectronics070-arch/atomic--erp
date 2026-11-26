@@ -10,7 +10,7 @@ import {
   Search, ImageOff, Home, Building, Factory, Cpu, Gamepad2, Utensils, Laptop, Award, User, Settings, ChevronDown, Package, LogIn, Menu,
   Wrench, Clock, ShieldCheck, Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle2, Briefcase, Loader2,
   Youtube, Play, PhoneCall, MessageSquare, Tag, Flame, Percent, ArrowUpRight, BookOpen, Layers, Check, Copy, GraduationCap, Share2,
-  MapPin, Phone, Users, ExternalLink, Globe
+  MapPin, Phone, Users, ExternalLink, Globe, ChevronUp, Plus, Minus
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -1267,6 +1267,10 @@ export default function PublicWebClient({
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false)
   const [coverflowSection, setCoverflowSection] = useState<'ofertas' | 'promociones' | 'temporada' | 'combos' | 'instalacion' | 'servicios'>('ofertas')
   const [catalogSubdivision, setCatalogSubdivision] = useState<string>("todos")
+  const [collapsedSubdivisions, setCollapsedSubdivisions] = useState<Record<string, boolean>>({})
+  const toggleSubdivisionCollapse = (id: string) => {
+    setCollapsedSubdivisions(prev => ({ ...prev, [id]: !prev[id] }))
+  }
   const [ofertasFilter, setOfertasFilter] = useState<'todos' | 'blackfriday' | 'remate'>('todos')
   const [selectedAreaId, setSelectedAreaId] = useState<string | null>(null)
   const [newsletterFilter, setNewsletterFilter] = useState<'todos' | 'educacion' | 'tecnologia'>('todos')
@@ -1412,6 +1416,46 @@ export default function PublicWebClient({
       return keywords.some((kw: string) => text.includes(kw.toLowerCase()))
     })
   }, [filteredProducts, catalogSubdivision, CATALOG_SUBDIVISIONS])
+
+  const groupedCatalogSections = useMemo(() => {
+    const matchedIds = new Set<string>()
+    const sections = CATALOG_SUBDIVISIONS
+      .filter((sub) => sub.id !== "todos")
+      .map((sub) => {
+        const keywords: string[] = (sub as any).keywords || []
+        const items = filteredProducts.filter((p: any) => {
+          const text = `${p.name || ''} ${p.description || ''} ${p.category?.name || ''}`.toLowerCase()
+          return keywords.some((kw: string) => text.includes(kw.toLowerCase()))
+        })
+        items.forEach((it: any) => matchedIds.add(it.id))
+        // 1, 2 o 3 líneas de productos (5 columnas en escritorio) según qué tan numerosa sea la categoría
+        const rowLimit = items.length > 18 ? 15 : items.length > 6 ? 10 : 5
+        const rowsCount = items.length > 18 ? 3 : items.length > 6 ? 2 : 1
+        return {
+          ...sub,
+          items,
+          rowLimit,
+          rowsCount
+        }
+      })
+      .filter((sec) => sec.items.length > 0)
+
+    const otherItems = filteredProducts.filter((p: any) => !matchedIds.has(p.id))
+    if (otherItems.length > 0) {
+      const rowLimit = otherItems.length > 18 ? 15 : otherItems.length > 6 ? 10 : 5
+      const rowsCount = otherItems.length > 18 ? 3 : otherItems.length > 6 ? 2 : 1
+      sections.push({
+        id: "otros",
+        label: "Otras Especialidades & Catálogo",
+        icon: "📦",
+        keywords: [],
+        items: otherItems,
+        rowLimit,
+        rowsCount
+      })
+    }
+    return sections
+  }, [filteredProducts, CATALOG_SUBDIVISIONS])
 
 
   return (
@@ -4794,32 +4838,75 @@ export default function PublicWebClient({
                 {displayedProducts.length} productos disponibles en esta sección
               </p>
             </div>
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="text-xs text-slate-700 hover:text-slate-950 font-bold uppercase tracking-wider flex items-center gap-1 bg-slate-100 hover:bg-slate-200 border border-slate-200 px-3 py-1.5 rounded-full cursor-pointer w-fit"
-              >
-                <span>✕ Limpiar Búsqueda</span>
-              </button>
-            )}
+            <div className="flex flex-wrap items-center gap-2">
+              {catalogSubdivision === "todos" && groupedCatalogSections.length > 0 && (
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setCollapsedSubdivisions({})}
+                    className="text-[11px] text-slate-400 hover:text-slate-700 font-medium px-2.5 py-1 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
+                  >
+                    Expandir viñetas
+                  </button>
+                  <span className="text-slate-300 text-xs">·</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const all: Record<string, boolean> = {}
+                      groupedCatalogSections.forEach(s => { all[s.id] = true })
+                      setCollapsedSubdivisions(all)
+                    }}
+                    className="text-[11px] text-slate-400 hover:text-slate-700 font-medium px-2.5 py-1 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
+                  >
+                    Minimizar viñetas
+                  </button>
+                </div>
+              )}
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="text-xs text-slate-700 hover:text-slate-950 font-bold uppercase tracking-wider flex items-center gap-1 bg-slate-100 hover:bg-slate-200 border border-slate-200 px-3 py-1.5 rounded-full cursor-pointer w-fit"
+                >
+                  <span>✕ Limpiar Búsqueda</span>
+                </button>
+              )}
+            </div>
           </div>
 
-          {/* SUBDIVISION PILLS BAR (DESAGRUPACIÓN DE CATÁLOGO) */}
-          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide no-scrollbar py-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          {/* SUBDIVISION PILLS BAR (CONTENEDORES DIVIDIDOS: EMOJI GRISÁCEO PUNTEADO | LÍNEA ENTRELAZADA | TEXTO) */}
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide no-scrollbar py-1.5" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {CATALOG_SUBDIVISIONS.map(sub => {
               const isSelected = catalogSubdivision === sub.id
               return (
                 <button
                   key={sub.id}
                   onClick={() => setCatalogSubdivision(sub.id)}
-                  className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs font-bold font-heading transition-all flex items-center gap-1.5 border cursor-pointer ${
+                  className={`shrink-0 rounded-xl text-xs font-bold font-heading transition-all inline-flex items-stretch overflow-hidden border cursor-pointer ${
                     isSelected
-                      ? "bg-slate-950 text-white border-slate-950 shadow-md scale-102"
-                      : "bg-white hover:bg-slate-100 text-slate-700 border-slate-200/90 hover:text-slate-950"
+                      ? "bg-slate-950 text-white border-slate-900 shadow-md scale-[1.02]"
+                      : "bg-white hover:bg-slate-50 text-slate-800 border-slate-200/90 hover:border-slate-300 shadow-xs"
                   }`}
                 >
-                  <span>{sub.icon}</span>
-                  <span>{sub.label}</span>
+                  {/* Parte del Emoji: ligeramente más gris, línea punteada y textura entrelazada */}
+                  <span
+                    className={`px-2.5 py-1.5 flex items-center justify-center border-r-2 border-dotted ${
+                      isSelected
+                        ? "bg-slate-800/95 border-slate-500/80"
+                        : "bg-slate-200/75 border-slate-400/75"
+                    }`}
+                    style={{
+                      backgroundImage: isSelected
+                        ? "repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(255,255,255,0.04) 3px, rgba(255,255,255,0.04) 6px), repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(255,255,255,0.03) 3px, rgba(255,255,255,0.03) 6px)"
+                        : "repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(100,116,139,0.07) 3px, rgba(100,116,139,0.07) 6px), repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(100,116,139,0.05) 3px, rgba(100,116,139,0.05) 6px)"
+                    }}
+                  >
+                    <span className="text-sm leading-none">{sub.icon}</span>
+                  </span>
+
+                  {/* Línea entrelazada sutil + Texto de la categoría */}
+                  <span className="px-3 py-1.5 flex items-center gap-1.5">
+                    <span>{sub.label}</span>
+                  </span>
                 </button>
               )
             })}
@@ -4842,41 +4929,193 @@ export default function PublicWebClient({
               Ver Todo el Catálogo
             </button>
           </div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-            {displayedProducts.slice(0, 80).map((p: any) => {
-              const imgs = safeParseArray(p.images);
-              const img = imgs[0] || '';
-              const price = calculateDiscountedPrice(p.price, userRole);
-              const categoryName = p.category?.name || 'General';
-
+        ) : catalogSubdivision === "todos" && !searchQuery.trim() ? (
+          /* ── VIÑETAS DISCRETAS POR CATEGORÍA CON MINIMIZAR / MAXIMIZAR Y 1, 2 O 3 LÍNEAS SEGÚN VOLUMEN ── */
+          <div className="space-y-8">
+            {groupedCatalogSections.map((sec) => {
+              const isCollapsed = Boolean(collapsedSubdivisions[sec.id])
+              const visibleItems = sec.items.slice(0, sec.rowLimit)
               return (
-                <div key={p.id} className="group flex flex-col bg-white border border-slate-200/90 rounded-3xl overflow-hidden hover:border-blue-400/50 hover:shadow-[0_20px_45px_rgba(0,0,0,0.08)] transition-all duration-300">
-                  <Link href={`/web/product/${p.id}`} className="relative aspect-square bg-slate-50 p-4 flex items-center justify-center overflow-hidden">
-                    <SafeImage src={img} alt={p.name} fill className="p-3 group-hover:scale-105 transition-transform duration-300" />
-                    <div className="absolute top-3 right-3 bg-slate-950 text-white font-black text-xs px-3 py-1 rounded-full shadow-md font-heading">
-                      ${price.toFixed(2)}
-                    </div>
-                  </Link>
-                  <div className="p-5 flex flex-col gap-2 flex-grow">
-                    <span className="text-[10px] font-mono text-slate-500 uppercase truncate">
-                      {categoryName}
-                    </span>
-                    <Link href={`/web/product/${p.id}`} className="text-xs font-bold text-slate-900 leading-snug line-clamp-2 group-hover:text-blue-600 transition-colors font-heading">
-                      {p.name}
-                    </Link>
-                    <a
-                      href={`https://wa.me/593969043453?text=${encodeURIComponent(`Hola ATOMIC! Deseo cotizar el producto: ${p.name} ($${price.toFixed(2)})`)}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="mt-auto w-full py-2.5 bg-slate-100 hover:bg-emerald-600 text-slate-800 hover:text-white font-bold text-[11px] uppercase tracking-wider rounded-2xl transition-all text-center flex items-center justify-center gap-1 border border-slate-200 shadow-sm"
+                <div key={sec.id} className="space-y-4">
+                  {/* Viñeta Discreta de Categoría */}
+                  <div className="flex items-center justify-between gap-3 pb-2 border-b border-dotted border-slate-300/90">
+                    <button
+                      type="button"
+                      onClick={() => toggleSubdivisionCollapse(sec.id)}
+                      className="inline-flex items-stretch rounded-xl overflow-hidden border border-slate-200/90 bg-white hover:border-slate-300 transition-all cursor-pointer group/vineta"
                     >
-                      <span>💬 Cotizar WhatsApp</span>
-                    </a>
+                      <span
+                        className="px-2.5 py-1.5 flex items-center justify-center bg-slate-200/75 border-r-2 border-dotted border-slate-400/75"
+                        style={{
+                          backgroundImage:
+                            "repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(100,116,139,0.07) 3px, rgba(100,116,139,0.07) 6px)"
+                        }}
+                      >
+                        <span className="text-sm leading-none">{sec.icon}</span>
+                      </span>
+                      <span className="px-3 py-1.5 flex items-center gap-2 text-left">
+                        <span className="w-1.5 h-1.5 rounded-full bg-slate-400 group-hover/vineta:bg-slate-800 transition-colors" />
+                        <span className="text-xs sm:text-sm font-extrabold text-slate-900 font-heading tracking-tight">
+                          {sec.label}
+                        </span>
+                        <span className="text-[10px] font-mono text-slate-400">
+                          ({sec.items.length})
+                        </span>
+                      </span>
+                    </button>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      {sec.items.length > sec.rowLimit && !isCollapsed && (
+                        <button
+                          type="button"
+                          onClick={() => setCatalogSubdivision(sec.id)}
+                          className="hidden sm:inline-flex items-center gap-1 text-[11px] font-medium text-slate-500 hover:text-slate-900 px-2.5 py-1 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
+                        >
+                          <span>Ver todos ({sec.items.length})</span>
+                          <ArrowRight size={11} />
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => toggleSubdivisionCollapse(sec.id)}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100/80 hover:bg-slate-200/80 border border-slate-200/90 text-[10px] font-medium text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
+                        title={isCollapsed ? `Maximizar ${sec.label}` : `Minimizar ${sec.label}`}
+                      >
+                        {isCollapsed ? (
+                          <>
+                            <Plus size={11} />
+                            <span>Maximizar</span>
+                          </>
+                        ) : (
+                          <>
+                            <Minus size={11} />
+                            <span>Minimizar</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
+
+                  {/* Grilla adaptativa: 1, 2 o 3 líneas según qué tan numerosa sea la categoría */}
+                  {!isCollapsed && (
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+                        {visibleItems.map((p: any) => {
+                          const imgs = safeParseArray(p.images);
+                          const img = imgs[0] || '';
+                          const price = calculateDiscountedPrice(p.price, userRole);
+                          const categoryName = p.category?.name || 'General';
+
+                          return (
+                            <div key={p.id} className="group flex flex-col bg-white border border-slate-200/90 rounded-3xl overflow-hidden hover:border-blue-400/50 hover:shadow-[0_20px_45px_rgba(0,0,0,0.08)] transition-all duration-300">
+                              <Link href={`/web/product/${p.id}`} className="relative aspect-square bg-slate-50 p-4 flex items-center justify-center overflow-hidden">
+                                <SafeImage src={img} alt={p.name} fill className="p-3 group-hover:scale-105 transition-transform duration-300" />
+                                <div className="absolute top-3 right-3 bg-slate-950 text-white font-black text-xs px-3 py-1 rounded-full shadow-md font-heading">
+                                  ${price.toFixed(2)}
+                                </div>
+                              </Link>
+                              <div className="p-5 flex flex-col gap-2 flex-grow">
+                                <span className="text-[10px] font-mono text-slate-500 uppercase truncate">
+                                  {categoryName}
+                                </span>
+                                <Link href={`/web/product/${p.id}`} className="text-xs font-bold text-slate-900 leading-snug line-clamp-2 group-hover:text-blue-600 transition-colors font-heading">
+                                  {p.name}
+                                </Link>
+                                <a
+                                  href={`https://wa.me/593969043453?text=${encodeURIComponent(`Hola ATOMIC! Deseo cotizar el producto: ${p.name} ($${price.toFixed(2)})`)}`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="mt-auto w-full py-2.5 bg-slate-100 hover:bg-emerald-600 text-slate-800 hover:text-white font-bold text-[11px] uppercase tracking-wider rounded-2xl transition-all text-center flex items-center justify-center gap-1 border border-slate-200 shadow-sm"
+                                >
+                                  <span>💬 Cotizar WhatsApp</span>
+                                </a>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {sec.items.length > sec.rowLimit && (
+                        <div className="flex justify-center pt-1">
+                          <button
+                            type="button"
+                            onClick={() => setCatalogSubdivision(sec.id)}
+                            className="text-[11px] font-medium text-slate-500 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-200 px-3.5 py-1.5 rounded-full transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+                          >
+                            <span>Explorar los {sec.items.length} productos de {sec.label}</span>
+                            <ArrowRight size={11} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-              );
+              )
             })}
+          </div>
+        ) : (
+          /* Vista de categoría filtrada o búsqueda */
+          <div className="space-y-4">
+            {catalogSubdivision !== "todos" && (
+              <div className="flex items-center justify-between gap-3 pb-2 border-b border-dotted border-slate-300/90">
+                <div className="inline-flex items-stretch rounded-xl overflow-hidden border border-slate-200 bg-white">
+                  <span
+                    className="px-2.5 py-1.5 flex items-center justify-center bg-slate-200/75 border-r-2 border-dotted border-slate-400/75"
+                  >
+                    <span className="text-sm leading-none">
+                      {CATALOG_SUBDIVISIONS.find(s => s.id === catalogSubdivision)?.icon || "📦"}
+                    </span>
+                  </span>
+                  <span className="px-3 py-1.5 text-xs sm:text-sm font-extrabold text-slate-900 font-heading flex items-center gap-2">
+                    <span>{CATALOG_SUBDIVISIONS.find(s => s.id === catalogSubdivision)?.label}</span>
+                    <span className="text-[10px] font-mono text-slate-400">({displayedProducts.length})</span>
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setCatalogSubdivision("todos")}
+                  className="text-[11px] font-medium text-slate-500 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 border border-slate-200 px-3 py-1 rounded-full transition-colors cursor-pointer"
+                >
+                  ← Ver todas las categorías
+                </button>
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+              {displayedProducts.slice(0, 80).map((p: any) => {
+                const imgs = safeParseArray(p.images);
+                const img = imgs[0] || '';
+                const price = calculateDiscountedPrice(p.price, userRole);
+                const categoryName = p.category?.name || 'General';
+
+                return (
+                  <div key={p.id} className="group flex flex-col bg-white border border-slate-200/90 rounded-3xl overflow-hidden hover:border-blue-400/50 hover:shadow-[0_20px_45px_rgba(0,0,0,0.08)] transition-all duration-300">
+                    <Link href={`/web/product/${p.id}`} className="relative aspect-square bg-slate-50 p-4 flex items-center justify-center overflow-hidden">
+                      <SafeImage src={img} alt={p.name} fill className="p-3 group-hover:scale-105 transition-transform duration-300" />
+                      <div className="absolute top-3 right-3 bg-slate-950 text-white font-black text-xs px-3 py-1 rounded-full shadow-md font-heading">
+                        ${price.toFixed(2)}
+                      </div>
+                    </Link>
+                    <div className="p-5 flex flex-col gap-2 flex-grow">
+                      <span className="text-[10px] font-mono text-slate-500 uppercase truncate">
+                        {categoryName}
+                      </span>
+                      <Link href={`/web/product/${p.id}`} className="text-xs font-bold text-slate-900 leading-snug line-clamp-2 group-hover:text-blue-600 transition-colors font-heading">
+                        {p.name}
+                      </Link>
+                      <a
+                        href={`https://wa.me/593969043453?text=${encodeURIComponent(`Hola ATOMIC! Deseo cotizar el producto: ${p.name} ($${price.toFixed(2)})`)}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-auto w-full py-2.5 bg-slate-100 hover:bg-emerald-600 text-slate-800 hover:text-white font-bold text-[11px] uppercase tracking-wider rounded-2xl transition-all text-center flex items-center justify-center gap-1 border border-slate-200 shadow-sm"
+                      >
+                        <span>💬 Cotizar WhatsApp</span>
+                      </a>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </section>
