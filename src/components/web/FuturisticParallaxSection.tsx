@@ -2,7 +2,7 @@
 
 import React from "react"
 import Link from "next/link"
-import { ArrowRight, ShieldCheck, Cpu, Building2, Lock, Bot, Sparkles, MessageSquare, Mic, Home, Smartphone } from "lucide-react"
+import { ArrowRight, ShieldCheck, Cpu, Building2, Lock, Bot, Sparkles, MessageSquare, Mic, Home, Smartphone, Globe, Package } from "lucide-react"
 
 export default function FuturisticParallaxSection() {
     return (
@@ -296,21 +296,70 @@ export default function FuturisticParallaxSection() {
                     </div>
                 </section>
 
-                {/* ── SECCIÓN 4: PARALLAX BG (LOGÍSTICA MAYORISTA & DESPACHOS) ── */}
+                {/* ── SECCIÓN 4: PARALLAX BG (DISTRIBUCIÓN MAYORISTA DIRECTA & IMPORTACIÓN GLOBAL) ── */}
                 <section className="parallax-section parallax-window-2">
                     <div className="parallax-overlay" />
                     
-                    <div className="relative z-10 p-6 max-w-2xl mx-auto">
-                        <div className="inline-block px-7 py-4 rounded-3xl bg-[#08090f]/85 border border-emerald-400/40 backdrop-blur-md shadow-2xl">
-                            <span className="text-emerald-300 text-xs font-mono font-bold uppercase tracking-widest block mb-1">
-                                📦 Distribución Mayorista Directa
+                    <div className="relative z-10 px-4 py-6 max-w-4xl mx-auto w-full">
+                        <div className="rounded-3xl bg-[#08090f]/82 border border-emerald-400/35 backdrop-blur-md shadow-[0_25px_70px_rgba(2,6,23,0.85)] px-6 sm:px-10 py-7 space-y-4">
+                            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-400/35 text-emerald-300 text-xs font-mono font-bold uppercase tracking-widest">
+                                <Package size={14} className="text-emerald-300" />
+                                <span>Distribución Mayorista Directa</span>
                             </span>
-                            <h3 className="text-xl sm:text-3xl font-black text-white uppercase tracking-tight font-heading">
-                                Stock Físico Inmediato & Despacho Express
+
+                            <h3 className="text-2xl sm:text-4xl font-black text-white uppercase tracking-tight font-heading leading-tight">
+                                Importación Global Verificada & Stock Inmediato
                             </h3>
-                            <p className="text-xs text-slate-300 mt-1 max-w-md mx-auto">
-                                Precios de contenedor e importación a partir de 6 unidades para tiendas, técnicos y emprendedores.
+
+                            <p className="text-xs sm:text-sm text-slate-200 max-w-3xl mx-auto leading-relaxed">
+                                Contamos con <strong className="text-emerald-300">relaciones comerciales verificadas con importadores de distintas áreas</strong> y proveedores directos en distintos países. Visita nuestra línea de <strong className="text-white">Importación e Industria</strong> y dispón de stock inmediato en todo el mundo con respaldo logístico real.
                             </p>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1 text-left">
+                                <div className="p-3.5 rounded-2xl bg-white/[0.05] border border-white/10 space-y-1">
+                                    <div className="flex items-center gap-1.5 text-emerald-300 text-[11px] font-mono font-bold uppercase tracking-wider">
+                                        <ShieldCheck size={13} />
+                                        <span>Alianzas Verificadas</span>
+                                    </div>
+                                    <p className="text-slate-300 text-xs leading-snug">
+                                        Importadores auditados en múltiples sectores industriales y tecnológicos.
+                                    </p>
+                                </div>
+                                <div className="p-3.5 rounded-2xl bg-white/[0.05] border border-white/10 space-y-1">
+                                    <div className="flex items-center gap-1.5 text-cyan-300 text-[11px] font-mono font-bold uppercase tracking-wider">
+                                        <Globe size={13} />
+                                        <span>Alcance Multipaís</span>
+                                    </div>
+                                    <p className="text-slate-300 text-xs leading-snug">
+                                        Proveedores directos estratégicos en Asia, EE. UU., Europa y Latinoamérica.
+                                    </p>
+                                </div>
+                                <div className="p-3.5 rounded-2xl bg-white/[0.05] border border-white/10 space-y-1">
+                                    <div className="flex items-center gap-1.5 text-amber-300 text-[11px] font-mono font-bold uppercase tracking-wider">
+                                        <Package size={13} />
+                                        <span>Stock Inmediato</span>
+                                    </div>
+                                    <p className="text-slate-300 text-xs leading-snug">
+                                        Disponibilidad ágil y despacho directo para proyectos, tiendas y mayoristas.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="pt-2 flex flex-wrap items-center justify-center gap-3">
+                                <Link
+                                    href="/web/bajo-pedido"
+                                    className="px-6 py-2.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs uppercase tracking-wider transition-all shadow-lg shadow-emerald-600/30 inline-flex items-center gap-2"
+                                >
+                                    <span>Línea de Importación e Industria</span>
+                                    <ArrowRight size={14} />
+                                </Link>
+                                <Link
+                                    href="/web/guia-proveedores"
+                                    className="px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider border border-white/15 transition-all"
+                                >
+                                    Red de Proveedores
+                                </Link>
+                            </div>
                         </div>
                     </div>
                 </section>
