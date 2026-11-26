@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useMemo } from "react"
+import { useSession } from "next-auth/react"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import Image from "next/image"
@@ -11,7 +12,8 @@ import {
   Home, Wrench, Shield, CheckCircle2, X, Flame, Gift,
   MapPin, Building2, Clock, Zap, Phone, ArrowUpRight,
   Filter, BadgeCheck, SlidersHorizontal, Send, Globe, Tag, FileText, BatteryCharging,
-  Calculator, Loader2, Plus, Minus, Trash2, ShoppingCart
+  Calculator, Loader2, Plus, Minus, Trash2, ShoppingCart,
+  Lock, Unlock, Briefcase, ShoppingBag
 } from "lucide-react"
 import QuotationClient from "@/app/dashboard/quotes/QuotationClient"
 
@@ -684,9 +686,11 @@ interface ProductCardProps {
   onAddToQuote: (product: any) => void
   onDirectQuote: (product: any) => void
   addedQty?: number
+  isUnlocked?: boolean
+  onRequestUnlock?: (reason?: "cotizar" | "descuentos") => void
 }
 
-function ProductCard({ product: p, copiedId, copyToClipboard, onAddToQuote, onDirectQuote, addedQty = 0 }: ProductCardProps) {
+function ProductCard({ product: p, copiedId, copyToClipboard, onAddToQuote, onDirectQuote, addedQty = 0, isUnlocked = false, onRequestUnlock }: ProductCardProps) {
   const saleP = Number(p.salePrice) || 0
   const comision20 = saleP * 0.20
   const productWebUrl = `https://atomiccotizador.shop/web/product/${p.id}`
@@ -918,19 +922,37 @@ function ProductCard({ product: p, copiedId, copyToClipboard, onAddToQuote, onDi
       </div>
 
       {/* Pricing Breakdown */}
-      <div className="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-zinc-950/80 border border-white/5">
+      <div className="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-zinc-950/80 border border-white/5 items-center">
         <div>
           <span className="block text-[9px] font-mono text-zinc-400 uppercase">PVP Público</span>
           <span className="text-base font-bold text-white font-mono">
             ${saleP.toFixed(2)} <span className="text-[10px] text-zinc-400 font-normal">USD</span>
           </span>
         </div>
-        <div className="text-right">
-          <span className="block text-[9px] font-mono text-emerald-400 uppercase">Comisión (20%)</span>
-          <span className="text-sm font-bold text-emerald-400 font-mono">
-            +${comision20.toFixed(2)} USD
-          </span>
-        </div>
+        {isUnlocked ? (
+          <div className="text-right">
+            <span className="block text-[9px] font-mono text-emerald-400 uppercase">Desc. / Margen (20%)</span>
+            <span className="text-sm font-bold text-emerald-400 font-mono">
+              +${comision20.toFixed(2)} USD
+            </span>
+          </div>
+        ) : (
+          <div className="text-right flex flex-col items-end justify-center gap-0.5">
+            <span className="text-[9px] font-mono text-zinc-500 uppercase flex items-center gap-1">
+              <Lock size={9} className="text-zinc-500" />
+              <span>Desc. disponibles</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => onRequestUnlock?.("descuentos")}
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 text-[10px] font-mono text-zinc-300 hover:text-white transition-colors cursor-pointer"
+              title="Desbloquear descuentos disponibles y cotizador"
+            >
+              <Lock size={9} className="text-orange-400/80" />
+              <span>Desbloquear</span>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Action Toolbar */}
@@ -1097,6 +1119,16 @@ ${productWebUrl}
 }
 
 export default function PreciosVendedorClient() {
+  const { data: session } = useSession()
+  const isAuthenticated = Boolean(session?.user)
+  const [isUnlockModalOpen, setIsUnlockModalOpen] = useState(false)
+  const [unlockReason, setUnlockReason] = useState<"cotizar" | "descuentos">("cotizar")
+
+  const handleRequestUnlock = (reason: "cotizar" | "descuentos" = "descuentos") => {
+    setUnlockReason(reason)
+    setIsUnlockModalOpen(true)
+  }
+
   const [activeTab, setActiveTab] = useState<TabType>("pvp-todos")
   const [selectedMsgCat, setSelectedMsgCat] = useState("saludos")
   const [msgSearchTerm, setMsgSearchTerm] = useState("")
@@ -1173,6 +1205,10 @@ export default function PreciosVendedorClient() {
       syncDraftStorage(quoteDraftItems)
     } else {
       setActiveQuoteItems(undefined)
+    }
+    if (!isAuthenticated) {
+      handleRequestUnlock("cotizar")
+      return
     }
     setIsQuoteModalOpen(true)
     if (quoteBootstrap) return
@@ -1656,6 +1692,22 @@ export default function PreciosVendedorClient() {
 
           {/* Quick External Actions */}
           <div className="flex items-center gap-2">
+            {!isAuthenticated ? (
+              <button
+                type="button"
+                onClick={() => handleRequestUnlock("descuentos")}
+                className="px-2.5 py-1.5 rounded-lg bg-white/[0.03] hover:bg-orange-500/15 border border-white/[0.08] hover:border-orange-500/35 text-[11px] font-medium text-zinc-400 hover:text-orange-300 transition-all flex items-center gap-1.5 cursor-pointer"
+                title="Desbloquear descuentos y cotizador completo"
+              >
+                <Lock size={11} className="text-orange-400/80" />
+                <span>Desbloquear</span>
+              </button>
+            ) : (
+              <span className="px-2.5 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/25 text-[11px] font-medium text-emerald-300 flex items-center gap-1.5">
+                <Unlock size={11} />
+                <span className="hidden sm:inline">Desbloqueado</span>
+              </span>
+            )}
             <Link
               href="/web"
               className="px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-xs font-medium text-zinc-300 hover:text-white transition-all flex items-center gap-1.5"
@@ -1840,10 +1892,24 @@ export default function PreciosVendedorClient() {
                     <span className="block text-[10px] font-mono uppercase text-cyan-400/90">Inventario Central</span>
                     <span className="text-sm font-mono font-bold text-white">3.000+ SKUs</span>
                   </div>
-                  <div className="px-3.5 py-2 rounded-xl bg-zinc-950/90 border border-emerald-500/30 text-right shadow-sm">
-                    <span className="block text-[10px] font-mono uppercase text-emerald-400">Comisión Vendedor</span>
-                    <span className="text-sm font-mono font-bold text-emerald-400">20% Directo</span>
-                  </div>
+                  {isAuthenticated ? (
+                    <div className="px-3.5 py-2 rounded-xl bg-zinc-950/90 border border-emerald-500/30 text-right shadow-sm">
+                      <span className="block text-[10px] font-mono uppercase text-emerald-400">Comisión Vendedor</span>
+                      <span className="text-sm font-mono font-bold text-emerald-400">20% Directo</span>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => handleRequestUnlock("descuentos")}
+                      className="px-3.5 py-2 rounded-xl bg-zinc-950/90 hover:bg-zinc-900 border border-white/10 hover:border-orange-500/35 text-right shadow-sm transition-all cursor-pointer group"
+                    >
+                      <span className="block text-[10px] font-mono uppercase text-zinc-400 group-hover:text-orange-300 transition-colors">Descuentos Disp.</span>
+                      <span className="text-xs font-mono font-semibold text-zinc-300 group-hover:text-white flex items-center justify-end gap-1.5 mt-0.5">
+                        <Lock size={11} className="text-orange-400/80" />
+                        <span>Desbloquear</span>
+                      </span>
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -2081,6 +2147,8 @@ export default function PreciosVendedorClient() {
                     onAddToQuote={handleAddToQuoteDraft}
                     onDirectQuote={handleDirectQuoteProduct}
                     addedQty={getProductDraftQty(p)}
+                    isUnlocked={isAuthenticated}
+                    onRequestUnlock={handleRequestUnlock}
                   />
                 ))}
               </div>
@@ -2398,6 +2466,8 @@ export default function PreciosVendedorClient() {
                     onAddToQuote={handleAddToQuoteDraft}
                     onDirectQuote={handleDirectQuoteProduct}
                     addedQty={getProductDraftQty(p)}
+                    isUnlocked={isAuthenticated}
+                    onRequestUnlock={handleRequestUnlock}
                   />
                 ))}
               </div>
@@ -2542,92 +2612,116 @@ export default function PreciosVendedorClient() {
               </p>
             </div>
 
-            {/* Infografía oficial toggle/download */}
-            <div className="p-4 rounded-xl bg-zinc-900/30 border border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-2.5">
-                <ShieldCheck size={18} className="text-zinc-400" />
-                <div>
-                  <h4 className="text-xs font-semibold text-zinc-200">Infografía Oficial de Descuentos</h4>
-                  <p className="text-[11px] text-zinc-400 font-mono">Documento gráfico auditable para compartir con clientes</p>
+            {!isAuthenticated ? (
+              <div className="relative rounded-2xl bg-zinc-900/50 border border-white/[0.08] p-8 sm:p-12 overflow-hidden flex flex-col items-center justify-center text-center">
+                <div className="w-11 h-11 rounded-2xl bg-orange-500/10 border border-orange-500/25 flex items-center justify-center mb-4">
+                  <Lock size={18} className="text-orange-400" />
                 </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setImageModalUrl("/images/pagos/politicas-descuentos-anticipo.png")}
-                  className="px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 hover:text-white text-xs font-medium transition-all"
-                >
-                  Visualizar Imagen
-                </button>
-                <a
-                  href="/images/pagos/politicas-descuentos-anticipo.png"
-                  download="politicas-descuentos-anticipo.png"
-                  className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-white/10 text-white text-xs font-medium transition-all flex items-center gap-1.5"
-                >
-                  <Download size={12} />
-                  <span>Descargar</span>
-                </a>
-              </div>
-            </div>
-
-            {/* Tiers Grid */}
-            <div className="grid md:grid-cols-3 gap-4">
-              {/* VIP 13% */}
-              <div className="p-5 rounded-xl bg-zinc-900/40 border border-white/[0.08] space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase text-zinc-400">Compras $500 - $1.000+</span>
-                  <span className="px-2 py-0.5 rounded bg-zinc-800 text-white font-mono text-xs font-semibold">13% OFF</span>
-                </div>
-                <h4 className="text-base font-semibold text-white">Descuento VIP del 13%</h4>
-                <p className="text-xs text-zinc-400 leading-relaxed">
-                  Para pagos <strong>100% anticipados</strong> en compras superiores a $500. Incluye flete express a domicilio <strong>gratuito</strong> a nivel nacional.
+                <h4 className="text-base sm:text-lg font-semibold text-white mb-1.5">
+                  Escala de descuentos bloqueada
+                </h4>
+                <p className="text-xs sm:text-sm text-zinc-400 max-w-md leading-relaxed mb-5">
+                  Los tabuladores de descuentos por pronto pago e infografías comerciales están reservados para vendedores y compradores registrados.
                 </p>
                 <button
-                  onClick={() => handleCopyText("🎉 ¡Excelente noticia! Al cancelar el 100% anticipado de tu compra mayor a $500, te aplicamos un DESCUENTO EXCLUSIVO DEL 13% sobre el total y te OBSEQUIAMOS el envío a domicilio a tu ciudad.", "Mensaje Descuento 13%")}
-                  className="w-full py-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-200 hover:text-white text-xs font-medium transition-all flex items-center justify-center gap-1.5"
+                  type="button"
+                  onClick={() => handleRequestUnlock("descuentos")}
+                  className="px-4 py-2 rounded-xl bg-white/[0.06] hover:bg-orange-500/20 border border-white/15 hover:border-orange-500/40 text-xs font-medium text-zinc-200 hover:text-white transition-all flex items-center gap-2 cursor-pointer"
                 >
-                  <Copy size={12} />
-                  <span>Copiar Mensaje</span>
+                  <Lock size={12} className="text-orange-400" />
+                  <span>Desbloquear</span>
                 </button>
               </div>
-
-              {/* Plus 10% */}
-              <div className="p-5 rounded-xl bg-zinc-900/40 border border-white/[0.08] space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase text-zinc-400">Compras $100 - $499</span>
-                  <span className="px-2 py-0.5 rounded bg-zinc-800 text-white font-mono text-xs font-semibold">10% OFF</span>
+            ) : (
+              <>
+                {/* Infografía oficial toggle/download */}
+                <div className="p-4 rounded-xl bg-zinc-900/30 border border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <ShieldCheck size={18} className="text-zinc-400" />
+                    <div>
+                      <h4 className="text-xs font-semibold text-zinc-200">Infografía Oficial de Descuentos</h4>
+                      <p className="text-[11px] text-zinc-400 font-mono">Documento gráfico auditable para compartir con clientes</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setImageModalUrl("/images/pagos/politicas-descuentos-anticipo.png")}
+                      className="px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-300 hover:text-white text-xs font-medium transition-all"
+                    >
+                      Visualizar Imagen
+                    </button>
+                    <a
+                      href="/images/pagos/politicas-descuentos-anticipo.png"
+                      download="politicas-descuentos-anticipo.png"
+                      className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 border border-white/10 text-white text-xs font-medium transition-all flex items-center gap-1.5"
+                    >
+                      <Download size={12} />
+                      <span>Descargar</span>
+                    </a>
+                  </div>
                 </div>
-                <h4 className="text-base font-semibold text-white">Descuento Plus del 10%</h4>
-                <p className="text-xs text-zinc-400 leading-relaxed">
-                  Para compras de $100 a $499 cancelando el 100% anticipado. Se otorga despacho preferencial y embalaje reforzado.
-                </p>
-                <button
-                  onClick={() => handleCopyText("🎁 Si realizas el pago del 100% anticipado hoy mismo, te autorizo un DESCUENTO ESPECIAL DEL 10% más despacho preferencial express asegurado a tu domicilio.", "Mensaje Descuento 10%")}
-                  className="w-full py-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-200 hover:text-white text-xs font-medium transition-all flex items-center justify-center gap-1.5"
-                >
-                  <Copy size={12} />
-                  <span>Copiar Mensaje</span>
-                </button>
-              </div>
 
-              {/* Base 5% */}
-              <div className="p-5 rounded-xl bg-zinc-900/40 border border-white/[0.08] space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase text-zinc-400">Compras $0 - $99</span>
-                  <span className="px-2 py-0.5 rounded bg-zinc-800 text-white font-mono text-xs font-semibold">5% OFF</span>
+                {/* Tiers Grid */}
+                <div className="grid md:grid-cols-3 gap-4">
+                  {/* VIP 13% */}
+                  <div className="p-5 rounded-xl bg-zinc-900/40 border border-white/[0.08] space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono uppercase text-zinc-400">Compras $500 - $1.000+</span>
+                      <span className="px-2 py-0.5 rounded bg-zinc-800 text-white font-mono text-xs font-semibold">13% OFF</span>
+                    </div>
+                    <h4 className="text-base font-semibold text-white">Descuento VIP del 13%</h4>
+                    <p className="text-xs text-zinc-400 leading-relaxed">
+                      Para pagos <strong>100% anticipados</strong> en compras superiores a $500. Incluye flete express a domicilio <strong>gratuito</strong> a nivel nacional.
+                    </p>
+                    <button
+                      onClick={() => handleCopyText("🎉 ¡Excelente noticia! Al cancelar el 100% anticipado de tu compra mayor a $500, te aplicamos un DESCUENTO EXCLUSIVO DEL 13% sobre el total y te OBSEQUIAMOS el envío a domicilio a tu ciudad.", "Mensaje Descuento 13%")}
+                      className="w-full py-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-200 hover:text-white text-xs font-medium transition-all flex items-center justify-center gap-1.5"
+                    >
+                      <Copy size={12} />
+                      <span>Copiar Mensaje</span>
+                    </button>
+                  </div>
+
+                  {/* Plus 10% */}
+                  <div className="p-5 rounded-xl bg-zinc-900/40 border border-white/[0.08] space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono uppercase text-zinc-400">Compras $100 - $499</span>
+                      <span className="px-2 py-0.5 rounded bg-zinc-800 text-white font-mono text-xs font-semibold">10% OFF</span>
+                    </div>
+                    <h4 className="text-base font-semibold text-white">Descuento Plus del 10%</h4>
+                    <p className="text-xs text-zinc-400 leading-relaxed">
+                      Para compras de $100 a $499 cancelando el 100% anticipado. Se otorga despacho preferencial y embalaje reforzado.
+                    </p>
+                    <button
+                      onClick={() => handleCopyText("🎁 Si realizas el pago del 100% anticipado hoy mismo, te autorizo un DESCUENTO ESPECIAL DEL 10% más despacho preferencial express asegurado a tu domicilio.", "Mensaje Descuento 10%")}
+                      className="w-full py-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-200 hover:text-white text-xs font-medium transition-all flex items-center justify-center gap-1.5"
+                    >
+                      <Copy size={12} />
+                      <span>Copiar Mensaje</span>
+                    </button>
+                  </div>
+
+                  {/* Base 5% */}
+                  <div className="p-5 rounded-xl bg-zinc-900/40 border border-white/[0.08] space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono uppercase text-zinc-400">Compras $0 - $99</span>
+                      <span className="px-2 py-0.5 rounded bg-zinc-800 text-white font-mono text-xs font-semibold">5% OFF</span>
+                    </div>
+                    <h4 className="text-base font-semibold text-white">Descuento Base del 5%</h4>
+                    <p className="text-xs text-zinc-400 leading-relaxed">
+                      Para compras menores a $100 con pago anticipado del 100%. Facilita el redondeo comercial para cierre inmediato.
+                    </p>
+                    <button
+                      onClick={() => handleCopyText("✅ Por pronto pago anticipado te otorgo un 5% de descuento inmediato para cerrar tu orden hoy mismo y asegurar la entrega inmediata.", "Mensaje Descuento 5%")}
+                      className="w-full py-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-200 hover:text-white text-xs font-medium transition-all flex items-center justify-center gap-1.5"
+                    >
+                      <Copy size={12} />
+                      <span>Copiar Mensaje</span>
+                    </button>
+                  </div>
                 </div>
-                <h4 className="text-base font-semibold text-white">Descuento Base del 5%</h4>
-                <p className="text-xs text-zinc-400 leading-relaxed">
-                  Para compras menores a $100 con pago anticipado del 100%. Facilita el redondeo comercial para cierre inmediato.
-                </p>
-                <button
-                  onClick={() => handleCopyText("✅ Por pronto pago anticipado te otorgo un 5% de descuento inmediato para cerrar tu orden hoy mismo y asegurar la entrega inmediata.", "Mensaje Descuento 5%")}
-                  className="w-full py-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-zinc-200 hover:text-white text-xs font-medium transition-all flex items-center justify-center gap-1.5"
-                >
-                  <Copy size={12} />
-                  <span>Copiar Mensaje</span>
-                </button>
-              </div>
-            </div>
+              </>
+            )}
           </div>
         )}
 
@@ -3409,9 +3503,19 @@ export default function PreciosVendedorClient() {
                     </button>
                     <Link
                       href="/dashboard/quotes"
-                      onClick={() => syncDraftStorage(quoteDraftItems)}
+                      onClick={(e) => {
+                        syncDraftStorage(quoteDraftItems)
+                        if (!isAuthenticated) {
+                          e.preventDefault()
+                          handleRequestUnlock("cotizar")
+                        }
+                      }}
                       className="py-2.5 px-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-white/10 text-zinc-200 text-xs font-medium flex items-center gap-1 transition-colors"
-                      title="Ir al Cotizador Oficial (/dashboard/quotes) con estos productos cargados"
+                      title={
+                        isAuthenticated
+                          ? "Ir al Cotizador Oficial (/dashboard/quotes) con estos productos cargados"
+                          : "Desbloquear cotizador oficial creando cuenta"
+                      }
                     >
                       <ExternalLink size={13} />
                     </Link>
@@ -3475,6 +3579,107 @@ export default function PreciosVendedorClient() {
                   onCloseModal={() => setIsQuoteModalOpen(false)}
                 />
               )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ═══════════ MODAL DISCRETO DE DESBLOQUEO (VENDEDOR / COMPRADOR) ═══════════ */}
+      <AnimatePresence>
+        {isUnlockModalOpen && !isAuthenticated && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsUnlockModalOpen(false)}
+            className="fixed inset-0 z-[105] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: 12 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md rounded-2xl bg-zinc-950 border border-white/15 shadow-2xl overflow-hidden"
+            >
+              <div className="px-5 py-4 border-b border-white/[0.08] flex items-center justify-between bg-zinc-900/60">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center">
+                    <Lock size={15} className="text-orange-400" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-white">
+                      {unlockReason === "cotizar" ? "Desbloquear Cotizador Directo" : "Desbloquear Descuentos Disponibles"}
+                    </h3>
+                    <p className="text-[11px] text-zinc-400">
+                      Acceso exclusivo para cuentas registradas
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsUnlockModalOpen(false)}
+                  className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer"
+                  aria-label="Cerrar"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              <div className="p-5 space-y-4">
+                <p className="text-xs text-zinc-300 leading-relaxed">
+                  {unlockReason === "cotizar"
+                    ? "Puedes revisar precios PVP y armar tu pre-selección libremente. Para generar la cotización oficial y ver condiciones finales, crea tu cuenta como vendedor o comprador:"
+                    : "El catálogo PVP es abierto para consulta general. Para revelar la columna de descuentos disponibles y comisiones, selecciona tu tipo de cuenta:"}
+                </p>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Link
+                    href="/register?role=SALESPERSON"
+                    className="group p-4 rounded-xl bg-zinc-900/80 hover:bg-orange-500/10 border border-white/10 hover:border-orange-500/40 transition-all flex flex-col gap-2"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="w-8 h-8 rounded-lg bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-orange-400">
+                        <Briefcase size={15} />
+                      </div>
+                      <ArrowUpRight size={14} className="text-zinc-500 group-hover:text-orange-400 transition-colors" />
+                    </div>
+                    <div>
+                      <span className="block text-xs font-semibold text-white">Soy Vendedor</span>
+                      <span className="block text-[11px] text-zinc-400 mt-0.5 leading-snug">
+                        Acceso a márgenes, descuentos y cotizador rápido.
+                      </span>
+                    </div>
+                  </Link>
+
+                  <Link
+                    href="/register?role=CONSUMIDOR"
+                    className="group p-4 rounded-xl bg-zinc-900/80 hover:bg-emerald-500/10 border border-white/10 hover:border-emerald-500/40 transition-all flex flex-col gap-2"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                        <ShoppingBag size={15} />
+                      </div>
+                      <ArrowUpRight size={14} className="text-zinc-500 group-hover:text-emerald-400 transition-colors" />
+                    </div>
+                    <div>
+                      <span className="block text-xs font-semibold text-white">Soy Comprador</span>
+                      <span className="block text-[11px] text-zinc-400 mt-0.5 leading-snug">
+                        Solicita proformas oficiales y beneficios por volumen.
+                      </span>
+                    </div>
+                  </Link>
+                </div>
+
+                <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-zinc-400">
+                  <span>¿Ya tienes cuenta activa?</span>
+                  <Link
+                    href="/login?callbackUrl=%2Fweb%2Fprecios-vendedor"
+                    className="font-medium text-orange-400 hover:text-orange-300 transition-colors"
+                  >
+                    Iniciar sesión →
+                  </Link>
+                </div>
+              </div>
             </motion.div>
           </motion.div>
         )}
