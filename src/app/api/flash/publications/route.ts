@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import crypto from 'crypto'
 
 function isFlashAuthorized(session: any) {
   const role = (session?.user as any)?.role || ''
@@ -10,13 +11,16 @@ function isFlashAuthorized(session: any) {
   const name = (session?.user as any)?.name || ''
   const roles = role.toUpperCase()
   return (
-    roles.includes('ADMIN') || roles.includes('COORDINATOR') || roles.includes('MANAGEMENT') ||
-    email.toLowerCase().includes('stefy') || name.toLowerCase().includes('stefy') ||
+    roles.includes('ADMIN') ||
+    roles.includes('COORDINATOR') ||
+    roles.includes('MANAGEMENT') ||
+    roles.includes('EDICION') ||
+    email.toLowerCase().includes('stefy') ||
+    name.toLowerCase().includes('stefy') ||
     email.toLowerCase().includes('edicion')
   )
 }
 
-// POST /api/flash/publications — create publication assignment
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions)
   if (!session || !isFlashAuthorized(session))
@@ -29,8 +33,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'advisorId e imageCount requeridos' }, { status: 400 })
 
   const count = Number(imageCount)
+  const shareToken = crypto.randomBytes(8).toString('hex')
 
-  // Create assignment + evidence slots atomically
   const assignment = await prisma.flashPublicationAssignment.create({
     data: {
       advisorId,
@@ -39,8 +43,9 @@ export async function POST(req: Request) {
       observations: observations || null,
       documentUrl: documentUrl || null,
       documentName: documentName || null,
+      shareToken,
       status: 'ACTIVE',
-      // Pre-create evidence slots
+      savedAt: new Date(),
       evidenceSlots: {
         createMany: {
           data: Array.from({ length: count }, (_, i) => ({ slotIndex: i })),
@@ -55,7 +60,6 @@ export async function POST(req: Request) {
   return NextResponse.json({ assignment })
 }
 
-// GET /api/flash/publications?advisorId=xxx — list assignments
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions)
   if (!session || !isFlashAuthorized(session))

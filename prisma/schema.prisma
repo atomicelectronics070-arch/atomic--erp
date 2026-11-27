@@ -928,34 +928,63 @@ model NfcCampaignPost {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model FlashAdvisor {
-  id          String   @id @default(cuid())
-  firstName   String
-  lastName    String
-  phone       String?
-  startDate   DateTime?
-  jobRole     String?  // Puesto / cargo
-  category    String?  // Categoría Suicide Squad
-  objective   String?  @db.Text // Objetivo libre
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String    @id @default(cuid())
+  firstName    String
+  lastName     String
+  phone        String?
+  startDate    DateTime?
+  jobRole      String?   // Puesto / cargo
+  category     String?   // Categoría Suicide Squad
+  objective    String?   @db.Text // Objetivo libre
+  pubEnabled   Boolean   @default(false)
+  phoneEnabled Boolean   @default(false)
+  msgEnabled   Boolean   @default(false)
+  dayStatus    String    @default("OPEN") // OPEN | SAVED | CLOSED
+  dayClosedAt  DateTime?
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   publicationAssignments FlashPublicationAssignment[]
   phoneAssignments       FlashPhoneAssignment[]
+  dailyLogs              FlashDailyLog[]
+}
+
+model FlashDailyLog {
+  id            String   @id @default(cuid())
+  advisorId     String
+  dateStr       String   // YYYY-MM-DD
+  status        String   @default("SAVED") // SAVED | CLOSED
+  pubsAssigned  Int      @default(0)
+  evidencesDone Int      @default(0)
+  phonesAssigned Int     @default(0)
+  phonesDone    Int      @default(0)
+  notes         String?  @db.Text
+  closedAt      DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  advisor       FlashAdvisor @relation(fields: [advisorId], references: [id], onDelete: Cascade)
+
+  @@unique([advisorId, dateStr])
+  @@index([advisorId])
 }
 
 // Asignación de publicaciones a un asesor (Toggle 1: Publicaciones Asignadas)
 model FlashPublicationAssignment {
-  id             String   @id @default(cuid())
+  id             String    @id @default(cuid())
   advisorId      String
-  topicTitle     String?  // Tema / grupo de anuncios
-  imageCount     Int      @default(1)       // Cantidad seleccionada (1,3,5,custom)
-  observations   String?  @db.Text
-  documentUrl    String?  // Excel / Doc adjunto
+  topicTitle     String?   // Tema / grupo de anuncios
+  imageCount     Int       @default(1)       // Cantidad seleccionada (1,3,5,custom)
+  observations   String?   @db.Text
+  documentUrl    String?   // Excel / Doc adjunto
   documentName   String?
-  status         String   @default("DRAFT") // DRAFT | ACTIVE | DONE
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  shareToken     String?   @unique
+  status         String    @default("ACTIVE") // DRAFT | ACTIVE | SAVED | CLOSED
+  savedAt        DateTime?
+  closedAt       DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   advisor        FlashAdvisor              @relation(fields: [advisorId], references: [id], onDelete: Cascade)
   publicationImages FlashPublicationImage[]

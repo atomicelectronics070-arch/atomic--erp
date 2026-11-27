@@ -10,8 +10,12 @@ function isFlashAuthorized(session: any) {
   const name = (session?.user as any)?.name || ''
   const roles = role.toUpperCase()
   return (
-    roles.includes('ADMIN') || roles.includes('COORDINATOR') || roles.includes('MANAGEMENT') ||
-    email.toLowerCase().includes('stefy') || name.toLowerCase().includes('stefy') ||
+    roles.includes('ADMIN') ||
+    roles.includes('COORDINATOR') ||
+    roles.includes('MANAGEMENT') ||
+    roles.includes('EDICION') ||
+    email.toLowerCase().includes('stefy') ||
+    name.toLowerCase().includes('stefy') ||
     email.toLowerCase().includes('edicion')
   )
 }
@@ -23,7 +27,6 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
-  // images: Array<{ url: string, fileName?: string, slotIndex?: number }>
   const { images } = body
 
   if (!images || !Array.isArray(images) || images.length === 0)
@@ -44,19 +47,65 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   return NextResponse.json({ images: created })
 }
 
-// PATCH /api/flash/publications/[id]/images — update evidence slot screenshot
+// PATCH /api/flash/publications/[id]/images — update evidence slot or assignment document/observations/status
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions)
   if (!session || !isFlashAuthorized(session))
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
-  // { slotId: string, screenshotUrl: string }
-  const { slotId, screenshotUrl } = body
+  const { slotId, screenshotUrl, status, documentUrl, documentName, observations, topicTitle } = body
 
-  const slot = await prisma.flashEvidenceSlot.update({
-    where: { id: slotId },
-    data: { screenshotUrl, uploadedAt: new Date() },
+  if (slotId) {
+    const slot = await prisma.flashEvidenceSlot.update({
+      where: { id: slotId },
+      data: { screenshotUrl: screenshotUrl ?? null, uploadedAt: screenshotUrl ? new Date() : null },
+    })
+    return NextResponse.json({ slot })
+  }
+
+  const updateData: any = {}
+  if (status !== undefined) {
+    updateData.status = status
+    if (status === 'CLOSED') updateData.closedAt = new Date()
+    if (status === 'SAVED') updateData.savedAt = new Date()
+  }
+  if (documentUrl !== undefined) updateData.documentUrl = documentUrl
+  if (documentName !== undefined) updateData.documentName = documentName
+  if (observations !== undefined) updateData.observations = observations
+  if (topicTitle !== undefined) updateData.topicTitle = topicTitle
+
+  const assignment = await prisma.flashPublicationAssignment.update({
+    where: { id: params.id },
+    data: updateData,
   })
-  return NextResponse.json({ slot })
+  return NextResponse.json({ assignment })
+}
+
+// DELETE /api/flash/publications/[id]/images?imageId=xxx OR ?slotId=xxx
+export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+  const session = await getServerSession(authOptions)
+  if (!session || !isFlashAuthorized(session))
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const { searchParams } = new URL(req.url)
+  const imageId = searchParams.get('imageId')
+  const slotId = searchParams.get('slotId')
+
+  if (imageId) {
+    await prisma.flashPublicationImage.deleteMany({
+      where: { id: imageId, assignmentId: params.id },
+    })
+    return NextResponse.json({ ok: true })
+  }
+
+  if (slotId) {
+    await prisma.flashEvidenceSlot.updateMany({
+      where: { id: slotId, assignmentId: params.id },
+      data: { screenshotUrl: null, uploadedAt: null },
+    })
+    return NextResponse.json({ ok: true })
+  }
+
+  return NextResponse.json({ error: 'imageId o slotId requerido' }, { status: 400 })
 }

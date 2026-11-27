@@ -7,7 +7,8 @@ import {
   Image as ImageIcon, Upload, X, Check, Save, Loader2, AlertCircle,
   ToggleLeft, ToggleRight, FileText, Eye, EyeOff, Trash2, Edit3,
   BookOpen, Target, Users, Camera, Grid3X3, Filter, Download,
-  CheckCircle2, Clock, Tag, MessageSquare, Flame, Play
+  CheckCircle2, Clock, Tag, MessageSquare, Flame, Play,
+  Link2, Lock, Unlock, ExternalLink, CalendarDays
 } from "lucide-react"
 import BancoImagenesFlash from "@/components/flash/BancoImagenesFlash"
 
@@ -56,10 +57,24 @@ interface FlashPublicationAssignment {
   observations?: string | null
   documentUrl?: string | null
   documentName?: string | null
+  shareToken?: string | null
   status: string
+  savedAt?: string | null
+  closedAt?: string | null
   publicationImages: FlashPublicationImage[]
   evidenceSlots: FlashEvidenceSlot[]
   createdAt: string
+}
+
+interface FlashDailyLog {
+  id: string
+  dateStr: string
+  status: string
+  pubsAssigned: number
+  evidencesDone: number
+  phonesAssigned: number
+  phonesDone: number
+  closedAt?: string | null
 }
 
 interface FlashAdvisor {
@@ -71,9 +86,15 @@ interface FlashAdvisor {
   jobRole?: string | null
   category?: string | null
   objective?: string | null
+  pubEnabled?: boolean
+  phoneEnabled?: boolean
+  msgEnabled?: boolean
+  dayStatus?: string
+  dayClosedAt?: string | null
   isActive: boolean
   publicationAssignments: FlashPublicationAssignment[]
   phoneAssignments: FlashPhoneAssignment[]
+  dailyLogs?: FlashDailyLog[]
   createdAt: string
 }
 
@@ -269,11 +290,13 @@ function MultiImageUploader({
 // Single image/file uploader (for evidence slots)
 function SingleFileUploader({
   onUploaded,
+  onDelete,
   currentUrl,
   accept,
   placeholder,
 }: {
   onUploaded: (url: string, fileName?: string) => void
+  onDelete?: () => void
   currentUrl?: string | null
   accept?: string
   placeholder?: string
@@ -303,10 +326,23 @@ function SingleFileUploader({
         onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])}
       />
       {currentUrl ? (
-        <div className="relative w-full h-32 bg-slate-800">
+        <div className="relative w-full h-32 bg-slate-800 group">
           <img src={currentUrl} alt="evidence" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-            <span className="text-xs text-white font-medium">Cambiar</span>
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="text-xs text-white font-medium px-2 py-1 rounded bg-slate-800/80">Cambiar</span>
+            {onDelete && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onDelete()
+                }}
+                className="p-1.5 rounded bg-rose-600 hover:bg-rose-500 text-white"
+                title="Eliminar captura"
+              >
+                <Trash2 size={12} />
+              </button>
+            )}
           </div>
         </div>
       ) : (
@@ -524,19 +560,93 @@ function PublicationPanel({
                     className="overflow-hidden"
                   >
                     <div className="px-4 pb-4 space-y-4 border-t border-slate-700/60">
-                      {/* Published images */}
-                      {a.publicationImages.length > 0 && (
-                        <div>
-                          <p className="text-xs font-bold text-slate-400 mt-3 mb-2 uppercase">Anuncios diseñados</p>
+                      {/* Shareable Advisor Link Bar */}
+                      <div className="mt-3 p-3 rounded-xl bg-cyan-950/30 border border-cyan-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="text-[11px] font-bold text-cyan-300 flex items-center gap-1.5">
+                            <Link2 size={13} /> Link directo para el asesor (descargar y subir entregas)
+                          </p>
+                          <p className="text-[10px] text-slate-400 truncate font-mono mt-0.5">
+                            /flash-entrega/{a.shareToken || a.id}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const link = `${window.location.origin}/flash-entrega/${a.shareToken || a.id}`
+                              navigator.clipboard.writeText(link)
+                            }}
+                            className="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-[11px] font-bold flex items-center gap-1"
+                          >
+                            <Link2 size={12} /> Copiar Link
+                          </button>
+                          <a
+                            href={`/flash-entrega/${a.shareToken || a.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-[11px] font-bold flex items-center gap-1"
+                          >
+                            Abrir <ExternalLink size={11} />
+                          </a>
+                        </div>
+                      </div>
+
+                      {/* Published images (editable: delete or add more) */}
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-xs font-bold text-slate-400 uppercase">
+                            Anuncios diseñados ({a.publicationImages.length})
+                          </p>
+                          <label className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-emerald-300 text-[11px] font-bold cursor-pointer">
+                            <Upload size={11} /> + Subir imagen
+                            <input
+                              type="file"
+                              accept="image/*,.heic,.heif,.webp"
+                              multiple
+                              className="hidden"
+                              onChange={async (e) => {
+                                const files = Array.from(e.target.files || [])
+                                if (!files.length) return
+                                const uploaded = []
+                                for (let i = 0; i < files.length; i++) {
+                                  const url = await uploadFileToStorage(files[i])
+                                  uploaded.push({ url, fileName: files[i].name, slotIndex: a.publicationImages.length + i })
+                                }
+                                await fetch(`/api/flash/publications/${a.id}/images`, {
+                                  method: "POST",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify({ images: uploaded }),
+                                })
+                                e.target.value = ""
+                                onRefresh()
+                              }}
+                            />
+                          </label>
+                        </div>
+                        {a.publicationImages.length > 0 && (
                           <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                             {a.publicationImages.map(img => (
-                              <div key={img.id} className="rounded-lg overflow-hidden aspect-square bg-slate-700">
+                              <div key={img.id} className="group relative rounded-lg overflow-hidden aspect-square bg-slate-700 border border-slate-600">
                                 <img src={img.url} alt={img.fileName || "pub"} className="w-full h-full object-cover" />
+                                <button
+                                  type="button"
+                                  onClick={async () => {
+                                    await fetch(`/api/flash/publications/${a.id}/images?imageId=${img.id}`, {
+                                      method: "DELETE",
+                                    })
+                                    onRefresh()
+                                  }}
+                                  className="absolute top-1 right-1 p-1 rounded-full bg-rose-600/90 hover:bg-rose-500 text-white opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity"
+                                  title="Eliminar imagen"
+                                >
+                                  <Trash2 size={11} />
+                                </button>
                               </div>
                             ))}
                           </div>
-                        </div>
-                      )}
+                        )}
+                      </div>
 
                       {/* Evidence slots */}
                       <div>
@@ -552,6 +662,12 @@ function PublicationPanel({
                                 accept="image/*"
                                 placeholder={`Evidencia ${slot.slotIndex + 1}`}
                                 onUploaded={(url) => handleEvidenceUpload(a.id, slot.id, url)}
+                                onDelete={async () => {
+                                  await fetch(`/api/flash/publications/${a.id}/images?slotId=${slot.id}`, {
+                                    method: "DELETE",
+                                  })
+                                  onRefresh()
+                                }}
                               />
                             </div>
                           ))}
@@ -812,11 +928,64 @@ function AdvisorCard({
   onRefresh: () => void
 }) {
   const [expanded, setExpanded] = useState(false)
-  const [pubOn, setPubOn] = useState(false)
-  const [phoneOn, setPhoneOn] = useState(false)
-  const [msgOn, setMsgOn] = useState(false)
+  const [pubOn, setPubOn] = useState(Boolean(advisor.pubEnabled))
+  const [phoneOn, setPhoneOn] = useState(Boolean(advisor.phoneEnabled))
+  const [msgOn, setMsgOn] = useState(Boolean(advisor.msgEnabled))
   const [editingObjective, setEditingObjective] = useState(false)
   const [objective, setObjective] = useState(advisor.objective || "")
+  const [daySaving, setDaySaving] = useState<"SAVED" | "CLOSED" | "OPEN" | null>(null)
+  const [dayFeedback, setDayFeedback] = useState<string | null>(null)
+  const [calendarOpen, setCalendarOpen] = useState(false)
+  const [selectedDay, setSelectedDay] = useState<string | null>(null)
+
+  useEffect(() => {
+    setPubOn(Boolean(advisor.pubEnabled))
+    setPhoneOn(Boolean(advisor.phoneEnabled))
+    setMsgOn(Boolean(advisor.msgEnabled))
+    setObjective(advisor.objective || "")
+  }, [advisor.pubEnabled, advisor.phoneEnabled, advisor.msgEnabled, advisor.objective])
+
+  async function toggleSwitch(field: "pubEnabled" | "phoneEnabled" | "msgEnabled", nextVal: boolean) {
+    if (field === "pubEnabled") setPubOn(nextVal)
+    if (field === "phoneEnabled") setPhoneOn(nextVal)
+    if (field === "msgEnabled") setMsgOn(nextVal)
+    await fetch(`/api/flash/advisors/${advisor.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ [field]: nextVal }),
+    })
+    onRefresh()
+  }
+
+  async function handleAdvisorDayAction(status: "SAVED" | "CLOSED" | "OPEN") {
+    if (status === "CLOSED") {
+      const ok = window.confirm(`¿Cerrar el día de ${advisor.firstName} ${advisor.lastName}? Se registrará en su calendario de 30 días.`)
+      if (!ok) return
+    }
+    setDaySaving(status)
+    try {
+      await fetch(`/api/flash/advisors/${advisor.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          dayStatus: status,
+          pubEnabled: pubOn,
+          phoneEnabled: phoneOn,
+          msgEnabled: msgOn,
+        }),
+      })
+      setDayFeedback(
+        status === "CLOSED"
+          ? "🔒 Día cerrado y guardado en el calendario"
+          : status === "SAVED"
+          ? "💾 Cambios guardados — puedes volver a editar cuando quieras"
+          : "🔓 Día reabierto para edición"
+      )
+      setTimeout(() => setDayFeedback(null), 3500)
+      onRefresh()
+    } catch { /* noop */ }
+    setDaySaving(null)
+  }
 
   async function saveObjective() {
     await fetch(`/api/flash/advisors/${advisor.id}`, {
@@ -827,6 +996,28 @@ function AdvisorCard({
     setEditingObjective(false)
     onRefresh()
   }
+
+  // Build 30-day calendar entries (today + past 29 days)
+  const calendarDays = Array.from({ length: 30 }, (_, i) => {
+    const d = new Date()
+    d.setDate(d.getDate() - (29 - i))
+    const dateStr = d.toISOString().slice(0, 10)
+    const log = advisor.dailyLogs?.find((l) => l.dateStr === dateStr)
+    const dayPubs = advisor.publicationAssignments.filter(
+      (a) => new Date(a.createdAt).toISOString().slice(0, 10) === dateStr
+    )
+    const dayPhones = advisor.phoneAssignments.filter(
+      (a) => new Date(a.createdAt).toISOString().slice(0, 10) === dateStr
+    )
+    const pubsAssigned = log?.pubsAssigned ?? dayPubs.reduce((s, a) => s + a.imageCount, 0)
+    const evidencesDone = log?.evidencesDone ?? dayPubs.reduce((s, a) => s + a.evidenceSlots.filter((e) => e.screenshotUrl).length, 0)
+    const phonesAssigned = log?.phonesAssigned ?? dayPhones.reduce((s, a) => s + a.phoneCount, 0)
+    const phonesDone = log?.phonesDone ?? dayPhones.reduce((s, a) => s + a.contacts.filter((c) => c.screenshotUrl).length, 0)
+    const status = log?.status || (dayPubs.some((a) => a.status === "CLOSED") ? "CLOSED" : pubsAssigned > 0 || phonesAssigned > 0 ? "SAVED" : "EMPTY")
+    return { dateStr, dayNum: d.getDate(), label: d.toLocaleDateString("es-EC", { day: "2-digit", month: "short" }), status, pubsAssigned, evidencesDone, phonesAssigned, phonesDone }
+  })
+
+  const selectedDayInfo = calendarDays.find((d) => d.dateStr === selectedDay) || calendarDays[calendarDays.length - 1]
 
   return (
     <div className="bg-[#0f1621] border border-slate-800 rounded-2xl overflow-hidden transition-all">
@@ -855,6 +1046,15 @@ function AdvisorCard({
                 {categoryLabel(advisor.category)}
               </span>
             )}
+            {advisor.dayStatus === "CLOSED" ? (
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                🔒 Día Cerrado
+              </span>
+            ) : advisor.dayStatus === "SAVED" ? (
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
+                💾 Guardado
+              </span>
+            ) : null}
           </div>
           <div className="flex items-center gap-4 mt-0.5">
             {advisor.phone && <span className="text-xs text-slate-400">{advisor.phone}</span>}
@@ -948,12 +1148,12 @@ function AdvisorCard({
                 )}
               </div>
 
-              {/* 3 Toggles */}
+              {/* 3 Toggles (Persistidos en BD) */}
               <div className="space-y-3 p-4 rounded-xl bg-slate-800/40 border border-slate-700/40">
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Actividades</p>
-                <Toggle on={pubOn} onToggle={() => setPubOn(!pubOn)} label="Publicaciones asignadas" />
-                <Toggle on={phoneOn} onToggle={() => setPhoneOn(!phoneOn)} label="Números de teléfono" />
-                <Toggle on={msgOn} onToggle={() => setMsgOn(!msgOn)} label="Mensajes enviados" />
+                <Toggle on={pubOn} onToggle={() => toggleSwitch("pubEnabled", !pubOn)} label="Publicaciones asignadas" />
+                <Toggle on={phoneOn} onToggle={() => toggleSwitch("phoneEnabled", !phoneOn)} label="Números de teléfono" />
+                <Toggle on={msgOn} onToggle={() => toggleSwitch("msgEnabled", !msgOn)} label="Mensajes enviados" />
               </div>
 
               {/* Publication Panel */}
@@ -993,6 +1193,129 @@ function AdvisorCard({
                   </motion.div>
                 )}
               </AnimatePresence>
+
+              {/* Collapsible 30-Day Performance Calendar */}
+              <div className="rounded-xl bg-slate-800/40 border border-slate-700/40 overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setCalendarOpen(!calendarOpen)}
+                  className="w-full flex items-center justify-between px-4 py-3 hover:bg-slate-700/30 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <CalendarDays size={15} className="text-purple-400" />
+                    <span className="text-xs font-bold text-purple-300 uppercase tracking-widest">
+                      Calendario de Rendimiento (30 Días)
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] text-slate-400">
+                      {calendarDays.filter((d) => d.status === "CLOSED").length} días cerrados
+                    </span>
+                    {calendarOpen ? <ChevronDown size={14} className="text-slate-400" /> : <ChevronRight size={14} className="text-slate-400" />}
+                  </div>
+                </button>
+
+                <AnimatePresence>
+                  {calendarOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden border-t border-slate-700/40"
+                    >
+                      <div className="p-4 space-y-3">
+                        <div className="grid grid-cols-6 sm:grid-cols-10 gap-1.5">
+                          {calendarDays.map((day) => (
+                            <button
+                              key={day.dateStr}
+                              type="button"
+                              onClick={() => setSelectedDay(day.dateStr)}
+                              className={`p-1.5 rounded-lg border text-center transition-all ${
+                                selectedDayInfo.dateStr === day.dateStr ? "ring-2 ring-white/50 " : ""
+                              }${
+                                day.status === "CLOSED"
+                                  ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300"
+                                  : day.status === "SAVED"
+                                  ? "bg-amber-500/20 border-amber-500/40 text-amber-300"
+                                  : "bg-slate-900/60 border-slate-800 text-slate-500"
+                              }`}
+                            >
+                              <span className="block text-[10px] font-black">{day.dayNum}</span>
+                              <span className="block text-[8px] truncate">{day.label.split(" ")[1]}</span>
+                            </button>
+                          ))}
+                        </div>
+
+                        {/* Selected Day Breakdown */}
+                        <div className="bg-slate-900/70 border border-slate-800 rounded-xl p-3 flex flex-wrap items-center justify-between gap-2 text-xs">
+                          <div>
+                            <span className="font-bold text-white">{selectedDayInfo.label}</span>
+                            <span className="ml-2 text-[11px] text-slate-400">
+                              ({selectedDayInfo.status === "CLOSED" ? "Día Cerrado ✅" : selectedDayInfo.status === "SAVED" ? "En progreso / Guardado 🟡" : "Sin actividad"})
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-3 text-[11px]">
+                            <span className="text-purple-300 font-bold">
+                              Pub: {selectedDayInfo.evidencesDone}/{selectedDayInfo.pubsAssigned} evidencias
+                            </span>
+                            <span className="text-cyan-300 font-bold">
+                              Tel: {selectedDayInfo.phonesDone}/{selectedDayInfo.phonesAssigned} envíos
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Guardar vs Cerrar Día Bar */}
+              <div className="p-4 rounded-xl bg-slate-900/70 border border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="text-xs">
+                  {dayFeedback ? (
+                    <span className="text-emerald-300 font-bold">{dayFeedback}</span>
+                  ) : advisor.dayStatus === "CLOSED" ? (
+                    <span className="text-emerald-300 font-semibold flex items-center gap-1.5">
+                      <Lock size={13} /> Jornada cerrada ({advisor.dayClosedAt ? new Date(advisor.dayClosedAt).toLocaleString("es-EC") : "hoy"})
+                    </span>
+                  ) : (
+                    <span className="text-slate-400">
+                      Usa <strong>Guardar</strong> para mantener los switches y editar luego, o <strong>Cerrar Día</strong> al finalizar.
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    disabled={daySaving !== null}
+                    onClick={() => handleAdvisorDayAction("SAVED")}
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-black transition-colors"
+                  >
+                    {daySaving === "SAVED" ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
+                    Guardar
+                  </button>
+                  {advisor.dayStatus === "CLOSED" ? (
+                    <button
+                      type="button"
+                      disabled={daySaving !== null}
+                      onClick={() => handleAdvisorDayAction("OPEN")}
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-white text-xs font-black transition-colors"
+                    >
+                      <Unlock size={13} /> Reabrir Día
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={daySaving !== null}
+                      onClick={() => handleAdvisorDayAction("CLOSED")}
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black transition-colors"
+                    >
+                      {daySaving === "CLOSED" ? <Loader2 size={13} className="animate-spin" /> : <Lock size={13} />}
+                      Cerrar Día
+                    </button>
+                  )}
+                </div>
+              </div>
 
             </div>
           </motion.div>

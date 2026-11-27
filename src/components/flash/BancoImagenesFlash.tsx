@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useCallback } from "react"
 import {
   Image as ImageIcon, Filter, FileText, Download, Eye, X,
-  CheckCircle2, Clock, User, Loader2, RefreshCw, ExternalLink
+  CheckCircle2, Clock, User, Loader2, RefreshCw, ExternalLink,
+  Search, Grid3X3, Layers, Link2, Check
 } from "lucide-react"
 
 interface BancoImage {
@@ -28,6 +29,7 @@ interface BancoAssignment {
   observations?: string | null
   documentUrl?: string | null
   documentName?: string | null
+  shareToken?: string | null
   status: string
   createdAt: string
   advisor: {
@@ -50,8 +52,11 @@ export default function BancoImagenesFlash() {
   const [assignments, setAssignments] = useState<BancoAssignment[]>([])
   const [advisors, setAdvisors] = useState<AdvisorOption[]>([])
   const [selectedAdvisorId, setSelectedAdvisorId] = useState<string>("")
+  const [nameQuery, setNameQuery] = useState<string>("")
+  const [viewMode, setViewMode] = useState<"assignments" | "gallery">("assignments")
   const [loading, setLoading] = useState(true)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [copiedId, setCopiedId] = useState<string | null>(null)
 
   const fetchBanco = useCallback(async () => {
     setLoading(true)
@@ -71,50 +76,127 @@ export default function BancoImagenesFlash() {
     fetchBanco()
   }, [fetchBanco])
 
-  const totalImages = assignments.reduce((acc, a) => acc + a.publicationImages.length, 0)
-  const totalEvidences = assignments.reduce(
-    (acc, a) => acc + a.evidenceSlots.filter(s => s.screenshotUrl).length,
+  const filteredAssignments = assignments.filter((a) => {
+    if (!nameQuery.trim()) return true
+    const fullName = `${a.advisor.firstName} ${a.advisor.lastName}`.toLowerCase()
+    const topic = (a.topicTitle || "").toLowerCase()
+    const q = nameQuery.trim().toLowerCase()
+    return fullName.includes(q) || topic.includes(q)
+  })
+
+  const allFlatImages = filteredAssignments.flatMap((a) => [
+    ...a.publicationImages.map((img, i) => ({
+      key: `pub-${img.id}`,
+      url: img.url,
+      label: img.fileName || `Anuncio #${i + 1}`,
+      kind: "ANUNCIO" as const,
+      advisorName: `${a.advisor.firstName} ${a.advisor.lastName}`,
+      topic: a.topicTitle || "Sin tema",
+      createdAt: a.createdAt,
+    })),
+    ...a.evidenceSlots
+      .filter((s) => Boolean(s.screenshotUrl))
+      .map((s) => ({
+        key: `ev-${s.id}`,
+        url: s.screenshotUrl!,
+        label: `Evidencia #${s.slotIndex + 1}`,
+        kind: "EVIDENCIA" as const,
+        advisorName: `${a.advisor.firstName} ${a.advisor.lastName}`,
+        topic: a.topicTitle || "Sin tema",
+        createdAt: s.uploadedAt || a.createdAt,
+      })),
+  ])
+
+  const totalImages = filteredAssignments.reduce((acc, a) => acc + a.publicationImages.length, 0)
+  const totalEvidences = filteredAssignments.reduce(
+    (acc, a) => acc + a.evidenceSlots.filter((s) => s.screenshotUrl).length,
     0
   )
+
+  function copyShareLink(a: BancoAssignment) {
+    const token = a.shareToken || a.id
+    const url = `${window.location.origin}/flash-entrega/${token}`
+    navigator.clipboard.writeText(url)
+    setCopiedId(a.id)
+    setTimeout(() => setCopiedId(null), 2500)
+  }
 
   return (
     <div className="space-y-5">
       {/* Header & Filter bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#0f1621] border border-slate-800 rounded-2xl p-4">
-        <div>
-          <h2 className="text-base font-black text-white flex items-center gap-2">
-            <ImageIcon size={18} className="text-emerald-400" />
-            Banco de Imágenes Completo — Flash Studio
-          </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
-            {assignments.length} asignaciones · {totalImages} anuncios subidos · {totalEvidences} evidencias de asesores
-          </p>
+      <div className="bg-[#0f1621] border border-slate-800 rounded-2xl p-4 space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 className="text-base font-black text-white flex items-center gap-2">
+              <ImageIcon size={18} className="text-emerald-400" />
+              Banco de Imágenes Completo — Flash Studio
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5">
+              {filteredAssignments.length} asignaciones · {totalImages} anuncios · {totalEvidences} evidencias
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* View mode switcher */}
+            <div className="flex items-center bg-slate-900 border border-slate-700 rounded-xl p-0.5">
+              <button
+                type="button"
+                onClick={() => setViewMode("assignments")}
+                className={`px-3 py-1.5 rounded-lg text-[11px] font-bold flex items-center gap-1 transition-colors ${
+                  viewMode === "assignments" ? "bg-emerald-600 text-white" : "text-slate-400 hover:text-white"
+                }`}
+              >
+                <Layers size={12} /> Por Asesor
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("gallery")}
+                className={`px-3 py-1.5 rounded-lg text-[11px] font-bold flex items-center gap-1 transition-colors ${
+                  viewMode === "gallery" ? "bg-cyan-600 text-white" : "text-slate-400 hover:text-white"
+                }`}
+              >
+                <Grid3X3 size={12} /> Todas General ({allFlatImages.length})
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={fetchBanco}
+              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 transition-colors"
+              title="Actualizar banco"
+            >
+              <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
+            </button>
+          </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Search by advisor name + dropdown */}
+        <div className="flex flex-col sm:flex-row gap-2.5">
+          <div className="flex-1 relative">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+            <input
+              type="text"
+              value={nameQuery}
+              onChange={(e) => setNameQuery(e.target.value)}
+              placeholder="Filtrar por nombre del asesor o tema..."
+              className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+            />
+          </div>
           <div className="flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2">
             <Filter size={14} className="text-slate-400" />
             <select
               value={selectedAdvisorId}
-              onChange={e => setSelectedAdvisorId(e.target.value)}
+              onChange={(e) => setSelectedAdvisorId(e.target.value)}
               className="bg-transparent text-xs font-bold text-white focus:outline-none cursor-pointer"
             >
               <option value="" className="bg-slate-900">Ver todos los asesores</option>
-              {advisors.map(adv => (
+              {advisors.map((adv) => (
                 <option key={adv.id} value={adv.id} className="bg-slate-900">
                   {adv.firstName} {adv.lastName}
                 </option>
               ))}
             </select>
           </div>
-          <button
-            type="button"
-            onClick={fetchBanco}
-            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 transition-colors"
-            title="Actualizar banco"
-          >
-            <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
-          </button>
         </div>
       </div>
 
@@ -124,16 +206,49 @@ export default function BancoImagenesFlash() {
           <Loader2 size={28} className="text-emerald-400 animate-spin" />
           <p className="text-xs text-slate-400">Cargando banco de imágenes...</p>
         </div>
-      ) : assignments.length === 0 ? (
+      ) : filteredAssignments.length === 0 ? (
         <div className="bg-[#0f1621] border border-slate-800 rounded-2xl p-12 text-center space-y-2">
           <ImageIcon size={32} className="mx-auto text-slate-600" />
-          <p className="text-sm font-bold text-slate-300">No hay publicaciones registradas aún</p>
-          <p className="text-xs text-slate-500">Cuando Stefi asigne anuncios a un vendedor, aparecerán aquí.</p>
+          <p className="text-sm font-bold text-slate-300">No hay publicaciones con ese filtro</p>
+          <p className="text-xs text-slate-500">Prueba limpiando el filtro de nombre o seleccionando todos los asesores.</p>
+        </div>
+      ) : viewMode === "gallery" ? (
+        /* General Flat Gallery View */
+        <div className="bg-[#0f1621] border border-slate-800 rounded-2xl p-5">
+          {allFlatImages.length === 0 ? (
+            <p className="text-center text-xs text-slate-500 py-8">No hay imágenes subidas aún</p>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3">
+              {allFlatImages.map((item) => (
+                <div
+                  key={item.key}
+                  onClick={() => setPreviewUrl(item.url)}
+                  className="group relative aspect-square rounded-xl overflow-hidden bg-slate-900 border border-slate-700 cursor-pointer hover:border-cyan-400 transition-all"
+                >
+                  <img src={item.url} alt={item.label} className="w-full h-full object-cover" />
+                  <div className="absolute top-1.5 left-1.5 right-1.5 flex items-center justify-between gap-1">
+                    <span
+                      className={`px-1.5 py-0.5 rounded text-[9px] font-black ${
+                        item.kind === "ANUNCIO" ? "bg-purple-600/90 text-white" : "bg-emerald-600/90 text-white"
+                      }`}
+                    >
+                      {item.kind}
+                    </span>
+                  </div>
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-2">
+                    <p className="text-[10px] font-bold text-white truncate">{item.advisorName}</p>
+                    <p className="text-[9px] text-slate-300 truncate">{item.topic}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       ) : (
         <div className="space-y-4">
-          {assignments.map(a => {
-            const filledEvidences = a.evidenceSlots.filter(s => s.screenshotUrl).length
+          {filteredAssignments.map((a) => {
+            const filledEvidences = a.evidenceSlots.filter((s) => s.screenshotUrl).length
+            const sharePath = `/flash-entrega/${a.shareToken || a.id}`
             return (
               <div key={a.id} className="bg-[#0f1621] border border-slate-800 rounded-2xl p-5 space-y-4">
                 {/* Assignment Header */}
@@ -159,16 +274,36 @@ export default function BancoImagenesFlash() {
                     </h3>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <button
+                      type="button"
+                      onClick={() => copyShareLink(a)}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/30 text-cyan-300 text-[11px] font-bold"
+                    >
+                      {copiedId === a.id ? <Check size={12} /> : <Link2 size={12} />}
+                      {copiedId === a.id ? "Link copiado" : "Link Asesor"}
+                    </button>
+                    <a
+                      href={sharePath}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] font-bold"
+                    >
+                      Abrir <ExternalLink size={11} />
+                    </a>
                     <span className="px-2.5 py-1 rounded-lg bg-purple-500/15 border border-purple-500/30 text-purple-300 text-xs font-bold">
                       {a.publicationImages.length}/{a.imageCount} anuncios
                     </span>
-                    <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${
-                      filledEvidences >= a.imageCount
-                        ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-300"
-                        : "bg-amber-500/15 border-amber-500/30 text-amber-300"
-                    }`}>
-                      {filledEvidences}/{a.imageCount} evidencias
+                    <span
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${
+                        a.status === "CLOSED"
+                          ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-300"
+                          : filledEvidences >= a.imageCount
+                          ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-300"
+                          : "bg-amber-500/15 border-amber-500/30 text-amber-300"
+                      }`}
+                    >
+                      {a.status === "CLOSED" ? "Cerrado · " : ""}{filledEvidences}/{a.imageCount} evidencias
                     </span>
                   </div>
                 </div>
@@ -262,7 +397,7 @@ export default function BancoImagenesFlash() {
           className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4"
           onClick={() => setPreviewUrl(null)}
         >
-          <div className="relative max-w-4xl max-h-[90vh] w-full flex flex-col items-center" onClick={e => e.stopPropagation()}>
+          <div className="relative max-w-4xl max-h-[90vh] w-full flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-2 self-end mb-2">
               <a
                 href={previewUrl}

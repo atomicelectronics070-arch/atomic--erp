@@ -13,6 +13,7 @@ function isFlashAuthorized(session: any) {
     roles.includes('ADMIN') ||
     roles.includes('COORDINATOR') ||
     roles.includes('MANAGEMENT') ||
+    roles.includes('EDICION') ||
     email.toLowerCase().includes('stefy') ||
     name.toLowerCase().includes('stefy') ||
     email.toLowerCase().includes('edicion')
@@ -29,14 +30,18 @@ export async function GET() {
     include: {
       publicationAssignments: {
         include: {
-          publicationImages: true,
-          evidenceSlots: true,
+          publicationImages: { orderBy: { slotIndex: 'asc' } },
+          evidenceSlots: { orderBy: { slotIndex: 'asc' } },
         },
         orderBy: { createdAt: 'desc' },
       },
       phoneAssignments: {
         include: { contacts: { orderBy: { slotIndex: 'asc' } } },
         orderBy: { createdAt: 'desc' },
+      },
+      dailyLogs: {
+        orderBy: { dateStr: 'desc' },
+        take: 35,
       },
     },
     orderBy: { createdAt: 'desc' },
@@ -68,6 +73,7 @@ export async function POST(req: Request) {
     include: {
       publicationAssignments: { include: { publicationImages: true, evidenceSlots: true } },
       phoneAssignments: { include: { contacts: true } },
+      dailyLogs: true,
     },
   })
   return NextResponse.json({ advisor })

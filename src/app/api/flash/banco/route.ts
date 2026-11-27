@@ -14,7 +14,7 @@ export async function GET(req: Request) {
   const name = (session?.user as any)?.name || ''
   const roles = role.toUpperCase()
   const authorized =
-    roles.includes('ADMIN') || roles.includes('COORDINATOR') || roles.includes('MANAGEMENT') ||
+    roles.includes('ADMIN') || roles.includes('COORDINATOR') || roles.includes('MANAGEMENT') || roles.includes('EDICION') ||
     email.toLowerCase().includes('stefy') || name.toLowerCase().includes('stefy') ||
     email.toLowerCase().includes('edicion')
 
