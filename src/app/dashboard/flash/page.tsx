@@ -17,6 +17,7 @@ export default async function FlashPage() {
     role.includes("ADMIN") ||
     role.includes("COORDINATOR") ||
     role.includes("MANAGEMENT") ||
+    role.includes("EDICION") ||
     email.includes("stefy") ||
     name.includes("stefy") ||
     email.includes("edicion")

@@ -199,6 +199,10 @@ export default function PersonalBotBubble() {
         userRole.includes("COORDINATOR") || 
         userRole.includes("ADMIN")
     )
+    const isStefyOnly = Boolean(
+        (userRole.includes("EDICION") || userEmail.includes("stefy") || userName.includes("stefy") || userEmail.includes("edicion")) &&
+        !isSupervisor
+    )
 
     // ── CONFIGURABLE FLOATING SHORTCUTS (UP TO 4 BUTTONS ABOVE BOT) ──
     const [activeShortcutIds, setActiveShortcutIds] = useState<string[]>(["landings", "ruta_dia", "suicide_squad", "quotes"])
@@ -483,29 +487,35 @@ export default function PersonalBotBubble() {
 
                 {/* 2. LOS HASTA 4 BOTONES DE ACCESO RÁPIDO CONFIGURADOS */}
                 <div className="flex flex-col-reverse items-center gap-2 pointer-events-auto">
-                    {activeShortcuts.map((shortcut, idx) => (
+                    {activeShortcuts.map((shortcut, idx) => {
+                        const isStefyRuta = isStefyOnly && shortcut.id === "ruta_dia"
+                        const targetPath = isStefyRuta ? "/dashboard/flash" : shortcut.path
+                        const displayLabel = isStefyRuta ? "Ruta del Día (Flash Studio)" : shortcut.label
+                        const displayShort = isStefyRuta ? "Flash Día" : shortcut.shortLabel
+                        return (
                         <motion.button
                             key={shortcut.id}
-                            onClick={() => router.push(shortcut.path)}
+                            onClick={() => router.push(targetPath)}
                             whileHover={{ scale: 1.12, x: -3 }}
                             whileTap={{ scale: 0.92 }}
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: idx * 0.05 }}
                             className={`w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr ${shortcut.gradient} border ${shortcut.border} shadow-lg shadow-black/60 flex flex-col items-center justify-center text-white cursor-pointer group relative`}
-                            title={shortcut.label}
+                            title={displayLabel}
                         >
                             <span className="text-base sm:text-lg leading-none">{shortcut.icon}</span>
                             <span className="text-[7.5px] font-mono font-black uppercase tracking-tight text-white/90 drop-shadow mt-0.5">
-                                {shortcut.shortLabel}
+                                {displayShort}
                             </span>
                             
                             {/* Hover Tooltip */}
                             <span className="absolute right-full mr-2.5 px-2.5 py-1 rounded-xl bg-slate-950/95 border border-slate-800 text-white text-[10px] font-mono whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-xl">
-                                {shortcut.label}
+                                {displayLabel}
                             </span>
                         </motion.button>
-                    ))}
+                        )
+                    })}
 
                     {/* 3. BOTÓN PARA CONFIGURAR ATAJOS (GEAR MINI ICON) */}
                     <motion.button

@@ -474,8 +474,12 @@ export default function DashboardLayout({
                         <button 
                             type="button"
                             onClick={() => {
-                                setToolsInitialTab("ruta_del_dia")
-                                setIsToolsModalOpen(true)
+                                if (isStefyOnly) {
+                                    router.push("/dashboard/flash")
+                                } else {
+                                    setToolsInitialTab("ruta_del_dia")
+                                    setIsToolsModalOpen(true)
+                                }
                             }}
                             className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500/25 via-teal-600/30 to-cyan-600/25 hover:from-emerald-500/40 hover:to-cyan-600/40 border-2 border-emerald-400/60 hover:border-emerald-300 text-white text-xs font-mono font-black transition-all cursor-pointer shadow-[0_0_20px_rgba(16,185,129,0.35)] hover:shadow-[0_0_30px_rgba(16,185,129,0.6)] active:scale-95 group"
                             title="Ruta del Día: Plan de Trabajo, Actividades y Metas"
