@@ -28,6 +28,7 @@ function MobileBottomDockInner() {
     const isKevin = userNameUpper.includes("KEVIN") || userNameUpper.includes("KEVON") || userEmailUpper.includes("KEVIN") || userEmailUpper.includes("KEVON")
     const isAdministrative = userRole.includes("ADMIN") || userRole.includes("COORDINATOR") || userRole.includes("MANAGEMENT") || userRole.includes("SUPERVISOR") || isKevin || userRole.includes("CRM")
     const isJuanPablo = userNameUpper.includes("JUAN") || userEmailUpper.includes("JUANGUZMAN") || userEmailUpper.includes("ATOMIC@INDUSTRIAS") || isAdministrative
+    const isStefyOnly = (userRole.includes("EDICION") || userNameUpper.includes("STEFY") || userEmailUpper.includes("STEFY") || userEmailUpper.includes("EDICION")) && !isAdministrative
 
     const pathname = usePathname()
     const searchParams = useSearchParams()
@@ -69,7 +70,7 @@ function MobileBottomDockInner() {
     }
 
     const isCrmActive = pathname.startsWith("/dashboard/whatsapp")
-    const isAsistenciaActive = pathname.startsWith("/dashboard/asistencia")
+    const isAsistenciaActive = isStefyOnly ? pathname.startsWith("/dashboard/flash") : pathname.startsWith("/dashboard/asistencia")
     const isPricesActive = pathname.startsWith("/dashboard/matriz-precios") || pathname.startsWith("/dashboard/shop") || pathname.startsWith("/dashboard/precios-vendedor") || pathname.startsWith("/web/precios-vendedor")
     const isQuotesActive = pathname.startsWith("/dashboard/quotes")
     const isShopActive = pathname.startsWith("/dashboard/shop") || pathname === "/web"
@@ -457,19 +458,16 @@ function MobileBottomDockInner() {
                             </Link>
                         ) : (
                             <Link
-                                href="/dashboard/asistencia"
+                                href={isStefyOnly ? "/dashboard/flash" : "/dashboard"}
                                 className="flex flex-col items-center justify-center py-1 transition-all group active:scale-90"
-                                title="Inicio del Día (Asistencia & Metas)"
+                                title={isStefyOnly ? "Flash Studio (Edición)" : "Inicio / Feed"}
                             >
-                                <div className={`p-1.5 rounded-xl transition-colors ${isAsistenciaActive ? 'bg-emerald-500/20 text-emerald-300' : 'text-emerald-400 group-hover:text-emerald-200'}`}>
-                                    <CalendarCheck size={16} className={isAsistenciaActive ? 'stroke-[2.2]' : 'stroke-[1.8]'} />
+                                <div className={`p-1.5 rounded-xl transition-colors ${pathname === "/dashboard" || (isStefyOnly && pathname.startsWith("/dashboard/flash")) ? 'bg-emerald-500/20 text-emerald-300' : 'text-slate-400 group-hover:text-white'}`}>
+                                    <CalendarCheck size={16} className="stroke-[1.8]" />
                                 </div>
-                                <span className={`text-[8px] font-bold tracking-tight mt-0.5 ${isAsistenciaActive ? 'text-white' : 'text-emerald-400'}`}>
-                                    Inicio Día
+                                <span className={`text-[8px] font-bold tracking-tight mt-0.5 ${isStefyOnly ? 'text-emerald-400' : 'text-slate-400'}`}>
+                                    {isStefyOnly ? "Flash" : "Home"}
                                 </span>
-                                {isAsistenciaActive && (
-                                    <motion.div layoutId="dock-dot" className="w-1 h-1 rounded-full bg-emerald-400 mt-0.5" />
-                                )}
                             </Link>
                         )}
 
@@ -557,17 +555,17 @@ function MobileBottomDockInner() {
                             </span>
                         </button>
 
-                        {/* 6. Inicio del Día (Asistencia & Metas Diarias) */}
+                        {/* 6. Inicio del Día (Flash Studio para Stefy / Asistencia para Ventas) */}
                         <Link
-                            href="/dashboard/asistencia"
+                            href={isStefyOnly ? "/dashboard/flash" : "/dashboard/asistencia"}
                             className="flex flex-col items-center justify-center py-1 transition-all group active:scale-90 cursor-pointer"
-                            title="Inicio del Día: Registro diario de Asistencia, Llamadas, Publicaciones, Grupos y Estados"
+                            title={isStefyOnly ? "Flash Studio (Edición)" : "Inicio del Día: Registro diario de Asistencia, Llamadas, Publicaciones, Grupos y Estados"}
                         >
                             <div className="p-1.5 rounded-xl transition-colors bg-gradient-to-br from-emerald-500/25 to-teal-500/25 text-emerald-300 group-hover:text-emerald-100 border border-emerald-400/40 shadow-[0_0_12px_rgba(16,185,129,0.35)]">
                                 <CalendarCheck size={16} className="stroke-[2.2]" />
                             </div>
                             <span className="text-[8px] font-black tracking-tight mt-0.5 text-emerald-300 group-hover:text-white truncate">
-                                Inicio Día
+                                {isStefyOnly ? "Flash Día" : "Inicio Día"}
                             </span>
                         </Link>
 

@@ -1,9 +1,17 @@
 import { NextResponse } from "next/server"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 
 export const dynamic = "force-dynamic"
 
 export async function GET() {
+    const session = await getServerSession(authOptions)
+    const role = String((session?.user as any)?.role || "").toUpperCase()
+    if (!session || (!role.includes("ADMIN") && !role.includes("MANAGEMENT"))) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
     try {
         const counts = await Promise.all([
             prisma.user.count().catch(() => -1),
@@ -17,7 +25,6 @@ export async function GET() {
 
         return NextResponse.json({
             status: "connected",
-            database: process.env.DATABASE_URL?.split("@")[1].split("/")[0] || "unknown",
             counts: {
                 users: counts[0],
                 products: counts[1],
@@ -29,12 +36,9 @@ export async function GET() {
             }
         })
     } catch (error: any) {
-        return NextResponse.json({ 
-            status: "error", 
-            message: error.message,
-            db_host: process.env.DATABASE_URL?.split("@")[1].split("/")[0] || "unknown"
+        return NextResponse.json({
+            status: "error",
+            message: error.message
         }, { status: 500 })
     }
 }
-
-

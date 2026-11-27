@@ -359,7 +359,7 @@ export default function DashboardLayout({
                             </div>
                             <GlassNavItem href="/dashboard/finance" icon={<DollarSign size={18} strokeWidth={1.8} />} label="Finanzas" isActive={pathname.startsWith('/dashboard/finance')} />
                             <GlassNavItem href="/dashboard/marketing" icon={<BarChart3 size={18} strokeWidth={1.8} />} label="Marketing" isActive={pathname.startsWith('/dashboard/marketing')} />
-                            <GlassNavItem href="/dashboard/benefits" icon={<Tag size={18} strokeWidth={1.8} />} label="Beneficios" isActive={pathname.startsWith('/dashboard/benefits')} />
+                            <GlassNavItem href="/dashboard/evaluations" icon={<Tag size={18} strokeWidth={1.8} />} label="Beneficios & Metas" isActive={pathname.startsWith('/dashboard/evaluations')} />
                         </>
                     )}
                     <GlassNavItem href="/dashboard/storage" icon={<Database size={18} strokeWidth={1.8} />} label="Nube & Archivos" isActive={pathname.startsWith('/dashboard/storage')} />
@@ -370,7 +370,7 @@ export default function DashboardLayout({
                         Inteligencia & Sistemas
                     </div>
                     <GlassNavItem href="/dashboard/coach" icon={<BrainCircuit size={18} strokeWidth={1.8} />} label="AI Coach" isActive={pathname.startsWith('/dashboard/coach')} />
-                    <GlassNavItem href="/dashboard/academy" icon={<GraduationCap size={18} strokeWidth={1.8} />} label="Academia Atomic" isActive={pathname.startsWith('/dashboard/academy') || pathname.startsWith('/dashboard/admin')} />
+                    <GlassNavItem href="/dashboard/academy" icon={<GraduationCap size={18} strokeWidth={1.8} />} label="Academia Atomic" isActive={pathname.startsWith('/dashboard/academy')} />
                     <GlassNavItem href="/dashboard/software" icon={<Cpu size={18} strokeWidth={1.8} />} label="Software & IA" isActive={pathname.startsWith('/dashboard/software')} />
                     <GlassNavItem href="/dashboard/bot-ruta" icon={<Bot size={18} strokeWidth={1.8} />} label="Bot Ruta" isActive={pathname.startsWith('/dashboard/bot-ruta')} />
                     {(isAdministrative || rolesList.includes("COORD_ASSISTANT")) && (
@@ -390,13 +390,13 @@ export default function DashboardLayout({
                         href="/dashboard/profile"
                         icon={<User size={18} strokeWidth={1.8} />}
                         label="Account"
-                        isActive={pathname.startsWith('/dashboard/profile')}
+                        isActive={pathname === '/dashboard/profile'}
                     />
                     <GlassNavItem
-                        href="/dashboard/admin"
+                        href="/dashboard/profile?tab=themes"
                         icon={<Settings size={18} strokeWidth={1.8} />}
                         label="Settings"
-                        isActive={pathname.startsWith('/dashboard/admin')}
+                        isActive={pathname.startsWith('/dashboard/profile')}
                     />
                     
                     <Link

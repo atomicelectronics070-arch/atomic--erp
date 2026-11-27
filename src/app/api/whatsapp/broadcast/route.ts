@@ -1,8 +1,19 @@
 export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { sendWhatsAppMessage } from '@/lib/whatsapp/service';
 import { PRE_APPROVED_BROADCAST_TEMPLATES } from '@/lib/karen/karenBrain';
+
+async function requireBroadcastAuth() {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) return null;
+    const role = String((session.user as any)?.role || '').toUpperCase();
+    const email = String(session.user?.email || '').toUpperCase();
+    const allowed = role.includes('ADMIN') || role.includes('COORDINATOR') || role.includes('MANAGEMENT') || role.includes('CRM') || email.includes('KEVIN');
+    return allowed ? session : null;
+}
 
 const INTERNAL_EXCLUSIONS = [
     { whatsappId: { contains: '969043453' } },
@@ -29,6 +40,8 @@ const BROADCAST_TEMPLATES: Record<string, { title: string; category: string; bod
 
 export async function GET(req: Request) {
     try {
+        const auth = await requireBroadcastAuth();
+        if (!auth) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
         const { searchParams } = new URL(req.url);
         const segment = searchParams.get('segment') || 'ALL';
 
@@ -107,6 +120,8 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
     try {
+        const auth = await requireBroadcastAuth();
+        if (!auth) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
         const body = await req.json();
         const { 
             templateId, 
